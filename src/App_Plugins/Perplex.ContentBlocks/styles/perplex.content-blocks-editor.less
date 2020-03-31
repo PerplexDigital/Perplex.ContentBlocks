@@ -1,0 +1,104 @@
+
+
+// CONTAINER
+    
+.p-editor 				{
+
+
+	/* holder */
+
+    &__holder   		{
+				
+		&.ng-hide + & 	{margin-top: 0px;} 
+
+    }
+
+
+    /* blockoptions */
+	 
+	&__blockoption			{
+ 
+ 		&__container 		{border-bottom: 1px solid @color-border; }
+
+		&__holder 		 	{width: 100%; display: flex; flex-flow: row wrap; justify-content: flex-end; padding-bottom: .5rem;}
+
+        &__holder.hidden 	{visibility:hidden;}
+
+		&__button 		 	{background: none; border: 0; color: @color-main; font-weight: 700; padding: 0; padding-bottom: 1rem; margin-left: 2rem;}
+		
+		&__icon 		 	{margin-right: .25rem;} 
+
+		&__button:hover  	{color: @color-sub;}
+
+		&__holder .ui-sortable-placeholder {border: 2px dashed black; visibility: visible !important;}
+
+	    .p-block__item:hover {cursor: move;}
+ 
+	} 
+
+
+	/* empty */
+
+    &__empty   						{text-align: center;
+
+    	&--header 					{margin-bottom: 20px; margin-top: 30px;}
+
+		&__title 					{color: @font-color; font-weight: 700; font-size: 1rem; line-height: 1.5; margin-bottom: 10px;}
+
+		&__hover 					{padding: 0; position: relative; .transitionDelay();}
+
+		&__hover:before 			{content: ""; position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto; display: block; width: 20rem; height: 5px; background: fade(@color-light-b, 25%); border-radius: 2.5px;}
+
+		&__click 					{overflow: hidden; max-height: 1rem; min-height: 0; background: transparent; border: 1px dashed transparent; text-align: center; padding: 0; width: 100%; display: flex; flex-flow: row wrap; align-items: center; justify-content: center; .transitionDelay();}
+
+		&__click .btn 				{margin: 0 .25rem; opacity: 0; .transitionDelay();}	
+		
+    	&--header &__click 			{min-height: 335px;} 
+
+		@media only screen and (min-width: 48em) {
+
+			&__title 				{font-size: 1.4rem; margin-bottom: 15px;} 
+  
+		}  
+
+		&__hover:hover 						{padding: 1rem 0; .transitionDelay();}
+
+		&__hover:hover:after,
+		&__hover:hover:before 				{opacity: 0; pointer-events: none; .transition;}
+ 
+		&__hover:hover &__click 			{min-height: @block-margin; max-height: @block-margin; background: fade(@color-main, 5%); border: 1px dashed @color-border; padding: @grid-margin/1.5; width: 100%; .transitionDelay();}
+ 	
+		&__hover:hover &__click .btn 		{opacity: 1; .transitionDelay();}
+
+		.transitionDelay(@duration: 0.2s, @ease: ease-in-out){transition: all @duration .2s @ease;} 
+  
+    }  
+
+}  
+
+
+// Last item should always have a Add-button available
+
+.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover 								{padding: 1rem 0; margin-top: 1rem;}
+.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover:after,
+.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover:before 						{opacity: 0; pointer-events: none; .transition;}
+.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover .p-editor__empty__click 		{min-height: @block-margin; max-height: @block-margin; background: fade(@color-main, 5%); border: 1px dashed @color-border; padding: @grid-margin/1.5; width: 100%;}
+.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover .p-editor__empty__click .btn 	{opacity: 1;}
+
+
+// If header is not selected, we need Add-header
+  
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover 								{padding: 1rem 0; margin-top: 1rem;}
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover:after,
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover:before 							{opacity: 0; pointer-events: none; .transition;}
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover .p-editor__empty__click 		{min-height: @block-margin; max-height: @block-margin; background: fade(@color-main, 5%); border: 1px dashed @color-border; padding: @grid-margin/1.5; width: 100%;}
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover .p-editor__empty__click .btn 	{opacity: 1;}
+
+
+// If header is alone
+
+.p-block__list.no-contentblock .p-editor__empty__hover 									{padding: 1rem 0; margin-top: 1rem;}
+.p-block__list.no-contentblock .p-editor__empty__hover:after,
+.p-block__list.no-contentblock .p-editor__empty__hover:before 							{opacity: 0; pointer-events: none; .transition;}
+.p-block__list.no-contentblock .p-editor__empty__hover .p-editor__empty__click 			{min-height: @block-margin; max-height: @block-margin; background: fade(@color-main, 5%); border: 1px dashed @color-border; padding: @grid-margin/1.5; width: 100%;}
+.p-block__list.no-contentblock .p-editor__empty__hover .p-editor__empty__click .btn 	{opacity: 1;}

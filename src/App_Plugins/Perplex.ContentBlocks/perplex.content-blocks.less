@@ -1,0 +1,248 @@
+
+
+// UMBRACO COLOR VARIABLES
+
+@color-main:    	#1b264f;  	/* Dark purple */  
+@color-sub:     	#2152a3; 	/* Blue */
+@color-alt:     	#f5c1bc; 	/* Pink */    
+@color-dark:        #000000;	/* Black */
+
+@color-light-a:   	#f6f4f4;    /* soft */
+@color-light-b: 	#e9e9eb;	/* mid */
+@color-light-c: 	#d8d7d9;	/* hard */
+
+@color-border:  	@color-light-c;
+ 
+@font-base:         Lato,Helvetica Neue,Helvetica,Arial,sans-serif; 
+@font-title:        Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
+@font-color:        @color-dark;
+
+@color-error:       #DE6161; 
+@color-warning:     #f77349;
+@color-success:     #3ec19d;
+ 
+@umbraco-border:    @color-border;
+  
+// IMPORT: STYLES
+
+@import "styles/perplex.content-blocks-block.less"; 
+@import "styles/perplex.content-blocks-editor.less";
+@import "styles/perplex.content-blocks-grid.less";
+@import "styles/perplex.content-blocks-icons.less"; 
+@import "styles/perplex.content-blocks-overlay.less"; 
+@import "styles/perplex.content-blocks-picker.less";  
+@import "styles/perplex.content-blocks-sidebar.less"; 
+@import "styles/perplex.content-blocks-slicksliders.less";
+@import "styles/perplex.content-blocks-tooltip.less";
+
+// SETUP
+
+@umbraco-shadow: 	0 1px 1px 0 rgba(0,0,0,.16);
+@grid-margin: 		20px;
+@grid-width: 		108rem; 
+@block-margin: 		4rem; 
+
+.transition(@duration: 0.2s, @ease: ease-in-out){transition: all @duration @ease;}
+
+.perplex-content-blocks {font-size: 80%; padding: 0 0 40px; margin: 0 0 40px; position: relative; box-shadow: 0;
+
+    &:after,
+    &:before 	{content: ''; display: none; position: absolute; top: 0; left: 0; width: ~"calc(100% - 20px)"; height: 1px; background: @color-border;}
+    &:after 	{top: auto; bottom: 0; display: block;}
+
+	@media only screen and (min-width: 120em) {font-size: 100%;}
+
+	* {-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; outline: none;}
+	
+	.btn-wide 		{width: 100%;}
+	.btn-main 		{background: @color-main; -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:not(input[type="submit"]) {-webkit-text-fill-color: rgba(255, 255, 255, 1); color: white;}} 
+	.btn-sub 		{background: @color-sub;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:hover {background: darken(@color-sub, 20%); .transition(.2s);}}
+	.btn-alt 		{background: @color-alt;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: black !important;}
+	.btn-radius		{border-radius: 2rem;} 
+	.btn 			{font-weight: 700 !important; appearance: none; .transition(.2s);}
+	.btn .l-icon:first-child 	{margin-right: 5px;}
+	.btn .l-icon:last-child 	{margin-left: 5px;}
+	
+}   
+
+.umb-group-panel + .perplex-content-blocks__panel .perplex-content-blocks {padding-top: 40px; margin-top: 20px;}
+.umb-group-panel + .perplex-content-blocks__panel .perplex-content-blocks:before {display: block;}
+ 
+
+
+//
+// PERPLEX UMBRACO DIVIDER
+//
+
+	.perplex-rte {font-size: 13px; font-family: @font-base; padding: 0 30px 0 190px; border-radius: 3px; margin: -1px -10px -5px; position: relative; z-index: 1;
+	 
+		strong 		{font-weight: 700;}
+		h2 			{font-size: 23px;}
+		h3 			{font-size: 19px;}
+		h4 			{font-size: 15px;}
+		h2, h3, h4 	{font-family: @font-title; line-height: 1.2; font-weight: 700;} 
+	 
+		* {margin: 5px 0;}
+
+		&__label 		{position: absolute; top: 10px; left: 10px; max-width: 170px; background: none; }
+
+		&--info 		{padding: 10px 30px 10px 190px; background: @color-light-a; color: @color-main;}
+
+		&--info-wide	{padding: 10px 30px; background: @color-light-a; color: @color-main;}
+
+		&--warning 		{padding: 10px 30px 10px 190px; background: fade(@color-warning, 10%); color: @color-warning;}
+
+		&--error 		{padding: 10px 30px 10px 190px; background: fade(@color-error, 10%); color: @color-error;}
+
+		&--nopadding 	{padding: 10px 20px 5px; margin: 0; color: @color-dark;
+
+			&:before 	{content: ""; z-index: -1; position: absolute; top: auto; bottom: -.25rem; left: 2rem; height: 1rem; width: 1rem; background: @color-light-a; display: block; transform: rotate(45deg);}
+
+		}
+
+	}
+
+	.perplex-solutionpick 	{display: block; margin-top: 20px;
+
+		&__item 			{margin: 0;
+
+			p 				{font-size: 14px;}
+			
+			& + &			{margin-top: -10px;}
+
+		}
+
+	}
+
+
+//
+// OVERWRITES
+//
+
+
+	.perplex-content-blocks__panel 		{all: unset; background: none; box-shadow: none !important;
+
+		.umb-group-panel__header 		{display: none;}
+		
+		.umb-group-panel__content 		{padding:0;}}
+
+	.perplex-content-blocks .umb-property-editor.umb-rte > .mce-tinymce.mce-container.mce-panel {max-width: 100%;}
+	.perplex-content-blocks .umb-control-group .umb-el-wrap .umb-el-wrap {border: 1px solid @color-border; display: flex; flex-flow: row nowrap;
+
+
+		/* Controls */
+		.control-label					{background: @color-light-a; position: relative; min-height: 100%; font-size: 11px; width: 120px; border-bottom: 1px solid @color-border; font-weight: 600; margin: 0; padding: .6rem 2rem 0rem 1rem !important; flex: 0 0 auto;
+			@media only screen and (min-width: 108em) {font-size: 13px; width: 160px;}}
+		.controls-row 					{width: 100%;}		
+		.controls 						{margin: 0; flex: 1 1 0; background: white; max-width: 100%;}
+		.controls input::placeholder 	{font-size: 13px; color: #68676b;}  
+		.umb-property-editor > p		{margin: .5rem 0 0 1rem;}	
+		.umb-node-preview__actions 		{margin-right: 1rem; position: relative; top: .1rem;}
+		.umb-node-preview-add + .alert	{background: #ECF1F5; color: @font-color; flex: 1 1 0; margin: 0;} 
+		@media only screen and (min-width: 48em) 	{.control-label {border-bottom: 0; border-right: 1px solid @color-border;}}
+
+		/* Helper Text */ 
+		label small 			{line-height: 1.3; padding-bottom: .25rem;}
+		
+		/* MCE */
+		.mce-edit-area			{padding: 0 10px 10px !important; height: auto !important; 	@media only screen and (min-width: 108em) {padding: 0 15px 20px !important;}} 
+		.mce-top-part:before	{box-shadow: none; border-bottom: 1px solid @color-border;}
+		.mce-panel 				{border: 0;}
+		.mce-tinymce 			{width: 100% !important;}
+		.umb-property-editor.umb-rte {max-width: 100% !important;}
+		input, textarea 		{width: 100%; padding-top: .7rem; padding-left: 1rem !important; padding-right: 1rem !important; border: 0;}
+		
+		/* Media picker */
+		.umb-mediapicker > div 	{width: 120px; margin: 10px 20px; display: flex; justify-content: center; background: white; border-color: @color-border;}
+		.umb-mediapicker .add-link-square {width: 80px; height: 80px;}		 
+		.umb-sortable-thumbnails .umb-sortable-thumbnails__wrapper {width: 110px; height: 110px;}
+		
+		/* Link picker */
+		.umb-node-preview 		{max-width: 100%;}
+		.umb-node-preview__icon {margin-top: .5rem; margin-left: 1rem;}	
+		.umb-node-preview-add	{display: inline-block; float: left; margin: 10px 20px; text-align: center; min-width: 7.6rem; max-width: 200px;}
+		.umb-contentpicker__min-max-help {display: inline-block; float: left; position: relative; top: 0.65rem;}
+		.umb-nested-content__content .control-label {background: fade(@color-light-a,25%);}
+
+		/* Date picker */
+		.flatpickr-input 	{display: flex; flex-flow: row wrap;
+			> input 		{height:100%; flex: 1 1 0; margin: 0; padding: 4px 6px !important; height: 44px;}
+			.on-top i, 
+			.add-on i		{position: relative; top: 4px;} 
+			.on-top 		{margin-left: 0; left: auto; right: 40px;}}
+		.umb-datepicker .input-append .add-on {width: 38px; height: 38px; border: 0; border-left: 1px solid @color-border; margin: 0;} 
+	 
+		/* Textarea Counter */ 
+		.c-count__parent 					{width: 100%;}
+		.c-count__parent .umb-textarea 		{position: relative !important; padding-bottom: 3rem; background: white !important; resize: vertical !important;} 
+		.c-count__parent .c-count__item 	{bottom: .5rem; top: auto; z-index: 100;}
+		.c-count__parent .help-inline 		{display: none;}
+
+		/* Umbraco Toggle */
+		.umb-property-editor .umb-toggle {margin: 10px 0 0 15px;} 
+
+		/* Umbraco pane */
+		.umb-pane {margin: 10px;} 
+		.umb-nested-content__item--single>.umb-nested-content__content>.umb-pane {margin: 0;}
+		@media only screen and (min-width: 48em) {
+			.umb-pane {margin: 10px;} 
+			.umb-nested-content__item--single>.umb-nested-content__content>.umb-pane {margin: 0;}
+		}
+	} 
+  
+ 
+
+//
+// OTHERS
+//
+
+	.umb-editor-sub-view__content 	{max-width: 1600px; margin: 0 auto;
+		.form-horizontal 			{max-width: 96%; margin: 0 auto;}
+		.form-horizontal .umb-control-group .control-header {float: none; padding-top: 0; min-height: 100%; display: flex; flex-flow: row wrap; position: relative;}
+	}  
+
+	/* HEADER PANELS WITH TOGGLE */ 
+	.umb-group-panel 						{box-shadow: @umbraco-shadow; .transition(.2s);}
+	.umb-group-panel:hover					{box-shadow: 0px 0px 7px rgba(0,0,0,0.16);}
+	.umb-group-panel__header 				{cursor: pointer; padding: 20px; position: relative; color: @color-dark;}
+	.umb-group-panel__header:after			{transform: rotate(0deg); .transition(.2s); content: ""; position: absolute; top: 0; bottom: 0; margin: auto 0; left: auto; right: 28px; width: 1rem; height: 1rem; display: block; background-position: center; background-repeat: no-repeat; background-size: 100%;background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9Imljb24tYXJyb3ctbGVmdCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMCAyMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjAgMjA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj48c3R5bGUgdHlwZT0idGV4dC9jc3MiPi5zdDB7ZmlsbDojQzlENUUwO308L3N0eWxlPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMCwxMGMwLDUuNS00LjUsMTAtMTAsMTBTMCwxNS41LDAsMTBTNC41LDAsMTAsMFMyMCw0LjUsMjAsMTB6IE02LjMsNy40TDQuNiw5LjJsMy43LDMuN2wxLjcsMS43bDEuNy0xLjdsMy43LTMuN2wtMS43LTEuN0wxMCwxMS4xTDYuMyw3LjR6Ii8+PC9zdmc+);}
+	.umb-group-panel__header.is-open:after 	{transform: rotate(180deg);}
+
+	/* SPLITVIEW */
+	.umb-split-views .umb-split-view:nth-of-type(1),
+	.umb-split-views .umb-split-view:nth-last-of-type(1) {
+		.p-col--md-1-4 {display: none;}
+		.p-col--md-3-4 {width: 100%; max-width: 100%; flex: 0 0 100%;}
+		.umb-group-panel {max-width: 100%;}}
+	@media only screen and (min-width: 64em) {
+		.umb-split-views .umb-split-view:nth-last-of-type(1):nth-of-type(1) {
+			.p-col--md-1-4 {display: block;}
+			.p-col--md-3-4 {width: 75%; max-width: 75%; flex: 0 0 75%;}
+		} 
+	}
+
+	/* HEIGHT FIX FOR TEXT INPUT */
+	.perplex-content-blocks .control-label + .controls .umb-property-editor input {background: fade(@color-light-a, 0%) !important; border: 1px solid fade(@color-light-a, 0%) !important; margin: 5px 10px; width: ~"calc(100% - 20px)" !important; padding: 1.1rem 10px !important; .transition;}
+	.perplex-content-blocks .control-label + .controls .umb-property-editor:hover input {background: fade(@color-light-a, 25%) !important; border: 1px solid fade(@color-border, 100%) !important;}
+	@media only screen and (min-width: 108em) {
+		.perplex-content-blocks .control-label + .controls .umb-property-editor input {margin: 10px 20px; width: ~"calc(100% - 40px)" !important; }
+	}
+
+ 
+	/* MOBILE FOOTER FIX (removed breadcrumb) */
+	.umb-editor-footer-content__left-side 	{display: none;}
+	.umb-editor-footer-content__right-side 	{padding-left: 0;}
+	@media only screen and (min-width: 48em) 	{
+		.umb-editor-footer-content__left-side 	{display: flex;} 
+		.umb-editor-footer-content__right-side 	{padding-left: 10px;}}
+	@media only screen and (min-width: 80em) { 
+		.umb-split-views .umb-split-view:nth-last-of-type(1):nth-of-type(1) .umb-group-panel {max-width: ~"calc(100% - 24px)";}
+		.umb-property-editor {width: 100%;}
+	}
+  
+
+//
+// OPTIONAL UMBRACO OVERWRITES
+//
+
+	.umb-dashboard__content {max-width: 1600px; margin: 0 auto; width: ~"calc(100% - 40px)";} 

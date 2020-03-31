@@ -1,0 +1,17 @@
+.p-tooltip {
+
+	&__container {position: absolute; display: inline-flex; align-items: center; top: 13px; left: auto; right: 0px; z-index: 1;
+
+		&:hover, &:focus {
+			[class*="__item"] {opacity: 1; visibility: visible;}
+		}
+
+	}
+	&__trigger {margin-right: 1rem; width: 0.75rem; height: 0.75rem; color: #70808c;}
+	&__item {position: absolute; background: white; padding: 0.7rem !important; box-shadow: 1px 1px 5px rgba(0,0,0,0.35); border-radius: 2px; max-width: 36rem; left: 100%; right: 0; display: block; width: 20rem; margin: auto; opacity: 0; visibility: hidden; .transition; z-index: 200;} 
+
+}
+
+.p-block__item .umb-nested-content-property-container:first-child .p-tooltip__item {top: 0; bottom: auto; }
+.p-block__item .umb-nested-content-property-container:last-child .p-tooltip__item {top: auto; bottom: 0; } 
+.p-block__item .umb-nested-content-property-container:last-child:first-child .p-tooltip__item {top: 0; bottom: auto; } 
