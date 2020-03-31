@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Block based content editor for Umbraco</description>
+    <releaseNotes>- Initial release</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+    <tags>umbraco property editor content</tags>
+  </metadata>
+</package>

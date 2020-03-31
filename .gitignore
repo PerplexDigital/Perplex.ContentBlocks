@@ -11,6 +11,7 @@
 x64/
 x86/
 [Oo]bj/
+[Bb]in/
 packages/
 
 # Logs
@@ -35,32 +36,22 @@ typings/
 **/App_Data/[Pp]review/
 **/App_Data/TEMP/
 **/App_Data/NuGetBackup/
-
-# Ignore Umbraco content cache file
+**/[Uu]mbraco
+**/App_Data/NuCache*
+**/[Mm]edia
 **/App_Data/umbraco.config
+**/App_Data/cache/
+# ModelsBuilder out of date flag
+ood.flag
 
 # Don't ignore Umbraco packages (VisualStudio.gitignore mistakes this for a NuGet packages folder)
 # Make sure to include details from VisualStudio.gitignore BEFORE this
 !**/App_Data/[Pp]ackages/
 !**/[Uu]mbraco/[Dd]eveloper/[Pp]ackages
-**/App_Data/cache/
 
-# Ignore Umbraco media folder
-*/[Mm]edia
-
-# Bin map
-*/[Bb]in/*
-
-*/[Uu]mbraco
-
-# ModelsBuilder flag
-ood.flag
-
-# Build script
-!vswhere.exe
-!nuget.exe
-
-# Umbraco ContentCache
-*/App_Data/NuCache*
-
-**/prepros-6.config
+# DemoWebsite
+src/DemoWebsite/App_Plugins/Perplex.ContentBlocks
+src/DemoWebsite/App_Data/Models
+src/DemoWebsite/App_Data/Umbraco.sdf
+*.css
+build/*.nupkg

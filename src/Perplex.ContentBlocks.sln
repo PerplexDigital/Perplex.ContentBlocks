@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perplex.ContentBlocks", "Perplex.ContentBlocks.csproj", "{1B565714-0FD5-4086-946F-A60E8AA32910}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perplex.ContentBlocks", "Perplex.ContentBlocks\Perplex.ContentBlocks.csproj", "{1B565714-0FD5-4086-946F-A60E8AA32910}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWebsite", "DemoWebsite\DemoWebsite.csproj", "{138B10FE-3907-4D28-A1A9-02FB6C630580}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1B565714-0FD5-4086-946F-A60E8AA32910} = {1B565714-0FD5-4086-946F-A60E8AA32910}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{1B565714-0FD5-4086-946F-A60E8AA32910}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B565714-0FD5-4086-946F-A60E8AA32910}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B565714-0FD5-4086-946F-A60E8AA32910}.Release|Any CPU.Build.0 = Release|Any CPU
+		{138B10FE-3907-4D28-A1A9-02FB6C630580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{138B10FE-3907-4D28-A1A9-02FB6C630580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{138B10FE-3907-4D28-A1A9-02FB6C630580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{138B10FE-3907-4D28-A1A9-02FB6C630580}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
