@@ -7,19 +7,19 @@ namespace Perplex.ContentBlocks.Definitions
 {
     public class ContentBlocksPresetApiController : UmbracoAuthorizedApiController
     {
-        private readonly IContentBlocksPresetRepository _presetService;
+        private readonly IContentBlocksPresetRepository _presetRepository;
 
-        public ContentBlocksPresetApiController(IContentBlocksPresetRepository presetService)
+        public ContentBlocksPresetApiController(IContentBlocksPresetRepository presetRepository)
         {
-            _presetService = presetService;
+            _presetRepository = presetRepository;
         }
 
         [HttpGet]
         public IEnumerable<IContentBlocksPreset> GetAllPresets()
-            => _presetService.GetAll();
+            => _presetRepository.GetAll();
 
         [HttpGet]
         public IContentBlocksPreset GetPresetForPage(string documentType, string culture)
-            => _presetService.GetPresetForPage(documentType, culture);
+            => _presetRepository.GetPresetForPage(documentType, culture);
     }
 }

@@ -8,7 +8,7 @@ namespace Perplex.ContentBlocks.Categories
     {
         public void Compose(Composition composition)
         {
-            composition.Register<IContentBlockCategoryRepository, InMemoryContentBlockCategoryRepository>(Lifetime.Singleton);
+            composition.RegisterUnique<IContentBlockCategoryRepository, InMemoryContentBlockCategoryRepository>();
         }
     }
 }

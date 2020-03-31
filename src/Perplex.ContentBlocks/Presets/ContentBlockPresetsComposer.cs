@@ -8,7 +8,7 @@ namespace Perplex.ContentBlocks.Presets
     {
         public void Compose(Composition composition)
         {
-            composition.Register<IContentBlocksPresetRepository, InMemoryContentBlocksPresetRepository>(Lifetime.Singleton);
+            composition.RegisterUnique<IContentBlocksPresetRepository, InMemoryContentBlocksPresetRepository>();
         }
     }
 }

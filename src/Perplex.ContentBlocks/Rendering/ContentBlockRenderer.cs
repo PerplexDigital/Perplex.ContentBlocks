@@ -11,12 +11,12 @@ namespace Perplex.ContentBlocks.Rendering
 {
     public class ContentBlockRenderer : IContentBlockRenderer
     {
-        private readonly IContentBlockDefinitionRepository _contentBlockDefinitionService;
+        private readonly IContentBlockDefinitionRepository _definitionRepository;
         private readonly bool _isPreview;
 
-        public ContentBlockRenderer(IContentBlockDefinitionRepository contentBlockDefinitionService, IPreviewModeProvider previewModeProvider)
+        public ContentBlockRenderer(IContentBlockDefinitionRepository definitionRepository, IPreviewModeProvider previewModeProvider)
         {
-            _contentBlockDefinitionService = contentBlockDefinitionService;
+            _definitionRepository = definitionRepository;
             _isPreview = previewModeProvider.IsPreviewMode;
         }
 
@@ -98,7 +98,7 @@ namespace Perplex.ContentBlocks.Rendering
 
         private string GetViewPath(Guid definitionId, Guid layoutId)
         {
-            var definition = _contentBlockDefinitionService.GetById(definitionId);
+            var definition = _definitionRepository.GetById(definitionId);
             return definition
                 ?.Layouts?.FirstOrDefault(l => l.Id == layoutId)
                 ?.ViewPath;

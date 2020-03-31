@@ -238,7 +238,7 @@
   <ItemGroup>
     <Compile Include="Categories\Constants.Categories.cs" />
     <Compile Include="Categories\ContentBlockCategory.cs" />
-    <Compile Include="Categories\ContentBlockDefinitionComposer.cs" />
+    <Compile Include="Categories\ContentBlockCategoryComposer.cs" />
     <Compile Include="Categories\InMemoryContentBlockCategoryRepository.cs" />
     <Compile Include="Categories\IContentBlockCategory.cs" />
     <Compile Include="Categories\IContentBlockCategoryRepository.cs" />

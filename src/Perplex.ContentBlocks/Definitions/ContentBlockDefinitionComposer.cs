@@ -8,7 +8,7 @@ namespace Perplex.ContentBlocks.Definitions
     {
         public void Compose(Composition composition)
         {
-            composition.Register<IContentBlockDefinitionRepository, InMemoryContentBlockDefinitionRepository>(Lifetime.Singleton);
+            composition.RegisterUnique<IContentBlockDefinitionRepository, InMemoryContentBlockDefinitionRepository>();
             composition.Register<IContentBlockDefinitionFilterer, ContentBlockDefinitionFilterer>(Lifetime.Singleton);
         }
     }

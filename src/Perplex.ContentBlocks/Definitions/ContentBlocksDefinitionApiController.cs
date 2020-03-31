@@ -7,25 +7,25 @@ namespace Perplex.ContentBlocks.Definitions
 {
     public class ContentBlocksDefinitionApiController : UmbracoAuthorizedApiController
     {
-        private readonly IContentBlockDefinitionRepository _definitionService;
-        private readonly IContentBlockCategoryRepository _categoryService;
+        private readonly IContentBlockDefinitionRepository _definitionRepository;
+        private readonly IContentBlockCategoryRepository _categoryRepository;
 
-        public ContentBlocksDefinitionApiController(IContentBlockDefinitionRepository definitionService, IContentBlockCategoryRepository categoryService)
+        public ContentBlocksDefinitionApiController(IContentBlockDefinitionRepository definitionRepository, IContentBlockCategoryRepository categoryRepository)
         {
-            _definitionService = definitionService;
-            _categoryService = categoryService;
+            _definitionRepository = definitionRepository;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
         public IEnumerable<IContentBlockDefinition> GetAllDefinitions()
-            => _definitionService.GetAll();
+            => _definitionRepository.GetAll();
 
         [HttpGet]
         public IEnumerable<IContentBlockCategory> GetAllCategories()
-            => _categoryService.GetAll(true);
+            => _categoryRepository.GetAll(true);
 
         [HttpGet]
         public IEnumerable<IContentBlockDefinition> GetDefinitionsForPage(string documentType, string culture)
-            => _definitionService.GetAllForPage(documentType, culture);
+            => _definitionRepository.GetAllForPage(documentType, culture);
     }
 }
