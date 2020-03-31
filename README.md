@@ -6,57 +6,77 @@ The package can be installed using NuGet:
 
 `Install-Package Perplex.ContentBlocks`
 
-## Usage
+## Configuration
 
-1. Create a collection of content blocks
-2. Add the blocks on a page and edit their content
-3. Render the content blocks on the front-end.
+In order to use this package, you will need to configure at least 1 Content Block.
 
-### Creating a Content Block
+After that is done, you can add the data type `Perplex.ContentBlocks` as a property to any document type where you want to use this content editor.
 
-The steps to create a new content block are as follows:
+In short, the steps to configure a Content Block are:
 
-1. Create a Document Type
+1. Create a document type
 
-2. Create a Nested Content data type
+    - Add any properties you need for the Content Block
+    - Tick "Is an element type" in Permissions
 
-3. Register the Content Block
+2. Create a data type based on Nested Content
 
-You can either register your own implementation of an `IContentBlockDefinitionService`,
-or simply add your block to the default repository, which is empty.
-For the latter case, simply inject the existing `IContentBlockDefinitionService` sometime on startup and add a content block definition:
+    - Select the document type created in step 1
+    - Set min. items and max. items to 1
+    - Hide the label
 
-```csharp
-// Inject this
-IContentBlockDefinitionRepository definitionRepo;
+3. Describe the Content Block using an implementation of the `IContentBlockDefinition` interface.
 
-// Create your definition
-var definition = new ContentBlockDefinition
-{
-    // Content Block definition here
-});
+    - Documentation of what every property means can be found [here](#content-block-definition).
 
-// Register your content block
-definitionRepo.Add(definition);
-```
+4. Add the definition created in step 3 to an `IContentBlockRepository`
 
-### Create Nested Content for Element Type
+    - Either use the built-in repository:
 
--   Create Nested Content
--   Min Items: 1
--   Max Items: 1
--   Hide Label: ✔
+        ```csharp
+        // Inject
+        IContentBlockDefinitionRepository definitions;
 
-### Render Content Blocks
+        // Your definition
+        var definition = new ContentBlockDefinition { /* ... */ };
 
-To render all content blocks, you can either use the `IContentBlocksRenderer` directly,
-or call an extension method with the Content Blocks model value (of type `IContentBlocks). In both cases we run the example code in the Razor view file.
+        // Add to the repository
+        definitions.Add(definition);
+        ```
+
+    - Or register your own implementation in a composer and expose it there:
+        ```csharp
+        composition
+            .RegisterUnique<IContentBlockDefinitionRepository, MyDefinitionRepository>();
+        ```
+        - Make sure your composer runs after the `ContentBlockDefinitionComposer`.
+
+### <a name="content-block-definition"></a>Content Block Definition
+
+### Content Block Categories
+
+Content Blocks are organized in categories. The categories are retrieved from a registered `IContentBlockCategoryRepository`. By default, this package contains two categories: "Headers" and "Content". You can manipulate these categories by either
+
+-   Inject the `IContentBlockCategoryRepository` and call `Add()` / or `Remove()` to add / remove entries.
+-   Register a custom implementation of the `IContentBlockCategoryRepository`:
+    ```csharp
+        composition
+            .RegisterUnique<IContentBlockCategoryRepository, MyCategoryRepository>();
+    ```
+    -   Make sure your composer runs after the `ContentBlockCategoriesComposer`.
+
+## Rendering Content Blocks
+
+To render all Content Blocks from the page containing the blocks, you can either use the `IContentBlocksRenderer` directly, or call an extension method with the Content Blocks model value (of type `IContentBlocks). In both cases we run the example code in the Razor view file.
 
 The examples assume the property alias of the Perplex.ContentBlocks property is `"contentBlocks"` which translates to a ModelsBuilder property of `ContentBlocks`.
 
 1. Using the extension method:
 
-`@Html.RenderContentBlocks(Model.ContentBlocks)`
+```csharp
+@using Perplex.ContentBlocks.Rendering;
+@Html.RenderContentBlocks(Model.ContentBlocks)
+```
 
 2. Using the renderer:
 
@@ -68,11 +88,37 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
 @renderer.Render(Model.ContentBlocks)
 ```
 
+The renderer will then render every Content Block by using their configured View and pass in a generic `IContentBlockViewModel<TContent>` where `TContent` is the ModelsBuilder type of the content.
+
+### Rendering a Content Block
+
+Because a Content Block is simply an `IPublishedElement` and generates ModelsBuilder models, you can either use `.Value()` or strongly typed ModelsBuilder properties to render its properties.
+
+A view file of a Content Block looks like this:
+
+```csharp
+@using Perplex.ContentBlocks.Rendering;
+@model IContentBlockViewModel<ContentBlockHeader>
+<h1>@Model.Content.Title</h1>
+<img src="@Model.Content.Image.Url" />
+```
+
+The `Model.Content` property is be the `IPublishedElement` of the Content Block content.
+
 ## Advanced
 
 ### Content Block Presets
 
+TODO: Explanation
+
 ### Custom View Model
 
--   Register Specialized View Model Factory
--   Define in your view `@model IContentBlockViewModel<MyCustomViewModel>`
+-   Register a custom view model factory that produces your custom model
+    -   This custom model should implement `IContentBlockViewModel`.
+-   This custom model will now be passed to your view:
+
+```
+-- MyCustomContentBlock.cshtml
+@model MyCustomContentBlockViewModel
+<h1>@Model.MyCustomProperty</h1>
+```
