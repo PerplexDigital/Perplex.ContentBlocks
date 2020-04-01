@@ -33,7 +33,7 @@
                                         ng-click="vm.fn.picker.pick(block.Id)">
                                     <span class="p-pick-blocks__inner__image"><img ng-if="block.PreviewImage" ng-src="{{block.PreviewImage}}" /></span>
                                     <span class="p-pick-blocks__inner__title" ng-bind="block.Name"></span>
-                                    <span class="p-pick-blocks__inner__description" ng-bind="block.Intro"></span>
+                                    <span class="p-pick-blocks__inner__description" ng-bind="block.Description"></span>
                                 </button>
                                 <div class="p-pick-blocks__options__holder">
                                     <div class="p-pick-blocks__options__info-bar">                                        
@@ -85,7 +85,7 @@
                             </div>
                         </slick>                        
                     </div> 
-                    <span class="p-pick-layouts__description" ng-bind-html="vm.state.ui.layoutPicker.block.Description"></span>
+                    <span class="p-pick-layouts__description" ng-bind="vm.state.ui.layoutPicker.block.Description"></span>
                 </div> 
                 <div class="p-overlay__bottom">
                     <button type="button" class="btn btn-link" ng-click="vm.fn.layoutPicker.close()">Close</button>                    

@@ -24,8 +24,7 @@ namespace DemoWebsite
                 Id = new Guid("7fe32235-3240-466b-92c8-3e6e626692aa"),
                 DataTypeId = 1065,
                 PreviewImage = $"{previewFolder}/Header-Normal-1/Preview.png",
-                Intro = "Example Header Intro",
-                Description = "<strong>Content page header.</strong> Use this header to clarify the purpose (main message) of a content page by using clear headers and recognizable content. You can add an image or video within this header. This content block is available in 4 lay-outs, with variations in the image size, position and background colour. <br/><br/> To make your page visual attractive, combine with an intro block in which the image position differs or with intro block #3 (text only).  ",
+                Description = "Content page header",
 
                 Layouts = new IContentBlockLayout[]
                     {
@@ -51,8 +50,7 @@ namespace DemoWebsite
                 Id = new Guid("12902bee-6c27-4f0f-99de-f7182df7d91f"),
                 DataTypeId = 1277,
                 PreviewImage = $"{previewFolder}/Normal-1/Preview.png",
-                Intro = "Example Block Intro",
-                Description = "<strong>Two columns with image and text.</strong> A paragraph of text accompanied by an image in 8 different lay-outs to choose from, with variations in the image sizes, position and background colour. It is also possible to make a reference to a (detail) page with the optional button. <br/><br/>To make your page visual attractive, combine with the other content blocks. ",
+                Description = "Two columns with image and text",
 
                 Layouts = new IContentBlockLayout[]
                     {

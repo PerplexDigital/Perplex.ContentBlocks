@@ -7,7 +7,6 @@ namespace Perplex.ContentBlocks.Definitions
     {
         Guid Id { get; }
         string Name { get; }
-        string Intro { get; }
         string Description { get; }
         string PreviewImage { get; }
         int? DataTypeId { get; }
