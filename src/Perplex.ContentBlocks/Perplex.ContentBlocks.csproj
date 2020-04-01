@@ -321,6 +321,7 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <None Include="packages.config" />
+    <None Include="Perplex.ContentBlocks.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\Perplex.ContentBlocks\assets\icons.svg" />
