@@ -340,10 +340,6 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.requires.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.service.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\previews\Header-Normal-1\Layout-1.png" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\previews\Header-Normal-1\Preview.png" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\previews\Normal-1\Layout-1.png" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\previews\Normal-1\Preview.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
