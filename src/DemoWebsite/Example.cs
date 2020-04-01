@@ -48,7 +48,7 @@ namespace DemoWebsite
             {
                 Name = "Example Block",
                 Id = new Guid("12902bee-6c27-4f0f-99de-f7182df7d91f"),
-                DataTypeId = 1277,
+                DataTypeId = 1065,
                 PreviewImage = $"{previewFolder}/Normal-1/Preview.png",
                 Description = "Two columns with image and text",
 
