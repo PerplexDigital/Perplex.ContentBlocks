@@ -1,0 +1,32 @@
+#!/bin/bash
+
+version=$1
+
+if [ -z "$version" ]; then
+    echo -e "Usage: ./version <version>\n\ne.g. ./version 1.2.3-rc1"
+    exit;
+fi
+
+# Version without suffix. E.g. 1.2.3-rc1 becomes 1.2.3
+version_info=$(echo $1 | sed 's/-.*//')
+
+# Save any open work
+git stash > /dev/null 2>&1
+
+projectDir=src/Perplex.ContentBlocks
+
+# Update version
+# AssemblyInfo: x.y.z
+sed -i "s/^\(\[assembly: AssemblyVersion(\"\)[^\"]\+/\1${version_info}/g" $projectDir/Properties/AssemblyInfo.cs
+
+# AssemblyInformationalVersion: x.y.z
+sed -i "s/^\(\[assembly: AssemblyInformationalVersion(\"\)[^\"]\+/\1${version}/g" $projectDir/Properties/AssemblyInfo.cs
+
+# Add
+git add $projectDir/Properties/AssemblyInfo.cs > /dev/null 2>&1
+
+# Commit
+git commit -m "Version ${version}" > /dev/null 2>&1
+
+# Restore previous work
+git stash pop --index > /dev/null 2>&1
