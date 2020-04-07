@@ -62,6 +62,24 @@ namespace DemoWebsite
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
                         },
+
+                        new ContentBlockLayout
+                        {
+                            Id = new Guid("3aaa12d6-6f49-44be-b5ca-21fd7173d273"),
+                            Name = "Layout 2",
+                            Description = "",
+                            PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
+                            ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
+                        },
+
+                        new ContentBlockLayout
+                        {
+                            Id = new Guid("4aaa12d6-6f49-44be-b5ca-21fd7173d273"),
+                            Name = "Layout 3",
+                            Description = "",
+                            PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
+                            ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
+                        },
                     },
 
                 CategoryIds = new[]
