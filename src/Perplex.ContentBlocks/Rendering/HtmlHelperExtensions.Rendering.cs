@@ -15,6 +15,11 @@ namespace Perplex.ContentBlocks.Rendering
         /// <returns></returns>
         public static IHtmlString RenderContentBlocks(this HtmlHelper html, IContentBlocks contentBlocks)
         {
+            if (contentBlocks == null)
+            {
+                return MvcHtmlString.Empty;
+            }
+
             var renderer = Current.Factory.GetInstance<IContentBlockRenderer>();
             return renderer.Render(contentBlocks, html);
         }

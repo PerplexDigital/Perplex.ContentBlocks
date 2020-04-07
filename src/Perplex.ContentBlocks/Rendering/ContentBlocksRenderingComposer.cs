@@ -9,7 +9,7 @@ namespace Perplex.ContentBlocks.Rendering
         public void Compose(Composition composition)
         {
             // Renderer
-            composition.Register<IContentBlockRenderer, ContentBlockRenderer>(Lifetime.Singleton);
+            composition.Register<IContentBlockRenderer, ContentBlockRenderer>(Lifetime.Scope);
 
             // General View Model factory
             composition.Register(

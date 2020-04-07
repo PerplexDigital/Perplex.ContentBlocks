@@ -22,28 +22,22 @@ namespace Perplex.ContentBlocks.Rendering
 
         public IHtmlString Render(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
         {
-            if (contentBlocks.Header == null && !contentBlocks.Blocks.Any())
+            if (contentBlocks == null)
             {
                 return MvcHtmlString.Empty;
             }
 
             StringBuilder sb = new StringBuilder();
 
-            IHtmlString headerHtml = RenderBlock(contentBlocks.Header, htmlHelper);
-            sb.Append(headerHtml.ToString());
-
-            foreach (var block in contentBlocks.Blocks)
-            {
-                IHtmlString blockHtml = RenderBlock(block, htmlHelper);
-                sb.Append(blockHtml.ToString());
-            }
+            sb.Append(RenderHeader(contentBlocks, htmlHelper));
+            sb.Append(RenderBlocks(contentBlocks, htmlHelper));
 
             return new HtmlString(sb.ToString());
         }
 
         public IHtmlString RenderHeader(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
         {
-            if (contentBlocks.Header == null)
+            if (contentBlocks?.Header == null)
             {
                 return MvcHtmlString.Empty;
             }
@@ -53,7 +47,7 @@ namespace Perplex.ContentBlocks.Rendering
 
         public IHtmlString RenderBlocks(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
         {
-            if (contentBlocks.Blocks?.Any() != true)
+            if (contentBlocks?.Blocks?.Any() != true)
             {
                 return MvcHtmlString.Empty;
             }

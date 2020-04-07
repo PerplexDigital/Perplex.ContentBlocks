@@ -10,7 +10,7 @@
       "rootPath": "",
       "sourceMapRoot": "",
       "sourceMapBasePath": "",
-      "sourceMap": false
+      "sourceMap": true
     },
     "sass": {
       "autoPrefix": "",
