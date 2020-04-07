@@ -22,7 +22,7 @@ namespace Perplex.ContentBlocks.Rendering
 
         public IHtmlString Render(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
         {
-            if (contentBlocks.Header == null && !contentBlocks.Blocks.Any())
+            if (contentBlocks.Header == null && contentBlocks.Blocks?.Any() != true)
             {
                 return MvcHtmlString.Empty;
             }
