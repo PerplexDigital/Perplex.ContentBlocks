@@ -6,7 +6,7 @@
     <authors>$author$</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Block based content editor for Umbraco</description>
-    <releaseNotes>- Initial release</releaseNotes>
+    <releaseNotes></releaseNotes>
     <copyright>Copyright 2020</copyright>
     <tags>umbraco property editor content</tags>
   </metadata>
