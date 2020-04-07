@@ -1,5 +1,3 @@
-
-
 // SLICK SLIDER
 
 .perplex-content-blocks {
@@ -50,19 +48,17 @@
     
     }
 
-}
+        // SLICK LOAD
 
+    .slick-slider {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: opacity 1s ease;
+        -webkit-transition: opacity 1s ease;
+    }
 
-// SLICK LOAD
-
-.slick-slider {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transition: opacity 1s ease;
-    -webkit-transition: opacity 1s ease;
-}
-
-.slick-slider.slick-initialized {
-    visibility: visible !important;
-    opacity: 1 !important;    
+    .slick-slider.slick-initialized {
+        visibility: visible !important;
+        opacity: 1 !important;    
+    }
 }

@@ -315,7 +315,6 @@
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-picker.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-sidebar.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-slicksliders.less" />
-    <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-tooltip.less" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
