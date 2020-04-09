@@ -19,9 +19,7 @@
             version: 2,
 
             initialized: false,
-            pageId: null,
-            // Het id van de homepage waar deze pagina onder valt
-            websiteId: null,
+            pageId: null,            
             isNewPage: null,
             // The currently active culture, e.g. "en-US"
             culture: null,
@@ -238,7 +236,7 @@
                 }
 
                 /* Fix Safari bugs */
-                if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Mac') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+                if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Mac') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
                     $('html').addClass('safari-mac'); // provide a class for the safari-mac specific css to filter with
                 }
             },
