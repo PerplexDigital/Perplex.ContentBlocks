@@ -16,7 +16,7 @@ namespace DemoWebsite
 
         public void Initialize()
         {
-            string previewFolder = "/App_Plugins/Perplex.ContentBlocks/previews";
+            string previewFolder = "/previews";
 
             _repo.Add(new ContentBlockDefinition
             {
