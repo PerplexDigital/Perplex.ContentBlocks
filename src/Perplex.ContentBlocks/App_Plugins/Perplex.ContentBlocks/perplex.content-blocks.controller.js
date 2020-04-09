@@ -1081,7 +1081,7 @@
                         fn.blocks.setExpand(blockId, !up);
                     } else {
                         var slideFn = up ? $.fn.slideUp : $.fn.slideDown;
-                        slideFn.call($main, "slow", function () {
+                        slideFn.call($main, "fast", function () {
                             fn.blocks.setExpand(blockId, !up);
                         });
                     }
