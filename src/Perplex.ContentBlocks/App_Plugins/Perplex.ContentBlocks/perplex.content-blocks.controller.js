@@ -1,7 +1,7 @@
 ﻿angular.module("umbraco").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
-    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService", "Perplex.Util.Service",
-    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService, utilService) {
+    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService", 
+    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {
         var vm = this;
 
         var constants = {
@@ -195,7 +195,7 @@
 
                     state.pageId = es.id;
                     state.isNewPage = state.pageId === 0;
-                    state.culture = utilService.getCurrentCulture();
+                    state.culture = fn.utils.getCurrentCulture();
                     state.documentType = es.contentTypeAlias;
                 }
             },
@@ -442,6 +442,24 @@
                         clearTimeout(timeout);
                         timeout = setTimeout(later, wait);
                     };
+                },
+
+                getCurrentCulture: function () {
+                    var es = editorState.current;
+
+                    if (es == null || !Array.isArray(es.variants)) {
+                        return null;
+                    }
+
+                    var activeVariant = _.find(es.variants, function (variant) {
+                        return variant.active;
+                    });
+
+                    if (activeVariant !== null && activeVariant.language != null) {
+                        return activeVariant.language.culture;
+                    }
+
+                    return null;
                 }
             },
 

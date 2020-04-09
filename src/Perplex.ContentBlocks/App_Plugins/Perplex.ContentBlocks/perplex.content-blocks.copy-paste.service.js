@@ -1,5 +1,10 @@
-﻿angular.module("umbraco").service("Perplex.ContentBlocks.CopyPaste.Service", ["Perplex.ContentBlocks.Service", "Perplex.LocalStorage.Service",    
-    function (service, localStorageService) {
+﻿angular.module("umbraco").service("Perplex.ContentBlocks.CopyPaste.Service", ["Perplex.ContentBlocks.Service",
+    function (service) {
+        var localStorage = window.localStorage;
+        if (typeof localStorage !== "object") {
+            throw new Error("Requires window.localStorage object");
+        }
+
         var STORAGE_KEY = "Perplex.ContentBlocks.CopyPaste";
 
         var onChangeCallbacks = [];
@@ -16,10 +21,8 @@
             // Immediately invoke with current data
             callback(getAll());
 
-            // The actual onChange is done via the localStorageService implementation
-            // with a single registration.
             if (!onChangeRegistered) {
-                localStorageService.onChange(function () {
+                localStorageOnChange(function () {
                     var data = getAll();
                     triggerOnChange(data);
                 }, STORAGE_KEY);
@@ -36,10 +39,10 @@
                 }
             }
         }
-        
+
         function copyAll(data) {
             var copies = service.copyAll(data);
-            localStorageService.save(STORAGE_KEY, copies);
+            save(copies);
             triggerOnChange(data);
         }
 
@@ -54,19 +57,6 @@
         function copyBlocks(blocks) {
             copyAll({ blocks: blocks });
         }
-    
-        function hasAny() {
-            return localStorageService.contains(STORAGE_KEY);
-        }
-
-        function getAll() {
-            return localStorageService.get(STORAGE_KEY);
-        }
-
-        function clear() {
-            localStorageService.remove(STORAGE_KEY);
-            triggerOnChange(null);
-        }
 
         function pasteAll(callback) {
             if (typeof callback !== "function") {
@@ -75,12 +65,12 @@
 
             var data = getAll();
             if (data != null && typeof callback === "function") {
-                callback(data.header, data.blocks);         
+                callback(data.header, data.blocks);
             }
         }
 
         function pasteHeader(callback) {
-            var data = getAll();            
+            var data = getAll();
             if (data != null && data.header != null && typeof callback === "function") {
                 callback(data.header);
             }
@@ -89,15 +79,61 @@
         function pasteBlocks(callback) {
             var data = getAll();
             if (data != null && Array.isArray(data.blocks) && typeof callback === "function") {
-                callback(data.blocks);             
+                callback(data.blocks);
             }
+        }
+
+        function save(value) {
+            if (!value) {
+                return;
+            }
+
+            var json = JSON.stringify(value);
+            localStorage.setItem(STORAGE_KEY, json);
+        }
+
+        function remove(key) {
+            localStorage.removeItem(key);
+        }
+
+        function localStorageOnChange(callback) {
+            if (typeof callback !== "function") {
+                throw new Error("callback should be a function.");
+            }
+
+            window.addEventListener("storage", function (e) {
+                if (e.key !== STORAGE_KEY) {
+                    return;
+                }
+
+                callback({
+                    key: e.key,
+                    oldValue: e.oldValue,
+                    newValue: e.newValue
+                });
+            });
+        }
+
+        function getAll() {
+            try {
+                var value = localStorage.getItem(STORAGE_KEY);
+                if (value) {
+                    return JSON.parse(value);
+                }
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clear() {
+            remove(STORAGE_KEY);
+            triggerOnChange(null);
         }
 
         this.copyAll = copyAll;
         this.copyBlock = copyBlock;
         this.copyBlocks = copyBlocks;
         this.copyHeader = copyHeader;
-        this.hasAny = hasAny;        
         this.getAll = getAll;
         this.pasteAll = pasteAll;
         this.pasteHeader = pasteHeader;
