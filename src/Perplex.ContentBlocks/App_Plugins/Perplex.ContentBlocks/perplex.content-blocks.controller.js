@@ -603,7 +603,7 @@
 
                                 fn.blocks.adding(block.id);
 
-                                // Alleen bij het plakken van 1 blok -- direct uitklappen:
+                                // Only when pasting a single block -- immediately expand it
                                 if (numBlocks === 1) {
                                     fn.blocks.openAndLoad(block.id);
                                 }
@@ -1302,7 +1302,7 @@
                 apply: function () {
                     if (state.preset != null) {
                         if ($scope.model.value.header == null && state.preset.Header != null) {
-                            // Alleen toepassen wanneer de pagina nog geen header heeft ingevuld
+                            // Only apply when there is no header yet on this page
                             var id = Guid.NewGuid();
                             $scope.model.value.header = {
                                 id: id,
@@ -1313,7 +1313,7 @@
                         }
 
                         if ($scope.model.value.blocks == null || $scope.model.value.blocks.length === 0) {
-                            // Alleen toepassen wanneer de pagina nog geen blokken heeft
+                            // Only apply when there are no blocks on this page yet
                             fn.preset.eachBlock(function (block) {
                                 if (block != null) {
                                     if (!Array.isArray($scope.model.value.blocks)) {
