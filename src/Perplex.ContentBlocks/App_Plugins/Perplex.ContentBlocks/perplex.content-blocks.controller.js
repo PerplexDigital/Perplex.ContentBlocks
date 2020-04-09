@@ -180,7 +180,7 @@
                     $timeout(function () {
                         self.initDom();
                         self.initEvents();
-                        self.initPreview();
+                        self.preview.init();
                     });
                 });
             },
@@ -682,20 +682,7 @@
                     fn.ui.fixOverlayStyling();
                 }
             },
-
-            initPreview: function () {
-                if (state.isNewPage) {
-                    return;
-                }
-
-                var previewUrl = fn.preview.getPreviewUrl();
-                if (previewUrl != null) {
-                    state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
-                    state.preview.lastUpdate = Date.now();
-                    $timeout(fn.preview.setPreviewScale);
-                }
-            },
-
+          
             updatePreviews: function () {
                 fn.preview.updateDesktop();
                 fn.preview.updateMobile();
@@ -710,6 +697,19 @@
             },
 
             preview: {
+                init: function () {
+                    if (state.isNewPage) {
+                        return;
+                    }
+
+                    var previewUrl = fn.preview.getPreviewUrl();
+                    if (previewUrl != null) {
+                        state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
+                        state.preview.lastUpdate = Date.now();
+                        $timeout(fn.preview.setPreviewScale);
+                    }
+                },
+
                 initEvents: function () {
                     var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
                     state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
@@ -722,7 +722,7 @@
                         if (state.isNewPage) {
                             // Initialize previews
                             fn.editorState.init();
-                            fn.initPreview();
+                            fn.preview.init();
                         } else {
                             // Update previews after save                    
                             fn.updatePreviews();
