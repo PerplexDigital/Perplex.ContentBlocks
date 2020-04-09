@@ -2,6 +2,7 @@
 @using ContentModels = Umbraco.Web.PublishedModels
 @model IContentBlockViewModel<ContentModels.ExampleHeader>
 
-<h2>@Model.Content.Title</h2>
-@Model.Content.Text
-
+<div style="height: 600px; background-color: red; border: 8px solid black;">
+    <h2>@Model.Content.Title</h2>
+    @Model.Content.Text
+</div>
