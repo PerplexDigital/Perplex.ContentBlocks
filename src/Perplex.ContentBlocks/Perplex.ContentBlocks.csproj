@@ -322,7 +322,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\Perplex.ContentBlocks\assets\icons.svg" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\assets\loader-preview.gif" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-block.component.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-block.component.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\lib\angular-slick.js" />

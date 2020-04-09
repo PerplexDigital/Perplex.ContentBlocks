@@ -1,16 +1,4 @@
-
-<!-- 
-
-  Als volgt te gebruiken:
-
- <svg class="l-icon"><use href="assets/icons.svg#icon-phone"></use></svg>
-
-  Een polyfill (SvgxUse) vult automatisch een xlink:href in op browsers die dat eisen, en plaatst de svg's in de <head> op IE. Dat laatste is noodzakelijk voor een goede werking in IE.
-
--->
-
-<svg xmlns="http://www.w3.org/2000/svg">
-  
+<svg xmlns="http://www.w3.org/2000/svg">  
   
   <!-- PHONE -->
   <symbol viewBox="0 0 450 450" id="icon-phone" preserveAspectRatio="xMidYMid">
@@ -74,7 +62,6 @@
         c-1.33-0.02-2.61,0.5-3.54,1.46c-0.95,0.93-1.48,2.21-1.46,3.54V85c-0.01,2.75,2.21,4.99,4.96,5c0.01,0,0.03,0,0.04,0h56.66
         c2.75,0.01,4.99-2.22,5-4.97c0-0.01,0-0.02,0-0.03V43.31L55,43.35z"/>
   </symbol>
-
   
   <!-- ZOOM -->
   <symbol viewBox="0 0 100 100" id="icon-zoom" preserveAspectRatio="xMidYMid">
@@ -92,13 +79,11 @@
     <rect x="15" y="15" class="st0" width="43.75" height="43.75"/>
   </symbol>
 
-
   <!-- CHECK -->
   <symbol viewBox="0 0 426.667 426.667" id="icon-checkmark" preserveAspectRatio="xMidYMid"> 
     <polygon points="366.933,42.667 149.333,262.4 59.733,172.8 0,232.533 149.333,384 426.667,104.533    "/>
   </symbol>
 
-  
   <!-- WASTE -->
   <symbol viewBox="0 0 100 100" id="icon-waste" preserveAspectRatio="xMidYMid">
       <path d="M28.82,84.57c0.86,3.3,3.91,5.56,7.32,5.43h27.71c3.41,0.14,6.46-2.12,7.32-5.43l5.47-53.19H23.35
@@ -110,7 +95,6 @@
     H24.96c-2.28-0.07-4.19,1.71-4.26,3.99c0.08,2.28,1.99,4.06,4.26,3.99h50.09c2.28,0.07,4.19-1.71,4.26-3.99
     c-0.08-2.28-1.98-4.07-4.26-4L75.04,20.73z M57.99,20.73H42.02v-5.34h15.97v5.33V20.73z"/>
   </symbol>
-
   
   <!-- HIDE -->
   <symbol viewBox="0 0 100 100" id="icon-hide" preserveAspectRatio="xMidYMid">
@@ -133,31 +117,26 @@
     c33.4-2.1,61,25.4,58.8,58.8C297.925,275.625,275.525,297.925,248.025,299.625z"/>
   </symbol>
 
-
   <!-- NEXT01 -->
   <symbol viewBox="0 0 100 100" id="icon-next01" preserveAspectRatio="xMidYMid">
       <path d="M4.761,2.743,3.314,1.8,2.14,1.034.64.091C.317-.12,0,.049,0,.467V5.783c0,.417.317.587.64.377l1.473-.943c.323-.21.865-.554,1.188-.765l1.454-.943A.424.424,0,0,0,4.761,2.743Z"/>
   </symbol>
-
 
   <!-- PLUS -->
   <symbol viewBox="0 0 448 448" id="icon-plus" preserveAspectRatio="xMidYMid">
     <path d="m408 184h-136c-4.417969 0-8-3.582031-8-8v-136c0-22.089844-17.910156-40-40-40s-40 17.910156-40 40v136c0 4.417969-3.582031 8-8 8h-136c-22.089844 0-40 17.910156-40 40s17.910156 40 40 40h136c4.417969 0 8 3.582031 8 8v136c0 22.089844 17.910156 40 40 40s40-17.910156 40-40v-136c0-4.417969 3.582031-8 8-8h136c22.089844 0 40-17.910156 40-40s-17.910156-40-40-40zm0 0"/> 
   </symbol>
 
-
   <!-- REORDER -->
   <symbol viewBox="0 0 15 15" id="icon-reorder" preserveAspectRatio="xMidYMid">
       <path d="M6.6,12.394H5.442a.269.269,0,0,0-.193.454l2.059,2.118a.269.269,0,0,0,.384,0l2.059-2.118a.267.267,0,0,0-.193-.454H8.4V8.445h3.95V9.6A.269.269,0,0,0,12.8,9.8l2.118-2.059a.269.269,0,0,0,0-.384L12.8,5.3a.267.267,0,0,0-.454.193v1.16H8.395V2.7h1.16a.269.269,0,0,0,.193-.454L7.689.131a.269.269,0,0,0-.384,0L5.246,2.248a.267.267,0,0,0,.193.454H6.6v3.95H2.652V5.492A.269.269,0,0,0,2.2,5.3L.081,7.358a.269.269,0,0,0,0,.384L2.2,9.8a.267.267,0,0,0,.454-.193V8.448H6.6v3.947Z" />
   </symbol>
-
 
   <!-- GRID BIG -->
   <symbol viewBox="0 0 100 100" id="icon-grid-big" preserveAspectRatio="xMidYMid">  
     <rect x="5" y="5" width="90" height="40"/> 
     <rect x="5" y="55" width="90" height="40"/>
   </symbol>
-
 
   <!-- GRID SMALL -->
   <symbol viewBox="0 0 100 100" id="icon-grid-small" preserveAspectRatio="xMidYMid">  
@@ -167,12 +146,10 @@
     <rect x="5" y="81.76" width="90" height="13.24"/>
   </symbol>
 
-
   <!-- ARROW LEFT -->
   <symbol viewBox="0 0 20 20" id="icon-arrow-left" preserveAspectRatio="xMidYMid">  
     <path d="M10,0A10,10,0,1,1,0,10,10,10,0,0,1,10,0ZM7.42,13.694l1.743,1.743,3.694-3.694L14.6,10,12.857,8.257,9.163,4.563,7.42,6.306,11.11,10Z"/>
-  </symbol>
-  
+  </symbol>  
 
   <!-- CAT - Special -->
   <symbol viewBox="0 0 150 150" id="icon-cat-special" preserveAspectRatio="xMidYMid">  
@@ -320,5 +297,3 @@
   </symbol>
 
 </svg>  
-
-
