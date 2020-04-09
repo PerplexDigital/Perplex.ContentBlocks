@@ -1,5 +1,5 @@
 ﻿angular.module("umbraco").controller("Perplex.ContentBlocks.Controller", [
-    "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout", 
+    "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
     "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService", "Perplex.Util.Service",
     function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService, utilService) {
         var vm = this;
@@ -19,7 +19,7 @@
             version: 2,
 
             initialized: false,
-            pageId: null,            
+            pageId: null,
             isNewPage: null,
             // The currently active culture, e.g. "en-US"
             culture: null,
@@ -104,7 +104,7 @@
                 previewIframeMobile: null,
                 previewIframeFrameMobile: null,
                 previewIframeFrameDesktop: null,
-                
+
                 blocksContainer: null,
                 contentBlocksViewport: null,
 
@@ -156,30 +156,30 @@
                     // We zitten niet in content
                     return;
                 }
-                
-                this.initModelValue();                  
-                this.copyPaste.init();                
+
+                this.initModelValue();
+                this.copyPaste.init();
                 this.setContainingGroupCssClass();
-                
+
                 var self = this;
 
                 $q.all([
                     api.getDefinitionsForPage(state.documentType, state.culture),
-                    api.getAllCategories(),                              
+                    api.getAllCategories(),
                     api.getPresetForPage(state.documentType, state.culture),
                 ]).then(function (responses) {
                     state.definitions = responses[0].data;
-                    state.categories = responses[1].data;           
+                    state.categories = responses[1].data;
                     state.preset = responses[2].data;
 
                     fn.preset.apply();
                     fn.updateComputed();
-                }).finally(function () {                    
+                }).finally(function () {
                     state.initialized = true;
 
-                    $timeout(function () {                        
+                    $timeout(function () {
                         self.initDom();
-                        self.initEvents();                                     
+                        self.initEvents();
                         self.initPreview();
                     });
                 });
@@ -265,14 +265,14 @@
                         } else if (state.ui.picker.open) {
                             fn.picker.close();
                         }
-                    });                    
+                    });
                 }
 
                 function handleKeyup(e) {
                     switch (e.keyCode) {
                         case 27: // Escape
                             return handleEscape(e);
-                    }                    
+                    }
                 }
 
                 document.addEventListener("keyup", handleKeyup);
@@ -314,7 +314,7 @@
                     map[block.Id] = block.Layouts || [];
                     return map;
                 }, {});
-                
+
                 computed.definitionsById = _.reduce(state.definitions, function (map, definition) {
                     map[definition.Id] = definition;
                     return map;
@@ -553,7 +553,7 @@
 
                                 // Do not paste blocks either, just stop.
                                 return;
-                            } else {                                
+                            } else {
                                 var definition = computed.definitionsById[header.definitionId];
                                 if (definition == null) {
                                     // Header definition not found, either because unavailable for this page or removed in general.
@@ -590,7 +590,7 @@
                                     notificationsService.warning("1 copied block is not available on this page and is skipped.");
                                 } else {
                                     notificationsService.warning(skippedBlocks + " copied blocks are not available for this page and are skipped.");
-                                }                                
+                                }
                             }
 
                             var args = [idx, 0].concat(availableBlocks);
@@ -660,7 +660,7 @@
                 close: function () {
                     state.ui.layoutPicker.open = false;
                     state.ui.layoutPicker.selectedLayoutId = null;
-                    
+
                     fn.ui.fixOverlayStyling();
                 }
             },
@@ -695,15 +695,15 @@
                 initEvents: function () {
                     var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
                     state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
-                    state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);                        
+                    state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
 
                     var debouncedSetPreviewScale = fn.utils.debounce(fn.preview.setPreviewScale, 200);
                     window.addEventListener("resize", debouncedSetPreviewScale);
 
-                    var unsubscribe = eventsService.on("content.saved", function () {                            
+                    var unsubscribe = eventsService.on("content.saved", function () {
                         if (state.isNewPage) {
                             // Initialize previews
-                            fn.editorState.init();                            
+                            fn.editorState.init();
                             fn.initPreview();
                         } else {
                             // Update previews after save                    
@@ -711,12 +711,12 @@
                         }
                     });
 
-                    this.setPreviewScaleOnLeftColumnResize(debouncedSetPreviewScale);                    
+                    this.setPreviewScaleOnLeftColumnResize(debouncedSetPreviewScale);
 
                     $scope.$on("$destroy", function () {
                         state.dom.editorsContainer.removeEventListener("scroll", debouncedSyncScroll);
                         state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
-                        window.removeEventListener("resize", debouncedSetPreviewScale); 
+                        window.removeEventListener("resize", debouncedSetPreviewScale);
 
                         if (typeof unsubscribe === "function") {
                             unsubscribe();
@@ -759,7 +759,7 @@
                     }
                 },
 
-                syncScroll: function () {                    
+                syncScroll: function () {
                     if (state.dom.previewIframeDesktop == null || state.dom.previewIframeDesktop.contentWindow == null) {
                         return;
                     }
@@ -799,7 +799,7 @@
 
                     var previewMargin = parseInt(state.dom.previewColumn.style.marginTop) || 0;
                     var toMove = actualScroll - previewMargin;
-                    
+
                     if (previewRect.height > blocksRect.height) {
                         // If the preview container is longer than the blocks container,
                         // align it to the top of the screen regardless of the current scroll
@@ -826,7 +826,7 @@
                         return;
                     }
 
-                    state.preview.mode = mode;                    
+                    state.preview.mode = mode;
                     $timeout(fn.preview.setPreviewScale);
                 },
 
@@ -846,7 +846,7 @@
                     this.updateIframe(state.dom.previewIframeMobile);
                 },
 
-                updateIframe: function (iframe) {                    
+                updateIframe: function (iframe) {
                     if (iframe == null) {
                         return;
                     }
@@ -858,10 +858,10 @@
                     }
 
                     iframe.contentWindow.location.reload();
-                    state.preview.lastUpdate = Date.now();                
+                    state.preview.lastUpdate = Date.now();
                 },
-                
-                setPreviewScale: function () {                                        
+
+                setPreviewScale: function () {
                     fn.preview.setDesktopPreviewScale();
                     fn.preview.setMobilePreviewScale();
                 },
@@ -874,14 +874,14 @@
                     fn.preview.setIframeScale(state.dom.previewIframeFrameMobile, state.dom.previewIframeMobile);
                 },
 
-                setIframeScale: function(iframeFrame, iframe) {
+                setIframeScale: function (iframeFrame, iframe) {
                     if (iframeFrame == null || iframe == null) {
                         return;
                     }
 
                     var ratio = iframeFrame.clientWidth / iframe.clientWidth;
                     iframe.style.transform = "scale(" + ratio + ") translateZ(0)";
-                }               
+                }
             },
 
             header: {
@@ -889,10 +889,10 @@
                     return $scope.model.value.header[property];
                 },
 
-                set: function (property, value) {                    
-                    $scope.model.value.header[property] = value;             
+                set: function (property, value) {
+                    $scope.model.value.header[property] = value;
                 },
-             
+
                 pick: function () {
                     function disabledSelector(category) {
                         return !category.isEnabledForHeaders;
@@ -910,7 +910,7 @@
                             }
                         }
 
-                        $timeout(function () {                            
+                        $timeout(function () {
                             var id = Guid.NewGuid();
 
                             fn.blocks.adding(id);
@@ -935,16 +935,16 @@
                     fn.blocks.removing($scope.model.value.header.id, function () {
                         $scope.model.value.header = null;
                     });
-                }           
+                }
             },
 
-            blocks: {               
-                get: function (block, property) {                    
-                    return block[property];                    
+            blocks: {
+                get: function (block, property) {
+                    return block[property];
                 },
 
-                set: function (block, property, value) {                                        
-                    block[property] = value;                    
+                set: function (block, property, value) {
+                    block[property] = value;
                 },
 
                 add: function (afterBlockId) {
@@ -980,7 +980,7 @@
                                     idx = blockIdx + 1;
                                 }
                             }
-                        }                       
+                        }
 
                         fn.blocks.adding(id);
 
@@ -1027,7 +1027,7 @@
                         if (typeof callback === "function") {
                             callback();
                         }
-                        
+
                         delete state.ui.blocks.removing[id];
                     }, 1000);
                 },
@@ -1061,7 +1061,7 @@
                         var slideFn = up ? $.fn.slideUp : $.fn.slideDown;
                         slideFn.call($main, "slow", function () {
                             fn.blocks.setExpand(blockId, !up);
-                        });                        
+                        });
                     }
                 },
 
@@ -1081,7 +1081,7 @@
                     fn.blocks.slide(blockId, false);
                 },
 
-                openAndLoad: function (id) {                              
+                openAndLoad: function (id) {
                     state.ui.blocks.expanded[id] = true;
                     state.ui.blocks.loaded[id] = true;
                 },
@@ -1147,7 +1147,7 @@
                 },
 
                 layouts: {
-                    getLayoutIndex: function (block) {                        
+                    getLayoutIndex: function (block) {
                         if (block == null || block.layoutId == null || block.definitionId == null) {
                             return null;
                         }
@@ -1171,7 +1171,7 @@
                         }
                     },
 
-                    getLayout: function(block, index) {
+                    getLayout: function (block, index) {
                         var layouts = computed.layoutsByDefinitionId[block.definitionId];
                         if (layouts == null || !Array.isArray(layouts)) {
                             return null;
@@ -1212,8 +1212,8 @@
                     }
 
                     $timeout(fn.preview.syncScroll, 0);
-                },                
-              
+                },
+
                 eachBlock: function (callback) {
                     if (Array.isArray($scope.model.value.blocks)) {
                         for (var i = 0; i < $scope.model.value.blocks.length; i++) {
@@ -1228,7 +1228,7 @@
 
                     var prev = {
                         id: null,
-                        ratio: null,                        
+                        ratio: null,
                     }
 
                     for (var i = 0; i < blocks.length; i++) {
@@ -1264,7 +1264,7 @@
                         if (visibleRatio > 0 && visibleRatio < 1) {
                             if (prev.id != null && prev.ratio > visibleRatio) {
                                 return prev.id;
-                            } else if(isLast) {
+                            } else if (isLast) {
                                 // Last block -> show this block
                                 return blockId;
                             } else {
@@ -1378,7 +1378,7 @@
                         if (!skipHeader && $scope.model.value.header != null) {
                             fn.blocks.slideDown($scope.model.value.header.id);
                         }
-                        
+
                         fn.blocks.eachBlock(function (block) {
                             fn.blocks.slideDown(block.id);
                         });
@@ -1386,7 +1386,7 @@
                         if (!skipHeader && $scope.model.value.header != null) {
                             fn.blocks.slideUp($scope.model.value.header.id);
                         }
-                        
+
                         fn.blocks.eachBlock(function (block) {
                             fn.blocks.slideUp(block.id);
                         });
@@ -1411,7 +1411,7 @@
                     if (overlayIsOpen) {
                         // Set z-index of element to -1
                         state.dom.leftColumn.style.zIndex = -1;
-                        state.dom.contentBlocksViewport.style.zIndex = 100;                        
+                        state.dom.contentBlocksViewport.style.zIndex = 100;
                     } else {
                         // Remove element z-index
                         state.dom.leftColumn.style.zIndex = null;
