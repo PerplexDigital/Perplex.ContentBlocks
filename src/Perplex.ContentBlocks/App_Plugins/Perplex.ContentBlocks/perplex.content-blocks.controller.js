@@ -936,7 +936,9 @@
                             $scope.model.value.header = {
                                 id: id,
                                 definitionId: definitionId,
-                                layoutId: layoutId
+                                layoutId: layoutId,
+                                // Empty NestedContent model value
+                                content: [],
                             };
                         });
 
@@ -1005,7 +1007,9 @@
                         $scope.model.value.blocks.splice(idx, 0, {
                             id: id,
                             definitionId: definitionId,
-                            layoutId: layoutId
+                            layoutId: layoutId,
+                            // Empty NestedContent model value
+                            content: [],
                         });
 
                         // Direct uitlappen                        
