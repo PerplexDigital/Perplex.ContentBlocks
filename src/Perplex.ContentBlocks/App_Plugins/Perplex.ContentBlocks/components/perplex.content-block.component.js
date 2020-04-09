@@ -13,9 +13,7 @@
                 preview: "=",
                 name: "=",
                 showSettings: "=",
-                lazyLoad: "&?",                
-                isRemoving: "=?",
-                isAdding: "=?",
+                lazyLoad: "&?",                                                
                 canPaste: "=?",
                 init: "&?",
 

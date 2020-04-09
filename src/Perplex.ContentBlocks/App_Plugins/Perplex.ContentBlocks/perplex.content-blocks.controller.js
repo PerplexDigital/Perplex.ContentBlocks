@@ -74,12 +74,6 @@
 
                     // block id => true/false
                     loaded: {},
-
-                    // block id => true/false
-                    removing: {},
-
-                    // block id => true/false
-                    adding: {}
                 },
 
                 expandAll: false,
@@ -577,8 +571,7 @@
                                     // Header definition not found, either because unavailable for this page or removed in general.
                                     notificationsService.warning("The copied header is not available on this page and will be skipped.");
                                 } else {
-                                    $scope.model.value.header = header;
-                                    fn.blocks.adding(header.id);
+                                    $scope.model.value.header = header;                                    
                                 }
                             }
                         }
@@ -618,8 +611,6 @@
                             var numBlocks = availableBlocks.length;
                             for (var i = 0; i < numBlocks; i++) {
                                 var block = availableBlocks[i];
-
-                                fn.blocks.adding(block.id);
 
                                 // Only when pasting a single block -- immediately expand it
                                 if (numBlocks === 1) {
@@ -931,8 +922,6 @@
                         $timeout(function () {
                             var id = Guid.NewGuid();
 
-                            fn.blocks.adding(id);
-
                             $scope.model.value.header = {
                                 id: id,
                                 definitionId: definitionId,
@@ -952,9 +941,7 @@
                         return;
                     }
 
-                    fn.blocks.removing($scope.model.value.header.id, function () {
-                        $scope.model.value.header = null;
-                    });
+                    $scope.model.value.header = null;
                 }
             },
 
@@ -1002,8 +989,6 @@
                             }
                         }
 
-                        fn.blocks.adding(id);
-
                         $scope.model.value.blocks.splice(idx, 0, {
                             id: id,
                             definitionId: definitionId,
@@ -1021,14 +1006,6 @@
                     fn.picker.open();
                 },
 
-                adding: function (id) {
-                    state.ui.blocks.adding[id] = true;
-
-                    $timeout(function () {
-                        delete state.ui.blocks.adding[id];
-                    }, 0);
-                },
-
                 remove: function (id) {
                     if (!Array.isArray($scope.model.value.blocks)) {
                         return;
@@ -1036,22 +1013,8 @@
 
                     var idx = fn.blocks.getIndex(id);
                     if (idx > -1) {
-                        fn.blocks.removing(id, function () {
-                            $scope.model.value.blocks.splice(idx, 1);
-                        });
+                        $scope.model.value.blocks.splice(idx, 1);
                     }
-                },
-
-                removing: function (id, callback) {
-                    state.ui.blocks.removing[id] = true;
-
-                    $timeout(function () {
-                        if (typeof callback === "function") {
-                            callback();
-                        }
-
-                        delete state.ui.blocks.removing[id];
-                    }, 1000);
                 },
 
                 registerElement: function (blockId, $element) {
