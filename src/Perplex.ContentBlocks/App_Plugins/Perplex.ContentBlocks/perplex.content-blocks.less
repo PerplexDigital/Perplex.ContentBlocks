@@ -53,10 +53,10 @@
 	
 	.btn-wide 		{width: 100%;}
 	.btn-main 		{background: @color-main; -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:not(input[type="submit"]) {-webkit-text-fill-color: rgba(255, 255, 255, 1); color: white;}} 
-	.btn-sub 		{background: @color-sub;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:hover {background: darken(@color-sub, 20%); .transition(.2s);}}
+	.btn-sub 		{background: @color-sub;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:hover {background: darken(@color-sub, 20%); }}
 	.btn-alt 		{background: @color-alt;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: black !important;}
 	.btn-radius		{border-radius: 2rem;} 
-	.btn 			{font-weight: 700 !important; appearance: none; .transition(.2s);}
+	.btn 			{font-weight: 700 !important; appearance: none; }
 	.btn .l-icon:first-child 	{margin-right: 5px;}
 	.btn .l-icon:last-child 	{margin-left: 5px;}
 	
@@ -70,4 +70,6 @@
 
 	.umb-group-panel__header 		{display: none;}
 		
-	.umb-group-panel__content 		{padding:0;}}
+	.umb-group-panel__content 		{padding:0;}
+
+}

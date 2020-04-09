@@ -8,7 +8,7 @@
 
     .slick-list:focus {outline: none;}
 
-    .slick-list.dragging {cursor: pointer; cursor: hand;}
+    .slick-list.dragging {cursor: pointer; cursor: grabbing;}
 
     .slick-slider .slick-track, .slick-slider .slick-list {transform: translate3d(0, 0, 0);}
 
@@ -46,19 +46,5 @@
 
         .slick-arrow:before {background-size: 30%;}
     
-    }
-
-        // SLICK LOAD
-
-    .slick-slider {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        transition: opacity 1s ease;
-        -webkit-transition: opacity 1s ease;
-    }
-
-    .slick-slider.slick-initialized {
-        visibility: visible !important;
-        opacity: 1 !important;    
     }
 }
