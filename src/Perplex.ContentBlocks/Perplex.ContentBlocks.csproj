@@ -267,8 +267,6 @@
     <Compile Include="Preview\Constants.Preview.cs" />
     <Compile Include="Preview\ContentBlocksPreviewApiController.cs" />
     <Compile Include="Preview\ContentBlocksPreviewComposer.cs" />
-    <Compile Include="Preview\ContentBlocksPreviewRequest.cs" />
-    <Compile Include="Preview\ContentBlocksPreviewResponse.cs" />
     <Compile Include="Preview\CookieBasedPreviewModeProvider.cs" />
     <Compile Include="Preview\IPreviewModeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
