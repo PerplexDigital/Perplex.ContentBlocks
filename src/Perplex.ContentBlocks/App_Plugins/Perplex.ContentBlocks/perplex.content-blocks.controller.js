@@ -1,6 +1,6 @@
 ﻿angular.module("umbraco").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
-    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService", 
+    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService",
     function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {
         var vm = this;
 
@@ -571,7 +571,7 @@
                                     // Header definition not found, either because unavailable for this page or removed in general.
                                     notificationsService.warning("The copied header is not available on this page and will be skipped.");
                                 } else {
-                                    $scope.model.value.header = header;                                    
+                                    $scope.model.value.header = header;
                                 }
                             }
                         }
@@ -673,7 +673,7 @@
                     fn.ui.fixOverlayStyling();
                 }
             },
-          
+
             updatePreviews: function () {
                 fn.preview.updateDesktop();
                 fn.preview.updateMobile();

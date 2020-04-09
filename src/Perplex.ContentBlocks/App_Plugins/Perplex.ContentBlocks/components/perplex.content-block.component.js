@@ -1,9 +1,9 @@
 ﻿angular.module("umbraco").directive("perplexContentBlock", [
     function () {
         return {
-            restrict: "E",            
+            restrict: "E",
             replace: true,
-            scope: {                
+            scope: {
                 block: "=",
                 definition: "=",
                 layouts: "=",
@@ -13,7 +13,7 @@
                 preview: "=",
                 name: "=",
                 showSettings: "=",
-                lazyLoad: "&?",                                                
+                lazyLoad: "&?",
                 canPaste: "=?",
                 init: "&?",
 
