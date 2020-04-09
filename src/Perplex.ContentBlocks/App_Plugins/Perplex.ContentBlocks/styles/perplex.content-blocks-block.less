@@ -203,7 +203,7 @@
 
 		&.s-active &__remove, 
 		&.s-active &__duplicate, 
-		&.s-active &__hide 			{pointer-events: all; box-shadow: 2px 2px 25px rgba(0,0,0,0.25); opacity: 0; -webkit-backface-visibility: hidden; -webkit-transform: translateZ(0) scale(1.0, 1.0); transform: translateZ(0); /* fix animation unsharpness */}
+		&.s-active &__hide 			{pointer-events: all; box-shadow: 2px 2px 25px rgba(0,0,0,0.25); opacity: 0;}
 
 		&.s-active &__duplicate 	{animation: settings__duplicate-in .2s forwards .0s ease-out;}
 		&.s-active &__remove 		{animation: settings__remove-in .2s forwards .05s ease-out;}
@@ -211,17 +211,17 @@
 
 		&.s-active &__remove:hover &__text,   
 		&.s-active &__duplicate:hover &__text,  
-		&.s-active &__hide:hover &__text	{opacity: 1; width: 9rem; box-shadow: 2px 2px 25px rgba(0,0,0,0.25);}
+		&.s-active &__hide:hover &__text	{opacity: 1; width: 9rem;}
 
-		@keyframes settings__remove-in 		{from {opacity: 0;} to {opacity: 1; transform: translate(-220%, 9%);}}
-		@keyframes settings__hide-in 		{from {opacity: 0;} to {opacity: 1; transform: translate(-175%, -119%);}}
-		@keyframes settings__duplicate-in 	{from {opacity: 0;} to {opacity: 1; transform: translate(-175%, 119%);}}
+		@keyframes settings__remove-in 		{to {opacity: 1; transform: translate(-220%, 9%);}}
+		@keyframes settings__hide-in 		{to {opacity: 1; transform: translate(-175%, -119%);}}
+		@keyframes settings__duplicate-in 	{to {opacity: 1; transform: translate(-175%, 135%);}}
 
 		@media only screen and (min-width: 48em) {
 
-			@keyframes settings__remove-in 		{from {opacity: 0;} to {opacity: 1; transform: translate(220%, 9%);}}
-			@keyframes settings__hide-in 		{from {opacity: 0;} to {opacity: 1; transform: translate(175%, -119%);}}
-			@keyframes settings__duplicate-in 	{from {opacity: 0;} to {opacity: 1; transform: translate(175%, 119%);}}
+			@keyframes settings__remove-in 		{to {opacity: 1; transform: translate(220%, 9%);}}
+			@keyframes settings__hide-in 		{to {opacity: 1; transform: translate(175%, -119%);}}
+			@keyframes settings__duplicate-in 	{to {opacity: 1; transform: translate(175%, 135%);}}
 
 		}
 	} 	
