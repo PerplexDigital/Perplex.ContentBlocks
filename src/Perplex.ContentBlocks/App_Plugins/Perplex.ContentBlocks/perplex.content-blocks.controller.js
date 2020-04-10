@@ -920,7 +920,7 @@
                         }
 
                         $timeout(function () {
-                            var id = Guid.NewGuid();
+                            var id = String.CreateGuid();
 
                             $scope.model.value.header = {
                                 id: id,
@@ -973,7 +973,7 @@
                             }
                         }
 
-                        var id = Guid.NewGuid();
+                        var id = String.CreateGuid();
 
                         // Add at the end by default
                         var idx = $scope.model.value.blocks.length - 1;
@@ -1288,7 +1288,7 @@
                     if (state.preset != null) {
                         if ($scope.model.value.header == null && state.preset.Header != null) {
                             // Only apply when there is no header yet on this page
-                            var id = Guid.NewGuid();
+                            var id = String.CreateGuid();
                             $scope.model.value.header = {
                                 id: id,
                                 definitionId: state.preset.Header.DefinitionId,
@@ -1305,7 +1305,7 @@
                                         $scope.model.value.blocks = [];
                                     }
 
-                                    var id = Guid.NewGuid();
+                                    var id = String.CreateGuid();
                                     $scope.model.value.blocks.push({
                                         id: id,
                                         definitionId: block.DefinitionId,
@@ -1339,13 +1339,13 @@
 
                     // Header
                     if ($scope.model.value.header != null && $scope.model.value.header.id == null) {
-                        $scope.model.value.header.id = Guid.NewGuid();
+                        $scope.model.value.header.id = String.CreateGuid();
                     }
 
                     // Blocks
                     fn.blocks.eachBlock(function (block) {
                         if (block != null && block.id == null) {
-                            block.id = Guid.NewGuid();
+                            block.id = String.CreateGuid();
                         }
                     })
                 }

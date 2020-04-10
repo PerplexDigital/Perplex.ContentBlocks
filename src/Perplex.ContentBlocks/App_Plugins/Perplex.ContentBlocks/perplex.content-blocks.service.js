@@ -25,14 +25,14 @@
         function copyContentBlock(original) {
             var copy = angular.copy(original);
 
-            // Altijd een nieuw uniek id instellen
-            copy.id = Guid.NewGuid();
+            // Always generate a new unique id
+            copy.id = String.CreateGuid();
 
             if (Array.isArray(copy.content) && copy.content[0] && copy.content[0].key) {
-                // Een Nested Content item heeft ook een uniek id en cached op basis daarvan content. 
-                // Voor de kopie moeten we dus ook een nieuw id instellen als er al een Nested Content
-                // item was aangemaakt.
-                copy.content[0].key = Guid.NewGuid();
+                // A Nested Content has its own unique id and caches an item based on it.
+                // When we have create a copy we should therefore also update their Nested Content
+                // id to prevent getting old cached values from Nested Content.
+                copy.content[0].key = String.CreateGuid();
             }
 
             return copy;

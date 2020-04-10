@@ -325,7 +325,6 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-block.component.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-block.component.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\lib\angular-slick.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\lib\node-uuid-3.3.2.min.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\lib\slick.min.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.api.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.controller.js" />

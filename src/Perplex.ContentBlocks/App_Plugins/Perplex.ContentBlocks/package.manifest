@@ -14,7 +14,6 @@
   "javascript": [
     "~/App_Plugins/Perplex.ContentBlocks/lib/slick.min.js",
     "~/App_Plugins/Perplex.ContentBlocks/lib/angular-slick.js",    
-    "~/App_Plugins/Perplex.ContentBlocks/lib/node-uuid-3.3.2.min.js",
     "~/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.requires.js",
 
     "~/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.controller.js",
