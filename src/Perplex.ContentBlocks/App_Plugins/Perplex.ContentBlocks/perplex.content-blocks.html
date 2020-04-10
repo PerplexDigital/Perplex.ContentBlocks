@@ -125,8 +125,8 @@
 
                     <div class="p-block__list" ng-if="model.value.header != null"
                          ng-class="{'no-contentblock': model.value.blocks != null && model.value.blocks.length == 0}">
-                        <perplex-content-block init="vm.fn.blocks.setExpand(model.value.header.id, true)"
-                                               block="model.value.header"
+                        <perplex-content-block block="model.value.header"
+                                               lazy-load="vm.fn.blocks.shouldLoad(model.value.header.id)"
                                                definition="vm.computed.definitionsById[model.value.header.definitionId]"
                                                layouts="vm.computed.layoutsByDefinitionId[model.value.header.definitionId]"
                                                set-layout="vm.fn.blocks.layouts.setLayout(block, layoutIdx)"
