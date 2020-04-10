@@ -28,8 +28,7 @@
                 setLayout: "&",
                 getLayoutIndex: "&",
                 toggleSettings: "&",
-                registerElement: "&?",
-                isHeader: "=?",
+                registerElement: "&?",                
                 isReorder: "=?",
                 isLastBlock: "=?",
                 hasContent: "=?"
