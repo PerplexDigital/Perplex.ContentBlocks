@@ -41,7 +41,7 @@
 
     &__empty   						{text-align: center;
 
-    	&--header 					{margin-bottom: 20px; margin-top: 30px;}
+    	&--header 					{margin-bottom: 20px; }
 
 		&__title 					{color: @font-color; font-weight: 700; font-size: 1rem; line-height: 1.5; margin-bottom: 10px;}
 
@@ -79,7 +79,7 @@
 
 // Last item should always have a Add-button available
 
-.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover 								{padding: 1rem 0; margin-top: 1rem;}
+.p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover 								{padding: 1rem 0; }
 .p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover:after,
 .p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover:before 						{opacity: 0; pointer-events: none; .transition;}
 .p-editor__holder:nth-last-of-type(1) .p-block__list > *:nth-last-of-type(1) .p-block__item ~ .p-editor__empty__hover .p-editor__empty__click 		{min-height: @block-margin; max-height: @block-margin; background: fade(@color-main, 5%); border: 1px dashed @color-border; padding: @grid-margin/1.5; width: 100%;}
@@ -88,9 +88,9 @@
 
 // If header is not selected, we need Add-header
   
-.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover 								{padding: 1rem 0; margin-top: 1rem;}
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover 								{padding: 1rem 0; }
 .p-editor__holder .p-editor__empty__title + .p-editor__empty__hover:after,
-.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover:before 							{opacity: 0; pointer-events: none; .transition;}
+.p-editor__holder .p-editor__empty__title + .p-editor__empty__hover:before 						{opacity: 0; pointer-events: none; .transition;}
 .p-editor__holder .p-editor__empty__title + .p-editor__empty__hover .p-editor__empty__click 		{min-height: @block-margin; max-height: @block-margin; background: fade(@color-main, 5%); border: 1px dashed @color-border; padding: @grid-margin/1.5; width: 100%;}
 .p-editor__holder .p-editor__empty__title + .p-editor__empty__hover .p-editor__empty__click .btn 	{opacity: 1;}
 
