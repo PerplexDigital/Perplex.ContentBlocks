@@ -1,94 +1,195 @@
 
- 
+
 // PREVIEW
 
 .p-sidebar {
-    
-    &__holder       {display: none; border-radius: 3px; box-shadow: @umbraco-shadow;
 
-        & + &       {margin-top: 20px;}
+    &__holder {
+        display: none;
+        border-radius: 3px;
+        box-shadow: @umbraco-shadow;
+
+        & + & {
+            margin-top: 20px;
+        }
 
         @media only screen and (min-width: 48em) {
-
             display: block;
-            
         }
     }
 
-    &__heading      {background: white; border-radius: 5px 5px 0 0; border-bottom: 1px solid @umbraco-border; height: @block-margin - 1rem; padding: 1rem 0 1rem @grid-margin; display: flex; flex-flow: row wrap; align-items: center;
+    &__heading {
+        background: white;
+        border-radius: 5px 5px 0 0;
+        border-bottom: 1px solid @umbraco-border;
+        height: @block-margin - 1rem;
+        padding: 1rem 0 1rem @grid-margin;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
 
-        &__title    {flex: 1 1 0;}
-        
-        @media only screen and (min-width: 108em) {height: @block-margin; padding: 1rem 0 1rem @grid-margin*1.5;}}
+        &__title {
+            flex: 1 1 0;
+        }
 
-    &__main         {background: white; border: 0; padding: @grid-margin; 
+        @media only screen and (min-width: 108em) {
+            height: @block-margin;
+            padding: 1rem 0 1rem @grid-margin*1.5;
+        }
+    }
 
-        @media only screen and (min-width: 108em) {padding: @grid-margin*1.5;}
+    &__main {
+        background: white;
+        border: 0;
+        padding: @grid-margin;
 
-    } 
-
-
- 
+        @media only screen and (min-width: 108em) {
+            padding: @grid-margin*1.5;
+        }
+    }
     /* PREVIEW */
+    &__preview {
 
-    &__preview                  {
-        
-        &__icon                 {width: 2.5rem; height: 100%; display: flex; flex-flow: row wrap; align-items: center; justify-content: center; border-left: 1px solid @umbraco-border; position: relative;}
+        &__icon {
+            width: 2.5rem;
+            height: 100%;
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid @umbraco-border;
+            position: relative;
+        }
 
-        &__icon  svg            {fill: @color-light-c; width: 1.2rem; height: 1.2rem; position: absolute; top: 0; bottom: 0; margin: auto;}
+        &__icon svg {
+            fill: @color-light-c;
+            width: 1.2rem;
+            height: 1.2rem;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
 
         &__icon:hover svg,
-        &__icon.s-active svg    {fill: @color-main;}
+        &__icon.s-active svg {
+            fill: @color-main;
+        }
 
-        &__timestamp            {font-weight: 700; margin: 0 0 1rem; display: block;}
-        
-        &__frame                {position: relative; padding-bottom: 56%; margin-bottom: .5rem; height: 0; border: 8px solid @umbraco-border; border-radius: 10px; overflow: hidden; background-color: fade(@color-light-a, 25%);
+        &__timestamp {
+            font-weight: 700;
+            margin: 0 0 1rem;
+            display: block;
+        }
 
-            &--desktop          {padding-bottom: 56%;}
+        &__frame {
+            position: relative;
+            padding-bottom: 56%;
+            margin-bottom: .5rem;
+            height: 0;
+            border: 8px solid @umbraco-border;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: fade(@color-light-a, 25%);
 
-            &--mobile           {padding-bottom: 90%; max-width: 60%; margin: 0 auto;}}
+            &--desktop {
+                padding-bottom: 56%;
+            }
 
-        &__root                 {position: absolute; top: 0; left: 0; transform-origin: top left; backface-visibility: hidden; -webkit-font-smoothing: subpixel-antialiased; background: none;
-           
-            &--desktop          {width: 1280px; height: 755px;}
+            &--mobile {
+                padding-bottom: 90%;
+                max-width: 60%;
+                margin: 0 auto;
+            }
+        }
 
-            &--mobile           {width: 325px; height: 535px;}} 
+        &__root {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+            backface-visibility: hidden;
+            -webkit-font-smoothing: subpixel-antialiased;
+            background: none;
+
+            &--desktop {
+                width: 1280px;
+                height: 755px;
+            }
+
+            &--mobile {
+                width: 325px;
+                height: 535px;
+            }
+        }
 
         @media only screen and (min-width: 108em) {
 
-            &__icon            {width: 3.5rem;}
-            
-            &__icon  svg       {width: 1.5rem; height: 1.5rem;}
+            &__icon {
+                width: 3.5rem;
+            }
 
+            &__icon svg {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
         }
     }
-
-
     /* OPTIONS */
+    &__blockoption {
 
-    &__blockoption                   {
+        &__button {
+            background: @color-light-a;
+            text-align: left;
+            width: 100%;
+            border: 0;
+            color: @color-main;
+            border-radius: 5px;
+            margin-bottom: .5rem;
+            font-weight: 700;
+            padding: .25rem 1rem;
+        }
 
-        &__button                    {background: @color-light-a; text-align: left; width: 100%; border: 0; color: @color-main; border-radius: 5px; margin-bottom: .5rem; font-weight: 700; padding: .25rem 1rem; }
+        &__icon {
+            margin-right: .5rem;
+            position: relative;
+            top: .1rem;
+        }
 
-        &__icon                      {margin-right: .5rem; position: relative; top: .1rem;} 
+        &__button:hover {
+            color: @color-sub;
+            background: @color-light-b;
+        }
 
-        &__button:hover              {color: @color-sub; background: @color-light-b;}
+        &__button.is-reorder {
+            color: white;
+            background: @color-success;
+        }
 
-        &__button.is-reorder         {color: white; background: @color-success;}
-
-        &__button.is-reorder:hover   {background: darken(@color-success, 10%);}
+        &__button.is-reorder:hover {
+            background: darken(@color-success, 10%);
+        }
 
         @media only screen and (min-width: 48em) {
 
-            &__button                {padding: .5rem 1rem; text-align: left; font-size: 12px;}}
+            &__button {
+                padding: .5rem 1rem;
+                text-align: left;
+                font-size: 12px;
+            }
+        }
 
         @media only screen and (min-width: 108em) {
 
-            &__button   {padding: .75rem 1rem; text-align: left; font-size: 15px;}
-        
-            &__icon     {margin-right: 1rem;} 
+            &__button {
+                padding: .75rem 1rem;
+                text-align: left;
+                font-size: 15px;
+            }
 
+            &__icon {
+                margin-right: 1rem;
+            }
         }
-    } 
-} 
-
+    }
+}

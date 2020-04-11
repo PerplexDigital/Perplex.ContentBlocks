@@ -28,9 +28,9 @@
                 setLayout: "&",
                 getLayoutIndex: "&",
                 toggleSettings: "&",
-                registerElement: "&?",                
+                registerElement: "&?",
                 isReorder: "=?",
-                showAddContentButton: "<?",                
+                showAddContentButton: "<?",
             },
 
             templateUrl: "/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.html",

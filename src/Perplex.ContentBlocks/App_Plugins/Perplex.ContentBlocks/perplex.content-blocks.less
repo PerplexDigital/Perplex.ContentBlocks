@@ -1,74 +1,128 @@
 // UMBRACO COLOR VARIABLES
 
-@color-main:    	#1b264f;  	/* Dark purple */  
-@color-sub:     	#2152a3; 	/* Blue */
-@color-alt:     	#f5c1bc; 	/* Pink */    
-@color-dark:        #000000;	/* Black */
+@color-main: #1b264f; /* Dark purple */
+@color-sub: #2152a3; /* Blue */
+@color-alt: #f5c1bc; /* Pink */
+@color-dark: #000000; /* Black */
 
-@color-light-a:   	#f6f4f4;    /* soft */
-@color-light-b: 	#e9e9eb;	/* mid */
-@color-light-c: 	#d8d7d9;	/* hard */
+@color-light-a: #f6f4f4; /* soft */
+@color-light-b: #e9e9eb; /* mid */
+@color-light-c: #d8d7d9; /* hard */
 
-@color-border:  	@color-light-c;
- 
-@font-base:         Lato,Helvetica Neue,Helvetica,Arial,sans-serif; 
-@font-title:        Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
-@font-color:        @color-dark;
+@color-border: @color-light-c;
 
-@color-error:       #DE6161; 
-@color-warning:     #f77349;
-@color-success:     #3ec19d;
- 
-@umbraco-border:    @color-border;
-  
+@font-base: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
+@font-title: Lato,Helvetica Neue,Helvetica,Arial,sans-serif;
+@font-color: @color-dark;
+
+@color-error: #DE6161;
+@color-warning: #f77349;
+@color-success: #3ec19d;
+
+@umbraco-border: @color-border;
+
 // IMPORT: STYLES
 
-@import "styles/perplex.content-blocks-block.less"; 
+@import "styles/perplex.content-blocks-block.less";
 @import "styles/perplex.content-blocks-editor.less";
 @import "styles/perplex.content-blocks-grid.less";
-@import "styles/perplex.content-blocks-icons.less"; 
-@import "styles/perplex.content-blocks-overlay.less"; 
-@import "styles/perplex.content-blocks-picker.less";  
-@import "styles/perplex.content-blocks-sidebar.less"; 
+@import "styles/perplex.content-blocks-icons.less";
+@import "styles/perplex.content-blocks-overlay.less";
+@import "styles/perplex.content-blocks-picker.less";
+@import "styles/perplex.content-blocks-sidebar.less";
 @import "styles/perplex.content-blocks-slicksliders.less";
 
 // SETUP
 
-@umbraco-shadow: 	0 1px 1px 0 rgba(0,0,0,.16);
-@grid-margin: 		20px;
-@grid-width: 		108rem; 
-@block-margin: 		4rem; 
+@umbraco-shadow: 0 1px 1px 0 rgba(0,0,0,.16);
+@grid-margin: 20px;
+@grid-width: 108rem;
+@block-margin: 4rem;
 
-.transition(@duration: 0.2s, @ease: ease-in-out){transition: all @duration @ease;}
+.transition(@duration: 0.2s, @ease: ease-in-out) {
+    transition: all @duration @ease;
+}
 
 .perplex-content-blocks {
-	font-size: 80%; 
-	margin-bottom: 20px;
+    font-size: 80%;
+    margin-bottom: 20px;
     position: relative;
     margin-right: -20px;
 
-	@media only screen and (min-width: 120em) {font-size: 100%;}
+    @media only screen and (min-width: 120em) {
+        font-size: 100%;
+    }
 
-	* {-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; outline: none;}
-	
-	.btn-wide 		{width: 100%;}
-	.btn-main 		{background: @color-main; -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:not(input[type="submit"]) {-webkit-text-fill-color: rgba(255, 255, 255, 1); color: white;}} 
-	.btn-sub 		{background: @color-sub;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: white !important; &:hover {background: darken(@color-sub, 20%); }}
-	.btn-alt 		{background: @color-alt;  -webkit-text-fill-color: rgba(255, 255, 255, 1); color: black !important;}
-	.btn-radius		{border-radius: 2rem;} 
-	.btn 			{font-weight: 700 !important; appearance: none; }
-	.btn .l-icon:first-child 	{margin-right: 5px;}
-	.btn .l-icon:last-child 	{margin-left: 5px;}
-	
-}   
+    * {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        outline: none;
+    }
+
+    .btn-wide {
+        width: 100%;
+    }
+
+    .btn-main {
+        background: @color-main;
+        -webkit-text-fill-color: rgba(255, 255, 255, 1);
+        color: white !important;
+
+        &:not(input[type="submit"]) {
+            -webkit-text-fill-color: rgba(255, 255, 255, 1);
+            color: white;
+        }
+    }
+
+    .btn-sub {
+        background: @color-sub;
+        -webkit-text-fill-color: rgba(255, 255, 255, 1);
+        color: white !important;
+
+        &:hover {
+            background: darken(@color-sub, 20%);
+        }
+    }
+
+    .btn-alt {
+        background: @color-alt;
+        -webkit-text-fill-color: rgba(255, 255, 255, 1);
+        color: black !important;
+    }
+
+    .btn-radius {
+        border-radius: 2rem;
+    }
+
+    .btn {
+        font-weight: 700 !important;
+        appearance: none;
+    }
+
+    .btn .l-icon:first-child {
+        margin-right: 5px;
+    }
+
+    .btn .l-icon:last-child {
+        margin-left: 5px;
+    }
+}
 
 //
 // OVERWRITES
 //
 
-.perplex-content-blocks__panel 		{all: unset; background: none; box-shadow: none !important;
+.perplex-content-blocks__panel {
+    all: unset;
+    background: none;
+    box-shadow: none !important;
 
-	.umb-group-panel__header 		{display: none;}
-		
-	.umb-group-panel__content 		{padding:0;}
+    .umb-group-panel__header {
+        display: none;
+    }
+
+    .umb-group-panel__content {
+        padding: 0;
+    }
 }

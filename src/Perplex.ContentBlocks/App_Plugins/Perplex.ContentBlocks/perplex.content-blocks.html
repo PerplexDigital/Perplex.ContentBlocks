@@ -103,7 +103,7 @@
             <div class="p-col--md-3-4 p-editor">
                 <div class="p-editor__holder"
                      ng-show="!vm.state.ui.reorder">
-                    <div class="p-editor__empty p-editor__empty--header" ng-show="model.value.header == null">                        
+                    <div class="p-editor__empty p-editor__empty--header" ng-show="model.value.header == null">
                         <div class="p-editor__empty__hover" ng-class="{'p-editor__empty__hover--visible': model.value.header == null}">
                             <div class="p-editor__empty__click">
                                 <button class="btn btn-sub btn-radius" type="button"
@@ -181,7 +181,7 @@
                                                name="vm.fn.blocks.getBlockName(block)"
                                                show-settings="vm.state.ui.blocks.showSettings[block.id]"
                                                toggle-settings="vm.fn.blocks.toggleSettings(block.id)"
-                                               register-element="vm.fn.blocks.registerElement(block.id, element)"                                               
+                                               register-element="vm.fn.blocks.registerElement(block.id, element)"
                                                is-reorder="vm.state.ui.reorder"
                                                show-add-content-button="$last">
                         </perplex-content-block>

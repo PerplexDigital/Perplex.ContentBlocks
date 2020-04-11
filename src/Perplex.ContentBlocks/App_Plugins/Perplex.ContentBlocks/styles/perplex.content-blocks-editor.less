@@ -1,156 +1,156 @@
 .p-editor {
-	&__holder {
-		&.ng-hide + & {
-			margin-top: 0px;
-		}
-	}
+    &__holder {
+        &.ng-hide + & {
+            margin-top: 0px;
+        }
+    }
 
-	&__blockoption {
-		&__container {
-			border-bottom: 1px solid @color-border;
-		}
+    &__blockoption {
+        &__container {
+            border-bottom: 1px solid @color-border;
+        }
 
-		&__holder {
-			width: 100%;
-			display: flex;
-			flex-flow: row wrap;
-			justify-content: flex-end;
-			padding-bottom: .5rem;
+        &__holder {
+            width: 100%;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-end;
+            padding-bottom: .5rem;
 
-			.hidden {
-				visibility: hidden;
-			}
+            .hidden {
+                visibility: hidden;
+            }
 
-			.ui-sortable-placeholder {
-				border: 2px dashed black;
-				visibility: visible !important;
-			}
-		}
+            .ui-sortable-placeholder {
+                border: 2px dashed black;
+                visibility: visible !important;
+            }
+        }
 
-		&__button {
-			background: none;
-			border: 0;
-			color: @color-main;
-			font-weight: 700;
-			padding: 0;
-			padding-bottom: 1rem;
-			margin-left: 2rem;
+        &__button {
+            background: none;
+            border: 0;
+            color: @color-main;
+            font-weight: 700;
+            padding: 0;
+            padding-bottom: 1rem;
+            margin-left: 2rem;
 
-			&:hover {
-				color: @color-sub;
-			}
-		}
+            &:hover {
+                color: @color-sub;
+            }
+        }
 
-		&__icon {
-			margin-right: .25rem;
-		}
+        &__icon {
+            margin-right: .25rem;
+        }
 
-		.p-block__item:hover {
-			cursor: move;
-		}
-	}
+        .p-block__item:hover {
+            cursor: move;
+        }
+    }
 
-	&__empty {
-		text-align: center;
+    &__empty {
+        text-align: center;
 
-		&__title {
-			color: @font-color;
-			font-weight: 700;
-			font-size: 1rem;
-			line-height: 1.5;
-			margin-bottom: 10px;
-		}
+        &__title {
+            color: @font-color;
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
 
-		&__hover {
-			padding: 0;
-			position: relative;
-			.transitionDelay();
+        &__hover {
+            padding: 0;
+            position: relative;
+            .transitionDelay();
 
-			&:before {
-				content: "";
-				position: absolute;
-				top: 0;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				margin: auto;
-				display: block;
-				width: 20rem;
-				height: 5px;
-				background: fade(@color-light-b, 25%);
-				border-radius: 2.5px;
-			}
+            &:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                display: block;
+                width: 20rem;
+                height: 5px;
+                background: fade(@color-light-b, 25%);
+                border-radius: 2.5px;
+            }
 
-			&:hover, &--visible {
-				.empty_hover_visible;
-			}
-		}
+            &:hover, &--visible {
+                .empty_hover_visible;
+            }
+        }
 
-		&--header &__hover {
-			padding-top: 0;
-		}
+        &--header &__hover {
+            padding-top: 0;
+        }
 
-		&__click {
-			overflow: hidden;
-			max-height: 1rem;
-			min-height: 0;
-			background: transparent;
-			border: 1px dashed transparent;
-			text-align: center;
-			padding: 0;
-			width: 100%;
-			display: flex;
-			flex-flow: row wrap;
-			align-items: center;
-			justify-content: center;
-			.transitionDelay();
+        &__click {
+            overflow: hidden;
+            max-height: 1rem;
+            min-height: 0;
+            background: transparent;
+            border: 1px dashed transparent;
+            text-align: center;
+            padding: 0;
+            width: 100%;
+            display: flex;
+            flex-flow: row wrap;
+            align-items: center;
+            justify-content: center;
+            .transitionDelay();
 
-			.btn {
-				margin: 0 .25rem;
-				opacity: 0;
-				.transitionDelay();
-			}
-		}
+            .btn {
+                margin: 0 .25rem;
+                opacity: 0;
+                .transitionDelay();
+            }
+        }
 
-		@media only screen and (min-width: 48em) {
-			&__title {
-				font-size: 1.4rem;
-				margin-bottom: 15px;
-			}
-		}
-	}
-}  
+        @media only screen and (min-width: 48em) {
+            &__title {
+                font-size: 1.4rem;
+                margin-bottom: 15px;
+            }
+        }
+    }
+}
 
 .transitionDelay(@duration: 0.2s, @ease: ease-in-out) {
-	transition: all @duration .2s @ease;
+    transition: all @duration .2s @ease;
 }
 
 .empty_hover_visible() {
-	padding: 1rem 0;
-	.transitionDelay();
+    padding: 1rem 0;
+    .transitionDelay();
 
-	&:after, &:before {
-		opacity: 0;
-		pointer-events: none;
-		.transition;
-	}
+    &:after, &:before {
+        opacity: 0;
+        pointer-events: none;
+        .transition;
+    }
 
-	.p-editor__empty__click {
-		.empty_hover_click_visible;
-	}
+    .p-editor__empty__click {
+        .empty_hover_click_visible;
+    }
 }
 
 .empty_hover_click_visible() {
-	min-height: @block-margin;
-	max-height: @block-margin;
-	background: fade(@color-main, 5%);
-	border: 1px dashed @color-border;
-	padding: @grid-margin/1.5;
-	width: 100%;
-	.transitionDelay();
+    min-height: @block-margin;
+    max-height: @block-margin;
+    background: fade(@color-main, 5%);
+    border: 1px dashed @color-border;
+    padding: @grid-margin/1.5;
+    width: 100%;
+    .transitionDelay();
 
-	.btn {
-		opacity: 1;
-		.transitionDelay();
-	}
+    .btn {
+        opacity: 1;
+        .transitionDelay();
+    }
 }

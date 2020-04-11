@@ -3,100 +3,214 @@
 // OVERLAY
 
 .p-overlay {
-    
-    &__container            {position: fixed; width: 100%; height: 100%; left: 0; right: 0; bottom: 0; top: 0; z-index: 110; display: flex; justify-content: center; align-items: flex-start; -webkit-transform: translate3d(0,0,0);
 
-        &--layout-picker .p-overlay__wrapper   {background: @color-light-a;}}
-    
-    &__wrapper              {position: relative; width: 100%; max-width: ~"calc(100% - 2rem)"; top: 2rem; left: 0; height: ~"calc(100vh - 4rem)"; background: white;}
+    &__container {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        z-index: 110;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        -webkit-transform: translate3d(0,0,0);
 
-    &__background           {background-color: fade(@color-dark,90%); width: 100%; height: 100%; position: fixed; width: 100%; height: 100%; left: 0; right: 0; bottom: 0; top: 0; z-index: -1;} 
+        &--layout-picker .p-overlay__wrapper {
+            background: @color-light-a;
+        }
+    }
+
+    &__wrapper {
+        position: relative;
+        width: 100%;
+        max-width: ~"calc(100% - 2rem)";
+        top: 2rem;
+        left: 0;
+        height: ~"calc(100vh - 4rem)";
+        background: white;
+    }
+
+    &__background {
+        background-color: fade(@color-dark,90%);
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        z-index: -1;
+    }
 
     @media only screen and (min-width: 48em) {
 
-        &__wrapper         {width: 100%; max-height: ~"calc(100% - 16rem)"; top: 6rem; max-width: 70rem;}
-
-    } 
-
-    &__close { position: absolute; top:0; right:0; height:4rem; width:4rem; font-size:2rem; border: none; background: none; color: white; font-weight: bold; 
-
-        &--blue {color: @color-main;}     
-
+        &__wrapper {
+            width: 100%;
+            max-height: ~"calc(100% - 16rem)";
+            top: 6rem;
+            max-width: 70rem;
+        }
     }
 
-    /* TABBAR */  
+    &__close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 4rem;
+        width: 4rem;
+        font-size: 2rem;
+        border: none;
+        background: none;
+        color: white;
+        font-weight: bold;
 
-    &__tabbar               {width: 100%; background: @color-main; display: flex; flex-flow: row wrap; padding: 0 .25rem; height: @block-margin; justify-content: center;
+        &--blue {
+            color: @color-main;
+        }
+    }
+    /* TABBAR */
+    &__tabbar {
+        width: 100%;
+        background: @color-main;
+        display: flex;
+        flex-flow: row wrap;
+        padding: 0 .25rem;
+        height: @block-margin;
+        justify-content: center;
 
-        &__item             {cursor: pointer; font-weight: 700; color: white; border-bottom: .3rem solid @color-main; padding: .25rem .25rem 0 .25rem; margin: 0 .25rem; display: flex; align-items: center;}
-        
-        &__item > span      {display: none;}
+        &__item {
+            cursor: pointer;
+            font-weight: 700;
+            color: white;
+            border-bottom: .3rem solid @color-main;
+            padding: .25rem .25rem 0 .25rem;
+            margin: 0 .25rem;
+            display: flex;
+            align-items: center;
+        }
 
-        &__item > svg       {width: 1.5rem; height: 1.5rem;}
+        &__item > span {
+            display: none;
+        }
 
-        &__item:hover       {border-color: @color-sub;}
+        &__item > svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
 
-        &__item.disabled    {opacity: 0.25; pointer-events: none;}
+        &__item:hover {
+            border-color: @color-sub;
+        }
 
-        &__item.selected    {border-color: @color-alt; margin: 0 .75rem;}
+        &__item.disabled {
+            opacity: 0.25;
+            pointer-events: none;
+        }
 
-        &__item.selected > span   {display: inline-block;}
- 
-        &__item.selected > svg    {margin-right: .5rem;}
+        &__item.selected {
+            border-color: @color-alt;
+            margin: 0 .75rem;
+        }
+
+        &__item.selected > span {
+            display: inline-block;
+        }
+
+        &__item.selected > svg {
+            margin-right: .5rem;
+        }
 
         @media only screen and (min-width: 48em) {
 
-            &                   {padding: 0 2rem; justify-content: flex-start;}
-            
-            &__item > span      {display: inline-block;}
+            & {
+                padding: 0 2rem;
+                justify-content: flex-start;
+            }
 
-            &__item > svg       {margin-right: 1rem;} 
+            &__item > span {
+                display: inline-block;
+            }
 
-            &__item             {padding: .25rem 1rem 0 1rem; margin: 0 1rem;}
+            &__item > svg {
+                margin-right: 1rem;
+            }
 
-            &__item.selected > svg      {margin-right: 1rem;} 
+            &__item {
+                padding: .25rem 1rem 0 1rem;
+                margin: 0 1rem;
+            }
 
-            &__item.selected            {margin: 0 1rem;}
- 
+            &__item.selected > svg {
+                margin-right: 1rem;
+            }
+
+            &__item.selected {
+                margin: 0 1rem;
+            }
         }
     }
+    /* INNER */
+    &__inner {
+        padding: 1rem;
+        height: ~"calc(100% - " @block-margin/2 ~")";
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
 
+        &__title {
+            font-weight: 600;
+            color: @font-color;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
 
-    /* INNER */ 
-
-    &__inner                {padding: 1rem; height: ~"calc(100% - " @block-margin/2 ~")"; overflow-y: scroll; -webkit-overflow-scrolling: touch;
-
-        &__title            {font-weight: 600; color: @font-color; margin-bottom: 1rem; width: 100%;}
-    
-        @media only screen and (min-width: 48em) {padding: 2rem 3rem; height: ~"calc(100% - " @block-margin ~")";}
-
+        @media only screen and (min-width: 48em) {
+            padding: 2rem 3rem;
+            height: ~"calc(100% - " @block-margin ~")";
+        }
     }
-
-
     /* TABBAR + INNER */
+    &__tabbar + &__inner {
+        height: ~"calc(100% - " @block-margin*1.5 ~")";
 
-    &__tabbar + &__inner    {height: ~"calc(100% - " @block-margin*1.5 ~")";
-
-        @media only screen and (min-width: 48em) {height: ~"calc(100% - " @block-margin ~")";}   
-
-    }
-
-
-    /* BOTTOM */
-
-    &__bottom               {display: flex; flex-flow: row wrap; width: 100%; z-index: 1; position: relative; height: @block-margin/1.33; background: white; border-top: 1px solid @color-border; justify-content: space-between; padding: .5rem .5rem;
-
-        @media only screen and (min-width: 48em) {padding: 1rem 3rem; height: @block-margin;
-
+        @media only screen and (min-width: 48em) {
+            height: ~"calc(100% - " @block-margin ~")";
         }
     }
-} 
+    /* BOTTOM */
+    &__bottom {
+        display: flex;
+        flex-flow: row wrap;
+        width: 100%;
+        z-index: 1;
+        position: relative;
+        height: @block-margin/1.33;
+        background: white;
+        border-top: 1px solid @color-border;
+        justify-content: space-between;
+        padding: .5rem .5rem;
+
+        @media only screen and (min-width: 48em) {
+            padding: 1rem 3rem;
+            height: @block-margin;
+        }
+    }
+}
 
 
 // Safari MAC overwrites
 
-.safari-mac .p-overlay__container  {position: absolute; width: ~"calc(100% + 100px)"; padding: 30px; margin: -20px -50px;}
-.safari-mac .p-overlay__wrapper    {max-width: ~"calc(80%)";}
+.safari-mac .p-overlay__container {
+    position: absolute;
+    width: ~"calc(100% + 100px)";
+    padding: 30px;
+    margin: -20px -50px;
+}
 
-
-
+.safari-mac .p-overlay__wrapper {
+    max-width: ~"calc(80%)";
+}
