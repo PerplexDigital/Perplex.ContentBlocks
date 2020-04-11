@@ -30,8 +30,7 @@
                 toggleSettings: "&",
                 registerElement: "&?",                
                 isReorder: "=?",
-                isLastBlock: "=?",
-                hasContent: "=?"
+                showAddContentButton: "<?",                
             },
 
             templateUrl: "/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.html",

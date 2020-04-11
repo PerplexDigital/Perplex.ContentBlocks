@@ -241,7 +241,7 @@
 	&__list.is-reorder &-topbar:hover &__reorder  	{opacity: 1;}
 	&__list.is-reorder &-topbar__settings,
 	&__list.is-reorder &-topbar__layout 			{display: none; pointer-events: none;}
-    &__list.is-reorder .p-editor__empty__hover      {pointer-events: none;}
+    &__list.is-reorder .p-editor__empty__hover      {pointer-events: none; display: none;}
 
 	/* mandatory */
  	
@@ -272,19 +272,6 @@
 	&__item.is-disabled &-topbar__settings:hover 	{color: @color-main;}
 	&__item.is-disabled &-topbar__text > div 	 	{opacity: 1;}
 	&__item.is-disabled .slick-arrow 				{background: none; &:after {background: @color-border;}}
-	
-	/* is-removing */
-
-	&__item.is-removing 							{margin: 0; opacity: 0; overflow: hidden; height: 0; min-height: 0;}
-	&__item + .p-editor__empty__hover				{opacity: 1; min-height: 2rem; max-height: 6rem; overflow: hidden;}
-	&__item.is-removing + .p-editor__empty__hover 	{margin: 0; opacity: 0; min-height: 0; max-height: 0rem;}
-	
-	/* is-adding */
-
-	&__item.is-adding .p-block-topbar 				{margin: 0; opacity: 0; overflow: hidden; height: 0; min-height: 0;} 
-	&__item .p-block__main > *						{max-height: 100%; opacity: 1; overflow: hidden;}
-	&__item.is-adding .p-block__main	> *			{margin: 0; opacity: 0; max-height: @block-margin; transform: translateY(-50%);}
-	
 }
 
 
