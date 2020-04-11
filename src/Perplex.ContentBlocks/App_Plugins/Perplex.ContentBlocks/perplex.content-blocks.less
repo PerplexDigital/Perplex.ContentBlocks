@@ -41,11 +41,11 @@
 
 .transition(@duration: 0.2s, @ease: ease-in-out){transition: all @duration @ease;}
 
-.perplex-content-blocks {font-size: 80%; padding: 0 0 40px; margin: 0 0 40px; position: relative; box-shadow: 0;
-
-    &:after,
-    &:before 	{content: ''; display: none; position: absolute; top: 0; left: 0; width: ~"calc(100% - 20px)"; height: 1px; background: @color-border;}
-    &:after 	{top: auto; bottom: 0; display: block;}
+.perplex-content-blocks {
+	font-size: 80%; 
+	margin-bottom: 20px;
+    position: relative;
+    margin-right: -20px;
 
 	@media only screen and (min-width: 120em) {font-size: 100%;}
 
@@ -71,5 +71,4 @@
 	.umb-group-panel__header 		{display: none;}
 		
 	.umb-group-panel__content 		{padding:0;}
-
 }
