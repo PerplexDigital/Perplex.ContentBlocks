@@ -1,4 +1,4 @@
-angular.module("umbraco").service("Perplex.ContentBlocks.Api", ["$http",
+angular.module("perplexContentBlocks").service("Perplex.ContentBlocks.Api", ["$http",
     function ($http) {
         var previewApiRoot = "/umbraco/backoffice/api/contentblockspreviewapi/";
         var definitionApiRoot = "/umbraco/backoffice/api/contentblocksdefinitionapi/";

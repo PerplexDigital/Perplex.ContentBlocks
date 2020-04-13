@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").controller("Perplex.ContentBlocks.Controller", [
+﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
     "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService",
     function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {

@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").component("perplexContentBlock", {
+﻿angular.module("perplexContentBlocks").component("perplexContentBlock", {
     templateUrl: "/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.html",
 
     bindings: {

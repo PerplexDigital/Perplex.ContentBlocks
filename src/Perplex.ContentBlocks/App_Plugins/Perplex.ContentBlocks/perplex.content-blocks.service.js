@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").service("Perplex.ContentBlocks.Service", [
+﻿angular.module("perplexContentBlocks").service("Perplex.ContentBlocks.Service", [
     function () {
         /**
          * Creates copies of the header + blocks in the given data object

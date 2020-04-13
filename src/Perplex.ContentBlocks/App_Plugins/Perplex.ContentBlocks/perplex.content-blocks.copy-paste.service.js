@@ -1,4 +1,4 @@
-﻿angular.module("umbraco").service("Perplex.ContentBlocks.CopyPaste.Service", ["Perplex.ContentBlocks.Service",
+﻿angular.module("perplexContentBlocks").service("Perplex.ContentBlocks.CopyPaste.Service", ["Perplex.ContentBlocks.Service",
     function (service) {
         var localStorage = window.localStorage;
         if (typeof localStorage !== "object") {
