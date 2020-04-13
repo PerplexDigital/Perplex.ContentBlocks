@@ -33,7 +33,7 @@
             </svg>
         </div>
         <div class="p-block-topbar__text" ng-click="!$ctrl.isReorder && $ctrl.toggleExpand()">
-            <strong ng-bind="$ctrl.block.content[0].name"></strong>
+            <strong ng-bind="$ctrl.name"></strong>
             <div ng-bind="$ctrl.definition.Name"></div>
         </div>
         <div class="p-block-topbar__layout"
@@ -127,7 +127,8 @@
         <perplex-render-property id="$ctrl.definition.DataTypeId"
                                  guid="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"
-                                 set-value="$ctrl.setValue({ value: value })">
+                                 set-value="$ctrl.setValue({ value: value })"
+                                 on-change="$ctrl.updateName()">
         </perplex-render-property>
     </div>
 </div>

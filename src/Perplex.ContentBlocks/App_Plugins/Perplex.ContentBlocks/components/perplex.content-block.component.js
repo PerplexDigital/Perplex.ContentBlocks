@@ -7,7 +7,7 @@
         layouts: "<",
         categories: "<",
         isExpanded: "<",
-        isMandatory: "<",               
+        isMandatory: "<",
         showSettings: "<",
         lazyLoad: "&?",
         canPaste: "<?",
@@ -30,12 +30,18 @@
 
     controller: [
         "$element",
+        "$interpolate",
+        "perplexRenderPropertyService",
         perplexContentBlockController
     ]
 });
 
-function perplexContentBlockController($element) {
+function perplexContentBlockController($element, $interpolate, renderPropertyService) {
     var destroyFns = [];
+
+    var state = {
+        nameTemplate: "",
+    };
 
     this.$onInit = function () {
         if (typeof this.init === "function") {
@@ -48,11 +54,35 @@ function perplexContentBlockController($element) {
                 destroyFns.push(removeFn);
             }
         }
+
+        this.initName();
     }
 
     this.$onDestroy = function () {
         destroyFns.forEach(function (destroyFn) {
             destroyFn();
         });
+    }
+
+    this.initName = function () {
+        var getScaffoldFn = null;
+
+        if (this.definition.DataTypeId) {
+            getScaffoldFn = renderPropertyService.getPropertyTypeScaffoldById(this.definition.DataTypeId);
+        } else if (this.definition.DataTypeKey) {
+            getScaffoldFn = renderPropertyService.getPropertyTypeScaffoldByGuid(this.definition.DataTypeKey);
+        }
+
+        if (getScaffoldFn) {
+            getScaffoldFn.then(function (scaffold) {
+                state.nameTemplate = scaffold.config.contentTypes[0].nameTemplate;
+                this.updateName();
+            }.bind(this));
+        }
+    }
+
+    this.updateName = function () {
+        var content = this.block && this.block.content && this.block.content[0];
+        this.name = $interpolate(state.nameTemplate)(content);
     }
 }
