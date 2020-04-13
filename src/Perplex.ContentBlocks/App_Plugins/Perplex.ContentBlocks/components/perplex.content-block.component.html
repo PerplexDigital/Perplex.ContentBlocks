@@ -33,8 +33,8 @@
             </svg>
         </div>
         <div class="p-block-topbar__text" ng-click="!$ctrl.isReorder && $ctrl.toggleExpand()">
-            <strong ng-bind="$ctrl.preview"></strong>
-            <div ng-bind="$ctrl.name"></div>
+            <strong ng-bind="$ctrl.block.content[0].name"></strong>
+            <div ng-bind="$ctrl.definition.Name"></div>
         </div>
         <div class="p-block-topbar__layout"
              ng-mouseenter="$ctrl.showLayoutPreview = true"
@@ -105,7 +105,7 @@
             </svg>
         </span>
         <span class="p-block__mandatory__info">
-            This block is mandatory on: <span ng-bind="$ctrl.name"></span>. Therefore you cannot change its settings.
+            This block is mandatory on: <span ng-bind="$ctrl.definition.Name"></span>. Therefore you cannot change its settings.
         </span>
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
             <slick on-after-change="setLayout({ block: block, layoutIdx: currentSlide })"

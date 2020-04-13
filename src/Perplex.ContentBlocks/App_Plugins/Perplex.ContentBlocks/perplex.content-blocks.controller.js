@@ -1102,35 +1102,6 @@
                     return definition.Name;
                 },
 
-                getPreview: function (block) {
-                    if (block == null) {
-                        return null;
-                    }
-
-                    if (!Array.isArray(block.content) || block.content.length === 0) {
-                        return fn.blocks.getBlockName(block);
-                    }
-
-                    // We gaan de volgende expressies evalueren voor elk blok,
-                    // en de eerst die een resultaat oplevert teruggeven als de preview-tekst
-                    // boven het blok type.
-                    var previewExpressions = ["title", "subtitle", "subtitle1", "subtitle_1", "name", "label"];
-
-                    for (var i = 0; i < previewExpressions.length; i++) {
-                        var previewExpression = previewExpressions[i];
-                        var props = previewExpression.split(".");
-
-                        var value = fn.utils.findValue(block.content[0], props);
-
-                        if (value) {
-                            return value;
-                        }
-                    }
-
-                    // Niets gevonden -> blok name als fallback
-                    return fn.blocks.getBlockName(block);
-                },
-
                 layouts: {
                     getLayoutIndex: function (block) {
                         if (block == null || block.layoutId == null || block.definitionId == null) {
