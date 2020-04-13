@@ -57,7 +57,7 @@ namespace DemoWebsite
                         new ContentBlockLayout
                         {
                             Id = new Guid("2aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                            Name = "Layout 1",
+                            Name = "Layout 1 long name",
                             Description = "",
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
@@ -66,7 +66,7 @@ namespace DemoWebsite
                         new ContentBlockLayout
                         {
                             Id = new Guid("3aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                            Name = "Layout 2",
+                            Name = "Layout 2 med nm",
                             Description = "",
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
@@ -75,7 +75,7 @@ namespace DemoWebsite
                         new ContentBlockLayout
                         {
                             Id = new Guid("4aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                            Name = "Layout 3",
+                            Name = "Layout 3 super long name!",
                             Description = "",
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
