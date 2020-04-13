@@ -5,4 +5,14 @@
 <div style="height: 600px; background-color: red; border: 8px solid black;">
     <h2>@Model.Content.Title</h2>
     @Model.Content.Text
+
+    @if (Model.Content.More.Any())
+    {
+        foreach (var block in Model.Content.More)
+        {
+            <h3>@block.Title</h3>
+            @block.Text
+        }
+    }
+
 </div>
