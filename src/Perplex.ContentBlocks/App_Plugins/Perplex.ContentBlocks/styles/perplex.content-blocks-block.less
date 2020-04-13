@@ -222,7 +222,6 @@
         align-items: flex-start;
         padding: .25rem 1rem 0;
         color: @font-color;
-        max-width: ~"calc(100% - " @block-margin*2 ~"- 2.5rem)";
         border-right: 1px solid @umbraco-border;
 
         &:hover {
@@ -250,13 +249,7 @@
             text-overflow: ellipsis;
         }
 
-        @media only screen and (min-width: 48em) {
-            max-width: ~"calc(100% - 16rem)";
-        }
-
         @media only screen and (min-width: 108em) {
-            max-width: ~"calc(100% - 18rem)";
-
             strong {
                 font-size: 18px;
                 margin: 0 0 .15rem;
