@@ -1,54 +1,60 @@
-﻿angular.module("umbraco").directive("perplexContentBlock", [
-    function () {
-        return {
-            restrict: "E",
-            replace: true,
-            scope: {
-                block: "=",
-                definition: "=",
-                layouts: "=",
-                categories: "=",
-                isExpanded: "=",
-                isMandatory: "=",
-                preview: "=",
-                name: "=",
-                showSettings: "=",
-                lazyLoad: "&?",
-                canPaste: "=?",
-                init: "&?",
+﻿angular.module("umbraco").component("perplexContentBlock", {
+    templateUrl: "/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.html",
 
-                addBlock: "&?",
-                paste: "&?",
-                getValue: "&",
-                setValue: "&",
-                toggleExpand: "&",
-                removeBlock: "&?",
-                copyBlock: "&?",
-                toggleDisableBlock: "&?",
-                setLayout: "&",
-                getLayoutIndex: "&",
-                toggleSettings: "&",
-                registerElement: "&?",
-                isReorder: "=?",
-                showAddContentButton: "<?",
-            },
+    bindings: {
+        block: "=",
+        definition: "=",
+        layouts: "=",
+        categories: "=",
+        isExpanded: "=",
+        isMandatory: "=",
+        preview: "=",
+        name: "=",
+        showSettings: "=",
+        lazyLoad: "&?",
+        canPaste: "=?",
+        init: "&?",
+        addBlock: "&?",
+        paste: "&?",
+        getValue: "&",
+        setValue: "&",
+        toggleExpand: "&",
+        removeBlock: "&?",
+        copyBlock: "&?",
+        toggleDisableBlock: "&?",
+        setLayout: "&",
+        getLayoutIndex: "&",
+        toggleSettings: "&",
+        registerElement: "&?",
+        isReorder: "=?",
+        showAddContentButton: "<?",
+    },
 
-            templateUrl: "/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.html",
+    controller: [
+        "$element",
+        perplexContentBlockController
+    ]
+});
 
-            link: function ($scope, $element) {
-                if (typeof $scope.init === "function") {
-                    $scope.init();
-                }
+function perplexContentBlockController($element) {
+    var destroyFns = [];
 
-                if (typeof $scope.registerElement === "function") {
-                    var removeFn = $scope.registerElement({ element: $element });
-                    if (typeof removeFn === "function") {
-                        $scope.$on("$destroy", function () {
-                            removeFn();
-                        })
-                    }
-                }
+    this.$onInit = function () {
+        if (typeof this.init === "function") {
+            this.init();
+        }
+
+        if (typeof this.registerElement === "function") {
+            var removeFn = this.registerElement({ element: $element });
+            if (typeof removeFn === "function") {
+                destroyFns.push(removeFn);
             }
         }
     }
-]);
+
+    this.$onDestroy = function () {
+        destroyFns.forEach(function (destroyFn) {
+            destroyFn();
+        });
+    }
+}
