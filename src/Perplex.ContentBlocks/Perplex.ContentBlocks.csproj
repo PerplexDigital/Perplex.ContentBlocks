@@ -329,7 +329,9 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.api.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.controller.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.copy-paste.service.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.css" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.css">
+      <DependentUpon>perplex.content-blocks.less</DependentUpon>
+    </Content>
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.requires.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.service.js" />
