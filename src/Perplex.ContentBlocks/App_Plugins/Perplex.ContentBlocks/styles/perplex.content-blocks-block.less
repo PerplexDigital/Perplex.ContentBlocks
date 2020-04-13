@@ -1,4 +1,6 @@
-
+perplex-content-block {
+    display: block;
+}
 
 // BLOCK
 
@@ -108,8 +110,6 @@
         }
     }
 }
-
-
 
 // BLOCK topbar
 
@@ -662,7 +662,6 @@
     }
 }
 
-
 // STATES
 
 .p-block {
@@ -678,7 +677,7 @@
         }
     }
 
-    &__list.is-reorder > div:first-child > &__item {
+    &__list.is-reorder > perplex-content-block:first-child > &__item {
         margin-top: 0;
     }
 
@@ -786,13 +785,4 @@
             background: @color-border;
         }
     }
-}
-
-
-// REORDER PLACEHOLDER
-
-.ui-sortable-placeholder {
-    background: fade(@color-light-b, 10%);
-    visibility: visible !important;
-    height: 6rem;
 }
