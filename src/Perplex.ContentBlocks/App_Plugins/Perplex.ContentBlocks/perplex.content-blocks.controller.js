@@ -929,6 +929,9 @@
                                 // Empty NestedContent model value
                                 content: [],
                             };
+
+                            // Expand immediately
+                            fn.blocks.openAndLoad(id);
                         });
 
                     }, disabledSelector);
@@ -997,7 +1000,7 @@
                             content: [],
                         });
 
-                        // Direct uitlappen                        
+                        // Expand immediately
                         fn.blocks.openAndLoad(id);
                     }
 
