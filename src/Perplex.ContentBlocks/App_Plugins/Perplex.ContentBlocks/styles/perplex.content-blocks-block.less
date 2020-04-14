@@ -19,7 +19,7 @@ perplex-content-block {
         &:hover {
             box-shadow: 0px 0px 7px rgba(0,0,0,0.16);
         }
-    } 
+    }
 
     &__main {
         border-top: 1px solid @umbraco-border;
@@ -223,6 +223,7 @@ perplex-content-block {
         padding: .25rem 1rem 0;
         color: @font-color;
         border-right: 1px solid @umbraco-border;
+        overflow: hidden;
 
         &:hover {
             cursor: pointer;
@@ -264,9 +265,8 @@ perplex-content-block {
     &__layout {
         display: block;
         border-right: 1px solid @umbraco-border;
-        width: 7.5rem;
         position: relative;
-        z-index: 3;
+        width: 16rem;
 
         &__list {
             list-style: none;
@@ -282,6 +282,7 @@ perplex-content-block {
             text-align: center;
             position: relative;
             line-height: 1.6;
+            padding: 0 1rem;
         }
 
         &__item:nth-of-type(1):nth-last-of-type(1) {
@@ -402,8 +403,6 @@ perplex-content-block {
         }
 
         @media only screen and (min-width: 48em) {
-            width: 10rem;
-
             &__item {
                 line-height: 1.6;
             }
@@ -425,11 +424,12 @@ perplex-content-block {
 
             &__preview {
                 display: block;
-                right: 1rem;
+                right: 4.5rem;
             }
         }
 
         @media only screen and (min-width: 108em) {
+            width: 20rem;
 
             &__item {
                 line-height: 1.1;
@@ -446,7 +446,7 @@ perplex-content-block {
             }
 
             &__preview {
-                right: 3.2rem;
+                right: 7.5rem;
             }
         }
     }
