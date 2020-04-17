@@ -340,28 +340,6 @@
             },
 
             utils: {
-                findValue: function (obj, props) {
-                    if (typeof obj !== "object" || obj == null) {
-                        return null;
-                    }
-
-                    if (!Array.isArray(props) || props.length === 0) {
-                        return null;
-                    }
-
-                    var prop = props.shift();
-                    var value = obj[prop];
-                    if (value === undefined) {
-                        return null;
-                    }
-
-                    if (props.length === 0) {
-                        return value;
-                    } else {
-                        return this.findValue(value, props);
-                    }
-                },
-
                 getContentBlockVisibleRatio: function (element) {
                     function getContentBlockVisibleRatio(element) {
                         var $element = $(element);
