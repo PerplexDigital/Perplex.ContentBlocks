@@ -737,8 +737,7 @@ perplex-content-block {
     /* is-disabled */
     &__item.is-disabled &-topbar,
     &__item.is-disabled &__main,
-    &__item.is-disabled .umb-nested-content__item,
-    &__item.is-disabled &-topbar__settings__button {
+    &__item.is-disabled .umb-nested-content__item {
         background: rgba(255,255,255,0.5);
     }
 
@@ -758,14 +757,6 @@ perplex-content-block {
 
     &__item.is-disabled .umb-nested-content__item .umb-nested-content__item {
         background: white;
-    }
-
-    &__item.is-disabled &-topbar__settings__button {
-        display: none;
-    }
-
-    &__item.is-disabled &-topbar__settings__button--show {
-        display: flex;
     }
 
     &__item.is-disabled &-topbar__settings:hover {

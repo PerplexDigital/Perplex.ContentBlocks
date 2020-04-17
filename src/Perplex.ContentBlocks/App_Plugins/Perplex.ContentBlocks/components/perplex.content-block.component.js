@@ -6,26 +6,23 @@
         definition: "<",
         layouts: "<",
         categories: "<",
-        isExpanded: "<",
         isMandatory: "<",
-        showSettings: "<",
-        lazyLoad: "&?",
         canPaste: "<?",
         init: "&?",
         addBlock: "&?",
         paste: "&?",
         getValue: "&",
         setValue: "&",
-        toggleExpand: "&",
         removeBlock: "&?",
         copyBlock: "&?",
-        toggleDisableBlock: "&?",
         setLayout: "&",
         getLayoutIndex: "&",
-        toggleSettings: "&",
         registerElement: "&?",
         isReorder: "<?",
         showAddContentButton: "<?",
+        registerCtrl: "&?",
+        onOpen: "&?",
+        onClose: "&?",
     },
 
     controller: [
@@ -39,9 +36,16 @@
 function perplexContentBlockController($element, $interpolate, renderPropertyService) {
     var destroyFns = [];
 
-    var state = {
+    // State
+
+    var state = this.state = {
         nameTemplate: "",
+
+        open: false,
+        load: false,
     };
+
+    // Functions
 
     this.$onInit = function () {
         if (typeof this.init === "function") {
@@ -49,10 +53,15 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
         }
 
         if (typeof this.registerElement === "function") {
-            var removeFn = this.registerElement({ element: $element });
-            if (typeof removeFn === "function") {
-                destroyFns.push(removeFn);
-            }
+            destroyFns.push(
+                this.registerElement({ element: $element })
+            );
+        }
+
+        if (typeof this.registerCtrl === "function") {
+            destroyFns.push(
+                this.registerCtrl({ ctrl: this })
+            );
         }
 
         this.initName();
@@ -60,7 +69,9 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
 
     this.$onDestroy = function () {
         destroyFns.forEach(function (destroyFn) {
-            destroyFn();
+            if (typeof destroyFn === "function") {
+                destroyFn();
+            }
         });
     }
 
@@ -84,5 +95,52 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
     this.updateName = function () {
         var content = this.block && this.block.content && this.block.content[0];
         this.name = $interpolate(state.nameTemplate)(content);
+    }
+
+    this.open = function () {
+        state.load = true;
+        this.slideDown();
+        if (typeof this.onOpen === "function") {
+            this.onOpen({ block: this });
+        }
+    }
+
+    this.close = function () {
+        this.slideUp();
+        if (typeof this.onClose === "function") {
+            this.onClose({ block: this });
+        }
+    }
+
+    this.toggle = function () {
+        if (this.state.open) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+
+    this.slideUp = function () {
+        this.slide(true);
+    }
+
+    this.slideDown = function () {
+        this.slide(false);
+    }
+
+    this.slideToggle = function () {
+        this.slide(state.expand);
+    }
+
+    this.slide = function (open) {
+        this.state.open = !open;
+
+        var $main = $element.find(".p-block__main");
+        if ($main.length === 0) {
+            return;
+        }
+
+        var slideFn = open ? $.fn.slideUp : $.fn.slideDown;
+        slideFn.call($main, "fast");
     }
 }

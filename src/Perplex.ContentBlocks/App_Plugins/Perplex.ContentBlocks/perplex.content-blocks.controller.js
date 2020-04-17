@@ -65,17 +65,6 @@
                     confirmCallback: null
                 },
 
-                blocks: {
-                    // block id => true/false
-                    expanded: {},
-
-                    // block id => true/false
-                    showSettings: {},
-
-                    // block id => true/false
-                    loaded: {},
-                },
-
                 expandAll: false,
                 reorder: false,
             },
@@ -118,7 +107,10 @@
 
             copyPaste: {
                 hasData: false
-            }
+            },
+
+            // blockId -> perplexContentBlockController
+            blocks: {},
         };
 
         var computed = {
@@ -1018,50 +1010,30 @@
                     return state.dom.blocks[id];
                 },
 
-                slide: function (blockId, up) {
-                    var element = fn.blocks.getElement(blockId);
-                    var $main = $(element).find(".p-block__main");
-                    if ($main.length === 0) {
-                        fn.blocks.setExpand(blockId, !up);
-                    } else {
-                        var slideFn = up ? $.fn.slideUp : $.fn.slideDown;
-                        slideFn.call($main, "fast", function () {
-                            fn.blocks.setExpand(blockId, !up);
-                        });
+                registerBlockController: function (id, controller) {                    
+                    state.blocks[id] = controller;
+
+                    return function deregisterController() {
+                        delete state.blocks[id];
                     }
                 },
 
                 slideToggle: function (blockId) {
-                    if (state.ui.blocks.expanded[blockId]) {
-                        fn.blocks.slideUp(blockId);
-                    } else {
-                        fn.blocks.slideDown(blockId);
-                    }
+                    state.blocks[blockId].toggle();
                 },
 
                 slideUp: function (blockId) {
-                    fn.blocks.slide(blockId, true);
+                    state.blocks[blockId].close();
                 },
 
                 slideDown: function (blockId) {
-                    fn.blocks.slide(blockId, false);
+                    state.blocks[blockId].open();
                 },
 
                 openAndLoad: function (id) {
-                    state.ui.blocks.expanded[id] = true;
-                    state.ui.blocks.loaded[id] = true;
-                },
-
-                toggleDisable: function (block) {
-                    block.isDisabled = !block.isDisabled;
-                },
-
-                toggleSettings: function (id) {
-                    state.ui.blocks.showSettings[id] = !state.ui.blocks.showSettings[id];
-                },
-
-                shouldLoad: function (id) {
-                    return state.ui.blocks.loaded[id];
+                    $timeout(function () {
+                        state.blocks[id].open();
+                    });
                 },
 
                 getIndex: function (id) {
@@ -1125,32 +1097,6 @@
                     },
                 },
 
-                toggleExpand: function (blockId) {
-                    if (state.ui.blocks.expanded[blockId]) {
-                        fn.blocks.collapse(blockId);
-                    } else {
-                        fn.blocks.expand(blockId);
-                    }
-                },
-
-                expand: function (blockId) {
-                    fn.blocks.setExpand(blockId, true);
-                },
-
-                collapse: function (blockId) {
-                    fn.blocks.setExpand(blockId, false);
-                },
-
-                setExpand: function (blockId, expand) {
-                    state.ui.blocks.expanded[blockId] = expand;
-
-                    if (expand && !state.ui.blocks.loaded[blockId]) {
-                        state.ui.blocks.loaded[blockId] = true;
-                    }
-
-                    $timeout(fn.preview.syncScroll, 0);
-                },
-
                 eachBlock: function (callback) {
                     if (Array.isArray($scope.model.value.blocks)) {
                         for (var i = 0; i < $scope.model.value.blocks.length; i++) {
@@ -1174,7 +1120,7 @@
                         var isLast = i === blocks.length - 1;
 
                         if (!includeCollapsed) {
-                            var skip = !state.ui.blocks.expanded[blockId];
+                            var skip = !state.blocks[blockId].state.open;
 
                             if (skip) {
                                 if (isLast) {
@@ -1264,9 +1210,6 @@
                                         layoutId: block.LayoutId,
                                         presetId: block.Id
                                     });
-
-                                    state.ui.blocks.expanded[id] = true;
-                                    state.ui.blocks.loaded[id] = true;
                                 }
                             });
                         }
