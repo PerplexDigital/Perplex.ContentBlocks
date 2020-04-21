@@ -36,7 +36,6 @@ typings/
 **/App_Data/[Pp]review/
 **/App_Data/TEMP/
 **/App_Data/NuGetBackup/
-**/[Uu]mbraco
 **/App_Data/NuCache*
 **/[Mm]edia
 **/App_Data/umbraco.config
@@ -53,5 +52,6 @@ ood.flag
 src/DemoWebsite/App_Plugins/Perplex.ContentBlocks
 src/DemoWebsite/App_Data/Models
 src/DemoWebsite/App_Data/Umbraco.sdf
+src/DemoWebsite/[Uu]mbraco/
 *.css
 build/*.nupkg
