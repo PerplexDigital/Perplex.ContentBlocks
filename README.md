@@ -1,6 +1,6 @@
 # Perplex.ContentBlocks
 
-Blocked based content editor for Umbraco. Blocks use Umbraco document types and therefore will generate ModelsBuilder models. Rendering a Content Block their properties will therefore be
+Block based content editor for Umbraco. ContentBlocks use Umbraco document types and it is therefore possible to generate ModelsBuilder models for the blocks. Rendering a Content Block in Razor is like rendering any other `IPublishedElement` values: use the ModelsBuilder properties or manually retrieve properties using the `.Value()` method.
 
 ## Installation
 
