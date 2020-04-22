@@ -53,27 +53,21 @@ perplex-content-block {
         }
     }
 
-    &__mandatory {
-        pointer-events: none;
-        opacity: 0;
+    &__mandatory {        
+        opacity: 1;
+        display: flex;
         color: @color-light-c;
-        width: @block-margin - 1rem;
+        width: 100%;
         height: 100%;
-        border-right: 1px solid @umbraco-border;
-        display: none;
         flex-flow: row wrap;
         justify-content: center;
         align-items: center;
-        border: 0 !important;
+        border: 0;
 
         svg {
             width: 1.5rem;
             height: 1.5rem;
-        }
-
-        &:hover + &__info {
-            display: block;
-        }
+        }     
 
         &__info {
             display: none;
@@ -218,7 +212,7 @@ perplex-content-block {
         flex: 1 1 0;
         display: flex;
         flex-flow: column wrap;
-        justify-content: center;        
+        justify-content: center;
         padding: .25rem 1rem;
         color: @font-color;
         border-right: 1px solid @umbraco-border;
@@ -251,7 +245,7 @@ perplex-content-block {
 
         @media only screen and (min-width: 108em) {
             strong {
-                font-size: 18px;                
+                font-size: 18px;
             }
 
             div {
@@ -449,7 +443,7 @@ perplex-content-block {
         }
     }
     /* settings */
-    &__settings {
+    &__settings, &__mandatory {
         width: @block-margin - 1rem;
         border: 0;
         position: relative;
@@ -658,6 +652,12 @@ perplex-content-block {
             }
         }
     }
+
+    &__mandatory {
+        &:hover .p-block__mandatory__info {
+            display: block;
+        }
+    }
 }
 
 // STATES
@@ -713,12 +713,6 @@ perplex-content-block {
     /* mandatory */
     &__item.is-mandatory {
         background: fade(@color-light-a, 25%);
-    }
-
-    &__item.is-mandatory &__mandatory {
-        display: flex;
-        opacity: 1;
-        pointer-events: all;
     }
 
     &__item.is-mandatory &-topbar__settings__button {

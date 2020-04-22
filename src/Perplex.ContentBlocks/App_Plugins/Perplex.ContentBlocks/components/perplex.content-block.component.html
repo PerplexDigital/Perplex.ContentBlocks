@@ -82,6 +82,18 @@
                 </div>
             </button>
         </div>
+
+        <div class="p-block-topbar__mandatory" ng-if="$ctrl.isMandatory">
+            <span class="p-block__mandatory">
+                <svg class="l-icon l-icon--sm">
+                    <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings-lock"></use>
+                </svg>
+            </span>
+            <span class="p-block__mandatory__info">
+                This block is mandatory: settings cannot be changed.
+            </span>
+        </div>
+
         <button class="p-block-topbar__toggle" type="button"
                 ng-class="{'is-collapsed': !$ctrl.state.open }"
                 ng-click="$ctrl.toggle()">
@@ -93,15 +105,7 @@
             <svg class="l-icon l-icon--sm">
                 <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-reorder"></use>
             </svg>
-        </span>
-        <span class="p-block__mandatory">
-            <svg class="l-icon l-icon--sm">
-                <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings-lock"></use>
-            </svg>
-        </span>
-        <span class="p-block__mandatory__info">
-            This block is mandatory on: <span ng-bind="$ctrl.definition.Name"></span>. Therefore you cannot change its settings.
-        </span>
+        </span>        
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
             <slick on-after-change="setLayout({ block: block, layoutIdx: currentSlide })"
                    initial-slide="getLayoutIndex(block)"
