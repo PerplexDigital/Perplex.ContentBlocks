@@ -121,7 +121,7 @@ namespace Perplex.ContentBlocks.Preview
                     if (element != null && typeof window.scrollTo === ""function"") {
                         window.scrollTo({
                             top: element.offsetTop,
-                            behavior:""smooth""
+                            behavior: ""smooth""
                         });
                     }
                 }";
