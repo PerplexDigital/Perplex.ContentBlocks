@@ -890,15 +890,7 @@
                         }
 
                         $timeout(function () {
-                            var id = String.CreateGuid();
-
-                            $scope.model.value.header = {
-                                id: id,
-                                definitionId: definitionId,
-                                layoutId: layoutId,
-                                // Empty NestedContent model value
-                                content: [],
-                            };
+                            $scope.model.value.header = fn.blocks.createEmpty(definitionId, layoutId);
 
                             // Expand immediately
                             fn.blocks.openAndLoad(id);
@@ -946,8 +938,6 @@
                             }
                         }
 
-                        var id = String.CreateGuid();
-
                         // Add at the end by default
                         var idx = $scope.model.value.blocks.length - 1;
 
@@ -962,21 +952,28 @@
                             }
                         }
 
-                        $scope.model.value.blocks.splice(idx, 0, {
-                            id: id,
-                            definitionId: definitionId,
-                            layoutId: layoutId,
-                            // Empty NestedContent model value
-                            content: [],
-                        });
+                        var empty = fn.blocks.createEmpty(definitionId, layoutId);
+                        $scope.model.value.blocks.splice(idx, 0, empty);
 
                         // Expand immediately
-                        fn.blocks.openAndLoad(id);
+                        fn.blocks.openAndLoad(empty.id);
                     }
 
                     fn.picker.init(selectBlockCallback, disabledSelector);
 
                     fn.picker.open();
+                },
+
+                createEmpty: function (definitionId, layoutId) {
+                    var id = String.CreateGuid();
+
+                    return {
+                        id: id,
+                        definitionId: definitionId,
+                        layoutId: layoutId,
+                        // Empty NestedContent model value
+                        content: [],
+                    };
                 },
 
                 remove: function (id) {
@@ -1010,7 +1007,7 @@
                     return state.dom.blocks[id];
                 },
 
-                registerBlockController: function (id, controller) {                    
+                registerBlockController: function (id, controller) {
                     state.blocks[id] = controller;
 
                     return function deregisterController() {
@@ -1185,31 +1182,20 @@
                 apply: function () {
                     if (state.preset != null) {
                         if ($scope.model.value.header == null && state.preset.Header != null) {
-                            // Only apply when there is no header yet on this page
-                            var id = String.CreateGuid();
-                            $scope.model.value.header = {
-                                id: id,
-                                definitionId: state.preset.Header.DefinitionId,
-                                layoutId: state.preset.Header.LayoutId,
-                                presetId: state.preset.Header.Id
-                            }
+                            // Only apply when there is no header yet on this page                            
+                            $scope.model.value.header = fn.preset.createBlock(state.preset.Header);
                         }
 
                         if ($scope.model.value.blocks == null || $scope.model.value.blocks.length === 0) {
                             // Only apply when there are no blocks on this page yet
-                            fn.preset.eachBlock(function (block) {
-                                if (block != null) {
+                            fn.preset.eachBlock(function (preset) {
+                                if (preset != null) {
                                     if (!Array.isArray($scope.model.value.blocks)) {
                                         $scope.model.value.blocks = [];
                                     }
 
-                                    var id = String.CreateGuid();
-                                    $scope.model.value.blocks.push({
-                                        id: id,
-                                        definitionId: block.DefinitionId,
-                                        layoutId: block.LayoutId,
-                                        presetId: block.Id
-                                    });
+                                    var block = fn.preset.createBlock(preset);
+                                    $scope.model.value.blocks.push(block);
                                 }
                             });
                         }
@@ -1223,7 +1209,13 @@
                             callback(block);
                         }
                     }
-                }
+                },
+
+                createBlock: function (preset) {
+                    var emptyBlock = fn.blocks.createEmpty(preset.DefinitionId, preset.LayoutId);
+                    emptyBlock.presetId = preset.Id;
+                    return emptyBlock;
+                },
             },
 
             versionUpgrades: {
