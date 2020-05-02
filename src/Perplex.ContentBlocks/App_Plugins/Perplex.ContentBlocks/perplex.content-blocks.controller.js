@@ -224,11 +224,17 @@
             },
 
             initDom: function () {
+                if ($rootElement.length === 0) {
+                    return;
+                }
+
+                var element = $rootElement[0];
+
                 state.dom.editorsContainer = document.querySelector(".umb-editor-container");
 
-                var sidebarHolder = document.querySelector(".perplex-content-blocks .p-sidebar__holder");
+                var sidebarHolder = element.querySelector(".p-sidebar__holder");
                 state.dom.previewColumn = sidebarHolder == null ? null : sidebarHolder.parentNode;
-                state.dom.blocksContainer = document.querySelector(".perplex-content-blocks .p-editor");
+                state.dom.blocksContainer = element.querySelector(".p-editor");
                 state.dom.contentBlocksViewport = document.querySelector(".umb-editor-container.umb-scrollable");
                 state.dom.leftColumn = document.getElementById("leftcolumn");
 
