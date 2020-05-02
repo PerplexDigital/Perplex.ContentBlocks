@@ -111,6 +111,9 @@
 
             // blockId -> perplexContentBlockController
             blocks: {},
+
+            // blockId -> callback function to run when a block with that id registers itself
+            onBlockRegisterFns: {},
         };
 
         var computed = {
@@ -582,9 +585,11 @@
                             for (var i = 0; i < numBlocks; i++) {
                                 var block = availableBlocks[i];
 
-                                // Only when pasting a single block -- immediately expand it
                                 if (numBlocks === 1) {
-                                    fn.blocks.openAndLoad(block.id);
+                                    // Only when pasting a single block -- immediately expand it
+                                    fn.blocks.withCtrl(block.id, function (block) {
+                                        block.open();
+                                    });
                                 }
                             }
                         }
@@ -878,8 +883,6 @@
                     }
 
                     fn.picker.init(function (definitionId, layoutId) {
-                        delete $scope.model.value.header;
-
                         var layoutId = layoutId;
 
                         if (layoutId == null) {
@@ -889,13 +892,12 @@
                             }
                         }
 
-                        $timeout(function () {
-                            $scope.model.value.header = fn.blocks.createEmpty(definitionId, layoutId);
+                        $scope.model.value.header = fn.blocks.createEmpty(definitionId, layoutId);
 
-                            // Expand immediately
-                            fn.blocks.openAndLoad(id);
+                        fn.blocks.withCtrl($scope.model.value.header.id, function (block) {
+                            // Open block immediately
+                            block.open();
                         });
-
                     }, disabledSelector);
 
                     fn.picker.open();
@@ -955,8 +957,10 @@
                         var empty = fn.blocks.createEmpty(definitionId, layoutId);
                         $scope.model.value.blocks.splice(idx, 0, empty);
 
-                        // Expand immediately
-                        fn.blocks.openAndLoad(empty.id);
+                        fn.blocks.withCtrl(empty.id, function (block) {
+                            // Open immediately
+                            block.open();
+                        });
                     }
 
                     fn.picker.init(selectBlockCallback, disabledSelector);
@@ -1010,27 +1014,33 @@
                 registerBlockController: function (id, controller) {
                     state.blocks[id] = controller;
 
+                    var onRegister = state.onBlockRegisterFns[id];
+                    if (typeof onRegister === "function") {
+                        onRegister(controller);
+                    }
+
                     return function deregisterController() {
                         delete state.blocks[id];
                     }
                 },
 
-                slideToggle: function (blockId) {
-                    state.blocks[blockId].toggle();
-                },
-
-                slideUp: function (blockId) {
-                    state.blocks[blockId].close();
-                },
-
-                slideDown: function (blockId) {
-                    state.blocks[blockId].open();
-                },
-
-                openAndLoad: function (id) {
-                    $timeout(function () {
-                        state.blocks[id].open();
-                    });
+                /**
+                 * Calls `callback` with the controller of the block with the given id.
+                 * If the block controller has not been registered yet, the callback will be called
+                 * when it does. Otherwise it is called immediately.
+                 * @param {any} id Block id
+                 * @param {any} callback Callback function to be called when the controller of the block is available
+                 */
+                withCtrl: function (id, callback) {
+                    var block = state.blocks[id];
+                    if (block != null) {
+                        callback(block);
+                    } else {
+                        state.onBlockRegisterFns[id] = function (block) {
+                            callback(block);
+                            delete state.onBlockRegisterFns[id];
+                        }
+                    }
                 },
 
                 getIndex: function (id) {
@@ -1117,7 +1127,9 @@
                         var isLast = i === blocks.length - 1;
 
                         if (!includeCollapsed) {
-                            var skip = !state.blocks[blockId].state.open;
+                            var blockCtrl = state.blocks[blockId]
+
+                            var skip = blockCtrl != null && !blockCtrl.state.open;
 
                             if (skip) {
                                 if (isLast) {
@@ -1246,22 +1258,20 @@
                 setExpandAll: function (expandAll, skipHeader) {
                     state.ui.expandAll = !!expandAll;
 
-                    if (state.ui.expandAll) {
-                        if (!skipHeader && $scope.model.value.header != null) {
-                            fn.blocks.slideDown($scope.model.value.header.id);
-                        }
+                    if (!skipHeader && $scope.model.value.header != null) {
+                        fn.blocks.withCtrl($scope.model.value.header.id, slideFn);
+                    }
 
-                        fn.blocks.eachBlock(function (block) {
-                            fn.blocks.slideDown(block.id);
-                        });
-                    } else {
-                        if (!skipHeader && $scope.model.value.header != null) {
-                            fn.blocks.slideUp($scope.model.value.header.id);
-                        }
+                    fn.blocks.eachBlock(function (block) {
+                        fn.blocks.withCtrl(block.id, slideFn);
+                    });
 
-                        fn.blocks.eachBlock(function (block) {
-                            fn.blocks.slideUp(block.id);
-                        });
+                    function slideFn(block) {
+                        if (state.ui.expandAll) {
+                            block.open();
+                        } else {
+                            block.close();
+                        }
                     }
                 },
 
