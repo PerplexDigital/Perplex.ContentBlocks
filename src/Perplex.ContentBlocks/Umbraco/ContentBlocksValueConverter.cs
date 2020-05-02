@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Perplex.ContentBlocks.Definitions;
 using Perplex.ContentBlocks.Rendering;
+using Perplex.ContentBlocks.Umbraco.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -90,14 +92,31 @@ namespace Perplex.ContentBlocks.Umbraco
                 return viewModelFactory.Create(content, block.Id, block.DefinitionId, block.LayoutId);
             }
 
+            EditorLayout editorLayout = GetEditorLayout(propertyType);
+
             return new Rendering.ContentBlocks
             {
-                Header = createViewModel(modelValue.Header),
-                Blocks = modelValue.Blocks
-                    .Select(createViewModel)
-                    .Where(rm => rm != null)
-                    .ToList()
+                Header = editorLayout == EditorLayout.Blocks ? null : createViewModel(modelValue.Header),
+                Blocks = editorLayout == EditorLayout.Header
+                    ? Enumerable.Empty<IContentBlockViewModel>()
+                    : modelValue.Blocks
+                        .Select(createViewModel)
+                        .Where(rm => rm != null)
+                        .ToList()
             };
+        }
+
+        private EditorLayout GetEditorLayout(IPublishedPropertyType propertyType)
+        {
+            if (propertyType.DataType.Configuration is IDictionary<string, object> config &&
+                config.TryGetValue(Constants.Umbraco.Configuration.EditorLayoutKey, out object configuredLayout) &&
+                Enum.TryParse(configuredLayout.ToString(), true, out EditorLayout layout))
+            {
+                return layout;
+            };
+
+            // Default
+            return EditorLayout.All;
         }
 
         public override Type GetPropertyValueType(IPublishedPropertyType propertyType)

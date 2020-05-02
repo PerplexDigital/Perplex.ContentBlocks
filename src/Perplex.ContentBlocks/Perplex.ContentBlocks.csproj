@@ -242,6 +242,8 @@
     <Compile Include="Categories\InMemoryContentBlockCategoryRepository.cs" />
     <Compile Include="Categories\IContentBlockCategory.cs" />
     <Compile Include="Categories\IContentBlockCategoryRepository.cs" />
+    <Compile Include="Umbraco\Configuration\Constants.Umbraco.Configuration.cs" />
+    <Compile Include="Umbraco\Configuration\ContentBlocksConfiguration.cs" />
     <Compile Include="Definitions\ContentBlockDefinition.cs" />
     <Compile Include="Definitions\ContentBlockDefinitionComposer.cs" />
     <Compile Include="Definitions\ContentBlockDefinitionFilterer.cs" />
@@ -303,7 +305,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.editor-layout.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.editor-layout.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\package.manifest" />
     <None Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-block.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-editor.less" />

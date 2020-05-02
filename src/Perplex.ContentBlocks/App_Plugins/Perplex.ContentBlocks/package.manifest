@@ -7,9 +7,26 @@
         "view": "~/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.html",
         "valueType": "JSON",
         "hideLabel": true
+      },
+      "prevalues": {
+        "fields": [
+          {
+            "key": "layout",
+            "label": "Editor layout",
+            "description": "Set editor layout",
+            "view": "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.editor-layout.html"
+          },
+
+          {
+            "key": "disablePreview",
+            "label": "Disable Preview",
+            "description": "Completely disables the Preview feature",
+            "view": "boolean"
+          }
+        ]        
       }
     }
-  ],
+  ],  
 
   "javascript": [
     "~/App_Plugins/Perplex.ContentBlocks/lib/slick.min.js",

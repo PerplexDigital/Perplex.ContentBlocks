@@ -102,8 +102,10 @@
         <div class="p-grid">
             <div class="p-col--md-3-4 p-editor">
                 <div class="p-editor__holder"
-                     ng-show="!vm.state.ui.reorder">
-                    <div class="p-editor__empty p-editor__empty--header" ng-show="model.value.header == null">
+                     ng-show="!vm.state.ui.reorder"
+                     ng-if="vm.config.layout !== 'blocks'">
+                    <div class="p-editor__empty p-editor__empty--header"                          
+                         ng-show="model.value.header == null">
                         <div class="p-editor__empty__hover" ng-class="{'p-editor__empty__hover--visible': model.value.header == null}">
                             <div class="p-editor__empty__click">
                                 <button class="btn btn-sub btn-radius" type="button"
@@ -147,7 +149,26 @@
                     </div>
                 </div>
 
-                <div class="p-editor__holder">
+                <div class="p-editor__holder" ng-if="vm.config.layout !== 'header'">
+                    <div class="p-editor__empty__hover p-editor__empty__hover--visible" 
+                         ng-if="vm.config.layout === 'blocks'"
+                         ng-show="model.value.blocks.length === 0">
+                        <div class="p-editor__empty__click">
+                            <button class="btn btn-sub btn-radius" type="button"
+                                    ng-click="vm.fn.blocks.add()">
+                                <svg class="l-icon l-icon--xxs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-plus"></use></svg>
+                                <span>Add content</span>
+                            </button>
+
+                            <button class="btn btn-sub btn-radius" type="button"
+                                    ng-click="vm.fn.copyPaste.paste()"
+                                    ng-show="vm.state.copyPaste.hasData">
+                                <svg class="l-icon l-icon--xs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
+                                <span>Paste content</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="p-block__list blocks"
                          ng-show="model.value.blocks != null && model.value.blocks.length > 0"
                          ng-class="{ 'is-reorder': vm.state.ui.reorder }"
@@ -179,7 +200,7 @@
             </div>
 
             <div class="p-col--md-1-4">
-                <div class="p-sidebar__holder">
+                <div class="p-sidebar__holder" ng-if="vm.config.disablePreview !== '1'">
                     <div class="p-sidebar__heading">
                         <strong class="p-sidebar__heading__title">Smart Preview</strong>
                         <div class="p-sidebar__preview__icon"
@@ -226,7 +247,8 @@
                                 Open all blocks
                             </div>
                         </button>
-                        <span ng-click="vm.fn.ui.toggleReorder()"
+                        <span ng-if="vm.config.layout !== 'header'"
+                              ng-click="vm.fn.ui.toggleReorder()"
                               ng-show="model.value.blocks.length > 1"
                               ng-class="{'s-active': vm.state.ui.reorder === !vm.state.ui.reorder}">
                             <button type="button" class="p-sidebar__blockoption__button" ng-show="!vm.state.ui.reorder">

@@ -1,0 +1,17 @@
+{
+  "propertyEditors": [
+    {
+      "name": "Perplex.ContentBlocks.ConfigurationEditor",
+      "alias": "Perplex.ContentBlocks.ConfigurationEditor",
+      "editor": {
+        "view": "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.editor-layout.html",
+        "valueType": "STRING",
+        "hideLabel": true
+      }
+    }
+  ],
+
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.editor-layout.js"
+  ]
+}

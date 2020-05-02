@@ -4,6 +4,8 @@
     function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {
         var vm = this;
 
+        var config = $scope.model.config;
+
         var constants = {
             preview: {
                 mode: {
@@ -139,7 +141,7 @@
 
         var fn = {
             init: function () {
-                this.editorState.init();
+                fn.editorState.init();
 
                 if (state.pageId == null) {
                     // We zitten niet in content
@@ -186,6 +188,19 @@
                     state.isNewPage = state.pageId === 0;
                     state.culture = fn.utils.getCurrentCulture();
                     state.documentType = es.contentTypeAlias;
+
+                    if (state.isNewPage) {
+                        var unsubscribe;
+                        unsubscribe = eventsService.on("content.saved", function () {
+                            if (state.isNewPage) {
+                                // Update editorState with pageId / isNewPage etc.
+                                fn.editorState.init();
+                                unsubscribe();
+                            }
+                        });
+
+                        $scope.$on("$destroy", unsubscribe);
+                    }
                 }
             },
 
@@ -236,7 +251,6 @@
                 }
 
                 fn.initHotkeys();
-                fn.preview.initEvents();
             },
 
             initHotkeys: function () {
@@ -521,10 +535,15 @@
                 },
 
                 copyAll: function () {
-                    var data = {
-                        header: $scope.model.value.header,
-                        blocks: $scope.model.value.blocks
-                    };
+                    var data = {};
+
+                    if (config.layout !== "blocks") {
+                        data.header = $scope.model.value.header;
+                    }
+
+                    if (config.layout !== "header") {
+                        data.blocks = $scope.model.value.blocks;
+                    }
 
                     copyPasteService.copyAll(data);
                     notificationsService.info("Copied all blocks");
@@ -532,7 +551,7 @@
 
                 paste: function (afterBlockId) {
                     copyPasteService.pasteAll(function (header, blocks) {
-                        if (header != null) {
+                        if (header != null && config.layout !== "blocks") {
                             if ($scope.model.value.header != null) {
                                 notificationsService.warning("Cannot paste a header on a page with another header. If the header should be replaced, remove it first.");
 
@@ -549,7 +568,7 @@
                             }
                         }
 
-                        if (blocks != null) {
+                        if (blocks != null && config.layout !== "header") {
                             var idx = $scope.model.value.blocks.length - 1;
                             if (afterBlockId != null) {
                                 if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
@@ -649,11 +668,6 @@
                 }
             },
 
-            updatePreviews: function () {
-                fn.preview.updateDesktop();
-                fn.preview.updateMobile();
-            },
-
             getModelVersion: function () {
                 return $scope.model.value.version;
             },
@@ -664,16 +678,12 @@
 
             preview: {
                 init: function () {
-                    if (state.isNewPage) {
+                    if (config.disablePreview === "1") {
                         return;
                     }
 
-                    var previewUrl = fn.preview.getPreviewUrl();
-                    if (previewUrl != null) {
-                        state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
-                        state.preview.lastUpdate = Date.now();
-                        $timeout(fn.preview.setPreviewScale);
-                    }
+                    fn.preview.initEvents();
+                    fn.preview.updatePreviews();
                 },
 
                 initEvents: function () {
@@ -686,12 +696,10 @@
 
                     var unsubscribe = eventsService.on("content.saved", function () {
                         if (state.isNewPage) {
-                            // Initialize previews
-                            fn.editorState.init();
                             fn.preview.init();
                         } else {
                             // Update previews after save                    
-                            fn.updatePreviews();
+                            fn.preview.updatePreviews();
                         }
                     });
 
@@ -709,7 +717,7 @@
                 },
 
                 getPreviewUrl: function () {
-                    if (state.pageId == null) {
+                    if (state.pageId == null || state.pageId === 0) {
                         return null;
                     }
 
@@ -717,6 +725,24 @@
                     var qs = "?pageId=" + state.pageId + "&culture=" + (state.culture || "");
 
                     return root + qs;
+                },
+
+                setPreviewUrl: function () {
+                    var previewUrl = fn.preview.getPreviewUrl();
+                    if (previewUrl != null) {
+                        state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
+                        state.preview.lastUpdate = Date.now();
+                    }
+                },
+
+                updatePreviews: function () {
+                    if (state.preview.previewUrl == null) {
+                        fn.preview.setPreviewUrl();
+                        $timeout(fn.preview.setPreviewScale);
+                    }
+
+                    fn.preview.updateDesktop();
+                    fn.preview.updateMobile();
                 },
 
                 setPreviewScaleOnLeftColumnResize: function (debouncedSetPreviewScale) {
@@ -1258,13 +1284,15 @@
                 setExpandAll: function (expandAll, skipHeader) {
                     state.ui.expandAll = !!expandAll;
 
-                    if (!skipHeader && $scope.model.value.header != null) {
+                    if (!skipHeader && $scope.model.value.header != null && config.layout !== "blocks") {
                         fn.blocks.withCtrl($scope.model.value.header.id, slideFn);
                     }
 
-                    fn.blocks.eachBlock(function (block) {
-                        fn.blocks.withCtrl(block.id, slideFn);
-                    });
+                    if (config.layout !== "header") {
+                        fn.blocks.eachBlock(function (block) {
+                            fn.blocks.withCtrl(block.id, slideFn);
+                        });
+                    }
 
                     function slideFn(block) {
                         if (state.ui.expandAll) {
@@ -1307,5 +1335,6 @@
         vm.fn = fn;
         vm.computed = computed;
         vm.constants = constants;
+        vm.config = config;
     }
 ]);
