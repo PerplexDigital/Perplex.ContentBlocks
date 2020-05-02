@@ -77,6 +77,10 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
     }
 
     this.initName = function () {
+        if (this.definition == null) {
+            return;
+        }
+
         var getScaffoldFn = null;
 
         if (this.definition.DataTypeId) {
