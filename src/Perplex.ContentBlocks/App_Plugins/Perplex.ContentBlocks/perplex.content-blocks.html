@@ -145,7 +145,8 @@
                                                show-add-content-button="model.value.blocks.length === 0"
                                                disable-add-content="vm.config.layout === 'header'"
                                                register-ctrl="vm.fn.blocks.registerBlockController(model.value.header.id, ctrl)"
-                                               on-open="vm.fn.preview.syncScroll()">
+                                               on-open="vm.fn.preview.syncScroll()"
+                                               on-close="vm.fn.preview.syncScroll(true)">
                         </perplex-content-block>
                     </div>
                 </div>
@@ -194,7 +195,8 @@
                                                is-reorder="vm.state.ui.reorder"
                                                show-add-content-button="$last"
                                                register-ctrl="vm.fn.blocks.registerBlockController(block.id, ctrl)"
-                                               on-open="vm.fn.preview.syncScroll()">
+                                               on-open="vm.fn.preview.syncScroll()"
+                                               on-close="vm.fn.preview.syncScroll(true)">
                         </perplex-content-block>
                     </div>
                 </div>

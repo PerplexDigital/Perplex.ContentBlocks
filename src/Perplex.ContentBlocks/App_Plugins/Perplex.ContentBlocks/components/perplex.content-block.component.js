@@ -104,17 +104,20 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
 
     this.open = function () {
         state.load = true;
-        this.slideDown();
-        if (typeof this.onOpen === "function") {
-            this.onOpen({ block: this });
-        }
+        this.slideDown(function () {
+            if (typeof this.onOpen === "function") {
+                this.onOpen({ block: this });
+            }
+        }.bind(this));        
     }
 
     this.close = function () {
-        this.slideUp();
-        if (typeof this.onClose === "function") {
-            this.onClose({ block: this });
-        }
+        this.slideUp(function () {
+            if (typeof this.onClose === "function") {
+                this.onClose({ block: this });
+            }
+        }.bind(this));
+        
     }
 
     this.toggle = function () {
@@ -125,19 +128,19 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
         }
     }
 
-    this.slideUp = function () {
-        this.slide(true);
+    this.slideUp = function (doneFn) {
+        this.slide(true, doneFn);
     }
 
-    this.slideDown = function () {
-        this.slide(false);
+    this.slideDown = function (doneFn) {
+        this.slide(false, doneFn);
     }
 
-    this.slideToggle = function () {
-        this.slide(state.expand);
+    this.slideToggle = function (doneFn) {
+        this.slide(state.expand, doneFn);
     }
 
-    this.slide = function (open) {
+    this.slide = function (open, doneFn) {
         this.state.open = !open;
 
         var $main = $element.find(".p-block__main");
@@ -146,6 +149,6 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
         }
 
         var slideFn = open ? $.fn.slideUp : $.fn.slideDown;
-        slideFn.call($main, "fast");
+        slideFn.call($main, "fast", doneFn);
     }
 }

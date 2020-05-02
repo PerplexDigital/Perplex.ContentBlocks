@@ -775,12 +775,16 @@
                     }
                 },
 
-                syncScroll: function () {
+                syncScroll: function (ignoreCollapsed) {
                     if (state.dom.previewIframeDesktop == null || state.dom.previewIframeDesktop.contentWindow == null) {
                         return;
                     }
 
-                    var visibleBlockId = fn.blocks.getInViewBlockId(false) || fn.blocks.getInViewBlockId(true);
+                    var visibleBlockId = fn.blocks.getInViewBlockId(false);
+
+                    if (visibleBlockId == null && !ignoreCollapsed) {
+                        visibleBlockId = fn.blocks.getInViewBlockId(true);
+                    }
 
                     if (visibleBlockId == null || state.preview.visibleBlockId === visibleBlockId) {
                         return;
