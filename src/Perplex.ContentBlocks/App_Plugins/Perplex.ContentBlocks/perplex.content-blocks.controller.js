@@ -1,7 +1,7 @@
-﻿angular.module("umbraco").controller("Perplex.ContentBlocks.Controller", [
-    "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout", 
-    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService", "Perplex.Util.Service",
-    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService, utilService) {
+﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
+    "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
+    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService",
+    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {
         var vm = this;
 
         var constants = {
@@ -20,8 +20,6 @@
 
             initialized: false,
             pageId: null,
-            // Het id van de homepage waar deze pagina onder valt
-            websiteId: null,
             isNewPage: null,
             // The currently active culture, e.g. "en-US"
             culture: null,
@@ -67,23 +65,6 @@
                     confirmCallback: null
                 },
 
-                blocks: {
-                    // block id => true/false
-                    expanded: {},
-
-                    // block id => true/false
-                    showSettings: {},
-
-                    // block id => true/false
-                    loaded: {},
-
-                    // block id => true/false
-                    removing: {},
-
-                    // block id => true/false
-                    adding: {}
-                },
-
                 expandAll: false,
                 reorder: false,
             },
@@ -106,7 +87,7 @@
                 previewIframeMobile: null,
                 previewIframeFrameMobile: null,
                 previewIframeFrameDesktop: null,
-                
+
                 blocksContainer: null,
                 contentBlocksViewport: null,
 
@@ -126,7 +107,13 @@
 
             copyPaste: {
                 hasData: false
-            }
+            },
+
+            // blockId -> perplexContentBlockController
+            blocks: {},
+
+            // blockId -> callback function to run when a block with that id registers itself
+            onBlockRegisterFns: {},
         };
 
         var computed = {
@@ -158,31 +145,31 @@
                     // We zitten niet in content
                     return;
                 }
-                
-                this.initModelValue();                  
-                this.copyPaste.init();                
+
+                this.initModelValue();
+                this.copyPaste.init();
                 this.setContainingGroupCssClass();
-                
+
                 var self = this;
 
                 $q.all([
                     api.getDefinitionsForPage(state.documentType, state.culture),
-                    api.getAllCategories(),                              
+                    api.getAllCategories(),
                     api.getPresetForPage(state.documentType, state.culture),
                 ]).then(function (responses) {
                     state.definitions = responses[0].data;
-                    state.categories = responses[1].data;           
+                    state.categories = responses[1].data;
                     state.preset = responses[2].data;
 
                     fn.preset.apply();
                     fn.updateComputed();
-                }).finally(function () {                    
+                }).finally(function () {
                     state.initialized = true;
 
-                    $timeout(function () {                        
+                    $timeout(function () {
                         self.initDom();
-                        self.initEvents();                                     
-                        self.initPreview();
+                        self.initEvents();
+                        self.preview.init();
                     });
                 });
             },
@@ -197,7 +184,7 @@
 
                     state.pageId = es.id;
                     state.isNewPage = state.pageId === 0;
-                    state.culture = utilService.getCurrentCulture();
+                    state.culture = fn.utils.getCurrentCulture();
                     state.documentType = es.contentTypeAlias;
                 }
             },
@@ -238,7 +225,7 @@
                 }
 
                 /* Fix Safari bugs */
-                if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Mac') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+                if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Mac') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
                     $('html').addClass('safari-mac'); // provide a class for the safari-mac specific css to filter with
                 }
             },
@@ -267,14 +254,14 @@
                         } else if (state.ui.picker.open) {
                             fn.picker.close();
                         }
-                    });                    
+                    });
                 }
 
                 function handleKeyup(e) {
                     switch (e.keyCode) {
                         case 27: // Escape
                             return handleEscape(e);
-                    }                    
+                    }
                 }
 
                 document.addEventListener("keyup", handleKeyup);
@@ -316,7 +303,7 @@
                     map[block.Id] = block.Layouts || [];
                     return map;
                 }, {});
-                
+
                 computed.definitionsById = _.reduce(state.definitions, function (map, definition) {
                     map[definition.Id] = definition;
                     return map;
@@ -348,28 +335,6 @@
             },
 
             utils: {
-                findValue: function (obj, props) {
-                    if (typeof obj !== "object" || obj == null) {
-                        return null;
-                    }
-
-                    if (!Array.isArray(props) || props.length === 0) {
-                        return null;
-                    }
-
-                    var prop = props.shift();
-                    var value = obj[prop];
-                    if (value === undefined) {
-                        return null;
-                    }
-
-                    if (props.length === 0) {
-                        return value;
-                    } else {
-                        return this.findValue(value, props);
-                    }
-                },
-
                 getContentBlockVisibleRatio: function (element) {
                     function getContentBlockVisibleRatio(element) {
                         var $element = $(element);
@@ -444,6 +409,24 @@
                         clearTimeout(timeout);
                         timeout = setTimeout(later, wait);
                     };
+                },
+
+                getCurrentCulture: function () {
+                    var es = editorState.current;
+
+                    if (es == null || !Array.isArray(es.variants)) {
+                        return null;
+                    }
+
+                    var activeVariant = _.find(es.variants, function (variant) {
+                        return variant.active;
+                    });
+
+                    if (activeVariant !== null && activeVariant.language != null) {
+                        return activeVariant.language.culture;
+                    }
+
+                    return null;
                 }
             },
 
@@ -555,14 +538,13 @@
 
                                 // Do not paste blocks either, just stop.
                                 return;
-                            } else {                                
+                            } else {
                                 var definition = computed.definitionsById[header.definitionId];
                                 if (definition == null) {
                                     // Header definition not found, either because unavailable for this page or removed in general.
                                     notificationsService.warning("The copied header is not available on this page and will be skipped.");
                                 } else {
                                     $scope.model.value.header = header;
-                                    fn.blocks.adding(header.id);
                                 }
                             }
                         }
@@ -592,7 +574,7 @@
                                     notificationsService.warning("1 copied block is not available on this page and is skipped.");
                                 } else {
                                     notificationsService.warning(skippedBlocks + " copied blocks are not available for this page and are skipped.");
-                                }                                
+                                }
                             }
 
                             var args = [idx, 0].concat(availableBlocks);
@@ -603,11 +585,11 @@
                             for (var i = 0; i < numBlocks; i++) {
                                 var block = availableBlocks[i];
 
-                                fn.blocks.adding(block.id);
-
-                                // Alleen bij het plakken van 1 blok -- direct uitklappen:
                                 if (numBlocks === 1) {
-                                    fn.blocks.openAndLoad(block.id);
+                                    // Only when pasting a single block -- immediately expand it
+                                    fn.blocks.withCtrl(block.id, function (block) {
+                                        block.open();
+                                    });
                                 }
                             }
                         }
@@ -662,21 +644,8 @@
                 close: function () {
                     state.ui.layoutPicker.open = false;
                     state.ui.layoutPicker.selectedLayoutId = null;
-                    
+
                     fn.ui.fixOverlayStyling();
-                }
-            },
-
-            initPreview: function () {
-                if (state.isNewPage) {
-                    return;
-                }
-
-                var previewUrl = fn.preview.getPreviewUrl();
-                if (previewUrl != null) {
-                    state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
-                    state.preview.lastUpdate = Date.now();
-                    $timeout(fn.preview.setPreviewScale);
                 }
             },
 
@@ -694,31 +663,44 @@
             },
 
             preview: {
+                init: function () {
+                    if (state.isNewPage) {
+                        return;
+                    }
+
+                    var previewUrl = fn.preview.getPreviewUrl();
+                    if (previewUrl != null) {
+                        state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
+                        state.preview.lastUpdate = Date.now();
+                        $timeout(fn.preview.setPreviewScale);
+                    }
+                },
+
                 initEvents: function () {
                     var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
                     state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
-                    state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);                        
+                    state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
 
                     var debouncedSetPreviewScale = fn.utils.debounce(fn.preview.setPreviewScale, 200);
                     window.addEventListener("resize", debouncedSetPreviewScale);
 
-                    var unsubscribe = eventsService.on("content.saved", function () {                            
+                    var unsubscribe = eventsService.on("content.saved", function () {
                         if (state.isNewPage) {
                             // Initialize previews
-                            fn.editorState.init();                            
-                            fn.initPreview();
+                            fn.editorState.init();
+                            fn.preview.init();
                         } else {
                             // Update previews after save                    
                             fn.updatePreviews();
                         }
                     });
 
-                    this.setPreviewScaleOnLeftColumnResize(debouncedSetPreviewScale);                    
+                    this.setPreviewScaleOnLeftColumnResize(debouncedSetPreviewScale);
 
                     $scope.$on("$destroy", function () {
                         state.dom.editorsContainer.removeEventListener("scroll", debouncedSyncScroll);
                         state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
-                        window.removeEventListener("resize", debouncedSetPreviewScale); 
+                        window.removeEventListener("resize", debouncedSetPreviewScale);
 
                         if (typeof unsubscribe === "function") {
                             unsubscribe();
@@ -761,7 +743,7 @@
                     }
                 },
 
-                syncScroll: function () {                    
+                syncScroll: function () {
                     if (state.dom.previewIframeDesktop == null || state.dom.previewIframeDesktop.contentWindow == null) {
                         return;
                     }
@@ -801,7 +783,7 @@
 
                     var previewMargin = parseInt(state.dom.previewColumn.style.marginTop) || 0;
                     var toMove = actualScroll - previewMargin;
-                    
+
                     if (previewRect.height > blocksRect.height) {
                         // If the preview container is longer than the blocks container,
                         // align it to the top of the screen regardless of the current scroll
@@ -828,7 +810,7 @@
                         return;
                     }
 
-                    state.preview.mode = mode;                    
+                    state.preview.mode = mode;
                     $timeout(fn.preview.setPreviewScale);
                 },
 
@@ -848,7 +830,7 @@
                     this.updateIframe(state.dom.previewIframeMobile);
                 },
 
-                updateIframe: function (iframe) {                    
+                updateIframe: function (iframe) {
                     if (iframe == null) {
                         return;
                     }
@@ -860,10 +842,10 @@
                     }
 
                     iframe.contentWindow.location.reload();
-                    state.preview.lastUpdate = Date.now();                
+                    state.preview.lastUpdate = Date.now();
                 },
-                
-                setPreviewScale: function () {                                        
+
+                setPreviewScale: function () {
                     fn.preview.setDesktopPreviewScale();
                     fn.preview.setMobilePreviewScale();
                 },
@@ -876,14 +858,14 @@
                     fn.preview.setIframeScale(state.dom.previewIframeFrameMobile, state.dom.previewIframeMobile);
                 },
 
-                setIframeScale: function(iframeFrame, iframe) {
+                setIframeScale: function (iframeFrame, iframe) {
                     if (iframeFrame == null || iframe == null) {
                         return;
                     }
 
                     var ratio = iframeFrame.clientWidth / iframe.clientWidth;
                     iframe.style.transform = "scale(" + ratio + ") translateZ(0)";
-                }               
+                }
             },
 
             header: {
@@ -891,18 +873,16 @@
                     return $scope.model.value.header[property];
                 },
 
-                set: function (property, value) {                    
-                    $scope.model.value.header[property] = value;             
+                set: function (property, value) {
+                    $scope.model.value.header[property] = value;
                 },
-             
+
                 pick: function () {
                     function disabledSelector(category) {
                         return !category.isEnabledForHeaders;
                     }
 
                     fn.picker.init(function (definitionId, layoutId) {
-                        delete $scope.model.value.header;
-
                         var layoutId = layoutId;
 
                         if (layoutId == null) {
@@ -912,18 +892,12 @@
                             }
                         }
 
-                        $timeout(function () {                            
-                            var id = Guid.NewGuid();
+                        $scope.model.value.header = fn.blocks.createEmpty(definitionId, layoutId);
 
-                            fn.blocks.adding(id);
-
-                            $scope.model.value.header = {
-                                id: id,
-                                definitionId: definitionId,
-                                layoutId: layoutId
-                            };
+                        fn.blocks.withCtrl($scope.model.value.header.id, function (block) {
+                            // Open block immediately
+                            block.open();
                         });
-
                     }, disabledSelector);
 
                     fn.picker.open();
@@ -934,19 +908,17 @@
                         return;
                     }
 
-                    fn.blocks.removing($scope.model.value.header.id, function () {
-                        $scope.model.value.header = null;
-                    });
-                }           
+                    $scope.model.value.header = null;
+                }
             },
 
-            blocks: {               
-                get: function (block, property) {                    
-                    return block[property];                    
+            blocks: {
+                get: function (block, property) {
+                    return block[property];
                 },
 
-                set: function (block, property, value) {                                        
-                    block[property] = value;                    
+                set: function (block, property, value) {
+                    block[property] = value;
                 },
 
                 add: function (afterBlockId) {
@@ -968,8 +940,6 @@
                             }
                         }
 
-                        var id = Guid.NewGuid();
-
                         // Add at the end by default
                         var idx = $scope.model.value.blocks.length - 1;
 
@@ -982,18 +952,15 @@
                                     idx = blockIdx + 1;
                                 }
                             }
-                        }                       
+                        }
 
-                        fn.blocks.adding(id);
+                        var empty = fn.blocks.createEmpty(definitionId, layoutId);
+                        $scope.model.value.blocks.splice(idx, 0, empty);
 
-                        $scope.model.value.blocks.splice(idx, 0, {
-                            id: id,
-                            definitionId: definitionId,
-                            layoutId: layoutId
+                        fn.blocks.withCtrl(empty.id, function (block) {
+                            // Open immediately
+                            block.open();
                         });
-
-                        // Direct uitlappen                        
-                        fn.blocks.openAndLoad(id);
                     }
 
                     fn.picker.init(selectBlockCallback, disabledSelector);
@@ -1001,12 +968,16 @@
                     fn.picker.open();
                 },
 
-                adding: function (id) {
-                    state.ui.blocks.adding[id] = true;
+                createEmpty: function (definitionId, layoutId) {
+                    var id = String.CreateGuid();
 
-                    $timeout(function () {
-                        delete state.ui.blocks.adding[id];
-                    }, 0);
+                    return {
+                        id: id,
+                        definitionId: definitionId,
+                        layoutId: layoutId,
+                        // Empty NestedContent model value
+                        content: [],
+                    };
                 },
 
                 remove: function (id) {
@@ -1016,22 +987,8 @@
 
                     var idx = fn.blocks.getIndex(id);
                     if (idx > -1) {
-                        fn.blocks.removing(id, function () {
-                            $scope.model.value.blocks.splice(idx, 1);
-                        });
+                        $scope.model.value.blocks.splice(idx, 1);
                     }
-                },
-
-                removing: function (id, callback) {
-                    state.ui.blocks.removing[id] = true;
-
-                    $timeout(function () {
-                        if (typeof callback === "function") {
-                            callback();
-                        }
-                        
-                        delete state.ui.blocks.removing[id];
-                    }, 1000);
                 },
 
                 registerElement: function (blockId, $element) {
@@ -1054,50 +1011,36 @@
                     return state.dom.blocks[id];
                 },
 
-                slide: function (blockId, up) {
-                    var element = fn.blocks.getElement(blockId);
-                    var $main = $(element).find(".p-block__main");
-                    if ($main.length === 0) {
-                        fn.blocks.setExpand(blockId, !up);
-                    } else {
-                        var slideFn = up ? $.fn.slideUp : $.fn.slideDown;
-                        slideFn.call($main, "slow", function () {
-                            fn.blocks.setExpand(blockId, !up);
-                        });                        
+                registerBlockController: function (id, controller) {
+                    state.blocks[id] = controller;
+
+                    var onRegister = state.onBlockRegisterFns[id];
+                    if (typeof onRegister === "function") {
+                        onRegister(controller);
+                    }
+
+                    return function deregisterController() {
+                        delete state.blocks[id];
                     }
                 },
 
-                slideToggle: function (blockId) {
-                    if (state.ui.blocks.expanded[blockId]) {
-                        fn.blocks.slideUp(blockId);
+                /**
+                 * Calls `callback` with the controller of the block with the given id.
+                 * If the block controller has not been registered yet, the callback will be called
+                 * when it does. Otherwise it is called immediately.
+                 * @param {any} id Block id
+                 * @param {any} callback Callback function to be called when the controller of the block is available
+                 */
+                withCtrl: function (id, callback) {
+                    var block = state.blocks[id];
+                    if (block != null) {
+                        callback(block);
                     } else {
-                        fn.blocks.slideDown(blockId);
+                        state.onBlockRegisterFns[id] = function (block) {
+                            callback(block);
+                            delete state.onBlockRegisterFns[id];
+                        }
                     }
-                },
-
-                slideUp: function (blockId) {
-                    fn.blocks.slide(blockId, true);
-                },
-
-                slideDown: function (blockId) {
-                    fn.blocks.slide(blockId, false);
-                },
-
-                openAndLoad: function (id) {                              
-                    state.ui.blocks.expanded[id] = true;
-                    state.ui.blocks.loaded[id] = true;
-                },
-
-                toggleDisable: function (block) {
-                    block.isDisabled = !block.isDisabled;
-                },
-
-                toggleSettings: function (id) {
-                    state.ui.blocks.showSettings[id] = !state.ui.blocks.showSettings[id];
-                },
-
-                shouldLoad: function (id) {
-                    return state.ui.blocks.loaded[id];
                 },
 
                 getIndex: function (id) {
@@ -1119,37 +1062,8 @@
                     return definition.Name;
                 },
 
-                getPreview: function (block) {
-                    if (block == null) {
-                        return null;
-                    }
-
-                    if (!Array.isArray(block.content) || block.content.length === 0) {
-                        return fn.blocks.getBlockName(block);
-                    }
-
-                    // We gaan de volgende expressies evalueren voor elk blok,
-                    // en de eerst die een resultaat oplevert teruggeven als de preview-tekst
-                    // boven het blok type.
-                    var previewExpressions = ["title", "subtitle", "subtitle1", "subtitle_1", "name", "label"];
-
-                    for (var i = 0; i < previewExpressions.length; i++) {
-                        var previewExpression = previewExpressions[i];
-                        var props = previewExpression.split(".");
-
-                        var value = fn.utils.findValue(block.content[0], props);
-
-                        if (value) {
-                            return value;
-                        }
-                    }
-
-                    // Niets gevonden -> blok name als fallback
-                    return fn.blocks.getBlockName(block);
-                },
-
                 layouts: {
-                    getLayoutIndex: function (block) {                        
+                    getLayoutIndex: function (block) {
                         if (block == null || block.layoutId == null || block.definitionId == null) {
                             return null;
                         }
@@ -1173,7 +1087,7 @@
                         }
                     },
 
-                    getLayout: function(block, index) {
+                    getLayout: function (block, index) {
                         var layouts = computed.layoutsByDefinitionId[block.definitionId];
                         if (layouts == null || !Array.isArray(layouts)) {
                             return null;
@@ -1190,32 +1104,6 @@
                     },
                 },
 
-                toggleExpand: function (blockId) {
-                    if (state.ui.blocks.expanded[blockId]) {
-                        fn.blocks.collapse(blockId);
-                    } else {
-                        fn.blocks.expand(blockId);
-                    }
-                },
-
-                expand: function (blockId) {
-                    fn.blocks.setExpand(blockId, true);
-                },
-
-                collapse: function (blockId) {
-                    fn.blocks.setExpand(blockId, false);
-                },
-
-                setExpand: function (blockId, expand) {
-                    state.ui.blocks.expanded[blockId] = expand;
-
-                    if (expand && !state.ui.blocks.loaded[blockId]) {
-                        state.ui.blocks.loaded[blockId] = true;
-                    }
-
-                    $timeout(fn.preview.syncScroll, 0);
-                },                
-              
                 eachBlock: function (callback) {
                     if (Array.isArray($scope.model.value.blocks)) {
                         for (var i = 0; i < $scope.model.value.blocks.length; i++) {
@@ -1230,7 +1118,7 @@
 
                     var prev = {
                         id: null,
-                        ratio: null,                        
+                        ratio: null,
                     }
 
                     for (var i = 0; i < blocks.length; i++) {
@@ -1239,7 +1127,9 @@
                         var isLast = i === blocks.length - 1;
 
                         if (!includeCollapsed) {
-                            var skip = !state.ui.blocks.expanded[blockId];
+                            var blockCtrl = state.blocks[blockId]
+
+                            var skip = blockCtrl != null && !blockCtrl.state.open;
 
                             if (skip) {
                                 if (isLast) {
@@ -1266,7 +1156,7 @@
                         if (visibleRatio > 0 && visibleRatio < 1) {
                             if (prev.id != null && prev.ratio > visibleRatio) {
                                 return prev.id;
-                            } else if(isLast) {
+                            } else if (isLast) {
                                 // Last block -> show this block
                                 return blockId;
                             } else {
@@ -1304,34 +1194,20 @@
                 apply: function () {
                     if (state.preset != null) {
                         if ($scope.model.value.header == null && state.preset.Header != null) {
-                            // Alleen toepassen wanneer de pagina nog geen header heeft ingevuld
-                            var id = Guid.NewGuid();
-                            $scope.model.value.header = {
-                                id: id,
-                                definitionId: state.preset.Header.DefinitionId,
-                                layoutId: state.preset.Header.LayoutId,
-                                presetId: state.preset.Header.Id
-                            }
+                            // Only apply when there is no header yet on this page                            
+                            $scope.model.value.header = fn.preset.createBlock(state.preset.Header);
                         }
 
                         if ($scope.model.value.blocks == null || $scope.model.value.blocks.length === 0) {
-                            // Alleen toepassen wanneer de pagina nog geen blokken heeft
-                            fn.preset.eachBlock(function (block) {
-                                if (block != null) {
+                            // Only apply when there are no blocks on this page yet
+                            fn.preset.eachBlock(function (preset) {
+                                if (preset != null) {
                                     if (!Array.isArray($scope.model.value.blocks)) {
                                         $scope.model.value.blocks = [];
                                     }
 
-                                    var id = Guid.NewGuid();
-                                    $scope.model.value.blocks.push({
-                                        id: id,
-                                        definitionId: block.DefinitionId,
-                                        layoutId: block.LayoutId,
-                                        presetId: block.Id
-                                    });
-
-                                    state.ui.blocks.expanded[id] = true;
-                                    state.ui.blocks.loaded[id] = true;
+                                    var block = fn.preset.createBlock(preset);
+                                    $scope.model.value.blocks.push(block);
                                 }
                             });
                         }
@@ -1345,7 +1221,13 @@
                             callback(block);
                         }
                     }
-                }
+                },
+
+                createBlock: function (preset) {
+                    var emptyBlock = fn.blocks.createEmpty(preset.DefinitionId, preset.LayoutId);
+                    emptyBlock.presetId = preset.Id;
+                    return emptyBlock;
+                },
             },
 
             versionUpgrades: {
@@ -1356,13 +1238,13 @@
 
                     // Header
                     if ($scope.model.value.header != null && $scope.model.value.header.id == null) {
-                        $scope.model.value.header.id = Guid.NewGuid();
+                        $scope.model.value.header.id = String.CreateGuid();
                     }
 
                     // Blocks
                     fn.blocks.eachBlock(function (block) {
                         if (block != null && block.id == null) {
-                            block.id = Guid.NewGuid();
+                            block.id = String.CreateGuid();
                         }
                     })
                 }
@@ -1376,22 +1258,20 @@
                 setExpandAll: function (expandAll, skipHeader) {
                     state.ui.expandAll = !!expandAll;
 
-                    if (state.ui.expandAll) {
-                        if (!skipHeader && $scope.model.value.header != null) {
-                            fn.blocks.slideDown($scope.model.value.header.id);
+                    if (!skipHeader && $scope.model.value.header != null) {
+                        fn.blocks.withCtrl($scope.model.value.header.id, slideFn);
+                    }
+
+                    fn.blocks.eachBlock(function (block) {
+                        fn.blocks.withCtrl(block.id, slideFn);
+                    });
+
+                    function slideFn(block) {
+                        if (state.ui.expandAll) {
+                            block.open();
+                        } else {
+                            block.close();
                         }
-                        
-                        fn.blocks.eachBlock(function (block) {
-                            fn.blocks.slideDown(block.id);
-                        });
-                    } else {
-                        if (!skipHeader && $scope.model.value.header != null) {
-                            fn.blocks.slideUp($scope.model.value.header.id);
-                        }
-                        
-                        fn.blocks.eachBlock(function (block) {
-                            fn.blocks.slideUp(block.id);
-                        });
                     }
                 },
 
@@ -1413,7 +1293,7 @@
                     if (overlayIsOpen) {
                         // Set z-index of element to -1
                         state.dom.leftColumn.style.zIndex = -1;
-                        state.dom.contentBlocksViewport.style.zIndex = 100;                        
+                        state.dom.contentBlocksViewport.style.zIndex = 100;
                     } else {
                         // Remove element z-index
                         state.dom.leftColumn.style.zIndex = null;

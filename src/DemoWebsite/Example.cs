@@ -1,4 +1,5 @@
 ﻿using Perplex.ContentBlocks.Definitions;
+using Perplex.ContentBlocks.Presets;
 using System;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -8,15 +9,19 @@ namespace DemoWebsite
     public class ExampleComponent : IComponent
     {
         private readonly IContentBlockDefinitionRepository _repo;
+        private readonly IContentBlocksPresetRepository _presetRepo;
 
-        public ExampleComponent(IContentBlockDefinitionRepository repo)
+        public ExampleComponent(
+            IContentBlockDefinitionRepository repo,
+            IContentBlocksPresetRepository presetRepo)
         {
             _repo = repo;
+            _presetRepo = presetRepo;
         }
 
         public void Initialize()
         {
-            string previewFolder = "/App_Plugins/Perplex.ContentBlocks/previews";
+            string previewFolder = "/previews";
 
             _repo.Add(new ContentBlockDefinition
             {
@@ -57,7 +62,7 @@ namespace DemoWebsite
                         new ContentBlockLayout
                         {
                             Id = new Guid("2aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                            Name = "Layout 1",
+                            Name = "Layout 1 long name",
                             Description = "",
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
@@ -66,7 +71,7 @@ namespace DemoWebsite
                         new ContentBlockLayout
                         {
                             Id = new Guid("3aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                            Name = "Layout 2",
+                            Name = "Layout 2 med nm",
                             Description = "",
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
@@ -75,7 +80,7 @@ namespace DemoWebsite
                         new ContentBlockLayout
                         {
                             Id = new Guid("4aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                            Name = "Layout 3",
+                            Name = "Layout 3 super long name!",
                             Description = "",
                             PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
                             ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
@@ -86,6 +91,21 @@ namespace DemoWebsite
                 {
                     Perplex.ContentBlocks.Constants.Categories.Content
                 }
+            });
+
+            // To add a preset
+            _presetRepo.Add(new ContentBlocksPreset
+            {
+                Id = new Guid("8203903b-8116-4ed9-92f7-cf65da6f3419"),
+                Header = new ContentBlockPreset
+                {
+                    Id = new Guid("8db819ff-514b-434b-8be6-4c303671689d"),
+                    DefinitionId = new Guid("12902bee-6c27-4f0f-99de-f7182df7d91f"),
+                    IsMandatory = false,
+                    LayoutId = new Guid("3aaa12d6-6f49-44be-b5ca-21fd7173d273"),
+                },
+                Name = "Preset X",
+                ApplyToDocumentTypes = new[] { "someDoctypeAlias" }
             });
         }
 

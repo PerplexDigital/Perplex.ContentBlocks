@@ -1,0 +1,14 @@
+﻿@using Perplex.ContentBlocks.Rendering
+@using ContentModels = Umbraco.Web.PublishedModels
+@model ContentModels.ExampleHeader
+
+<h2>@Model.Someotherprop</h2>
+@Model.Text
+
+@if (Model.More.Any())
+{
+    foreach (var block in Model.More)
+    {
+        @Html.Partial("ContentBlocks/_ExampleHeader", block)
+    }
+}

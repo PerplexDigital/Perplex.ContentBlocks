@@ -1,27 +1,27 @@
-angular.module("umbraco").service("Perplex.ContentBlocks.Api", ["Perplex.Downloader",
-    function (PerplexDownloader) {        
-        var previewApi = new PerplexDownloader("/umbraco/backoffice/api/contentblockspreviewapi/");
-        var definitionApi = new PerplexDownloader("/umbraco/backoffice/api/contentblocksdefinitionapi/");        
-        var presetApi = new PerplexDownloader("/umbraco/backoffice/api/contentblockspresetapi/");
+angular.module("perplexContentBlocks").service("Perplex.ContentBlocks.Api", ["$http",
+    function ($http) {
+        var previewApiRoot = "/umbraco/backoffice/api/contentblockspreviewapi/";
+        var definitionApiRoot = "/umbraco/backoffice/api/contentblocksdefinitionapi/";
+        var presetApiRoot = "/umbraco/backoffice/api/contentblockspresetapi/";
 
         this.getPreview = function (pageId) {
-            return previewApi.post("GetPreview", { pageId: pageId });
+            return $http.post(previewApiRoot + "GetPreview", { pageId: pageId });
         }
 
         this.getAllDefinitions = function () {
-            return definitionApi.get("GetAllDefinitions");
+            return $http.get(definitionApiRoot + "GetAllDefinitions");
         }
 
         this.getDefinitionsForPage = function (documentType, culture) {
-            return definitionApi.get("GetDefinitionsForPage?documentType=" + documentType + "&culture=" + culture);
+            return $http.get(definitionApiRoot + "GetDefinitionsForPage?documentType=" + documentType + "&culture=" + culture);
         }
 
         this.getAllCategories = function () {
-            return definitionApi.get("GetAllCategories");
+            return $http.get(definitionApiRoot + "GetAllCategories");
         }
 
         this.getPresetForPage = function (documentType, culture) {
-            return presetApi.get("GetPresetForPage?documentType=" + documentType + "&culture=" + culture);
+            return $http.get(presetApiRoot + "GetPresetForPage?documentType=" + documentType + "&culture=" + culture);
         }
     }
 ]);

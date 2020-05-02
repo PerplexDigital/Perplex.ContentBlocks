@@ -4,75 +4,166 @@
 
 .p-grid {
 
-	& 		{width: 100%; display: flex; flex-flow: row wrap; align-items: flex-start; justify-content: flex-start;}
+    & {
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
 
-	+ & 	{margin-top: @grid-margin * 2;}
+    &+ & {
+        margin-top: @grid-margin * 2;
+    }
 
-	&--css-grid {
-		.picker & {
-			@supports(display: grid) {display: grid; grid-template-columns: ~"repeat(auto-fill, minmax(10rem, 1fr))"; grid-gap: 10px; margin: 0; width: 100%;
-				@media only screen and (min-width: 48em)  {grid-template-columns: ~"repeat(auto-fill, minmax(18rem, 1fr))"; grid-gap: 15px;}
+    &--css-grid {
+        .picker & {
+            @supports
 
-				& > *, & > .p-col--lg-1-3 {padding: 0; width: 100%; max-width: none; flex: auto; height: 100%;}
-				.p-pick-blocks__holder {display: flex; flex-direction: column; height: 100%; margin: 0;
-					.p-pick-blocks__inner {display: flex; flex: 1; flex-direction: column;}
-				}
-			}
-		}
-	}
+            (display: grid) {
+                display: grid;
+                grid-template-columns: ~"repeat(auto-fill, minmax(10rem, 1fr))";
+                grid-gap: 10px;
+                margin: 0;
+                width: 100%;
 
-	@media only screen and (min-width: 48em) {width: calc(100% + 20px); margin-left: -20px;}
+                @media only screen and (min-width: 48em) {
+                    grid-template-columns: ~"repeat(auto-fill, minmax(18rem, 1fr))";
+                    grid-gap: 15px;
+                }
 
+                & > *, & > .p-col--lg-1-3 {
+                    padding: 0;
+                    width: 100%;
+                    max-width: none;
+                    flex: auto;
+                    height: 100%;
+                }
 
+                .p-pick-blocks__holder {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100%;
+                    margin: 0;
 
-	// COLS
+                    .p-pick-blocks__inner {
+                        display: flex;
+                        flex: 1;
+                        flex-direction: column;
+                    }
+                }
+            }
+        }
+    }
 
-	[class*="p-col-"] {
+    @media only screen and (min-width: 48em) {
+        width: calc(100% + 20px);
+        margin-left: -20px;
+    }
+    // COLS
+    [class*="p-col-"] {
 
-		& {flex: 1 0 100%; max-width: 100%;}
+        & {
+            flex: 1 0 100%;
+            max-width: 100%;
+        }
 
-		+ [class*="p-col-"] {margin-top: @grid-margin; @media only screen and (min-width: 48em) {margin-top: 0;}}
+        + [class*="p-col-"] {
+            margin-top: @grid-margin;
 
-		@media only screen and (min-width: 48em) {padding-left: 20px; padding-right: 20px;}
+            @media only screen and (min-width: 48em) {
+                margin-top: 0;
+            }
+        }
 
-	} 
+        @media only screen and (min-width: 48em) {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    }
+    // SMALL
+    @media only screen and (min-width: 48em) {
 
+        &--sm {
+            margin-left: -15px;
+            margin-right: -15px;
+            width: ~"calc(100% + 60px)";
+        }
 
+        &--sm [class*="p-col-"] {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+    // MEDIA
+    @media only screen and (min-width: 48em) {
+        .p-col--md-1-2 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
 
-	// SMALL
- 
-	@media only screen and (min-width: 48em) {
+        .p-col--md-1-3 {
+            flex: 0 0 33.3334%;
+            max-width: 33.3334%;
+        }
 
-		&--sm 	{margin-left: -15px; margin-right: -15px; width: ~"calc(100% + 60px)";}
+        .p-col--md-2-3 {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+        }
 
-		&--sm  	[class*="p-col-"] {padding-left: 15px; padding-right: 15px;}
+        .p-col--md-1-4 {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
 
-	}
+        .p-col--md-3-4 {
+            flex: 0 0 75%;
+            max-width: 75%;
+        }
 
+        .p-col--md-1-1 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
 
+    @media only screen and (min-width: 48em) and (max-width: 63.99em) {
+        .p-col--md-1-1 + .p-col--md-1-1 {
+            margin-top: @grid-margin;
+        }
+    }
 
-	// MEDIA
+    @media only screen and (min-width: 64em) {
+        .p-col--lg-1-2 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
 
-	@media only screen and (min-width: 48em) {
-		.p-col--md-1-2 {flex: 0 0 50%; max-width: 50%;}
-		.p-col--md-1-3 {flex: 0 0 33.3334%; max-width: 33.3334%;}
-		.p-col--md-2-3 {flex: 0 0 66.6667%; max-width: 66.6667%;}
-		.p-col--md-1-4 {flex: 0 0 25%; max-width: 25%;}
-		.p-col--md-3-4 {flex: 0 0 75%; max-width: 75%;}
-		.p-col--md-1-1 {flex: 0 0 100%; max-width: 100%;}
-	}
+        .p-col--lg-1-3 {
+            flex: 0 0 33.3334%;
+            max-width: 33.3334%;
+        }
 
-	@media only screen and (min-width: 48em) and (max-width: 63.99em) {.p-col--md-1-1 + .p-col--md-1-1 {margin-top: @grid-margin;}}
+        .p-col--lg-2-3 {
+            flex: 0 0 66.6667%;
+            max-width: 66.6667%;
+        }
 
-	@media only screen and (min-width: 64em) {
-		.p-col--lg-1-2 {flex: 0 0 50%; max-width: 50%;}
-		.p-col--lg-1-3 {flex: 0 0 33.3334%; max-width: 33.3334%;}
-		.p-col--lg-2-3 {flex: 0 0 66.6667%; max-width: 66.6667%;}
-		.p-col--lg-1-4 {flex: 0 0 25%; max-width: 25%;}
-		.p-col--lg-3-4 {flex: 0 0 75%; max-width: 75%;}
-	}
+        .p-col--lg-1-4 {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
 
-	@media only screen and (min-width: 64em) and (max-width: 79.99em) {.p-col--lg-1-1 + .p-col--lg-1-1 {margin-top: @grid-margin;}}
+        .p-col--lg-3-4 {
+            flex: 0 0 75%;
+            max-width: 75%;
+        }
+    }
 
-
+    @media only screen and (min-width: 64em) and (max-width: 79.99em) {
+        .p-col--lg-1-1 + .p-col--lg-1-1 {
+            margin-top: @grid-margin;
+        }
+    }
 }

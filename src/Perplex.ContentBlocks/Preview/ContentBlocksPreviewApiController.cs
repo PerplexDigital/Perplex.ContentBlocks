@@ -116,9 +116,13 @@ namespace Perplex.ContentBlocks.Preview
                 window.addEventListener('message', receiveMessage, false);
 
                 function receiveMessage(event) {
-                    var id = event.data.blockId;
-                    if (id != null) {
-                        Perplex.Util.scrollToElement($(""a[id="" + id + ""]""));
+                    var element = document.getElementById(event.data.blockId);
+
+                    if (element != null && typeof window.scrollTo === ""function"") {
+                        window.scrollTo({
+                            top: element.offsetTop,
+                            behavior: ""smooth""
+                        });
                     }
                 }";
 

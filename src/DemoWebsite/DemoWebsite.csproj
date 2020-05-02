@@ -318,6 +318,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Partials\ContentBlocks\ExampleHeader\ExampleHeader_Layout-1.cshtml" />
     <Content Include="Views\Partials\ContentBlocks\ExampleBlock\ExampleBlock_Layout-1.cshtml" />
+    <Content Include="Views\Partials\ContentBlocks\_ExampleHeader.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

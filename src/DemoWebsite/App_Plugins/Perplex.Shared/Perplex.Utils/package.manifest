@@ -1,8 +1,0 @@
-{
-  "javascript": [
-    "~/App_Plugins/Perplex.Shared/Perplex.Utils/js/perplex.download.service.js",
-    "~/App_Plugins/Perplex.Shared/Perplex.Utils/js/perplex.util.service.js",
-    "~/App_Plugins/Perplex.Shared/Perplex.Utils/js/perplex.downloader.factory.js",
-    "~/App_Plugins/Perplex.Shared/Perplex.Utils/js/perplex.local-storage.service.js"
-  ]
-}
