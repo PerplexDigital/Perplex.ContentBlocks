@@ -93,6 +93,7 @@ namespace DemoWebsite
                 }
             });
 
+            // To add a preset
             _presetRepo.Add(new ContentBlocksPreset
             {
                 Id = new Guid("8203903b-8116-4ed9-92f7-cf65da6f3419"),
@@ -100,10 +101,11 @@ namespace DemoWebsite
                 {
                     Id = new Guid("8db819ff-514b-434b-8be6-4c303671689d"),
                     DefinitionId = new Guid("12902bee-6c27-4f0f-99de-f7182df7d91f"),
-                    IsMandatory = true,
+                    IsMandatory = false,
                     LayoutId = new Guid("3aaa12d6-6f49-44be-b5ca-21fd7173d273"),
                 },
                 Name = "Preset X",
+                ApplyToDocumentTypes = new[] { "someDoctypeAlias" }
             });
         }
 
