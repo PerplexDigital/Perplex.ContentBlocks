@@ -1,5 +1,3 @@
-
-
 // PERPLEX GRID
 
 .p-grid {
@@ -12,45 +10,41 @@
         justify-content: flex-start;
     }
 
-    &+ & {
+    & + & {
         margin-top: @grid-margin * 2;
     }
 
     &--css-grid {
         .picker & {
-            @supports
+            display: grid;
+            grid-template-columns: ~"repeat(auto-fill, minmax(10rem, 1fr))";
+            grid-gap: 10px;
+            margin: 0;
+            width: 100%;
 
-            (display: grid) {
-                display: grid;
-                grid-template-columns: ~"repeat(auto-fill, minmax(10rem, 1fr))";
-                grid-gap: 10px;
-                margin: 0;
+            @media only screen and (min-width: 48em) {
+                grid-template-columns: ~"repeat(auto-fill, minmax(18rem, 1fr))";
+                grid-gap: 15px;
+            }
+
+            & > *, & > .p-col--lg-1-3 {
+                padding: 0;
                 width: 100%;
+                max-width: none;
+                flex: auto;
+                height: 100%;
+            }
 
-                @media only screen and (min-width: 48em) {
-                    grid-template-columns: ~"repeat(auto-fill, minmax(18rem, 1fr))";
-                    grid-gap: 15px;
-                }
+            .p-pick-blocks__holder {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                margin: 0;
 
-                & > *, & > .p-col--lg-1-3 {
-                    padding: 0;
-                    width: 100%;
-                    max-width: none;
-                    flex: auto;
-                    height: 100%;
-                }
-
-                .p-pick-blocks__holder {
+                .p-pick-blocks__inner {
                     display: flex;
+                    flex: 1;
                     flex-direction: column;
-                    height: 100%;
-                    margin: 0;
-
-                    .p-pick-blocks__inner {
-                        display: flex;
-                        flex: 1;
-                        flex-direction: column;
-                    }
                 }
             }
         }
@@ -78,7 +72,10 @@
 
         @media only screen and (min-width: 48em) {
             padding-left: 20px;
-            padding-right: 20px;
+
+            &:last-child {
+                padding-right: 20px;
+            }
         }
     }
     // SMALL
@@ -86,13 +83,19 @@
 
         &--sm {
             margin-left: -15px;
-            margin-right: -15px;
             width: ~"calc(100% + 60px)";
+
+            &:last-child {
+                margin-right: -15px;
+            }
         }
 
         &--sm [class*="p-col-"] {
             padding-left: 15px;
-            padding-right: 15px;
+
+            &:last-child {
+                padding-right: 15px;
+            }
         }
     }
     // MEDIA
