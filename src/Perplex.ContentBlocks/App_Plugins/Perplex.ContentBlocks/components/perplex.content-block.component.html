@@ -132,7 +132,9 @@
     </div>
 </div>
 
-<div class="p-editor__empty__hover" ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
+<div class="p-editor__empty__hover" 
+     ng-if="!$ctrl.disableAddContent"
+     ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
     <div class="p-editor__empty__click">
         <button class="btn btn-sub btn-radius" type="button"
                 ng-click="$ctrl.addBlock({ id: $ctrl.block.id })"

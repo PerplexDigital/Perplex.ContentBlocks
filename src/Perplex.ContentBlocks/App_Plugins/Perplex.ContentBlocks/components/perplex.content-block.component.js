@@ -23,6 +23,7 @@
         registerCtrl: "&?",
         onOpen: "&?",
         onClose: "&?",
+        disableAddContent: "<?",
     },
 
     controller: [
