@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using Perplex.ContentBlocks.Definitions;
+﻿using Perplex.ContentBlocks.Definitions;
 using Perplex.ContentBlocks.Rendering;
 using Perplex.ContentBlocks.Umbraco.Configuration;
+using Perplex.ContentBlocks.Umbraco.ModelValue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +16,14 @@ namespace Perplex.ContentBlocks.Umbraco
     public class ContentBlocksValueConverter : PropertyValueConverterBase
     {
         private readonly NestedContentSingleValueConverter _nestedContentSingleValueConverter;
+        private readonly ContentBlocksModelValueDeserializer _deserializer;
 
-        public ContentBlocksValueConverter(NestedContentSingleValueConverter nestedContentSingleValueConverter)
+        public ContentBlocksValueConverter(
+            NestedContentSingleValueConverter nestedContentSingleValueConverter,
+            ContentBlocksModelValueDeserializer deserializer)
         {
             _nestedContentSingleValueConverter = nestedContentSingleValueConverter;
+            _deserializer = deserializer;
         }
 
         public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
@@ -32,22 +36,24 @@ namespace Perplex.ContentBlocks.Umbraco
 
         public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object inter, bool preview)
         {
-            string json = inter?.ToString();
-            if (string.IsNullOrEmpty(json))
+            ContentBlocksModelValue modelValue = _deserializer.Deserialize(inter?.ToString());
+            if (modelValue == null)
             {
                 return Rendering.ContentBlocks.Empty;
             }
 
-            ContentBlocksModelValue modelValue;
+            EditorLayout editorLayout = GetEditorLayout(propertyType.DataType.Configuration);
 
-            try
+            return new Rendering.ContentBlocks
             {
-                modelValue = JsonConvert.DeserializeObject<ContentBlocksModelValue>(json);
-            }
-            catch
-            {
-                return Rendering.ContentBlocks.Empty;
-            }
+                Header = editorLayout == EditorLayout.Blocks ? null : createViewModel(modelValue.Header),
+                Blocks = editorLayout == EditorLayout.Header
+                    ? Enumerable.Empty<IContentBlockViewModel>()
+                    : modelValue.Blocks
+                        .Select(createViewModel)
+                        .Where(rm => rm != null)
+                        .ToList()
+            };
 
             IContentBlockViewModel createViewModel(ContentBlockModelValue block)
             {
@@ -91,24 +97,11 @@ namespace Perplex.ContentBlocks.Umbraco
 
                 return viewModelFactory.Create(content, block.Id, block.DefinitionId, block.LayoutId);
             }
-
-            EditorLayout editorLayout = GetEditorLayout(propertyType);
-
-            return new Rendering.ContentBlocks
-            {
-                Header = editorLayout == EditorLayout.Blocks ? null : createViewModel(modelValue.Header),
-                Blocks = editorLayout == EditorLayout.Header
-                    ? Enumerable.Empty<IContentBlockViewModel>()
-                    : modelValue.Blocks
-                        .Select(createViewModel)
-                        .Where(rm => rm != null)
-                        .ToList()
-            };
         }
 
-        private EditorLayout GetEditorLayout(IPublishedPropertyType propertyType)
+        private EditorLayout GetEditorLayout(object configuration)
         {
-            if (propertyType.DataType.Configuration is IDictionary<string, object> config &&
+            if (configuration is IDictionary<string, object> config &&
                 config.TryGetValue(Constants.Umbraco.Configuration.EditorLayoutKey, out object configuredLayout) &&
                 Enum.TryParse(configuredLayout.ToString(), true, out EditorLayout layout))
             {

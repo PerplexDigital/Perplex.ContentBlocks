@@ -1,5 +1,5 @@
 ﻿<div class="p-block__item"
-     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory }"
+     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.validationMessages }"
      data-id="{{$ctrl.block.id}}">
     <div class="p-block-topbar"
          ng-if="!$ctrl.definition">
@@ -61,7 +61,7 @@
                     ng-click="$ctrl.state.showSettings = !$ctrl.state.showSettings">
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-close"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-close"></use></svg>
-            </button>         
+            </button>
             <button ng-if="$ctrl.copyBlock" type="button" class="p-block-topbar__settings__duplicate duplicate" ng-click="$ctrl.copyBlock(); $ctrl.state.showSettings = false">
                 <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
                 <span class="p-block-topbar__settings__text">Copy</span>
@@ -105,7 +105,7 @@
             <svg class="l-icon l-icon--sm">
                 <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-reorder"></use>
             </svg>
-        </span>        
+        </span>
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
             <slick on-after-change="setLayout({ block: block, layoutIdx: currentSlide })"
                    initial-slide="getLayoutIndex(block)"
@@ -121,8 +121,14 @@
             </slick>
         </div>
     </div>
+
     <div class="p-block__main"
          ng-if="$ctrl.state.load">
+        <div class="alert alert-error property-error"
+             ng-show="$ctrl.validationMessages"
+             ng-repeat="validationMessage in $ctrl.validationMessages"
+             ng-bind="validationMessage">
+        </div>
         <perplex-render-property id="$ctrl.definition.DataTypeId"
                                  guid="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"

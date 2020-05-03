@@ -1,7 +1,7 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
-    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService",
-    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {
+    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService", "serverValidationManager",
+    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService, serverValidationManager) {
         var vm = this;
 
         var config = $scope.model.config;
@@ -116,6 +116,9 @@
 
             // blockId -> callback function to run when a block with that id registers itself
             onBlockRegisterFns: {},
+
+            // blockId => [validationMessage]
+            validationMessages: {},
         };
 
         var computed = {
@@ -141,6 +144,7 @@
 
         var fn = {
             init: function () {
+                fn.validation.init();
                 fn.editorState.init();
 
                 if (state.pageId == null) {
@@ -174,6 +178,31 @@
                         self.preview.init();
                     });
                 });
+            },
+
+            validation: {
+                init: function () {
+                    var propertyAlias = $scope.model.alias;
+
+                    var unsubscribe = serverValidationManager.subscribe(propertyAlias, undefined, "", function (valid, errors, allErrors, culture) {
+                        // Clear validationMessages
+                        state.validationMessages = {};
+
+                        if (!valid) {
+                            errors.forEach(function (error) {
+                                var match = error.fieldName.match(/#content-blocks-id:([^#]+)#/);
+                                if (match != null && match.length === 2) {
+                                    var blockId = match[1];
+                                    var errorMessage = error.errorMsg;
+                                    state.validationMessages[blockId] = state.validationMessages[blockId] || [];
+                                    state.validationMessages[blockId].push(errorMessage);
+                                }
+                            });
+                        }
+                    });
+
+                    $scope.$on("$destroy", unsubscribe);
+                }
             },
 
             editorState: {

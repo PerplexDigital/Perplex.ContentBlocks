@@ -290,9 +290,13 @@
     <Compile Include="Rendering\IContentBlockViewModelFactory{T}.cs" />
     <Compile Include="Rendering\IContentBlockViewModel{T}.cs" />
     <Compile Include="Umbraco\Constants.Umbraco.cs" />
-    <Compile Include="Umbraco\ContentBlockModelValue.cs" />
-    <Compile Include="Umbraco\ContentBlocksModelValue.cs" />
+    <Compile Include="Umbraco\ModelValue\ContentBlocksModelValueComposer.cs" />
+    <Compile Include="Umbraco\ModelValue\ContentBlockModelValue.cs" />
+    <Compile Include="Umbraco\ModelValue\ContentBlocksModelValueDeserializer.cs" />
+    <Compile Include="Umbraco\ModelValue\ContentBlocksModelValue.cs" />
     <Compile Include="Umbraco\ContentBlocksValueConverter.cs" />
+    <Compile Include="Umbraco\Validation\ContentBlocksValidationComponent.cs" />
+    <Compile Include="Umbraco\Validation\ContentBlocksValidator.cs" />
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />

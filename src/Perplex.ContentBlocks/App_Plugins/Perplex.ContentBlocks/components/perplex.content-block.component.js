@@ -24,6 +24,7 @@
         onOpen: "&?",
         onClose: "&?",
         disableAddContent: "<?",
+        validationMessages: "<?",
     },
 
     controller: [
@@ -144,11 +145,11 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
         this.state.open = !open;
 
         var $main = $element.find(".p-block__main");
-        if ($main.length === 0) {            
+        if ($main.length === 0) {
             if (typeof doneFn === "function") {
                 // No slide will happen, call doneFn now.
                 doneFn();
-            } 
+            }
             return;
         }
 

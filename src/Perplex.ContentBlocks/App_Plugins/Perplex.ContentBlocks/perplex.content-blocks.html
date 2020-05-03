@@ -145,7 +145,8 @@
                                                disable-add-content="vm.config.layout === 'header'"
                                                register-ctrl="vm.fn.blocks.registerBlockController(model.value.header.id, ctrl)"
                                                on-open="vm.fn.preview.syncScroll()"
-                                               on-close="vm.fn.preview.syncScroll(true)">
+                                               on-close="vm.fn.preview.syncScroll(true)"
+                                               validation-messages="vm.state.validationMessages[model.value.header.id]">
                         </perplex-content-block>
                     </div>
                 </div>
@@ -195,7 +196,8 @@
                                                show-add-content-button="$last"
                                                register-ctrl="vm.fn.blocks.registerBlockController(block.id, ctrl)"
                                                on-open="vm.fn.preview.syncScroll()"
-                                               on-close="vm.fn.preview.syncScroll(true)">
+                                               on-close="vm.fn.preview.syncScroll(true)"
+                                               validation-messages="vm.state.validationMessages[block.id]">
                         </perplex-content-block>
                     </div>
                 </div>
