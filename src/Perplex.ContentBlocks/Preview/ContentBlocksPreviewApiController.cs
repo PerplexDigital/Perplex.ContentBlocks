@@ -86,8 +86,15 @@ namespace Perplex.ContentBlocks.Preview
                 return originalHtml;
             }
 
-            var doc = new HtmlDocument();
             var node = HtmlNode.CreateNode(originalHtml);
+            if (node.NodeType != HtmlNodeType.Document && node.NodeType != HtmlNodeType.Element)
+            {
+                // The original HTML is not a document or element,
+                // probably completely empty.
+                return originalHtml;
+            }
+
+            var doc = new HtmlDocument();
             doc.DocumentNode.AppendChild(node);
 
             doc.DocumentNode.FirstChild.AddClass("perplex-preview");
