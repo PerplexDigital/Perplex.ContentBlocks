@@ -104,20 +104,20 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
 
     this.open = function () {
         state.load = true;
-        this.slideDown(function () {
-            if (typeof this.onOpen === "function") {
-                this.onOpen({ block: this });
-            }
-        }.bind(this));        
+
+        var onOpen = typeof this.onOpen === "function"
+            ? this.onOpen.bind(null, { block: this })
+            : null;
+
+        this.slideDown(onOpen);
     }
 
     this.close = function () {
-        this.slideUp(function () {
-            if (typeof this.onClose === "function") {
-                this.onClose({ block: this });
-            }
-        }.bind(this));
-        
+        var onClose = typeof this.onClose === "function"
+            ? this.onClose.bind(null, { block: this })
+            : null;
+
+        this.slideUp(onClose);
     }
 
     this.toggle = function () {
@@ -144,7 +144,11 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
         this.state.open = !open;
 
         var $main = $element.find(".p-block__main");
-        if ($main.length === 0) {
+        if ($main.length === 0) {            
+            if (typeof doneFn === "function") {
+                // No slide will happen, call doneFn now.
+                doneFn();
+            } 
             return;
         }
 
