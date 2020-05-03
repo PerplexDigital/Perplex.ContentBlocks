@@ -25,6 +25,7 @@
         onClose: "&?",
         disableAddContent: "<?",
         validationMessages: "<?",
+        allowDisable: "<?",
     },
 
     controller: [

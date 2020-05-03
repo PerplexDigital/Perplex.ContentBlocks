@@ -71,6 +71,7 @@
                 <span class="p-block-topbar__settings__text">Remove</span>
             </button>
             <button type="button" class="p-block-topbar__settings__hide"
+                    ng-if="$ctrl.allowDisable || $ctrl.block.isDisabled"
                     ng-click="$ctrl.block.isDisabled = !$ctrl.block.isDisabled; $ctrl.state.showSettings = false">
                 <div ng-show="$ctrl.block.isDisabled">
                     <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-show"></use></svg>

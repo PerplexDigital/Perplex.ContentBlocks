@@ -146,7 +146,8 @@
                                                register-ctrl="vm.fn.blocks.registerBlockController(model.value.header.id, ctrl)"
                                                on-open="vm.fn.preview.syncScroll()"
                                                on-close="vm.fn.preview.syncScroll(true)"
-                                               validation-messages="vm.state.validationMessages[model.value.header.id]">
+                                               validation-messages="vm.state.validationMessages[model.value.header.id]"
+                                               allow-disable="false">
                         </perplex-content-block>
                     </div>
                 </div>
@@ -197,7 +198,8 @@
                                                register-ctrl="vm.fn.blocks.registerBlockController(block.id, ctrl)"
                                                on-open="vm.fn.preview.syncScroll()"
                                                on-close="vm.fn.preview.syncScroll(true)"
-                                               validation-messages="vm.state.validationMessages[block.id]">
+                                               validation-messages="vm.state.validationMessages[block.id]"
+                                               allow-disable="true">
                         </perplex-content-block>
                     </div>
                 </div>
