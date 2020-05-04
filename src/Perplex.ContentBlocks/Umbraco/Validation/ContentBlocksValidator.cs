@@ -100,7 +100,7 @@ namespace Perplex.ContentBlocks.Umbraco.Validation
                 .Select(vr =>
                 {
                     var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
-                    var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+\s*", "");
+                    var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
                     return new ValidationResult(errorMessage, memberNames);
                 })
             );
