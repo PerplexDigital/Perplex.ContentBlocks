@@ -572,11 +572,11 @@
                 copyAll: function () {
                     var data = {};
 
-                    if (config.layout !== "blocks") {
+                    if (config.layout.header) {
                         data.header = $scope.model.value.header;
                     }
 
-                    if (config.layout !== "header") {
+                    if (config.layout.blocks) {
                         data.blocks = $scope.model.value.blocks;
                     }
 
@@ -586,7 +586,7 @@
 
                 paste: function (afterBlockId) {
                     copyPasteService.pasteAll(function (header, blocks) {
-                        if (header != null && config.layout !== "blocks") {
+                        if (header != null && config.layout.header) {
                             if ($scope.model.value.header != null) {
                                 notificationsService.warning("Cannot paste a header on a page with another header. If the header should be replaced, remove it first.");
 
@@ -603,7 +603,7 @@
                             }
                         }
 
-                        if (blocks != null && config.layout !== "header") {
+                        if (blocks != null && config.layout.blocks) {
                             var idx = $scope.model.value.blocks.length - 1;
                             if (afterBlockId != null) {
                                 if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
@@ -713,7 +713,7 @@
 
             preview: {
                 init: function () {
-                    if (config.disablePreview === "1") {
+                    if (config.disablePreview) {
                         return;
                     }
 
@@ -1323,11 +1323,11 @@
                 setExpandAll: function (expandAll, skipHeader) {
                     state.ui.expandAll = !!expandAll;
 
-                    if (!skipHeader && $scope.model.value.header != null && config.layout !== "blocks") {
+                    if (!skipHeader && $scope.model.value.header != null && config.layout.header) {
                         fn.blocks.withCtrl($scope.model.value.header.id, slideFn);
                     }
 
-                    if (config.layout !== "header") {
+                    if (config.layout.blocks) {
                         fn.blocks.eachBlock(function (block) {
                             fn.blocks.withCtrl(block.id, slideFn);
                         });

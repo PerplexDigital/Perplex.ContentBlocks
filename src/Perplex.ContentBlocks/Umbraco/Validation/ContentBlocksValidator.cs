@@ -1,4 +1,5 @@
 ﻿using Perplex.ContentBlocks.Definitions;
+using Perplex.ContentBlocks.Umbraco.Configuration;
 using Perplex.ContentBlocks.Umbraco.ModelValue;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,12 @@ namespace Perplex.ContentBlocks.Umbraco.Validation
         public ContentBlocksValidator(
             IDataTypeService dataTypeService,
             IContentBlockDefinitionRepository contentBlockDefinitionRepository,
-            ContentBlocksModelValueDeserializer deserializer,
-            object configuration = null)
+            ContentBlocksModelValueDeserializer deserializer)
         {
             _dataTypeService = dataTypeService;
             _contentBlockDefinitionRepository = contentBlockDefinitionRepository;
             _deserializer = deserializer;
-            Configuration = configuration;
         }
-
-        public object Configuration { get; }
 
         public IEnumerable<ValidationResult> Validate(object value, string valueType, object dataTypeConfiguration)
         {
@@ -41,12 +38,20 @@ namespace Perplex.ContentBlocks.Umbraco.Validation
 
             var validationResults = new List<ValidationResult>();
 
-            if (modelValue.Header?.IsDisabled == false)
+            EditorLayout layout = (dataTypeConfiguration as ContentBlocksConfiguration)?.Layout
+                // No configuration passed in -> assume everything
+                ?? EditorLayout.All;
+
+            if (modelValue.Header?.IsDisabled == false && layout.HasFlag(EditorLayout.Header))
             {
                 validationResults.AddRange(Validate(modelValue.Header));
             }
 
-            validationResults.AddRange(modelValue.Blocks.Where(block => !block.IsDisabled).SelectMany(Validate));
+            var blockValidations = modelValue.Blocks
+                .Where(block => !block.IsDisabled && layout.HasFlag(EditorLayout.Blocks))
+                .SelectMany(Validate);
+
+            validationResults.AddRange(blockValidations);
 
             return validationResults;
         }

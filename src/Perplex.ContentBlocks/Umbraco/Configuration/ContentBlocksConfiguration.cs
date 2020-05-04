@@ -1,9 +1,21 @@
-﻿namespace Perplex.ContentBlocks.Umbraco.Configuration
+﻿using System;
+
+namespace Perplex.ContentBlocks.Umbraco.Configuration
 {
+    [Flags]
     public enum EditorLayout
     {
-        All,
-        Blocks,
-        Header
+        None = 0,
+
+        Blocks = 1,
+        Header = 2,
+
+        All = Blocks | Header,
+    }
+
+    public class ContentBlocksConfiguration
+    {
+        public EditorLayout Layout { get; set; }
+        public bool DisablePreview { get; set; }
     }
 }

@@ -3,7 +3,6 @@ using Perplex.ContentBlocks.Rendering;
 using Perplex.ContentBlocks.Umbraco.Configuration;
 using Perplex.ContentBlocks.Umbraco.ModelValue;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
@@ -28,11 +27,16 @@ namespace Perplex.ContentBlocks.Umbraco
 
         public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
         {
+            // We might be able to set this to .Elements. This ensures the cache will be refreshed
+            // even after publishing any other content, which ensures no issues arise when the block
+            // contains editors that reference other content (e.g. a ContentPicker).
+            // However, this requires proper testing first with a wide range of editors.
+            // Until that time, .Snapshot is the safest option: per request caching.
             return PropertyCacheLevel.Snapshot;
         }
 
         public override bool IsConverter(IPublishedPropertyType propertyType)
-            => propertyType.EditorAlias == Constants.Umbraco.ContentBlocksPropertyEditorAlias;
+            => propertyType.EditorAlias == Constants.Umbraco.PropertyEditor.Alias;
 
         public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object inter, bool preview)
         {
@@ -42,17 +46,20 @@ namespace Perplex.ContentBlocks.Umbraco
                 return Rendering.ContentBlocks.Empty;
             }
 
-            EditorLayout editorLayout = GetEditorLayout(propertyType.DataType.Configuration);
+            var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>();
+
+            var header = config.Layout.HasFlag(EditorLayout.Header)
+                ? createViewModel(modelValue.Header)
+                : null;
+
+            var blocks = config.Layout.HasFlag(EditorLayout.Blocks)
+                ? modelValue.Blocks.Select(createViewModel).Where(rm => rm != null).ToList()
+                : Enumerable.Empty<IContentBlockViewModel>();
 
             return new Rendering.ContentBlocks
             {
-                Header = editorLayout == EditorLayout.Blocks ? null : createViewModel(modelValue.Header),
-                Blocks = editorLayout == EditorLayout.Header
-                    ? Enumerable.Empty<IContentBlockViewModel>()
-                    : modelValue.Blocks
-                        .Select(createViewModel)
-                        .Where(rm => rm != null)
-                        .ToList()
+                Header = header,
+                Blocks = blocks
             };
 
             IContentBlockViewModel createViewModel(ContentBlockModelValue block)
@@ -97,19 +104,6 @@ namespace Perplex.ContentBlocks.Umbraco
 
                 return viewModelFactory.Create(content, block.Id, block.DefinitionId, block.LayoutId);
             }
-        }
-
-        private EditorLayout GetEditorLayout(object configuration)
-        {
-            if (configuration is IDictionary<string, object> config &&
-                config.TryGetValue(Constants.Umbraco.Configuration.EditorLayoutKey, out object configuredLayout) &&
-                Enum.TryParse(configuredLayout.ToString(), true, out EditorLayout layout))
-            {
-                return layout;
-            };
-
-            // Default
-            return EditorLayout.All;
         }
 
         public override Type GetPropertyValueType(IPublishedPropertyType propertyType)

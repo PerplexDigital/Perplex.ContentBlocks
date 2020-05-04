@@ -295,7 +295,9 @@
     <Compile Include="Umbraco\ModelValue\ContentBlocksModelValueDeserializer.cs" />
     <Compile Include="Umbraco\ModelValue\ContentBlocksModelValue.cs" />
     <Compile Include="Umbraco\ContentBlocksValueConverter.cs" />
-    <Compile Include="Umbraco\Validation\ContentBlocksValidationComponent.cs" />
+    <Compile Include="Umbraco\PropertyEditor\Constants.Umbraco.PropertyEditor.cs" />
+    <Compile Include="Umbraco\PropertyEditor\ContentBlocksConfigurationEditor.cs" />
+    <Compile Include="Umbraco\PropertyEditor\ContentBlocksPropertyEditor.cs" />
     <Compile Include="Umbraco\Validation\ContentBlocksValidator.cs" />
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
