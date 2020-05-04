@@ -3,7 +3,7 @@ using Umbraco.Core.Composing;
 
 namespace Perplex.ContentBlocks.Features.Migrations
 {
-    [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
+    [RuntimeLevel(MinLevel = RuntimeLevel.Install)]
     public class ContentBlocksMigrationsComposer : ComponentComposer<ContentBlocksMigrationsComponent>
     {
     }
