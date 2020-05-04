@@ -144,19 +144,16 @@
 
         var fn = {
             init: function () {
-                fn.validation.init();
-                fn.editorState.init();
-
+                fn.editorState.init();                
                 if (state.pageId == null) {
-                    // We zitten niet in content
+                    // Not in content
                     return;
                 }
 
-                this.initModelValue();
-                this.copyPaste.init();
-                this.setContainingGroupCssClass();
-
-                var self = this;
+                fn.initModelValue();
+                fn.copyPaste.init();
+                fn.validation.init();
+                fn.setContainingGroupCssClass();                
 
                 $q.all([
                     api.getDefinitionsForPage(state.documentType, state.culture),
@@ -173,9 +170,9 @@
                     state.initialized = true;
 
                     $timeout(function () {
-                        self.initDom();
-                        self.initEvents();
-                        self.preview.init();
+                        fn.initDom();
+                        fn.initEvents();
+                        fn.preview.init();
                     });
                 });
             },
