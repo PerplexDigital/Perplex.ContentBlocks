@@ -3,7 +3,7 @@ using Umbraco.Core.Composing;
 
 namespace Perplex.ContentBlocks.Presets
 {
-    [RuntimeLevel(MinLevel = RuntimeLevel.Install)]
+    [RuntimeLevel(MinLevel = RuntimeLevel.Upgrade)]
     public class ContentBlockPresetsComposer : IUserComposer
     {
         public void Compose(Composition composition)

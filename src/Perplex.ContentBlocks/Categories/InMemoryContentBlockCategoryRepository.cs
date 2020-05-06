@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Perplex.ContentBlocks.Constants.Umbraco;
+using static Perplex.ContentBlocks.Constants.PropertyEditor;
 using categories = Perplex.ContentBlocks.Constants.Categories;
 
 namespace Perplex.ContentBlocks.Categories
@@ -14,7 +14,7 @@ namespace Perplex.ContentBlocks.Categories
             {
                 Id = categories.Headers,
                 Name = "Headers",
-                Icon = $"{ContentBlocksAssetsFolder}/icons.svg#icon-cat-header",
+                Icon = $"{AssetsFolder}/icons.svg#icon-cat-header",
                 IsEnabledForHeaders = true,
                 IsDisabledForBlocks = true,
             },
@@ -23,7 +23,7 @@ namespace Perplex.ContentBlocks.Categories
             {
                 Id = categories.Content,
                 Name = "Content",
-                Icon = $"{ContentBlocksAssetsFolder}/icons.svg#icon-cat-content",
+                Icon = $"{AssetsFolder}/icons.svg#icon-cat-content",
             },
         }.ToDictionary(d => d.Id);
 

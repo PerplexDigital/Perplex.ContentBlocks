@@ -1,0 +1,6 @@
+{
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks/lib/slick.min.js",
+    "~/App_Plugins/Perplex.ContentBlocks/lib/angular-slick.js"
+  ]
+}

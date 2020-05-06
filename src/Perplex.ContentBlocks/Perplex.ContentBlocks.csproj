@@ -242,8 +242,8 @@
     <Compile Include="Categories\InMemoryContentBlockCategoryRepository.cs" />
     <Compile Include="Categories\IContentBlockCategory.cs" />
     <Compile Include="Categories\IContentBlockCategoryRepository.cs" />
-    <Compile Include="Umbraco\Configuration\Constants.Umbraco.Configuration.cs" />
-    <Compile Include="Umbraco\Configuration\ContentBlocksConfiguration.cs" />
+    <Compile Include="PropertyEditor\Configuration\Constants.PropertyEditor.Configuration.cs" />
+    <Compile Include="PropertyEditor\Configuration\ContentBlocksConfiguration.cs" />
     <Compile Include="Definitions\ContentBlockDefinition.cs" />
     <Compile Include="Definitions\ContentBlockDefinitionComposer.cs" />
     <Compile Include="Definitions\ContentBlockDefinitionFilterer.cs" />
@@ -289,16 +289,15 @@
     <Compile Include="Rendering\IContentBlockViewModelFactory.cs" />
     <Compile Include="Rendering\IContentBlockViewModelFactory{T}.cs" />
     <Compile Include="Rendering\IContentBlockViewModel{T}.cs" />
-    <Compile Include="Umbraco\Constants.Umbraco.cs" />
-    <Compile Include="Umbraco\ModelValue\ContentBlocksModelValueComposer.cs" />
-    <Compile Include="Umbraco\ModelValue\ContentBlockModelValue.cs" />
-    <Compile Include="Umbraco\ModelValue\ContentBlocksModelValueDeserializer.cs" />
-    <Compile Include="Umbraco\ModelValue\ContentBlocksModelValue.cs" />
-    <Compile Include="Umbraco\ContentBlocksValueConverter.cs" />
-    <Compile Include="Umbraco\PropertyEditor\Constants.Umbraco.PropertyEditor.cs" />
-    <Compile Include="Umbraco\PropertyEditor\ContentBlocksConfigurationEditor.cs" />
-    <Compile Include="Umbraco\PropertyEditor\ContentBlocksPropertyEditor.cs" />
-    <Compile Include="Umbraco\Validation\ContentBlocksValidator.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValueComposer.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlockModelValue.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValueDeserializer.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValue.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksValueConverter.cs" />
+    <Compile Include="PropertyEditor\Constants.PropertyEditor.cs" />
+    <Compile Include="PropertyEditor\Configuration\ContentBlocksConfigurationEditor.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksPropertyEditor.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksValidator.cs" />
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />
@@ -318,6 +317,8 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\package.manifest" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lib\package.manifest" />
     <None Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-block.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-editor.less" />
@@ -327,7 +328,8 @@
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-picker.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-sidebar.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-slicksliders.less" />
-    <None Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -343,13 +345,13 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\lib\slick.min.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.api.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.controller.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.copy-paste.service.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\perplex.content-blocks.copy-paste-service.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.css">
       <DependentUpon>perplex.content-blocks.less</DependentUpon>
     </Content>
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.requires.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.service.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\perplex.content-blocks.utils.js" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

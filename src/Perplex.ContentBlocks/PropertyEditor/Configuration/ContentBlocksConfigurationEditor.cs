@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using Perplex.ContentBlocks.Umbraco.Configuration;
 using System.Collections.Generic;
 using Umbraco.Core.PropertyEditors;
-using static Perplex.ContentBlocks.Constants.Umbraco.Configuration;
+using static Perplex.ContentBlocks.Constants.PropertyEditor.Configuration;
 
-namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
+namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 {
     public class ContentBlocksConfigurationEditor : ConfigurationEditor<ContentBlocksConfiguration>
     {
@@ -61,7 +60,7 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
         public override ContentBlocksConfiguration FromConfigurationEditor(IDictionary<string, object> editorValues, ContentBlocksConfiguration configuration)
         {
             var hideLabel = GetHideLabel(editorValues);
-            var layout = GetStructure(editorValues);
+            var structure = GetStructure(editorValues);
             var disablePreview = GetDisablePreview(editorValues);
 
             return new ContentBlocksConfiguration
@@ -71,7 +70,7 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
                 // and the user has now actively saved the configuration again.
                 Version = Version,
 
-                Structure = layout ?? _defaultConfiguration.Structure,
+                Structure = structure ?? _defaultConfiguration.Structure,
                 DisablePreview = disablePreview ?? _defaultConfiguration.DisablePreview,
                 HideLabel = hideLabel ?? _defaultConfiguration.HideLabel,
             };

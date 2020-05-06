@@ -1,12 +1,11 @@
 ﻿using Perplex.ContentBlocks.Definitions;
-using Perplex.ContentBlocks.Umbraco.Configuration;
-using Perplex.ContentBlocks.Umbraco.ModelValue;
-using Perplex.ContentBlocks.Umbraco.Validation;
+using Perplex.ContentBlocks.PropertyEditor.Configuration;
+using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using System.Collections.Generic;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
 
-namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
+namespace Perplex.ContentBlocks.PropertyEditor
 {
     public class ContentBlocksPropertyEditor : IDataEditor
     {
@@ -24,9 +23,9 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
             _contentBlocksModelValueDeserializer = contentBlocksModelValueDeserializer;
         }
 
-        public string Alias { get; } = Constants.Umbraco.PropertyEditor.Alias;
+        public string Alias { get; } = Constants.PropertyEditor.Alias;
         public EditorType Type { get; } = EditorType.PropertyValue;
-        public string Name { get; } = Constants.Umbraco.PropertyEditor.Name;
+        public string Name { get; } = Constants.PropertyEditor.Name;
         public string Icon { get; }
         public string Group { get; }
         public bool IsDeprecated { get; } = false;
@@ -48,7 +47,7 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
 
-            return new DataValueEditor(Constants.Umbraco.PropertyEditor.ViewPath, validator)
+            return new DataValueEditor(Constants.PropertyEditor.ViewPath, validator)
             {
                 Configuration = configuration,
                 HideLabel = hideLabel,

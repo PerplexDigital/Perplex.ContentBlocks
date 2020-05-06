@@ -3,7 +3,7 @@ using Umbraco.Core.Composing;
 
 namespace Perplex.ContentBlocks.Utils.DataTypes
 {
-    [RuntimeLevel(MinLevel = RuntimeLevel.Install)]
+    [RuntimeLevel(MinLevel = RuntimeLevel.Upgrade)]
     public class DataTypesComposer : IUserComposer
     {
         public void Compose(Composition composition)

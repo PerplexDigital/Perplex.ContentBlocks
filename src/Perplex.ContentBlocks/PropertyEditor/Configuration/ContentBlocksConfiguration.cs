@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Perplex.ContentBlocks.Umbraco.Configuration
+namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 {
     [Flags]
     public enum Structure

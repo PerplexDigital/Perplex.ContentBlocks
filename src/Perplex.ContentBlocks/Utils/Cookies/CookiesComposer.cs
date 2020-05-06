@@ -3,7 +3,7 @@ using Umbraco.Core.Composing;
 
 namespace Perplex.ContentBlocks.Utils.Cookies
 {
-    [RuntimeLevel(MinLevel = RuntimeLevel.Install)]
+    [RuntimeLevel(MinLevel = RuntimeLevel.Upgrade)]
     public class CookiesComposer : IUserComposer
     {
         public void Compose(Composition composition)

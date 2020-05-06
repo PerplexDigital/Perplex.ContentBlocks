@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Perplex.ContentBlocks.Umbraco.ModelValue
+namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 {
     public class ContentBlocksModelValue
     {

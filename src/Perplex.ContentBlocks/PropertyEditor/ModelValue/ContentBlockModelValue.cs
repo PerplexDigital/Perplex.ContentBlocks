@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 
-namespace Perplex.ContentBlocks.Umbraco.ModelValue
+namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 {
     public class ContentBlockModelValue
     {

@@ -2,7 +2,7 @@
 {
     public static partial class Constants
     {
-        public static partial class Umbraco
+        public static partial class PropertyEditor
         {
             public static partial class Configuration
             {

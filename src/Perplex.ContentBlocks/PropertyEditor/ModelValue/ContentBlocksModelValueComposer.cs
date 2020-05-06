@@ -1,9 +1,9 @@
 ﻿using Umbraco.Core;
 using Umbraco.Core.Composing;
 
-namespace Perplex.ContentBlocks.Umbraco.ModelValue
+namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 {
-    [RuntimeLevel(MinLevel = RuntimeLevel.Install)]
+    [RuntimeLevel(MinLevel = RuntimeLevel.Upgrade)]
     public class ContentBlocksModelValueComposer : IUserComposer
     {
         public void Compose(Composition composition)

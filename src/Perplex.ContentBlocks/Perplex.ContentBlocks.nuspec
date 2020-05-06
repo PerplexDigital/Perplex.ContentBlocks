@@ -7,7 +7,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Block based content editor for Umbraco</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020</copyright>
-    <tags>umbraco property editor content</tags>
+    <copyright>© Perplex Digital</copyright>
+    <tags>umbraco property editor content block</tags>
   </metadata>
 </package>

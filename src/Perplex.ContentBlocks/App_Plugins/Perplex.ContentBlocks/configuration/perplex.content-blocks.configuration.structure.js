@@ -1,11 +1,11 @@
-﻿angular.module("perplexContentBlocks").controller("perplexContentBlocksConfigurationStructureController", [
+﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.ConfigurationStructureController", [
     "$scope",
-    perplexContentBlocksConfigurationStructureController
+    contentBlocksConfigurationStructureController
 ])
 
-function perplexContentBlocksConfigurationStructureController($scope) {
+function contentBlocksConfigurationStructureController($scope) {
     this.options = [        
-        { value: "header,blocks", label: "Header + Blocks" },        
+        { value: "blocks,header", label: "Header + Blocks" },        
         { value: "blocks", label: "Blocks" },
         { value: "header", label: "Header" },        
     ]

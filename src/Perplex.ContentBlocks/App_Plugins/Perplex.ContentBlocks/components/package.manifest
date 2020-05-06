@@ -1,0 +1,5 @@
+{
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.js"
+  ]
+}

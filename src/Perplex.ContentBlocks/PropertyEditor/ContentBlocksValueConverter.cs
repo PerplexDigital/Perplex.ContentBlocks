@@ -1,7 +1,7 @@
 ﻿using Perplex.ContentBlocks.Definitions;
+using Perplex.ContentBlocks.PropertyEditor.Configuration;
+using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Rendering;
-using Perplex.ContentBlocks.Umbraco.Configuration;
-using Perplex.ContentBlocks.Umbraco.ModelValue;
 using System;
 using System.Linq;
 using Umbraco.Core;
@@ -10,7 +10,7 @@ using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Web.PropertyEditors.ValueConverters;
 
-namespace Perplex.ContentBlocks.Umbraco
+namespace Perplex.ContentBlocks.PropertyEditor
 {
     public class ContentBlocksValueConverter : PropertyValueConverterBase
     {
@@ -36,7 +36,7 @@ namespace Perplex.ContentBlocks.Umbraco
         }
 
         public override bool IsConverter(IPublishedPropertyType propertyType)
-            => propertyType.EditorAlias == Constants.Umbraco.PropertyEditor.Alias;
+            => propertyType.EditorAlias == Constants.PropertyEditor.Alias;
 
         public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object inter, bool preview)
         {

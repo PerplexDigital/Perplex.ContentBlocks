@@ -108,8 +108,8 @@
             </svg>
         </span>
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
-            <slick on-after-change="setLayout({ block: block, layoutIdx: currentSlide })"
-                   initial-slide="getLayoutIndex(block)"
+            <slick on-after-change="$ctrl.setLayout({ block: $ctrl.block, layoutIdx: currentSlide })"
+                   initial-slide="$ctrl.getLayoutIndex({ block: $ctrl.block })"
                    infinite="true"
                    class="p-block-topbar__layout__view"
                    dots="false"
@@ -119,7 +119,7 @@
                      ng-repeat="layout in $ctrl.layouts track by layout.Id">
                     <img class="p-block-topbar__layout__img" ng-src="{{layout.PreviewImage}}" />
                 </div>
-            </slick>
+            </slick>          
         </div>
     </div>
 

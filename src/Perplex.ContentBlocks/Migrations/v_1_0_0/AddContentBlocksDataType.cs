@@ -19,7 +19,7 @@ namespace Perplex.ContentBlocks.Migrations.v_1_0_0
         {
             _dataTypeRegistrationService.RegisterDataType(
                    "Perplex.ContentBlocks",
-                   Constants.Umbraco.PropertyEditor.Alias);
+                   Constants.PropertyEditor.Alias);
         }
     }
 }
