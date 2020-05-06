@@ -3,7 +3,7 @@
 namespace Perplex.ContentBlocks.Umbraco.Configuration
 {
     [Flags]
-    public enum EditorLayout
+    public enum Structure
     {
         None = 0,
 
@@ -15,7 +15,13 @@ namespace Perplex.ContentBlocks.Umbraco.Configuration
 
     public class ContentBlocksConfiguration
     {
-        public EditorLayout Layout { get; set; }
+        /// <summary>
+        /// Added for detecting out of date configuration objects in the future.
+        /// </summary>
+        public int Version { get; set; }
+
+        public Structure Structure { get; set; }
         public bool DisablePreview { get; set; }
+        public bool HideLabel { get; set; }
     }
 }

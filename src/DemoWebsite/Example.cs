@@ -55,7 +55,7 @@ namespace DemoWebsite
                 Name = "Example Block",
                 Id = new Guid("33333333-3333-3333-3333-333333333333"),
                 //DataTypeId = 1065,
-                DataTypeKey = new Guid("86644a92-8b53-4c89-abc4-745c37775cbe"),
+                DataTypeKey = new Guid("953ae0af-8967-4223-a129-65950381f27b"),
                 PreviewImage = $"{previewFolder}/Normal-1/Preview.png",
                 Description = "Two columns with image and text",
 

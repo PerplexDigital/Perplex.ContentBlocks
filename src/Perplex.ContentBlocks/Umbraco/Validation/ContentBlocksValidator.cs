@@ -38,17 +38,17 @@ namespace Perplex.ContentBlocks.Umbraco.Validation
 
             var validationResults = new List<ValidationResult>();
 
-            EditorLayout layout = (dataTypeConfiguration as ContentBlocksConfiguration)?.Layout
+            Structure layout = (dataTypeConfiguration as ContentBlocksConfiguration)?.Structure
                 // No configuration passed in -> assume everything
-                ?? EditorLayout.All;
+                ?? Structure.All;
 
-            if (modelValue.Header?.IsDisabled == false && layout.HasFlag(EditorLayout.Header))
+            if (modelValue.Header?.IsDisabled == false && layout.HasFlag(Structure.Header))
             {
                 validationResults.AddRange(Validate(modelValue.Header));
             }
 
             var blockValidations = modelValue.Blocks
-                .Where(block => !block.IsDisabled && layout.HasFlag(EditorLayout.Blocks))
+                .Where(block => !block.IsDisabled && layout.HasFlag(Structure.Blocks))
                 .SelectMany(Validate);
 
             validationResults.AddRange(blockValidations);

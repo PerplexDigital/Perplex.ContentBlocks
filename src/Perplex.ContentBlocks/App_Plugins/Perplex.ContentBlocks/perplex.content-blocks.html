@@ -102,7 +102,7 @@
             <div class="p-col--md-3-4 p-editor">
                 <div class="p-editor__holder"
                      ng-show="!vm.state.ui.reorder"
-                     ng-if="vm.config.layout.header">
+                     ng-if="vm.config.structure.header">
                     <div class="p-editor__empty p-editor__empty--header"
                          ng-show="model.value.header == null">
                         <div class="p-editor__empty__hover" ng-class="{'p-editor__empty__hover--visible': model.value.header == null}">
@@ -142,7 +142,7 @@
                                                remove-block="vm.fn.header.remove()"
                                                register-element="vm.fn.blocks.registerElement(model.value.header.id, element)"
                                                show-add-content-button="model.value.blocks.length === 0"
-                                               disable-add-content="!vm.config.layout.blocks"
+                                               disable-add-content="!vm.config.structure.blocks"
                                                register-ctrl="vm.fn.blocks.registerBlockController(model.value.header.id, ctrl)"
                                                on-open="vm.fn.preview.syncScroll()"
                                                on-close="vm.fn.preview.syncScroll(true)"
@@ -152,9 +152,9 @@
                     </div>
                 </div>
 
-                <div class="p-editor__holder" ng-if="vm.config.layout.blocks">
+                <div class="p-editor__holder" ng-if="vm.config.structure.blocks">
                     <div class="p-editor__empty__hover p-editor__empty__hover--visible"
-                         ng-if="!vm.config.layout.header"
+                         ng-if="!vm.config.structure.header"
                          ng-show="model.value.blocks.length === 0">
                         <div class="p-editor__empty__click">
                             <button class="btn btn-sub btn-radius" type="button"
@@ -253,7 +253,7 @@
                                 Open all blocks
                             </div>
                         </button>
-                        <span ng-if="vm.config.layout.blocks"
+                        <span ng-if="vm.config.structure.blocks"
                               ng-click="vm.fn.ui.toggleReorder()"
                               ng-show="model.value.blocks.length > 1"
                               ng-class="{'s-active': vm.state.ui.reorder === !vm.state.ui.reorder}">

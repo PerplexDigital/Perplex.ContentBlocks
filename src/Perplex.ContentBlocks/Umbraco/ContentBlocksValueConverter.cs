@@ -48,11 +48,11 @@ namespace Perplex.ContentBlocks.Umbraco
 
             var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>();
 
-            var header = config.Layout.HasFlag(EditorLayout.Header)
+            var header = config.Structure.HasFlag(Structure.Header)
                 ? createViewModel(modelValue.Header)
                 : null;
 
-            var blocks = config.Layout.HasFlag(EditorLayout.Blocks)
+            var blocks = config.Structure.HasFlag(Structure.Blocks)
                 ? modelValue.Blocks.Select(createViewModel).Where(rm => rm != null).ToList()
                 : Enumerable.Empty<IContentBlockViewModel>();
 

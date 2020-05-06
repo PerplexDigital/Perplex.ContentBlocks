@@ -2,6 +2,7 @@
 using Perplex.ContentBlocks.Umbraco.Configuration;
 using System.Collections.Generic;
 using Umbraco.Core.PropertyEditors;
+using static Perplex.ContentBlocks.Constants.Umbraco.Configuration;
 
 namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
 {
@@ -13,26 +14,42 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
             {
                 new ConfigurationField
                 {
-                    Name = "Editor layout",
-                    Description = "Set editor layout",
-                    Key = "layout",
-                    View = Constants.Umbraco.Configuration.EditorLayoutEditorViewName,
+                    Name = "Structure",
+                    Description = "Sets the structure",
+                    Key = StructureKey,
+                    View = StructureViewName,
                 },
 
                 new ConfigurationField
                 {
                     Name = "Disable Preview",
-                    Description = "Completely disables the Preview feature",
-                    Key = "disablePreview",
-                    View = Constants.Umbraco.Configuration.DisablePreviewViewName,
+                    Description = "Disables the preview feature",
+                    Key = DisablePreviewKey,
+                    View = DisablePreviewViewName,
+                },
+
+                new ConfigurationField
+                {
+                    Name = "Hide Label",
+                    Description = "Hides the data type label",
+                    Key = HideLabelKey,
+                    View = HideLabelViewName,
                 },
             });
         }
 
-        private static readonly ContentBlocksConfiguration _defaultConfiguration = new ContentBlocksConfiguration
+        /// <summary>
+        /// Current configuration version.
+        /// </summary>
+        public const int Version = 1;
+
+        internal static readonly ContentBlocksConfiguration _defaultConfiguration = new ContentBlocksConfiguration
         {
+            Version = Version,
+
+            HideLabel = true,
+            Structure = Structure.Blocks | Structure.Header,
             DisablePreview = false,
-            Layout = EditorLayout.Blocks | EditorLayout.Header
         };
 
         public override object DefaultConfigurationObject { get; }
@@ -43,13 +60,20 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
 
         public override ContentBlocksConfiguration FromConfigurationEditor(IDictionary<string, object> editorValues, ContentBlocksConfiguration configuration)
         {
-            var layout = GetEditorLayout(editorValues);
+            var hideLabel = GetHideLabel(editorValues);
+            var layout = GetStructure(editorValues);
             var disablePreview = GetDisablePreview(editorValues);
 
             return new ContentBlocksConfiguration
             {
-                Layout = layout ?? _defaultConfiguration.Layout,
+                // When saved we store the current version,
+                // Any transformations should have been applied before
+                // and the user has now actively saved the configuration again.
+                Version = Version,
+
+                Structure = layout ?? _defaultConfiguration.Structure,
                 DisablePreview = disablePreview ?? _defaultConfiguration.DisablePreview,
+                HideLabel = hideLabel ?? _defaultConfiguration.HideLabel,
             };
         }
 
@@ -57,13 +81,17 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
         {
             return new Dictionary<string, object>
             {
-                [Constants.Umbraco.Configuration.EditorLayoutKey] = new
+                [VersionKey] = configuration.Version,
+
+                [StructureKey] = new
                 {
-                    blocks = configuration.Layout.HasFlag(EditorLayout.Blocks),
-                    header = configuration.Layout.HasFlag(EditorLayout.Header),
+                    blocks = configuration.Structure.HasFlag(Structure.Blocks),
+                    header = configuration.Structure.HasFlag(Structure.Header),
                 },
 
-                [Constants.Umbraco.Configuration.DisablePreviewKey] = configuration.DisablePreview,
+                [DisablePreviewKey] = configuration.DisablePreview,
+
+                [HideLabelKey] = configuration.HideLabel,
             };
         }
 
@@ -88,41 +116,56 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
 
         private bool? GetDisablePreview(IDictionary<string, object> config)
         {
-            if (config != null && config.TryGetValue(Constants.Umbraco.Configuration.DisablePreviewKey, out object configuredDisablePreview))
+            if (config != null && config.TryGetValue(DisablePreviewKey, out object value) &&
+                ParseBoolean(value?.ToString()) is bool disablePreview)
             {
-                string disablePreviewStr = configuredDisablePreview?.ToString();
-
-                if (bool.TryParse(disablePreviewStr, out bool disablePreview))
-                {
-                    return disablePreview;
-                }
-
-                // Parse manually
-                if (disablePreviewStr == "0")
-                    return false;
-
-                if (disablePreviewStr == "1")
-                    return true;                
+                return disablePreview;
             };
 
             return null;
         }
 
-        private EditorLayout? GetEditorLayout(IDictionary<string, object> config)
+        private bool? GetHideLabel(IDictionary<string, object> config)
         {
-            EditorLayout layout = EditorLayout.None;
+            if (config != null && config.TryGetValue(HideLabelKey, out object value) &&
+                ParseBoolean(value?.ToString()) is bool hideLabel)
+            {
+                return hideLabel;
+            };
+
+            return null;
+        }
+
+        private bool? ParseBoolean(string input)
+        {
+            if (bool.TryParse(input, out bool value))
+                return value;
+
+            // Parse manually
+            if (input == "0")
+                return false;
+
+            if (input == "1")
+                return true;
+
+            return null;
+        }
+
+        private Structure? GetStructure(IDictionary<string, object> config)
+        {
+            Structure structure = Structure.None;
 
             if (config != null &&
-                config.TryGetValue(Constants.Umbraco.Configuration.EditorLayoutKey, out object obj) &&
-                obj is JObject configuredLayout)
+                config.TryGetValue(StructureKey, out object obj) &&
+                obj is JObject structureObj)
             {
-                if (configuredLayout.Value<bool>("blocks"))
-                    layout |= EditorLayout.Blocks;
+                if (structureObj.Value<bool>("blocks"))
+                    structure |= Structure.Blocks;
 
-                if (configuredLayout.Value<bool>("header"))
-                    layout |= EditorLayout.Header;
+                if (structureObj.Value<bool>("header"))
+                    structure |= Structure.Header;
 
-                return layout;
+                return structure;
             };
 
             return null;

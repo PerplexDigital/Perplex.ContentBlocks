@@ -314,8 +314,8 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />
     <None Include="app.config" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.editor-layout.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.editor-layout.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\package.manifest" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\package.manifest" />
     <None Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.less" />

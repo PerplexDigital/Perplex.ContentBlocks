@@ -1,4 +1,5 @@
 ﻿using Perplex.ContentBlocks.Definitions;
+using Perplex.ContentBlocks.Umbraco.Configuration;
 using Perplex.ContentBlocks.Umbraco.ModelValue;
 using Perplex.ContentBlocks.Umbraco.Validation;
 using System.Collections.Generic;
@@ -43,10 +44,14 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
         public IDataValueEditor GetValueEditor(object configuration)
         {
             var validator = new ContentBlocksValidator(_dataTypeService, _contentBlockDefinitionRepository, _contentBlocksModelValueDeserializer);
+
+            bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
+                ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
+
             return new DataValueEditor(Constants.Umbraco.PropertyEditor.ViewPath, validator)
             {
                 Configuration = configuration,
-                HideLabel = true,
+                HideLabel = hideLabel,
                 ValueType = "JSON",
             };
         }

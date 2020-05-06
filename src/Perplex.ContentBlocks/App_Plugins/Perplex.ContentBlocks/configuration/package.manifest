@@ -1,10 +1,10 @@
 {
   "propertyEditors": [
     {
-      "name": "Perplex.ContentBlocks.ConfigurationEditor",
-      "alias": "Perplex.ContentBlocks.ConfigurationEditor",
+      "name": "Perplex.ContentBlocks.Configuration.Structure",
+      "alias": "Perplex.ContentBlocks.Configuration.Structure",
       "editor": {
-        "view": "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.editor-layout.html",
+        "view": "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.configuration.structure.html",
         "valueType": "STRING",
         "hideLabel": true
       }
@@ -12,6 +12,6 @@
   ],
 
   "javascript": [
-    "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.editor-layout.js"
+    "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.configuration.structure.js"
   ]
 }

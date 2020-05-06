@@ -6,19 +6,19 @@
         {
             public static partial class Configuration
             {
-                /// <summary>
-                /// Key for datatype configuration value for the Editor layout.
-                /// </summary>
-                public const string EditorLayoutKey = "layout";
+                public const string VersionKey = "_version";
 
-                public const string EditorLayoutEditorViewName = "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.editor-layout.html";
+                public const string StructureKey = "structure";
 
-                /// <summary>
-                /// Key for datatype configuration value for "Disable Preview"
-                /// </summary>
+                public const string StructureViewName = "~/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.configuration.structure.html";
+
                 public const string DisablePreviewKey = "disablePreview";
 
                 public const string DisablePreviewViewName = "boolean";
+
+                public const string HideLabelKey = "hideLabel";
+
+                public const string HideLabelViewName = "boolean";
             }
         }
     }
