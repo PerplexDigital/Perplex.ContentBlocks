@@ -31,12 +31,12 @@
     controller: [
         "$element",
         "$interpolate",
-        "perplexRenderPropertyService",
+        "contentBlocksPropertyScaffoldCache",
         perplexContentBlockController
     ]
 });
 
-function perplexContentBlockController($element, $interpolate, renderPropertyService) {
+function perplexContentBlockController($element, $interpolate, scaffoldCache) {
     var destroyFns = [];
 
     // State
@@ -82,19 +82,14 @@ function perplexContentBlockController($element, $interpolate, renderPropertySer
         if (this.definition == null) {
             return;
         }
-
-        var getScaffoldFn = null;
-
-        if (this.definition.DataTypeId) {
-            getScaffoldFn = renderPropertyService.getPropertyTypeScaffoldById(this.definition.DataTypeId);
-        } else if (this.definition.DataTypeKey) {
-            getScaffoldFn = renderPropertyService.getPropertyTypeScaffoldByGuid(this.definition.DataTypeKey);
-        }
-
-        if (getScaffoldFn) {
-            getScaffoldFn.then(function (scaffold) {
-                state.nameTemplate = scaffold.config.contentTypes[0].nameTemplate;
-                this.updateName();
+        
+        var scaffoldIdOrKey = this.definition.DataTypeId || this.definition.DataTypeKey;
+        if (scaffoldIdOrKey != null) {
+            scaffoldCache.getScaffold(scaffoldIdOrKey).then(function (scaffold) {
+                if (scaffold != null) {
+                    state.nameTemplate = scaffold.config.contentTypes[0].nameTemplate;
+                    this.updateName();
+                }
             }.bind(this));
         }
     }

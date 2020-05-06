@@ -129,13 +129,13 @@
              ng-show="$ctrl.validationMessages"
              ng-repeat="validationMessage in $ctrl.validationMessages"
              ng-bind="validationMessage">
-        </div>
-        <perplex-render-property id="$ctrl.definition.DataTypeId"
-                                 guid="$ctrl.definition.DataTypeKey"
+        </div>        
+        <content-blocks-property datatype-id="$ctrl.definition.DataTypeId"
+                                 datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"
                                  set-value="$ctrl.setValue({ value: value })"
                                  on-change="$ctrl.updateName()">
-        </perplex-render-property>
+        </content-blocks-property>
     </div>
 </div>
 

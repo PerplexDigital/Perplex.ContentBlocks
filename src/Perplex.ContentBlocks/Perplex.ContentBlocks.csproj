@@ -310,6 +310,9 @@
     <Compile Include="Utils\DataTypes\IDataTypeRegistrationService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />
     <None Include="app.config" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.editor-layout.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.editor-layout.html" />
@@ -324,6 +327,7 @@
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-picker.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-sidebar.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-slicksliders.less" />
+    <None Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
