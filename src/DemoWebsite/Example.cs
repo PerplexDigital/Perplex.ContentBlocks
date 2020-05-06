@@ -1,101 +1,104 @@
 ﻿using Perplex.ContentBlocks.Definitions;
-using Perplex.ContentBlocks.Presets;
 using System;
 using System.Linq;
-using Umbraco.Core;
 using Umbraco.Core.Composing;
 
 namespace DemoWebsite
 {
+    public class ExampleComposer : ComponentComposer<ExampleComponent>
+    {
+    }
+
     public class ExampleComponent : IComponent
     {
-        private readonly IContentBlockDefinitionRepository _repo;
-        private readonly IContentBlocksPresetRepository _presetRepo;
+        private readonly IContentBlockDefinitionRepository _definitions;
 
-        public ExampleComponent(
-            IContentBlockDefinitionRepository repo,
-            IContentBlocksPresetRepository presetRepo)
+        public ExampleComponent(IContentBlockDefinitionRepository definitions)
         {
-            _repo = repo;
-            _presetRepo = presetRepo;
+            _definitions = definitions;
         }
 
         public void Initialize()
         {
-            string previewFolder = "/previews";
+            string previewDir = "/previews/ExampleBlock/";
 
-            _repo.Add(new ContentBlockDefinition
+            _definitions.Add(new ContentBlockDefinition
             {
-                Name = "Example Header",
+                Name = "Example Block",
                 Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                DataTypeId = 1065,
-                PreviewImage = $"{previewFolder}/Header-Normal-1/Preview.png",
-                Description = "Content page header",
+                DataTypeKey = new Guid("6c4999f8-1134-4d38-b8ac-3250f28398e7"),
+                PreviewImage = previewDir + "block.png",
+                Description = "Example Block",
 
                 Layouts = new IContentBlockLayout[]
                     {
                         new ContentBlockLayout
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Name = "Layout 1",
+                            Name = "Red",
                             Description = "",
-                            PreviewImage = $"{previewFolder}/Header-Normal-1/Layout-1.png",
-                            ViewPath = "~/Views/Partials/ContentBlocks/ExampleHeader/ExampleHeader_Layout-1.cshtml"
+                            PreviewImage = previewDir + "red.png",
+                            ViewPath = "~/Views/Partials/ExampleBlock/Red.cshtml"
+                        },
+                        new ContentBlockLayout
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Name = "Green",
+                            Description = "",
+                            PreviewImage = previewDir + "green.png",
+                            ViewPath = "~/Views/Partials/ExampleBlock/Green.cshtml"
+                        },
+                        new ContentBlockLayout
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Name = "Blue",
+                            Description = "",
+                            PreviewImage = previewDir + "blue.png",
+                            ViewPath = "~/Views/Partials/ExampleBlock/Blue.cshtml",
                         },
                     },
 
                 CategoryIds = new[]
                 {
-                    Perplex.ContentBlocks.Constants.Categories.Headers
+                    Perplex.ContentBlocks.Constants.Categories.Content,
                 }
             });
 
-            _repo.Add(new ContentBlockDefinition
+            _definitions.Add(new ContentBlockDefinition
             {
-                Name = "Example Block",
-                Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                //DataTypeId = 1065,
-                DataTypeKey = new Guid("953ae0af-8967-4223-a129-65950381f27b"),
-                PreviewImage = $"{previewFolder}/Normal-1/Preview.png",
-                Description = "Two columns with image and text",
+                Name = "Example Header",
+                Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                DataTypeKey = new Guid("6c4999f8-1134-4d38-b8ac-3250f28398e7"),
+                PreviewImage = previewDir + "block.png",
+                Description = "Example Block",
 
                 Layouts = new IContentBlockLayout[]
                     {
                         new ContentBlockLayout
                         {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            Name = "Layout 1 long name",
-                            Description = "",
-                            PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
-                            ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-1.cshtml"
-                        },
-
-                        new ContentBlockLayout
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            Name = "Layout 2 med nm",
-                            Description = "",
-                            PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
-                            ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-2.cshtml"
-                        },
-
-                        new ContentBlockLayout
-                        {
                             Id = new Guid("66666666-6666-6666-6666-666666666666"),
-                            Name = "Layout 3 super long name!",
+                            Name = "Yellow",
                             Description = "",
-                            PreviewImage = $"{previewFolder}/Normal-1/Layout-1.png",
-                            ViewPath = "~/Views/Partials/ContentBlocks/ExampleBlock/ExampleBlock_Layout-3.cshtml"
+                            PreviewImage = previewDir + "yellow.png",
+                            ViewPath = "~/Views/Partials/ExampleHeader/Yellow.cshtml"
+                        },
+                        new ContentBlockLayout
+                        {
+                            Id = new Guid("77777777-7777-7777-7777-777777777777"),
+                            Name = "Magenta",
+                            Description = "",
+                            PreviewImage = previewDir + "magenta.png",
+                            ViewPath = "~/Views/Partials/ExampleHeader/Magenta.cshtml"
                         },
                     },
 
                 CategoryIds = new[]
                 {
-                    Perplex.ContentBlocks.Constants.Categories.Content
+                    Perplex.ContentBlocks.Constants.Categories.Headers,
                 }
             });
 
-            var all = _repo.GetAll().ToList();
+            var all = _definitions.GetAll().ToList();
 
             for (int i = 0; i < all.Count; i++)
             {
@@ -122,36 +125,13 @@ namespace DemoWebsite
                         PreviewImage = def.PreviewImage,
                     };
 
-                    _repo.Add(newDef);
+                    _definitions.Add(newDef);
                 }
             }
-
-            // To add a preset
-            _presetRepo.Add(new ContentBlocksPreset
-            {
-                Id = new Guid("8203903b-8116-4ed9-92f7-cf65da6f3419"),
-                Header = new ContentBlockPreset
-                {
-                    Id = new Guid("8db819ff-514b-434b-8be6-4c303671689d"),
-                    DefinitionId = new Guid("12902bee-6c27-4f0f-99de-f7182df7d91f"),
-                    IsMandatory = false,
-                    LayoutId = new Guid("3aaa12d6-6f49-44be-b5ca-21fd7173d273"),
-                },
-                Name = "Preset X",
-                ApplyToDocumentTypes = new[] { "someDoctypeAlias" }
-            });
         }
 
         public void Terminate()
         {
-        }
-    }
-
-    public class ExampleComposer : IUserComposer
-    {
-        public void Compose(Composition composition)
-        {
-            composition.Components().Append<ExampleComponent>();
         }
     }
 }

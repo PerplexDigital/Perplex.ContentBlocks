@@ -129,7 +129,7 @@
              ng-show="$ctrl.validationMessages"
              ng-repeat="validationMessage in $ctrl.validationMessages"
              ng-bind="validationMessage">
-        </div>        
+        </div>
         <content-blocks-property datatype-id="$ctrl.definition.DataTypeId"
                                  datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"
@@ -139,7 +139,7 @@
     </div>
 </div>
 
-<div class="p-editor__empty__hover" 
+<div class="p-editor__empty__hover"
      ng-if="!$ctrl.disableAddContent"
      ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
     <div class="p-editor__empty__click">
