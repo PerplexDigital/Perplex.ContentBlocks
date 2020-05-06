@@ -87,6 +87,10 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         if (scaffoldIdOrKey != null) {
             scaffoldCache.getScaffold(scaffoldIdOrKey).then(function (scaffold) {
                 if (scaffold != null) {
+                    if (scaffold.editor !== "Umbraco.NestedContent") {
+                        throw new Error("The data type editor should be \"Umbraco.NestedContent\", but is \"" + scaffold.editor + "\"");
+                    }
+
                     state.nameTemplate = scaffold.config.contentTypes[0].nameTemplate;
                     this.updateName();
                 }
