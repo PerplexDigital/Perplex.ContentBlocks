@@ -46,10 +46,10 @@ function contentBlocksPropertyController(properyScaffoldCache) {
 
         this.property = propertyTypeScaffold;
 
-        if (this.property.config && this.property.config.hideLabel != null) {
-            // If there is a property named hideLabel in config, use that.
-            this.property.hideLabel = !!this.property.config.hideLabel;
-        }
+        // For use in ContentBlocks the label should be hidden.    
+        // If/when we add a custom label/description binding we could
+        // use those to determine whether to hide the label or not.
+        this.property.hideLabel = true;
 
         if (this.config != null && this.property.config != null) {
             Object.assign(this.property.config, this.config);
