@@ -88,10 +88,21 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
 
         private bool? GetDisablePreview(IDictionary<string, object> config)
         {
-            if (config != null && config.TryGetValue(Constants.Umbraco.Configuration.DisablePreviewKey, out object configuredLayout) &&
-                bool.TryParse(configuredLayout.ToString(), out bool disablePreview))
+            if (config != null && config.TryGetValue(Constants.Umbraco.Configuration.DisablePreviewKey, out object configuredDisablePreview))
             {
-                return disablePreview;
+                string disablePreviewStr = configuredDisablePreview?.ToString();
+
+                if (bool.TryParse(disablePreviewStr, out bool disablePreview))
+                {
+                    return disablePreview;
+                }
+
+                // Parse manually
+                if (disablePreviewStr == "0")
+                    return false;
+
+                if (disablePreviewStr == "1")
+                    return true;                
             };
 
             return null;
