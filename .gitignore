@@ -54,4 +54,7 @@ src/DemoWebsite/App_Data/Models
 src/DemoWebsite/App_Data/Umbraco.sdf
 src/DemoWebsite/[Uu]mbraco/
 *.css
-build/*.nupkg
+
+# NuGet / Our Umbraco packages
+pkg/**/*.nupkg
+pkg/**/*.zip

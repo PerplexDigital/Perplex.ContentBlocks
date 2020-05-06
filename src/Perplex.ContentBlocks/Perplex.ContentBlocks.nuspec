@@ -3,10 +3,13 @@
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
+    <title>$title$</title>
     <authors>$author$</authors>
+    <owners>$author$</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</projectUrl>
     <description>Block based content editor for Umbraco</description>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>Public release</releaseNotes>
     <copyright>© Perplex Digital</copyright>
     <tags>umbraco property editor content block</tags>
   </metadata>
