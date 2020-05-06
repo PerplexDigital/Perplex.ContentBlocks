@@ -46,7 +46,8 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
             return new DataValueEditor(Constants.Umbraco.PropertyEditor.ViewPath, validator)
             {
                 Configuration = configuration,
-                HideLabel = true
+                HideLabel = true,
+                ValueType = "JSON",
             };
         }
     }

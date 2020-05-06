@@ -69,6 +69,13 @@ namespace Perplex.ContentBlocks.Umbraco.PropertyEditor
 
         public override object FromDatabase(string configuration)
         {
+            if (configuration == null || configuration.Trim() == "{}")
+            {
+                // Special case: empty configuration object.
+                // That is not allowed, return the default.
+                return _defaultConfiguration;
+            }
+
             try
             {
                 return base.FromDatabase(configuration);
