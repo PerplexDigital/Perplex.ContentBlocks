@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Umbraco.Core;
+using Umbraco.Core.Composing;
 using Umbraco.Core.Models;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
@@ -15,17 +17,17 @@ namespace Perplex.ContentBlocks.PropertyEditor
     public class ContentBlocksValidator : IValueValidator
     {
         private readonly IDataTypeService _dataTypeService;
-        private readonly IContentBlockDefinitionRepository _contentBlockDefinitionRepository;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
+        private readonly Lazy<IContentBlockDefinitionRepository> _definitionRepository;
 
         public ContentBlocksValidator(
             IDataTypeService dataTypeService,
-            IContentBlockDefinitionRepository contentBlockDefinitionRepository,
-            ContentBlocksModelValueDeserializer deserializer)
+            ContentBlocksModelValueDeserializer deserializer,
+            IFactory factory)
         {
             _dataTypeService = dataTypeService;
-            _contentBlockDefinitionRepository = contentBlockDefinitionRepository;
             _deserializer = deserializer;
+            _definitionRepository = new Lazy<IContentBlockDefinitionRepository>(() => factory.GetInstance<IContentBlockDefinitionRepository>());
         }
 
         public IEnumerable<ValidationResult> Validate(object value, string valueType, object dataTypeConfiguration)
@@ -63,7 +65,13 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return Enumerable.Empty<ValidationResult>();
             }
 
-            var definition = _contentBlockDefinitionRepository.GetById(blockValue.DefinitionId);
+            var repository = _definitionRepository.Value;
+            if (repository == null)
+            {
+                return Enumerable.Empty<ValidationResult>();
+            }
+
+            var definition = repository.GetById(blockValue.DefinitionId);
             if (definition == null)
             {
                 return Enumerable.Empty<ValidationResult>();
@@ -96,7 +104,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             // Validate the value using all validators that have been defined for the datatype
             return valueEditor.Validators.SelectMany(ve => ve
-                .Validate(blockValue.Content, "JSON", dataType.Configuration)
+                .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
                 .Select(vr =>
                 {
                     var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
