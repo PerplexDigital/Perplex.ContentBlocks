@@ -221,6 +221,27 @@
         .slick-dots li.slick-active button {
             opacity: 1;
         }
+
+        .slick-slide.selected .p-pick-layouts__image {
+            &:before {
+                content: '';
+                display: block;
+                position: absolute;
+                top: 0;
+                left: auto;
+                right: 0;
+                width: 3rem;
+                height: 3rem;
+                z-index: 10;
+                color: white;
+                pointer-events: none;
+                background-repeat: no-repeat;
+                background-size: 35%;
+                background-position: center;
+                background-color: @color-sub;
+                background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJDYXBhXzEiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgNDgzLjg4NSA0ODMuODg1IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODMuODg1IDQ4My44ODU7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgY2xhc3M9IiI+PGc+PGc+Cgk8Zz4KCQk8cGF0aCBkPSJNNDY0LjYyOSwyNy44MzNjLTIwLjg2NC0xMy41NjgtNTAuMTc2LTkuMzc1LTY1LjQzOSw5LjE4NWwtMjM2LjgsMjg5LjA1NUw4My41NzMsMjM3LjIxICAgIGMtMTYuMDYxLTE4LjA0OC00NS41MDEtMjEuMTItNjUuNzYxLTYuODgxQy0yLjUxLDI0NC41NjctNS45MywyNzAuODM4LDEwLjA3LDI4OC44MjVsMTU1LjI5NSwxNzUuMjAxTDQ3NC44NjksODYuMDczICAgIEM0OTAuMTMyLDY3LjQ1MSw0ODUuNTU0LDQxLjQwMSw0NjQuNjI5LDI3LjgzM3oiIGRhdGEtb3JpZ2luYWw9IiMwMDAwMDAiIGNsYXNzPSJhY3RpdmUtcGF0aCIgc3R5bGU9ImZpbGw6I0ZGRkZGRiIgZGF0YS1vbGRfY29sb3I9IiNmZmZmZmYiPjwvcGF0aD4KCTwvZz4KPC9nPjwvZz4gPC9zdmc+");
+            }
+        }
     }
 
     &__item {
@@ -245,7 +266,7 @@
         height: 0;
         padding-bottom: 45%;
         background: white;
-        position: relative;                
+        position: relative;
     }
 
     &__image img {
@@ -254,7 +275,8 @@
         bottom: 0;
         left: 0;
         right: 0;
-        margin: auto;        
+        margin: auto;
+        width: 100%;
     }
 
     &__select {

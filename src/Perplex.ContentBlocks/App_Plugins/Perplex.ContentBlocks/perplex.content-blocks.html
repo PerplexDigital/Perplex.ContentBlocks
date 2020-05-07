@@ -36,11 +36,15 @@
                              ng-repeat="block in category.blocks track by block.Id">
                             <div class="p-pick-blocks__holder"
                                  ng-class="{ selected: vm.state.ui.picker.selectedBlockId === block.Id }">
-                                <button type="button" class="p-pick-blocks__inner"
-                                        ng-click="vm.fn.picker.pick(block.Id)">
-                                    <span class="p-pick-blocks__inner__image"><img ng-if="block.PreviewImage" ng-src="{{block.PreviewImage}}" /></span>
-                                    <span class="p-pick-blocks__inner__title" ng-bind="block.Name"></span>
-                                    <span class="p-pick-blocks__inner__description" ng-bind="block.Description"></span>
+                                <button type="button" ng-click="vm.fn.picker.pick(block.Id)"
+                                        class="p-pick-blocks__inner">
+                                    <span class="p-pick-blocks__inner__container">
+                                        <span class="p-pick-blocks__inner__image">
+                                            <img ng-if="block.PreviewImage" ng-src="{{block.PreviewImage}}" />
+                                        </span>
+                                        <span class="p-pick-blocks__inner__title" ng-bind="block.Name"></span>
+                                        <span class="p-pick-blocks__inner__description" ng-bind="block.Description"></span>
+                                    </span>
                                 </button>
                                 <div class="p-pick-blocks__options__holder">
                                     <div class="p-pick-blocks__options__info-bar">
