@@ -256,10 +256,6 @@
     <Compile Include="Definitions\IContentBlockDefinitionFilterer.cs" />
     <Compile Include="Definitions\IContentBlockDefinitionRepository.cs" />
     <Compile Include="Definitions\IContentBlockLayout.cs" />
-    <Compile Include="Migrations\ContentBlocksMigrationPlan.cs" />
-    <Compile Include="Migrations\ContentBlocksMigrationsComponent.cs" />
-    <Compile Include="Migrations\ContentBlocksMigrationsComposer.cs" />
-    <Compile Include="Migrations\v_1_0_0\AddContentBlocksDataType.cs" />
     <Compile Include="Presets\ContentBlockPreset.cs" />
     <Compile Include="Presets\ContentBlockPresetsComposer.cs" />
     <Compile Include="Presets\ContentBlocksPreset.cs" />
@@ -303,9 +299,6 @@
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />
-    <Compile Include="Migrations\Utils\IMigrationPlanExecuter.cs" />
-    <Compile Include="Migrations\Utils\MigrationPlanExecuter.cs" />
-    <Compile Include="Migrations\Utils\MigrationsComposer.cs" />
     <Compile Include="Utils\DataTypes\DataTypeRegistrationService.cs" />
     <Compile Include="Utils\DataTypes\DataTypesComposer.cs" />
     <Compile Include="Utils\DataTypes\IDataTypeRegistrationService.cs" />
