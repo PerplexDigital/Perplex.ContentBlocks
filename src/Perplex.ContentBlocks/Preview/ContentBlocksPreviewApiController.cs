@@ -15,6 +15,12 @@ namespace Perplex.ContentBlocks.Preview
     {
         private static readonly HttpClientHandler _httpClientHandler = new HttpClientHandler { UseCookies = false };
         private static readonly HttpClient _httpClient = new HttpClient(_httpClientHandler);
+        private readonly IPreviewScrollScriptProvider _scrollScriptProvider;
+
+        public ContentBlocksPreviewApiController(IPreviewScrollScriptProvider scrollScriptProvider)
+        {
+            _scrollScriptProvider = scrollScriptProvider;
+        }
 
         [HttpGet]
         public async Task<HttpResponseMessage> GetPreviewForIframe(int? pageId, string culture)
@@ -124,10 +130,7 @@ namespace Perplex.ContentBlocks.Preview
 
                 function receiveMessage(event) {
                     var element = document.getElementById(event.data.blockId);
-
-                    if (element != null && typeof window.jump === ""function"") {
-                        window.jump(element, { duration: 500 });
-                    }
+                   " + _scrollScriptProvider.ScrollScript + @"
                 }
 
                 // Jump.js v1.0.2 - https://github.com/callmecavs/jump.js

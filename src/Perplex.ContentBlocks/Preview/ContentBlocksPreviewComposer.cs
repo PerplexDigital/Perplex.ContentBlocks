@@ -9,6 +9,9 @@ namespace Perplex.ContentBlocks.Preview
         public void Compose(Composition composition)
         {
             composition.Register<IPreviewModeProvider, CookieBasedPreviewModeProvider>(Lifetime.Scope);
+
+            // Can be replaced by clients
+            composition.RegisterUnique<IPreviewScrollScriptProvider, DefaultPreviewScrollScriptProvider>();
         }
     }
 }

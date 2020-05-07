@@ -242,6 +242,8 @@
     <Compile Include="Categories\InMemoryContentBlockCategoryRepository.cs" />
     <Compile Include="Categories\IContentBlockCategory.cs" />
     <Compile Include="Categories\IContentBlockCategoryRepository.cs" />
+    <Compile Include="Preview\DefaultPreviewScrollScriptProvider.cs" />
+    <Compile Include="Preview\IPreviewScrollScriptProvider.cs" />
     <Compile Include="PropertyEditor\Configuration\Constants.PropertyEditor.Configuration.cs" />
     <Compile Include="PropertyEditor\Configuration\ContentBlocksConfiguration.cs" />
     <Compile Include="Definitions\ContentBlockDefinition.cs" />
