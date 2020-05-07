@@ -299,9 +299,6 @@
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />
-    <Compile Include="Utils\DataTypes\DataTypeRegistrationService.cs" />
-    <Compile Include="Utils\DataTypes\DataTypesComposer.cs" />
-    <Compile Include="Utils\DataTypes\IDataTypeRegistrationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
