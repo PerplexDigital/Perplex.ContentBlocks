@@ -26,8 +26,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
         public string Alias { get; } = Constants.PropertyEditor.Alias;
         public EditorType Type { get; } = EditorType.PropertyValue;
         public string Name { get; } = Constants.PropertyEditor.Name;
-        public string Icon { get; }
-        public string Group { get; }
+        // Icon cannot be NULL for Umbraco 8.6+, 
+        // it will actually crash the UI.
+        public string Icon { get; } = "icon-list";
+        public string Group { get; } = "Lists";
+
         public bool IsDeprecated { get; } = false;
         public IDictionary<string, object> DefaultConfiguration { get; }
 
@@ -51,7 +54,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             {
                 Configuration = configuration,
                 HideLabel = hideLabel,
-                ValueType = "JSON",
+                ValueType = ValueTypes.Json,                
             };
         }
     }
