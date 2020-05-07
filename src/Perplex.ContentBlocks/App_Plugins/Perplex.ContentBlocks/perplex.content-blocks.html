@@ -21,6 +21,14 @@
                 </div>
 
                 <div class="p-overlay__inner">
+                    <div class="umb-alert umb-alert--warning"
+                         ng-if="vm.state.definitions.length === 0">
+                        <h3>No Content Block definitions found</h3>
+                        <p>
+                            Please refer to <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">the documentation</a> to get started.
+                        </p>
+                    </div>
+
                     <div class="p-grid p-grid--sm p-grid--css-grid"
                          ng-repeat="category in vm.state.ui.picker.categories track by category.id"
                          ng-show="vm.state.ui.picker.selectedCategoryId === category.id">
