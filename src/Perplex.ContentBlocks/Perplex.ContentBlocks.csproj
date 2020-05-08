@@ -276,7 +276,6 @@
     <Compile Include="Rendering\ContentBlockRenderer.cs" />
     <Compile Include="Rendering\ContentBlocks.cs" />
     <Compile Include="Rendering\ContentBlocksRenderingComposer.cs" />
-    <Compile Include="Rendering\ContentBlocksRenderingEnums.cs" />
     <Compile Include="Rendering\ContentBlockViewModel.cs" />
     <Compile Include="Rendering\ContentBlockViewModelFactory{T}.cs" />
     <Compile Include="Rendering\ContentBlockViewModel{T}.cs" />
