@@ -260,9 +260,9 @@ This code will:
 2. Create a NestedContent data type for it
 3. Configure a Header and a Block to use the data type
 
-If you now add the `Perplex.ContentBlocks` data type to a document type of your choice you should be able to pick blocks.
+If you now create a **new data type** based on the `Perplex.ContentBlocks` property editor and add it to a document type of your choice you should be able to pick blocks.
 
-Note this does not cover the front-end rendering yet, so nothing will happen there yet.
+Also note this does not cover the front-end rendering yet, so nothing will happen there yet.
 Head over to the [Rendering Content Blocks](#rendering-content-blocks) section for an explanation about that.
 
 ## Getting Started
