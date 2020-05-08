@@ -316,9 +316,13 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Partials\ContentBlocks\ExampleHeader\ExampleHeader_Layout-1.cshtml" />
-    <Content Include="Views\Partials\ContentBlocks\ExampleBlock\ExampleBlock_Layout-1.cshtml" />
-    <Content Include="Views\Partials\ContentBlocks\_ExampleHeader.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\Blue.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\Green.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\Red.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\_ExampleBlock.cshtml" />
+    <Content Include="Views\Partials\ExampleHeader\_ExampleHeader.cshtml" />
+    <Content Include="Views\Partials\ExampleHeader\Yellow.cshtml" />
+    <Content Include="Views\Partials\ExampleHeader\Magenta.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -276,10 +276,7 @@ perplex-content-block {
             line-height: 1.6;
             padding: 0 1rem;
         }
-
-        &__item:nth-of-type(1):nth-last-of-type(1) {
-            opacity: .25;
-        }
+        
         /* if there are no other layouts */
         &__list .slick-arrow {
             z-index: 1;
@@ -364,6 +361,7 @@ perplex-content-block {
             border: 0.3rem solid @color-light-b;
             background-color: @color-light-a;
             box-shadow: 5px 5px 8px rgba(0,0,0,0.35);
+            overflow: hidden;
         }
 
         &__preview.is-active {
@@ -717,6 +715,10 @@ perplex-content-block {
 
     &__item.is-mandatory &-topbar__settings__button {
         display: none;
+    }
+
+    &__item.is-invalid {        
+        box-shadow: 0 0 2px 2px #cc0000;        
     }
 
     &__list.is-mandatory &-topbar__settings,

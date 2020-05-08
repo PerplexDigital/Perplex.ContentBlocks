@@ -1,0 +1,6 @@
+{
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks/utils/perplex.content-blocks.copy-paste-service.js",
+    "~/App_Plugins/Perplex.ContentBlocks/utils/perplex.content-blocks.utils.js"
+  ]
+}

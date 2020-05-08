@@ -1,0 +1,6 @@
+{
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks/utils/property/perplex.content-blocks.property.js",
+    "~/App_Plugins/Perplex.ContentBlocks/utils/property/perplex.content-blocks.property-scaffold-cache.js"    
+  ]
+}

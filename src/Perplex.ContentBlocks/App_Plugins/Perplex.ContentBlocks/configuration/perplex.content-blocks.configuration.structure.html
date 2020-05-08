@@ -1,0 +1,6 @@
+﻿<div class="perplex-content-blocks-configuration-structure" 
+     ng-controller="Perplex.ContentBlocks.ConfigurationStructureController as $ctrl">
+    <select ng-model="$ctrl.selected"
+            ng-change="$ctrl.updateModel($ctrl.selected)" 
+            ng-options="option.value as option.label for option in $ctrl.options"/>
+</div>

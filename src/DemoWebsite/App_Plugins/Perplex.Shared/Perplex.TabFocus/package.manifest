@@ -1,8 +1,0 @@
-{
-    "javascript": [
-      "~/App_Plugins/Perplex.Shared/Perplex.TabFocus/tab-focus.service.js",
-      "~/App_Plugins/Perplex.Shared/Perplex.TabFocus/tab-focus.directive.js",
-      "~/App_Plugins/Perplex.Shared/Perplex.TabFocus/tab-focus-once.directive.js",
-      "~/App_Plugins/Perplex.Shared/Perplex.TabFocus/tab-refocus.directive.js"
-    ]
-}

@@ -1,5 +1,5 @@
 ﻿<div class="p-block__item"
-     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory }"
+     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.validationMessages }"
      data-id="{{$ctrl.block.id}}">
     <div class="p-block-topbar"
          ng-if="!$ctrl.definition">
@@ -41,8 +41,8 @@
              ng-mouseleave="$ctrl.showLayoutPreview = false"
              ng-class="{'is-disabled': $ctrl.layouts.length === 1}">
             <div class="p-block-topbar__layout__list">
-                <slick on-after-change="setLayout({ block: block, layoutIdx: currentSlide })"
-                       initial-slide="getLayoutIndex({ block: block })"
+                <slick on-after-change="$ctrl.setLayout({ block: $ctrl.block, layoutIdx: currentSlide })"
+                       initial-slide="$ctrl.getLayoutIndex({ block: $ctrl.block })"
                        as-nav-for="[data-id='{{$ctrl.block.id}}'] .p-block-topbar__layout__view"
                        infinite="true">
                     <div class="p-block-topbar__layout__item layout"
@@ -61,7 +61,7 @@
                     ng-click="$ctrl.state.showSettings = !$ctrl.state.showSettings">
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-close"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-close"></use></svg>
-            </button>         
+            </button>
             <button ng-if="$ctrl.copyBlock" type="button" class="p-block-topbar__settings__duplicate duplicate" ng-click="$ctrl.copyBlock(); $ctrl.state.showSettings = false">
                 <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
                 <span class="p-block-topbar__settings__text">Copy</span>
@@ -71,6 +71,7 @@
                 <span class="p-block-topbar__settings__text">Remove</span>
             </button>
             <button type="button" class="p-block-topbar__settings__hide"
+                    ng-if="$ctrl.allowDisable || $ctrl.block.isDisabled"
                     ng-click="$ctrl.block.isDisabled = !$ctrl.block.isDisabled; $ctrl.state.showSettings = false">
                 <div ng-show="$ctrl.block.isDisabled">
                     <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-show"></use></svg>
@@ -105,10 +106,10 @@
             <svg class="l-icon l-icon--sm">
                 <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-reorder"></use>
             </svg>
-        </span>        
+        </span>
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
-            <slick on-after-change="setLayout({ block: block, layoutIdx: currentSlide })"
-                   initial-slide="getLayoutIndex(block)"
+            <slick on-after-change="$ctrl.setLayout({ block: $ctrl.block, layoutIdx: currentSlide })"
+                   initial-slide="$ctrl.getLayoutIndex({ block: $ctrl.block })"
                    infinite="true"
                    class="p-block-topbar__layout__view"
                    dots="false"
@@ -118,21 +119,29 @@
                      ng-repeat="layout in $ctrl.layouts track by layout.Id">
                     <img class="p-block-topbar__layout__img" ng-src="{{layout.PreviewImage}}" />
                 </div>
-            </slick>
+            </slick>          
         </div>
     </div>
+
     <div class="p-block__main"
          ng-if="$ctrl.state.load">
-        <perplex-render-property id="$ctrl.definition.DataTypeId"
-                                 guid="$ctrl.definition.DataTypeKey"
+        <div class="alert alert-error property-error"
+             ng-show="$ctrl.validationMessages"
+             ng-repeat="validationMessage in $ctrl.validationMessages"
+             ng-bind="validationMessage">
+        </div>
+        <content-blocks-property datatype-id="$ctrl.definition.DataTypeId"
+                                 datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"
                                  set-value="$ctrl.setValue({ value: value })"
                                  on-change="$ctrl.updateName()">
-        </perplex-render-property>
+        </content-blocks-property>
     </div>
 </div>
 
-<div class="p-editor__empty__hover" ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
+<div class="p-editor__empty__hover"
+     ng-if="!$ctrl.disableAddContent"
+     ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
     <div class="p-editor__empty__click">
         <button class="btn btn-sub btn-radius" type="button"
                 ng-click="$ctrl.addBlock({ id: $ctrl.block.id })"

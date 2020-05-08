@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="ClientDependency.Core, Version=1.9.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ClientDependency.1.9.9\lib\net45\ClientDependency.Core.dll</HintPath>
     </Reference>
@@ -220,19 +223,16 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Umbraco.Core, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UmbracoCms.Core.8.5.5\lib\net472\Umbraco.Core.dll</HintPath>
+      <HintPath>..\..\packages\UmbracoCms.Core.8.1.0\lib\net472\Umbraco.Core.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Examine, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UmbracoCms.Web.8.5.5\lib\net472\Umbraco.Examine.dll</HintPath>
-    </Reference>
-    <Reference Include="Umbraco.ModelsBuilder.Embedded, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UmbracoCms.Web.8.5.5\lib\net472\Umbraco.ModelsBuilder.Embedded.dll</HintPath>
+      <HintPath>..\..\packages\UmbracoCms.Web.8.1.0\lib\net472\Umbraco.Examine.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Web, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UmbracoCms.Web.8.5.5\lib\net472\Umbraco.Web.dll</HintPath>
+      <HintPath>..\..\packages\UmbracoCms.Web.8.1.0\lib\net472\Umbraco.Web.dll</HintPath>
     </Reference>
     <Reference Include="Umbraco.Web.UI, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UmbracoCms.Web.8.5.5\lib\net472\Umbraco.Web.UI.dll</HintPath>
+      <HintPath>..\..\packages\UmbracoCms.Web.8.1.0\lib\net472\Umbraco.Web.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +242,10 @@
     <Compile Include="Categories\InMemoryContentBlockCategoryRepository.cs" />
     <Compile Include="Categories\IContentBlockCategory.cs" />
     <Compile Include="Categories\IContentBlockCategoryRepository.cs" />
+    <Compile Include="Preview\DefaultPreviewScrollScriptProvider.cs" />
+    <Compile Include="Preview\IPreviewScrollScriptProvider.cs" />
+    <Compile Include="PropertyEditor\Configuration\Constants.PropertyEditor.Configuration.cs" />
+    <Compile Include="PropertyEditor\Configuration\ContentBlocksConfiguration.cs" />
     <Compile Include="Definitions\ContentBlockDefinition.cs" />
     <Compile Include="Definitions\ContentBlockDefinitionComposer.cs" />
     <Compile Include="Definitions\ContentBlockDefinitionFilterer.cs" />
@@ -252,10 +256,6 @@
     <Compile Include="Definitions\IContentBlockDefinitionFilterer.cs" />
     <Compile Include="Definitions\IContentBlockDefinitionRepository.cs" />
     <Compile Include="Definitions\IContentBlockLayout.cs" />
-    <Compile Include="Migrations\ContentBlocksMigrationPlan.cs" />
-    <Compile Include="Migrations\ContentBlocksMigrationsComponent.cs" />
-    <Compile Include="Migrations\ContentBlocksMigrationsComposer.cs" />
-    <Compile Include="Migrations\v_1_0_0\AddContentBlocksDataType.cs" />
     <Compile Include="Presets\ContentBlockPreset.cs" />
     <Compile Include="Presets\ContentBlockPresetsComposer.cs" />
     <Compile Include="Presets\ContentBlocksPreset.cs" />
@@ -287,23 +287,30 @@
     <Compile Include="Rendering\IContentBlockViewModelFactory.cs" />
     <Compile Include="Rendering\IContentBlockViewModelFactory{T}.cs" />
     <Compile Include="Rendering\IContentBlockViewModel{T}.cs" />
-    <Compile Include="Umbraco\Constants.Umbraco.cs" />
-    <Compile Include="Umbraco\ContentBlockModelValue.cs" />
-    <Compile Include="Umbraco\ContentBlocksModelValue.cs" />
-    <Compile Include="Umbraco\ContentBlocksValueConverter.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValueComposer.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlockModelValue.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValueDeserializer.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValue.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksValueConverter.cs" />
+    <Compile Include="PropertyEditor\Constants.PropertyEditor.cs" />
+    <Compile Include="PropertyEditor\Configuration\ContentBlocksConfigurationEditor.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksPropertyEditor.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksValidator.cs" />
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />
-    <Compile Include="Migrations\Utils\IMigrationPlanExecuter.cs" />
-    <Compile Include="Migrations\Utils\MigrationPlanExecuter.cs" />
-    <Compile Include="Migrations\Utils\MigrationsComposer.cs" />
-    <Compile Include="Utils\DataTypes\DataTypeRegistrationService.cs" />
-    <Compile Include="Utils\DataTypes\DataTypesComposer.cs" />
-    <Compile Include="Utils\DataTypes\IDataTypeRegistrationService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />
     <None Include="app.config" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lib\package.manifest" />
     <None Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-block.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-editor.less" />
@@ -313,6 +320,8 @@
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-picker.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-sidebar.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-slicksliders.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -328,13 +337,13 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\lib\slick.min.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.api.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.controller.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.copy-paste.service.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\perplex.content-blocks.copy-paste-service.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.css">
       <DependentUpon>perplex.content-blocks.less</DependentUpon>
     </Content>
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.requires.js" />
-    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.service.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\perplex.content-blocks.utils.js" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

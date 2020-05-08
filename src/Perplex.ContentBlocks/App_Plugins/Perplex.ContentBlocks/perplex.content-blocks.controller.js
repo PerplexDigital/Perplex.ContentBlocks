@@ -1,948 +1,523 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
-    "Perplex.ContentBlocks.Api", "Perplex.ContentBlocks.CopyPaste.Service", "notificationsService",
-    function ($scope, $sce, $rootElement, $q, editorState, eventsService, $timeout, api, copyPasteService, notificationsService) {
-        var vm = this;
+    "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
+    "serverValidationManager",
+    perplexContentBlocksController,
+]);
 
-        var constants = {
-            preview: {
-                mode: {
-                    desktop: "desktop",
-                    mobile: "mobile"
-                }
+function perplexContentBlocksController(
+    $scope, $sce, $rootElement, $q, editorState, eventsService, $timeout,
+    api, utils, copyPasteService, notificationsService, serverValidationManager) {
+    var vm = this;
+
+    var config = $scope.model.config;
+
+    var constants = {
+        preview: {
+            mode: {
+                desktop: "desktop",
+                mobile: "mobile"
             }
         }
+    }
 
-        var state = {
-            // The current version of the model, useful for possible future model changes
-            // if we have to transform data.
-            version: 2,
+    var state = {
+        // The current version of the model, useful for possible future model changes
+        // if we have to transform data.
+        version: 2,
 
-            initialized: false,
-            pageId: null,
-            isNewPage: null,
-            // The currently active culture, e.g. "en-US"
-            culture: null,
+        initialized: false,
+        pageId: null,
+        isNewPage: null,
+        // The currently active culture, e.g. "en-US"
+        culture: null,
 
-            documentType: null,
+        documentType: null,
 
-            ui: {
-                picker: {
-                    open: false,
-
-                    // Array of { category: <string>, blocks: [IContentBlockDefinition] }
-                    categories: null,
-
-                    // Callback with selected block definition Id
-                    callback: null,
-
-                    // Currently selected category Id
-                    selectedCategoryId: null,
-
-                    // Id of currently selected block definition
-                    selectedBlockId: null,
-
-                    // Callback to run when confirming selection
-                    confirmCallback: null,
-                },
-
-                layoutPicker: {
-                    open: false,
-
-                    // IContentBlockDefinition
-                    block: null,
-
-                    // [IContentBlockLayout]
-                    layouts: null,
-
-                    // Callback function with selected layoutId parameter
-                    callback: null,
-
-                    // Id of currently selected layout
-                    selectedLayoutId: null,
-
-                    // Callback to run when confirming selection
-                    confirmCallback: null
-                },
-
-                expandAll: false,
-                reorder: false,
-            },
-
-            // Array of IContentBlockDefinition
-            definitions: [],
-
-            // Array of IContentBlockCategory
-            categories: [],
-
-            // IContentBlocksPreset
-            preset: null,
-
-            dom: {
-                // Container containing the Umbraco editors and is the scrolling element
-                editorsContainer: null,
-
-                previewColumn: null,
-                previewIframeDesktop: null,
-                previewIframeMobile: null,
-                previewIframeFrameMobile: null,
-                previewIframeFrameDesktop: null,
-
-                blocksContainer: null,
-                contentBlocksViewport: null,
-
-                leftColumn: null,
-
-                // block id -> block dom element
-                blocks: {}
-            },
-
-            preview: {
-                visibleBlockId: null,
-                previewUrl: null,
-                // constants.preview.mode
-                mode: constants.preview.mode.desktop,
-                lastUpdate: null
-            },
-
-            copyPaste: {
-                hasData: false
-            },
-
-            // blockId -> perplexContentBlockController
-            blocks: {},
-
-            // blockId -> callback function to run when a block with that id registers itself
-            onBlockRegisterFns: {},
-        };
-
-        var computed = {
-            // Array of { category: <string>, blocks: [IContentBlockDefinition] },
-            // computed based on state.definitions and state.categories
-            definitionsByCategory: [],
-
-            // definitionId => [IContentBlockCategory]
-            categoriesByDefinitionId: {},
-
-            // definitionId => [IContentBlockLayout]
-            layoutsByDefinitionId: {},
-
-            // definitionId => IContentBlockDefinition
-            definitionsById: {},
-
-            // categoryId => IContentBlockCategory
-            categoriesById: {},
-
-            // presetId => true/false (based on state.preset)
-            mandatoryBlocks: {}
-        }
-
-        var fn = {
-            init: function () {
-                this.editorState.init();
-
-                if (state.pageId == null) {
-                    // We zitten niet in content
-                    return;
-                }
-
-                this.initModelValue();
-                this.copyPaste.init();
-                this.setContainingGroupCssClass();
-
-                var self = this;
-
-                $q.all([
-                    api.getDefinitionsForPage(state.documentType, state.culture),
-                    api.getAllCategories(),
-                    api.getPresetForPage(state.documentType, state.culture),
-                ]).then(function (responses) {
-                    state.definitions = responses[0].data;
-                    state.categories = responses[1].data;
-                    state.preset = responses[2].data;
-
-                    fn.preset.apply();
-                    fn.updateComputed();
-                }).finally(function () {
-                    state.initialized = true;
-
-                    $timeout(function () {
-                        self.initDom();
-                        self.initEvents();
-                        self.preview.init();
-                    });
-                });
-            },
-
-            editorState: {
-                init: function () {
-                    var es = editorState.current;
-
-                    if (es == null) {
-                        return;
-                    }
-
-                    state.pageId = es.id;
-                    state.isNewPage = state.pageId === 0;
-                    state.culture = fn.utils.getCurrentCulture();
-                    state.documentType = es.contentTypeAlias;
-                }
-            },
-
-            initModelValue: function () {
-                if (
-                    $scope.model.value == null ||
-                    Object.prototype.toString.call($scope.model.value) !== "[object Object]"
-                ) {
-                    $scope.model.value = {
-                        version: state.version,
-
-                        // IContentBlock
-                        header: null,
-
-                        // Array of IContentBlock
-                        blocks: []
-                    };
-                }
-
-                this.upgradeVersion();
-            },
-
-            initDom: function () {
-                state.dom.editorsContainer = document.querySelector(".umb-editor-container");
-
-                var sidebarHolder = document.querySelector(".perplex-content-blocks .p-sidebar__holder");
-                state.dom.previewColumn = sidebarHolder == null ? null : sidebarHolder.parentNode;
-                state.dom.blocksContainer = document.querySelector(".perplex-content-blocks .p-editor");
-                state.dom.contentBlocksViewport = document.querySelector(".umb-editor-container.umb-scrollable");
-                state.dom.leftColumn = document.getElementById("leftcolumn");
-
-                if (state.dom.previewColumn != null) {
-                    state.dom.previewIframeDesktop = state.dom.previewColumn.querySelector(".p-sidebar__preview__root--desktop");
-                    state.dom.previewIframeFrameDesktop = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame--desktop");
-                    state.dom.previewIframeMobile = state.dom.previewColumn.querySelector(".p-sidebar__preview__root--mobile");
-                    state.dom.previewIframeFrameMobile = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame--mobile");
-                }
-
-                /* Fix Safari bugs */
-                if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Mac') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
-                    $('html').addClass('safari-mac'); // provide a class for the safari-mac specific css to filter with
-                }
-            },
-
-            initEvents: function () {
-                if (state.dom.editorsContainer == null) {
-                    return;
-                }
-
-                fn.initHotkeys();
-                fn.preview.initEvents();
-            },
-
-            initHotkeys: function () {
-                function handleEscape() {
-                    if (!state.ui.picker.open && !state.ui.layoutPicker.open) {
-                        return;
-                    }
-
-                    // Prioriteit: eerst layoutpicker sluiten
-                    // en als die niet open is dan eventueel de blockpicker.
-                    // In een $timeout zodat de wijzigingen door Angular worden verwerkt
-                    $timeout(function () {
-                        if (state.ui.layoutPicker.open) {
-                            fn.layoutPicker.close();
-                        } else if (state.ui.picker.open) {
-                            fn.picker.close();
-                        }
-                    });
-                }
-
-                function handleKeyup(e) {
-                    switch (e.keyCode) {
-                        case 27: // Escape
-                            return handleEscape(e);
-                    }
-                }
-
-                document.addEventListener("keyup", handleKeyup);
-
-                $scope.$on("$destroy", function () {
-                    document.removeEventListener("keyup", handleKeyup);
-                });
-            },
-
-            updateComputed: function () {
-                computed.definitionsByCategory = _.map(state.categories, function (category) {
-                    return {
-                        id: category.Id,
-                        category: category.Name,
-                        blocks: _.filter(state.definitions, function (block) {
-                            return block.CategoryIds.indexOf(category.Id) > -1;
-                        }),
-                        isEnabledForHeaders: category.IsEnabledForHeaders,
-                        isDisabledForBlocks: category.IsDisabledForBlocks,
-                    };
-                });
-
-                computed.categoriesById = _.reduce(state.categories, function (map, category) {
-                    map[category.Id] = category;
-                    return map;
-                }, {});
-
-                computed.categoriesByDefinitionId = _.reduce(state.definitions, function (map, block) {
-                    map[block.Id] = _.filter(_.map(block.CategoryIds || [], function (id) {
-                        return computed.categoriesById[id];
-                    }), function (category) {
-                        return category != null;
-                    });
-
-                    return map;
-                }, {});
-
-                computed.layoutsByDefinitionId = _.reduce(state.definitions, function (map, block) {
-                    map[block.Id] = block.Layouts || [];
-                    return map;
-                }, {});
-
-                computed.definitionsById = _.reduce(state.definitions, function (map, definition) {
-                    map[definition.Id] = definition;
-                    return map;
-                }, {});
-
-                computed.mandatoryBlocks = {};
-                if (state.preset != null) {
-                    if (state.preset.Header != null && state.preset.Header.IsMandatory) {
-                        computed.mandatoryBlocks[state.preset.Header.Id] = true;
-                    }
-
-                    fn.preset.eachBlock(function (block) {
-                        if (block.IsMandatory) {
-                            computed.mandatoryBlocks[block.Id] = true;
-                        }
-                    });
-                }
-            },
-
-            filters: {
-                categoryHasBlocks: function (category) {
-                    return category != null && Array.isArray(category.blocks) && category.blocks.length > 0;
-                }
-            },
-
-            save: function () {
-                // Yeah...
-                $("div[data-element='button-save'] > button").click();
-            },
-
-            utils: {
-                getContentBlockVisibleRatio: function (element) {
-                    function getContentBlockVisibleRatio(element) {
-                        var $element = $(element);
-                        if ($element.length === 0) {
-                            return;
-                        }
-
-                        var vp = getContentBlocksViewport();
-                        var ep = getElementPosition($element);
-
-                        if (ep.top > vp.bottom || vp.top > ep.bottom) {
-                            // Totally out of view
-                            return 0;
-                        }
-
-                        if (ep.top >= vp.top && ep.bottom <= vp.bottom) {
-                            // Totally in view
-                            return 1;
-                        }
-
-                        var visibleTop = Math.max(ep.top, vp.top);
-                        var visibleBottom = Math.min(ep.bottom, vp.bottom);
-
-                        var visibleHeight = visibleBottom - visibleTop;
-                        return visibleHeight / ep.height;
-                    }
-
-                    function getContentBlocksViewport() {
-                        var viewport = state.dom.contentBlocksViewport;
-                        var bcr = viewport.getBoundingClientRect();
-
-                        var top = bcr.top;
-                        var height = viewport.clientHeight;
-                        var bottom = top + height;
-                        var center = (top + height) / 2;
-
-                        return {
-                            top: top,
-                            bottom: bottom,
-                            height: height,
-                            center: center
-                        }
-                    }
-
-                    function getElementPosition($element) {
-                        var offset = $element.offset();
-                        var top = offset.top;
-                        var bottom = top + $element.outerHeight();
-                        var height = bottom - top;
-                        var center = top + height / 2;
-
-                        return {
-                            top: top,
-                            bottom: bottom,
-                            center: center,
-                            height: height,
-                            element: $element
-                        };
-                    }
-
-                    return getContentBlockVisibleRatio(element);
-                },
-
-                debounce: function debounce(func, wait) {
-                    var timeout;
-                    return function () {
-                        var context = this, args = arguments;
-                        var later = function () {
-                            timeout = null;
-                            func.apply(context, args);
-                        };
-                        clearTimeout(timeout);
-                        timeout = setTimeout(later, wait);
-                    };
-                },
-
-                getCurrentCulture: function () {
-                    var es = editorState.current;
-
-                    if (es == null || !Array.isArray(es.variants)) {
-                        return null;
-                    }
-
-                    var activeVariant = _.find(es.variants, function (variant) {
-                        return variant.active;
-                    });
-
-                    if (activeVariant !== null && activeVariant.language != null) {
-                        return activeVariant.language.culture;
-                    }
-
-                    return null;
-                }
-            },
-
+        ui: {
             picker: {
-                init: function (callback, disabledSelector) {
-                    state.ui.picker.callback = callback;
+                open: false,
 
-                    // Don't show hidden categories
-                    var definitionsByVisibleCategories = _.filter(computed.definitionsByCategory, function (c) {
-                        return !computed.categoriesById[c.id].IsHidden;
-                    });
+                // Array of { category: <string>, blocks: [IContentBlockDefinition] }
+                categories: null,
 
-                    state.ui.picker.categories = _.map(definitionsByVisibleCategories, function (category) {
-                        var isDisabled = typeof disabledSelector === "function"
-                            ? disabledSelector(category)
-                            : false;
+                // Callback with selected block definition Id
+                callback: null,
 
-                        return Object.assign({}, category, { isDisabled: isDisabled });
-                    });
+                // Currently selected category Id
+                selectedCategoryId: null,
 
-                    var firstEnabled = _.find(state.ui.picker.categories, function (category) {
-                        return !category.isDisabled && category.blocks.length > 0;
-                    });
+                // Id of currently selected block definition
+                selectedBlockId: null,
 
-                    if (firstEnabled != null) {
-                        state.ui.picker.selectedCategoryId = firstEnabled.id;
-                    }
-                },
-
-                pick: function (blockId) {
-                    state.ui.picker.selectedBlockId = blockId;
-
-                    state.ui.picker.confirmCallback = function () {
-                        var callback = state.ui.picker.callback;
-                        if (typeof callback === "function") {
-                            callback(blockId);
-                        }
-
-                        fn.picker.close();
-                    }
-                },
-
-                confirm: function () {
-                    if (typeof state.ui.picker.confirmCallback === "function") {
-                        state.ui.picker.confirmCallback();
-                    }
-                },
-
-                open: function () {
-                    state.ui.picker.open = true;
-                    fn.ui.fixOverlayStyling();
-                },
-
-                close: function () {
-                    state.ui.picker.open = false;
-
-                    state.ui.picker.selectedBlockId = null;
-                    state.ui.picker.selectedCategoryId = null;
-
-                    fn.ui.fixOverlayStyling();
-                }
-            },
-
-            copyPaste: {
-                init: function () {
-                    copyPasteService.onChange(function (data) {
-                        $timeout(function () {
-                            state.copyPaste.hasData = data != null;
-                        });
-                    })
-                },
-
-                confirmCopy: function (block) {
-                    var name = fn.blocks.getBlockName(block);
-                    if (name != null) {
-                        notificationsService.info("Copied " + name);
-                    }
-                },
-
-                copyHeader: function (header) {
-                    if (header != null) {
-                        copyPasteService.copyHeader(header);
-                        this.confirmCopy(header);
-                    }
-                },
-
-                copyBlock: function (block) {
-                    if (block != null) {
-                        copyPasteService.copyBlock(block);
-                        this.confirmCopy(block);
-                    }
-                },
-
-                copyAll: function () {
-                    var data = {
-                        header: $scope.model.value.header,
-                        blocks: $scope.model.value.blocks
-                    };
-
-                    copyPasteService.copyAll(data);
-                    notificationsService.info("Copied all blocks");
-                },
-
-                paste: function (afterBlockId) {
-                    copyPasteService.pasteAll(function (header, blocks) {
-                        if (header != null) {
-                            if ($scope.model.value.header != null) {
-                                notificationsService.warning("Cannot paste a header on a page with another header. If the header should be replaced, remove it first.");
-
-                                // Do not paste blocks either, just stop.
-                                return;
-                            } else {
-                                var definition = computed.definitionsById[header.definitionId];
-                                if (definition == null) {
-                                    // Header definition not found, either because unavailable for this page or removed in general.
-                                    notificationsService.warning("The copied header is not available on this page and will be skipped.");
-                                } else {
-                                    $scope.model.value.header = header;
-                                }
-                            }
-                        }
-
-                        if (blocks != null) {
-                            var idx = $scope.model.value.blocks.length - 1;
-                            if (afterBlockId != null) {
-                                if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
-                                    idx = 0;
-                                } else {
-                                    var blockIdx = fn.blocks.getIndex(afterBlockId);
-                                    if (blockIdx > -1) {
-                                        idx = blockIdx + 1;
-                                    }
-                                }
-                            }
-
-                            // Add all blocks in 1 statement -- filtering out blocks that are unavailable for this page or any mandatory blocks
-
-                            var availableBlocks = _.filter(blocks, function (block) {
-                                return computed.definitionsById[block.definitionId] != null && !computed.mandatoryBlocks[block.presetId];
-                            });
-
-                            var skippedBlocks = blocks.length - availableBlocks.length;
-                            if (skippedBlocks > 0) {
-                                if (skippedBlocks === 1) {
-                                    notificationsService.warning("1 copied block is not available on this page and is skipped.");
-                                } else {
-                                    notificationsService.warning(skippedBlocks + " copied blocks are not available for this page and are skipped.");
-                                }
-                            }
-
-                            var args = [idx, 0].concat(availableBlocks);
-                            [].splice.apply($scope.model.value.blocks, args);
-
-                            // Open and load all blocks
-                            var numBlocks = availableBlocks.length;
-                            for (var i = 0; i < numBlocks; i++) {
-                                var block = availableBlocks[i];
-
-                                if (numBlocks === 1) {
-                                    // Only when pasting a single block -- immediately expand it
-                                    fn.blocks.withCtrl(block.id, function (block) {
-                                        block.open();
-                                    });
-                                }
-                            }
-                        }
-
-                        // Remove copied data
-                        copyPasteService.clear();
-                    });
-                }
+                // Callback to run when confirming selection
+                confirmCallback: null,
             },
 
             layoutPicker: {
-                init: function (definitionId, blockCallback) {
-                    function selectLayoutCallback(layoutId) {
-                        state.ui.layoutPicker.selectedLayoutId = layoutId;
+                open: false,
 
-                        state.ui.layoutPicker.confirmCallback = function () {
-                            blockCallback(definitionId, layoutId);
+                // IContentBlockDefinition
+                block: null,
 
-                            fn.picker.close();
-                            fn.layoutPicker.close();
-                        }
+                // [IContentBlockLayout]
+                layouts: null,
+
+                // Callback function with selected layoutId parameter
+                callback: null,
+
+                // Id of currently selected layout
+                selectedLayoutId: null,
+
+                // Callback to run when confirming selection
+                confirmCallback: null
+            },
+
+            expandAll: false,
+            reorder: false,
+        },
+
+        // Array of IContentBlockDefinition
+        definitions: [],
+
+        // Array of IContentBlockCategory
+        categories: [],
+
+        // IContentBlocksPreset
+        preset: null,
+
+        dom: {
+            // Container containing the Umbraco editors and is the scrolling element
+            editorsContainer: null,
+
+            previewColumn: null,
+            previewIframeDesktop: null,
+            previewIframeMobile: null,
+            previewIframeFrameMobile: null,
+            previewIframeFrameDesktop: null,
+
+            blocksContainer: null,
+            contentBlocksViewport: null,
+
+            leftColumn: null,
+
+            // block id -> block dom element
+            blocks: {}
+        },
+
+        preview: {
+            visibleBlockId: null,
+            previewUrl: null,
+            // constants.preview.mode
+            mode: constants.preview.mode.desktop,
+            lastUpdate: null
+        },
+
+        copyPaste: {
+            hasData: false
+        },
+
+        // blockId -> perplexContentBlockController
+        blocks: {},
+
+        // blockId -> callback function to run when a block with that id registers itself
+        onBlockRegisterFns: {},
+
+        // blockId => [validationMessage]
+        validationMessages: {},
+    };
+
+    var computed = {
+        // Array of { category: <string>, blocks: [IContentBlockDefinition] },
+        // computed based on state.definitions and state.categories
+        definitionsByCategory: [],
+
+        // definitionId => [IContentBlockCategory]
+        categoriesByDefinitionId: {},
+
+        // definitionId => [IContentBlockLayout]
+        layoutsByDefinitionId: {},
+
+        // definitionId => IContentBlockDefinition
+        definitionsById: {},
+
+        // categoryId => IContentBlockCategory
+        categoriesById: {},
+
+        // presetId => true/false (based on state.preset)
+        mandatoryBlocks: {}
+    }
+
+    var fn = {
+        init: function () {
+            fn.editorState.init();
+            if (state.pageId == null) {
+                // Not in content
+                return;
+            }
+
+            fn.initModelValue();
+            fn.copyPaste.init();
+            fn.validation.init();
+            fn.setContainingGroupCssClass();
+
+            $q.all([
+                api.getDefinitionsForPage(state.documentType, state.culture),
+                api.getAllCategories(),
+                api.getPresetForPage(state.documentType, state.culture),
+            ]).then(function (responses) {
+                state.definitions = responses[0].data;
+                state.categories = responses[1].data;
+                state.preset = responses[2].data;
+
+                fn.preset.apply();
+                fn.updateComputed();
+            }).finally(function () {
+                state.initialized = true;
+
+                $timeout(function () {
+                    fn.initDom();
+                    fn.initEvents();
+                    fn.preview.init();
+                });
+            });
+        },
+
+        validation: {
+            init: function () {
+                var propertyAlias = $scope.model.alias;
+
+                var unsubscribe = serverValidationManager.subscribe(propertyAlias, undefined, "", function (valid, errors, allErrors, culture) {
+                    // Clear validationMessages
+                    state.validationMessages = {};
+
+                    if (!valid) {
+                        errors.forEach(function (error) {
+                            var match = error.fieldName.match(/#content-blocks-id:([^#]+)#/);
+                            if (match != null && match.length === 2) {
+                                var blockId = match[1];
+                                var errorMessage = error.errorMsg;
+                                state.validationMessages[blockId] = state.validationMessages[blockId] || [];
+                                state.validationMessages[blockId].push(errorMessage);
+                            }
+                        });
                     }
+                });
 
-                    var layouts = computed.layoutsByDefinitionId[definitionId];
+                $scope.$on("$destroy", unsubscribe);
+            }
+        },
 
-                    state.ui.layoutPicker.callback = selectLayoutCallback;
-                    state.ui.layoutPicker.layouts = layouts;
-                    state.ui.layoutPicker.block = computed.definitionsById[definitionId];
+        editorState: {
+            init: function () {
+                var es = editorState.current;
 
-                    this.open();
-                },
-
-                pick: function (layoutId) {
-                    var callback = state.ui.layoutPicker.callback;
-                    if (typeof callback === "function") {
-                        callback(layoutId);
-                    }
-                },
-
-                confirm: function () {
-                    if (typeof state.ui.layoutPicker.confirmCallback === "function") {
-                        state.ui.layoutPicker.confirmCallback();
-                    }
-                },
-
-                open: function () {
-                    state.ui.layoutPicker.open = true;
-
-                    fn.ui.fixOverlayStyling();
-                },
-
-                close: function () {
-                    state.ui.layoutPicker.open = false;
-                    state.ui.layoutPicker.selectedLayoutId = null;
-
-                    fn.ui.fixOverlayStyling();
+                if (es == null) {
+                    return;
                 }
-            },
 
-            updatePreviews: function () {
-                fn.preview.updateDesktop();
-                fn.preview.updateMobile();
-            },
+                state.pageId = es.id;
+                state.isNewPage = state.pageId === 0;
+                state.culture = fn.utils.getCurrentCulture();
+                state.documentType = es.contentTypeAlias;
 
-            getModelVersion: function () {
-                return $scope.model.value.version;
-            },
-
-            setModelVersion: function (version) {
-                $scope.model.value.version = version;
-            },
-
-            preview: {
-                init: function () {
-                    if (state.isNewPage) {
-                        return;
-                    }
-
-                    var previewUrl = fn.preview.getPreviewUrl();
-                    if (previewUrl != null) {
-                        state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
-                        state.preview.lastUpdate = Date.now();
-                        $timeout(fn.preview.setPreviewScale);
-                    }
-                },
-
-                initEvents: function () {
-                    var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
-                    state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
-                    state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
-
-                    var debouncedSetPreviewScale = fn.utils.debounce(fn.preview.setPreviewScale, 200);
-                    window.addEventListener("resize", debouncedSetPreviewScale);
-
-                    var unsubscribe = eventsService.on("content.saved", function () {
+                if (state.isNewPage) {
+                    var unsubscribe;
+                    unsubscribe = eventsService.on("content.saved", function () {
                         if (state.isNewPage) {
-                            // Initialize previews
+                            // Update editorState with pageId / isNewPage etc.
                             fn.editorState.init();
-                            fn.preview.init();
-                        } else {
-                            // Update previews after save                    
-                            fn.updatePreviews();
-                        }
-                    });
-
-                    this.setPreviewScaleOnLeftColumnResize(debouncedSetPreviewScale);
-
-                    $scope.$on("$destroy", function () {
-                        state.dom.editorsContainer.removeEventListener("scroll", debouncedSyncScroll);
-                        state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
-                        window.removeEventListener("resize", debouncedSetPreviewScale);
-
-                        if (typeof unsubscribe === "function") {
                             unsubscribe();
                         }
                     });
-                },
 
-                getPreviewUrl: function () {
-                    if (state.pageId == null) {
-                        return null;
+                    $scope.$on("$destroy", unsubscribe);
+                }
+            }
+        },
+
+        initModelValue: function () {
+            if (
+                $scope.model.value == null ||
+                Object.prototype.toString.call($scope.model.value) !== "[object Object]"
+            ) {
+                $scope.model.value = {
+                    version: state.version,
+
+                    // IContentBlock
+                    header: null,
+
+                    // Array of IContentBlock
+                    blocks: []
+                };
+            }
+
+            this.upgradeVersion();
+        },
+
+        initDom: function () {
+            if ($rootElement.length === 0) {
+                return;
+            }
+
+            var element = $rootElement[0];
+
+            state.dom.editorsContainer = document.querySelector(".umb-editor-container");
+
+            var sidebarHolder = element.querySelector(".p-sidebar__holder");
+            state.dom.previewColumn = sidebarHolder == null ? null : sidebarHolder.parentNode;
+            state.dom.blocksContainer = element.querySelector(".p-editor");
+            state.dom.contentBlocksViewport = document.querySelector(".umb-editor-container.umb-scrollable");
+            state.dom.leftColumn = document.getElementById("leftcolumn");
+
+            if (state.dom.previewColumn != null) {
+                state.dom.previewIframeDesktop = state.dom.previewColumn.querySelector(".p-sidebar__preview__root--desktop");
+                state.dom.previewIframeFrameDesktop = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame--desktop");
+                state.dom.previewIframeMobile = state.dom.previewColumn.querySelector(".p-sidebar__preview__root--mobile");
+                state.dom.previewIframeFrameMobile = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame--mobile");
+            }
+
+            /* Fix Safari bugs */
+            if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Mac') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
+                $('html').addClass('safari-mac'); // provide a class for the safari-mac specific css to filter with
+            }
+        },
+
+        initEvents: function () {
+            if (state.dom.editorsContainer == null) {
+                return;
+            }
+
+            fn.initHotkeys();
+        },
+
+        initHotkeys: function () {
+            function handleEscape() {
+                if (!state.ui.picker.open && !state.ui.layoutPicker.open) {
+                    return;
+                }
+
+                // Prioriteit: eerst layoutpicker sluiten
+                // en als die niet open is dan eventueel de blockpicker.
+                // In een $timeout zodat de wijzigingen door Angular worden verwerkt
+                $timeout(function () {
+                    if (state.ui.layoutPicker.open) {
+                        fn.layoutPicker.close();
+                    } else if (state.ui.picker.open) {
+                        fn.picker.close();
                     }
+                });
+            }
 
-                    var root = "/umbraco/backoffice/api/contentblockspreviewapi/GetPreviewForIframe";
-                    var qs = "?pageId=" + state.pageId + "&culture=" + (state.culture || "");
+            function handleKeyup(e) {
+                switch (e.keyCode) {
+                    case 27: // Escape
+                        return handleEscape(e);
+                }
+            }
 
-                    return root + qs;
-                },
+            document.addEventListener("keyup", handleKeyup);
 
-                setPreviewScaleOnLeftColumnResize: function (debouncedSetPreviewScale) {
-                    if (typeof MutationObserver === "function" && state.dom.leftColumn != null) {
-                        var navigationElement = state.dom.leftColumn.children[0];
-                        if (navigationElement != null) {
-                            var observer = new MutationObserver(function onMutation(mutations) {
-                                debouncedSetPreviewScale();
-                            });
+            $scope.$on("$destroy", function () {
+                document.removeEventListener("keyup", handleKeyup);
+            });
+        },
 
-                            // Start observing
-                            observer.observe(navigationElement, {
-                                attributes: true,
-                                // Only look at changes to the "style" attribute
-                                attributeFilter: ["style"]
-                            });
+        updateComputed: function () {
+            computed.definitionsByCategory = _.map(state.categories, function (category) {
+                return {
+                    id: category.Id,
+                    category: category.Name,
+                    blocks: _.filter(state.definitions, function (block) {
+                        return block.CategoryIds.indexOf(category.Id) > -1;
+                    }),
+                    isEnabledForHeaders: category.IsEnabledForHeaders,
+                    isDisabledForBlocks: category.IsDisabledForBlocks,
+                };
+            });
 
-                            $scope.$on("$destroy", function () {
-                                observer.disconnect();
-                            });
+            computed.categoriesById = _.reduce(state.categories, function (map, category) {
+                map[category.Id] = category;
+                return map;
+            }, {});
 
-                            return observer;
-                        }
+            computed.categoriesByDefinitionId = _.reduce(state.definitions, function (map, block) {
+                map[block.Id] = _.filter(_.map(block.CategoryIds || [], function (id) {
+                    return computed.categoriesById[id];
+                }), function (category) {
+                    return category != null;
+                });
+
+                return map;
+            }, {});
+
+            computed.layoutsByDefinitionId = _.reduce(state.definitions, function (map, block) {
+                map[block.Id] = block.Layouts || [];
+                return map;
+            }, {});
+
+            computed.definitionsById = _.reduce(state.definitions, function (map, definition) {
+                map[definition.Id] = definition;
+                return map;
+            }, {});
+
+            computed.mandatoryBlocks = {};
+            if (state.preset != null) {
+                if (state.preset.Header != null && state.preset.Header.IsMandatory) {
+                    computed.mandatoryBlocks[state.preset.Header.Id] = true;
+                }
+
+                fn.preset.eachBlock(function (block) {
+                    if (block.IsMandatory) {
+                        computed.mandatoryBlocks[block.Id] = true;
                     }
-                },
+                });
+            }
+        },
 
-                syncScroll: function () {
-                    if (state.dom.previewIframeDesktop == null || state.dom.previewIframeDesktop.contentWindow == null) {
-                        return;
-                    }
+        filters: {
+            categoryHasBlocks: function (category) {
+                return category != null && Array.isArray(category.blocks) && category.blocks.length > 0;
+            }
+        },
 
-                    var visibleBlockId = fn.blocks.getInViewBlockId(false) || fn.blocks.getInViewBlockId(true);
+        save: function () {
+            // Yeah...
+            $("div[data-element='button-save'] > button").click();
+        },
 
-                    if (visibleBlockId == null || state.preview.visibleBlockId === visibleBlockId) {
-                        return;
-                    }
+        utils: {
+            getContentBlockVisibleRatio: utils.getContentBlockVisibleRatio,
+            debounce: utils.debounce,
+            getCurrentCulture: utils.getCurrentCulture,
+        },
 
-                    state.preview.visibleBlockId = visibleBlockId;
-                    state.dom.previewIframeDesktop.contentWindow.postMessage({ blockId: state.preview.visibleBlockId }, window.location.origin);
-                },
+        picker: {
+            init: function (callback, disabledSelector) {
+                state.ui.picker.callback = callback;
 
-                updatePreviewColumnPositionOnScroll: function (e) {
-                    if (e.srcElement == null) {
-                        return;
-                    }
+                // Don't show hidden categories
+                var definitionsByVisibleCategories = _.filter(computed.definitionsByCategory, function (c) {
+                    return !computed.categoriesById[c.id].IsHidden;
+                });
 
-                    fn.preview.updatePreviewColumnPosition(e.srcElement.scrollTop);
-                },
+                state.ui.picker.categories = _.map(definitionsByVisibleCategories, function (category) {
+                    var isDisabled = typeof disabledSelector === "function"
+                        ? disabledSelector(category)
+                        : false;
 
-                updatePreviewColumnPosition: function (scrollTop) {
-                    var blocksRect = state.dom.blocksContainer.getBoundingClientRect();
-                    var previewRect = state.dom.previewColumn.getBoundingClientRect();
-                    var editorsRect = state.dom.editorsContainer.getBoundingClientRect();
+                    return Object.assign({}, category, { isDisabled: isDisabled });
+                });
 
-                    var distanceToTop = blocksRect.top - editorsRect.top
-                    var offset = scrollTop + distanceToTop;
-                    var padding = 20;
-                    var actualScroll = scrollTop - offset + padding;
+                var firstEnabled = _.find(state.ui.picker.categories, function (category) {
+                    return !category.isDisabled && category.blocks.length > 0;
+                });
 
-                    var blocksTop = blocksRect.top;
-                    var blocksPosY = blocksTop + blocksRect.height;
-                    var previewTop = previewRect.top;
-                    var previewPosY = previewTop + previewRect.height;
-
-                    var previewMargin = parseInt(state.dom.previewColumn.style.marginTop) || 0;
-                    var toMove = actualScroll - previewMargin;
-
-                    if (previewRect.height > blocksRect.height) {
-                        // If the preview container is longer than the blocks container,
-                        // align it to the top of the screen regardless of the current scroll
-                        toMove = blocksTop - previewTop;
-                    } else {
-                        if ((previewPosY + toMove) >= blocksPosY) {
-                            // When the bottom of the preview container
-                            // goes beyond the bottom of the blocks container 
-                            // -> set to bottom
-                            var maxMove = blocksPosY - previewPosY;
-                            toMove = Math.max(0, maxMove);
-                        } else if (actualScroll < 0 || previewTop + toMove < blocksTop) {
-                            toMove = blocksTop - previewTop;
-                        }
-                    }
-
-                    if (state.dom.previewColumn != null) {
-                        state.dom.previewColumn.style.marginTop = (previewMargin + toMove) + "px";
-                    }
-                },
-
-                switchTo: function (mode) {
-                    if (state.preview.mode === mode) {
-                        return;
-                    }
-
-                    state.preview.mode = mode;
-                    $timeout(fn.preview.setPreviewScale);
-                },
-
-                switchToDesktop: function () {
-                    fn.preview.switchTo(constants.preview.mode.desktop);
-                },
-
-                switchToMobile: function () {
-                    fn.preview.switchTo(constants.preview.mode.mobile);
-                },
-
-                updateDesktop: function () {
-                    this.updateIframe(state.dom.previewIframeDesktop);
-                },
-
-                updateMobile: function () {
-                    this.updateIframe(state.dom.previewIframeMobile);
-                },
-
-                updateIframe: function (iframe) {
-                    if (iframe == null) {
-                        return;
-                    }
-
-                    iframe.onload = function () {
-                        // Clear visible block -- always scroll again
-                        state.preview.visibleBlockId = null;
-                        fn.preview.syncScroll();
-                    }
-
-                    iframe.contentWindow.location.reload();
-                    state.preview.lastUpdate = Date.now();
-                },
-
-                setPreviewScale: function () {
-                    fn.preview.setDesktopPreviewScale();
-                    fn.preview.setMobilePreviewScale();
-                },
-
-                setDesktopPreviewScale: function () {
-                    fn.preview.setIframeScale(state.dom.previewIframeFrameDesktop, state.dom.previewIframeDesktop);
-                },
-
-                setMobilePreviewScale: function () {
-                    fn.preview.setIframeScale(state.dom.previewIframeFrameMobile, state.dom.previewIframeMobile);
-                },
-
-                setIframeScale: function (iframeFrame, iframe) {
-                    if (iframeFrame == null || iframe == null) {
-                        return;
-                    }
-
-                    var ratio = iframeFrame.clientWidth / iframe.clientWidth;
-                    iframe.style.transform = "scale(" + ratio + ") translateZ(0)";
+                if (firstEnabled != null) {
+                    state.ui.picker.selectedCategoryId = firstEnabled.id;
                 }
             },
 
-            header: {
-                get: function (property) {
-                    return $scope.model.value.header[property];
-                },
+            pick: function (blockId) {
+                state.ui.picker.selectedBlockId = blockId;
 
-                set: function (property, value) {
-                    $scope.model.value.header[property] = value;
-                },
-
-                pick: function () {
-                    function disabledSelector(category) {
-                        return !category.isEnabledForHeaders;
+                state.ui.picker.confirmCallback = function () {
+                    var callback = state.ui.picker.callback;
+                    if (typeof callback === "function") {
+                        callback(blockId);
                     }
 
-                    fn.picker.init(function (definitionId, layoutId) {
-                        var layoutId = layoutId;
-
-                        if (layoutId == null) {
-                            var layouts = computed.layoutsByDefinitionId[definitionId];
-                            if (layouts != null && layouts.length > 0) {
-                                layoutId = layouts[0].Id;
-                            }
-                        }
-
-                        $scope.model.value.header = fn.blocks.createEmpty(definitionId, layoutId);
-
-                        fn.blocks.withCtrl($scope.model.value.header.id, function (block) {
-                            // Open block immediately
-                            block.open();
-                        });
-                    }, disabledSelector);
-
-                    fn.picker.open();
-                },
-
-                remove: function () {
-                    if ($scope.model.value.header == null) {
-                        return;
-                    }
-
-                    $scope.model.value.header = null;
+                    fn.picker.close();
                 }
             },
 
-            blocks: {
-                get: function (block, property) {
-                    return block[property];
-                },
+            confirm: function () {
+                if (typeof state.ui.picker.confirmCallback === "function") {
+                    state.ui.picker.confirmCallback();
+                }
+            },
 
-                set: function (block, property, value) {
-                    block[property] = value;
-                },
+            open: function () {
+                state.ui.picker.open = true;
+                fn.ui.fixOverlayStyling();
+            },
 
-                add: function (afterBlockId) {
-                    if (!Array.isArray($scope.model.value.blocks)) {
-                        $scope.model.value.blocks = [];
-                    }
+            close: function () {
+                state.ui.picker.open = false;
 
-                    function disabledSelector(category) {
-                        return category.isDisabledForBlocks;
-                    }
+                state.ui.picker.selectedBlockId = null;
+                state.ui.picker.selectedCategoryId = null;
 
-                    function selectBlockCallback(definitionId, layoutId) {
-                        var layoutId = layoutId;
+                fn.ui.fixOverlayStyling();
+            }
+        },
 
-                        if (layoutId == null) {
-                            var layouts = computed.layoutsByDefinitionId[definitionId];
-                            if (layouts != null && layouts.length > 0) {
-                                layoutId = layouts[0].Id;
+        copyPaste: {
+            init: function () {
+                copyPasteService.onChange(function (data) {
+                    $timeout(function () {
+                        state.copyPaste.hasData = data != null;
+                    });
+                })
+            },
+
+            confirmCopy: function (block) {
+                var name = fn.blocks.getBlockName(block);
+                if (name != null) {
+                    notificationsService.info("Copied " + name);
+                }
+            },
+
+            copyHeader: function (header) {
+                if (header != null) {
+                    copyPasteService.copyHeader(header);
+                    this.confirmCopy(header);
+                }
+            },
+
+            copyBlock: function (block) {
+                if (block != null) {
+                    copyPasteService.copyBlock(block);
+                    this.confirmCopy(block);
+                }
+            },
+
+            copyAll: function () {
+                var data = {};
+
+                if (config.structure.header) {
+                    data.header = $scope.model.value.header;
+                }
+
+                if (config.structure.blocks) {
+                    data.blocks = $scope.model.value.blocks;
+                }
+
+                copyPasteService.copyAll(data);
+                notificationsService.info("Copied all blocks");
+            },
+
+            paste: function (afterBlockId) {
+                copyPasteService.pasteAll(function (header, blocks) {
+                    if (header != null && config.structure.header) {
+                        if ($scope.model.value.header != null) {
+                            notificationsService.warning("Cannot paste a header on a page with another header. If the header should be replaced, remove it first.");
+
+                            // Do not paste blocks either, just stop.
+                            return;
+                        } else {
+                            var definition = computed.definitionsById[header.definitionId];
+                            if (definition == null) {
+                                // Header definition not found, either because unavailable for this page or removed in general.
+                                notificationsService.warning("The copied header is not available on this page and will be skipped.");
+                            } else {
+                                $scope.model.value.header = header;
                             }
                         }
+                    }
 
-                        // Add at the end by default
+                    if (blocks != null && config.structure.blocks) {
                         var idx = $scope.model.value.blocks.length - 1;
-
                         if (afterBlockId != null) {
                             if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
                                 idx = 0;
@@ -954,358 +529,765 @@
                             }
                         }
 
-                        var empty = fn.blocks.createEmpty(definitionId, layoutId);
-                        $scope.model.value.blocks.splice(idx, 0, empty);
+                        // Add all blocks in 1 statement -- filtering out blocks that are unavailable for this page or any mandatory blocks
 
-                        fn.blocks.withCtrl(empty.id, function (block) {
-                            // Open immediately
-                            block.open();
+                        var availableBlocks = _.filter(blocks, function (block) {
+                            return computed.definitionsById[block.definitionId] != null && !computed.mandatoryBlocks[block.presetId];
                         });
-                    }
 
-                    fn.picker.init(selectBlockCallback, disabledSelector);
-
-                    fn.picker.open();
-                },
-
-                createEmpty: function (definitionId, layoutId) {
-                    var id = String.CreateGuid();
-
-                    return {
-                        id: id,
-                        definitionId: definitionId,
-                        layoutId: layoutId,
-                        // Empty NestedContent model value
-                        content: [],
-                    };
-                },
-
-                remove: function (id) {
-                    if (!Array.isArray($scope.model.value.blocks)) {
-                        return;
-                    }
-
-                    var idx = fn.blocks.getIndex(id);
-                    if (idx > -1) {
-                        $scope.model.value.blocks.splice(idx, 1);
-                    }
-                },
-
-                registerElement: function (blockId, $element) {
-                    if (blockId == null) {
-                        throw new Error("Block id should not be null / undefined!");
-                    }
-
-                    if ($element.length === 1) {
-                        var element = $element[0];
-
-                        state.dom.blocks[blockId] = element;
-
-                        return function removeElement() {
-                            delete state.dom.blocks[blockId];
-                        }
-                    }
-                },
-
-                getElement: function (id) {
-                    return state.dom.blocks[id];
-                },
-
-                registerBlockController: function (id, controller) {
-                    state.blocks[id] = controller;
-
-                    var onRegister = state.onBlockRegisterFns[id];
-                    if (typeof onRegister === "function") {
-                        onRegister(controller);
-                    }
-
-                    return function deregisterController() {
-                        delete state.blocks[id];
-                    }
-                },
-
-                /**
-                 * Calls `callback` with the controller of the block with the given id.
-                 * If the block controller has not been registered yet, the callback will be called
-                 * when it does. Otherwise it is called immediately.
-                 * @param {any} id Block id
-                 * @param {any} callback Callback function to be called when the controller of the block is available
-                 */
-                withCtrl: function (id, callback) {
-                    var block = state.blocks[id];
-                    if (block != null) {
-                        callback(block);
-                    } else {
-                        state.onBlockRegisterFns[id] = function (block) {
-                            callback(block);
-                            delete state.onBlockRegisterFns[id];
-                        }
-                    }
-                },
-
-                getIndex: function (id) {
-                    return _.findIndex($scope.model.value.blocks, function (block) {
-                        return block.id === id;
-                    })
-                },
-
-                getBlockName: function (block) {
-                    if (block == null) {
-                        return null;
-                    }
-
-                    var definition = computed.definitionsById[block.definitionId];
-                    if (definition == null) {
-                        return null;
-                    }
-
-                    return definition.Name;
-                },
-
-                layouts: {
-                    getLayoutIndex: function (block) {
-                        if (block == null || block.layoutId == null || block.definitionId == null) {
-                            return null;
-                        }
-
-                        var layouts = computed.layoutsByDefinitionId[block.definitionId];
-                        if (layouts == null) {
-                            return null;
-                        }
-
-                        return _.findIndex(layouts, function (layout) {
-                            return layout.Id === block.layoutId;
-                        });
-                    },
-
-                    slider: {
-                        onAfterChange: function (block, slideIdx) {
-                            var layout = fn.blocks.layouts.getLayout(block, slideIdx);
-                            if (layout != null) {
-                                block.layoutId = layout.Id;
-                            }
-                        }
-                    },
-
-                    getLayout: function (block, index) {
-                        var layouts = computed.layoutsByDefinitionId[block.definitionId];
-                        if (layouts == null || !Array.isArray(layouts)) {
-                            return null;
-                        }
-
-                        return layouts[index];
-                    },
-
-                    setLayout: function (block, layoutIdx) {
-                        var layout = this.getLayout(block, layoutIdx);
-                        if (layout != null) {
-                            block.layoutId = layout.Id;
-                        }
-                    },
-                },
-
-                eachBlock: function (callback) {
-                    if (Array.isArray($scope.model.value.blocks)) {
-                        for (var i = 0; i < $scope.model.value.blocks.length; i++) {
-                            var block = $scope.model.value.blocks[i];
-                            callback(block);
-                        }
-                    }
-                },
-
-                getInViewBlockId: function (includeCollapsed) {
-                    var blocks = state.dom.blocksContainer.querySelectorAll(".p-block__item");
-
-                    var prev = {
-                        id: null,
-                        ratio: null,
-                    }
-
-                    for (var i = 0; i < blocks.length; i++) {
-                        var block = blocks[i];
-                        var blockId = block.dataset.id;
-                        var isLast = i === blocks.length - 1;
-
-                        if (!includeCollapsed) {
-                            var blockCtrl = state.blocks[blockId]
-
-                            var skip = blockCtrl != null && !blockCtrl.state.open;
-
-                            if (skip) {
-                                if (isLast) {
-                                    return prev.id;
-                                } else {
-                                    continue;
-                                }
-                            }
-                        }
-
-                        var visibleRatio = fn.utils.getContentBlockVisibleRatio(block);
-
-                        if (visibleRatio === 1) {
-                            // Completely visible
-                            return block.dataset.id;
-                        }
-
-                        if (visibleRatio === 0) {
-                            if (prev.id != null) {
-                                return prev.id;
-                            }
-                        }
-
-                        if (visibleRatio > 0 && visibleRatio < 1) {
-                            if (prev.id != null && prev.ratio > visibleRatio) {
-                                return prev.id;
-                            } else if (isLast) {
-                                // Last block -> show this block
-                                return blockId;
+                        var skippedBlocks = blocks.length - availableBlocks.length;
+                        if (skippedBlocks > 0) {
+                            if (skippedBlocks === 1) {
+                                notificationsService.warning("1 copied block is not available on this page and is skipped.");
                             } else {
-                                // Store for later
-                                prev = { id: blockId, ratio: visibleRatio };
+                                notificationsService.warning(skippedBlocks + " copied blocks are not available for this page and are skipped.");
+                            }
+                        }
+
+                        var args = [idx, 0].concat(availableBlocks);
+                        [].splice.apply($scope.model.value.blocks, args);
+
+                        // Open and load all blocks
+                        var numBlocks = availableBlocks.length;
+                        for (var i = 0; i < numBlocks; i++) {
+                            var block = availableBlocks[i];
+
+                            if (numBlocks === 1) {
+                                // Only when pasting a single block -- immediately expand it
+                                fn.blocks.withCtrl(block.id, function (block) {
+                                    block.open();
+                                });
                             }
                         }
                     }
-                },
-            },
 
-            upgradeVersion: function () {
-                // Add any version upgrade logic here,
-                // e.g. if(fn.getModelVersion() === 1 && state.version === 2) { ... }
+                    // Remove copied data
+                    copyPasteService.clear();
+                });
+            }
+        },
 
-                if (fn.getModelVersion() < 2) {
-                    fn.versionUpgrades.addGuids();
+        layoutPicker: {
+            init: function (definitionId, blockCallback) {
+                function selectLayoutCallback(layoutId) {
+                    state.ui.layoutPicker.selectedLayoutId = layoutId;
+
+                    state.ui.layoutPicker.confirmCallback = function () {
+                        blockCallback(definitionId, layoutId);
+
+                        fn.picker.close();
+                        fn.layoutPicker.close();
+                    }
                 }
 
-                fn.setModelVersion(state.version);
+                var layouts = computed.layoutsByDefinitionId[definitionId];
+
+                state.ui.layoutPicker.callback = selectLayoutCallback;
+                state.ui.layoutPicker.layouts = layouts;
+                state.ui.layoutPicker.block = computed.definitionsById[definitionId];
+
+                this.open();
             },
 
-            setContainingGroupCssClass: function () {
-                if ($rootElement == null) {
+            pick: function (layoutId) {
+                var callback = state.ui.layoutPicker.callback;
+                if (typeof callback === "function") {
+                    callback(layoutId);
+                }
+            },
+
+            confirm: function () {
+                if (typeof state.ui.layoutPicker.confirmCallback === "function") {
+                    state.ui.layoutPicker.confirmCallback();
+                }
+            },
+
+            open: function () {
+                state.ui.layoutPicker.open = true;
+
+                fn.ui.fixOverlayStyling();
+            },
+
+            close: function () {
+                state.ui.layoutPicker.open = false;
+                state.ui.layoutPicker.selectedLayoutId = null;
+
+                fn.ui.fixOverlayStyling();
+            }
+        },
+
+        getModelVersion: function () {
+            return $scope.model.value.version;
+        },
+
+        setModelVersion: function (version) {
+            $scope.model.value.version = version;
+        },
+
+        preview: {
+            init: function () {
+                if (config.disablePreview) {
                     return;
                 }
 
-                var tabGroup = $rootElement.closest(".umb-group-panel");
-                if (tabGroup != null) {
-                    tabGroup.addClass("perplex-content-blocks__panel");
+                fn.preview.initEvents();
+                fn.preview.updatePreviews();
+            },
+
+            initEvents: function () {
+                var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
+                state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
+                state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
+
+                var debouncedSetPreviewScale = fn.utils.debounce(fn.preview.setPreviewScale, 200);
+                window.addEventListener("resize", debouncedSetPreviewScale);
+
+                var unsubscribe = eventsService.on("content.saved", function () {
+                    if (state.isNewPage) {
+                        fn.preview.init();
+                    } else {
+                        // Update previews after save                    
+                        fn.preview.updatePreviews();
+                    }
+                });
+
+                this.setPreviewScaleOnLeftColumnResize(debouncedSetPreviewScale);
+
+                $scope.$on("$destroy", function () {
+                    state.dom.editorsContainer.removeEventListener("scroll", debouncedSyncScroll);
+                    state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
+                    window.removeEventListener("resize", debouncedSetPreviewScale);
+
+                    if (typeof unsubscribe === "function") {
+                        unsubscribe();
+                    }
+                });
+            },
+
+            getPreviewUrl: function () {
+                if (state.pageId == null || state.pageId === 0) {
+                    return null;
+                }
+
+                var root = "/umbraco/backoffice/api/contentblockspreviewapi/GetPreviewForIframe";
+                var qs = "?pageId=" + state.pageId + "&culture=" + (state.culture || "");
+
+                return root + qs;
+            },
+
+            setPreviewUrl: function () {
+                var previewUrl = fn.preview.getPreviewUrl();
+                if (previewUrl != null) {
+                    state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
+                    state.preview.lastUpdate = Date.now();
                 }
             },
 
-            preset: {
-                apply: function () {
-                    if (state.preset != null) {
-                        if ($scope.model.value.header == null && state.preset.Header != null) {
-                            // Only apply when there is no header yet on this page                            
-                            $scope.model.value.header = fn.preset.createBlock(state.preset.Header);
+            updatePreviews: function () {
+                if (state.preview.previewUrl == null) {
+                    fn.preview.setPreviewUrl();
+                    $timeout(fn.preview.setPreviewScale);
+                }
+
+                fn.preview.updateDesktop();
+                fn.preview.updateMobile();
+            },
+
+            setPreviewScaleOnLeftColumnResize: function (debouncedSetPreviewScale) {
+                if (typeof MutationObserver === "function" && state.dom.leftColumn != null) {
+                    var navigationElement = state.dom.leftColumn.children[0];
+                    if (navigationElement != null) {
+                        var observer = new MutationObserver(function onMutation(mutations) {
+                            debouncedSetPreviewScale();
+                        });
+
+                        // Start observing
+                        observer.observe(navigationElement, {
+                            attributes: true,
+                            // Only look at changes to the "style" attribute
+                            attributeFilter: ["style"]
+                        });
+
+                        $scope.$on("$destroy", function () {
+                            observer.disconnect();
+                        });
+
+                        return observer;
+                    }
+                }
+            },
+
+            syncScroll: function (ignoreCollapsed) {
+                if (state.dom.previewIframeDesktop == null || state.dom.previewIframeDesktop.contentWindow == null) {
+                    return;
+                }
+
+                var visibleBlockId = fn.blocks.getInViewBlockId(false);
+
+                if (visibleBlockId == null && !ignoreCollapsed) {
+                    visibleBlockId = fn.blocks.getInViewBlockId(true);
+                }
+
+                if (visibleBlockId == null || state.preview.visibleBlockId === visibleBlockId) {
+                    return;
+                }
+
+                state.preview.visibleBlockId = visibleBlockId;
+                state.dom.previewIframeDesktop.contentWindow.postMessage({ blockId: state.preview.visibleBlockId }, window.location.origin);
+            },
+
+            updatePreviewColumnPositionOnScroll: function (e) {
+                if (e.srcElement == null) {
+                    return;
+                }
+
+                fn.preview.updatePreviewColumnPosition(e.srcElement.scrollTop);
+            },
+
+            updatePreviewColumnPosition: function (scrollTop) {
+                var blocksRect = state.dom.blocksContainer.getBoundingClientRect();
+                var previewRect = state.dom.previewColumn.getBoundingClientRect();
+                var editorsRect = state.dom.editorsContainer.getBoundingClientRect();
+
+                var distanceToTop = blocksRect.top - editorsRect.top
+                var offset = scrollTop + distanceToTop;
+                var padding = 20;
+                var actualScroll = scrollTop - offset + padding;
+
+                var blocksTop = blocksRect.top;
+                var blocksPosY = blocksTop + blocksRect.height;
+                var previewTop = previewRect.top;
+                var previewPosY = previewTop + previewRect.height;
+
+                var previewMargin = parseInt(state.dom.previewColumn.style.marginTop) || 0;
+                var toMove = actualScroll - previewMargin;
+
+                if (previewRect.height > blocksRect.height) {
+                    // If the preview container is longer than the blocks container,
+                    // align it to the top of the screen regardless of the current scroll
+                    toMove = blocksTop - previewTop;
+                } else {
+                    if ((previewPosY + toMove) >= blocksPosY) {
+                        // When the bottom of the preview container
+                        // goes beyond the bottom of the blocks container 
+                        // -> set to bottom
+                        var maxMove = blocksPosY - previewPosY;
+                        toMove = Math.max(0, maxMove);
+                    } else if (actualScroll < 0 || previewTop + toMove < blocksTop) {
+                        toMove = blocksTop - previewTop;
+                    }
+                }
+
+                if (state.dom.previewColumn != null) {
+                    state.dom.previewColumn.style.marginTop = (previewMargin + toMove) + "px";
+                }
+            },
+
+            switchTo: function (mode) {
+                if (state.preview.mode === mode) {
+                    return;
+                }
+
+                state.preview.mode = mode;
+                $timeout(fn.preview.setPreviewScale);
+            },
+
+            switchToDesktop: function () {
+                fn.preview.switchTo(constants.preview.mode.desktop);
+            },
+
+            switchToMobile: function () {
+                fn.preview.switchTo(constants.preview.mode.mobile);
+            },
+
+            updateDesktop: function () {
+                this.updateIframe(state.dom.previewIframeDesktop);
+            },
+
+            updateMobile: function () {
+                this.updateIframe(state.dom.previewIframeMobile);
+            },
+
+            updateIframe: function (iframe) {
+                if (iframe == null) {
+                    return;
+                }
+
+                iframe.onload = function () {
+                    // Clear visible block -- always scroll again
+                    state.preview.visibleBlockId = null;
+                    fn.preview.syncScroll();
+                }
+
+                iframe.contentWindow.location.reload();
+                state.preview.lastUpdate = Date.now();
+            },
+
+            setPreviewScale: function () {
+                fn.preview.setDesktopPreviewScale();
+                fn.preview.setMobilePreviewScale();
+            },
+
+            setDesktopPreviewScale: function () {
+                fn.preview.setIframeScale(state.dom.previewIframeFrameDesktop, state.dom.previewIframeDesktop);
+            },
+
+            setMobilePreviewScale: function () {
+                fn.preview.setIframeScale(state.dom.previewIframeFrameMobile, state.dom.previewIframeMobile);
+            },
+
+            setIframeScale: function (iframeFrame, iframe) {
+                if (iframeFrame == null || iframe == null) {
+                    return;
+                }
+
+                var ratio = iframeFrame.clientWidth / iframe.clientWidth;
+                iframe.style.transform = "scale(" + ratio + ") translateZ(0)";
+            }
+        },
+
+        header: {
+            get: function (property) {
+                return $scope.model.value.header[property];
+            },
+
+            set: function (property, value) {
+                $scope.model.value.header[property] = value;
+            },
+
+            pick: function () {
+                function disabledSelector(category) {
+                    return !category.isEnabledForHeaders;
+                }
+
+                fn.picker.init(function (definitionId, layoutId) {
+                    var layoutId = layoutId;
+
+                    if (layoutId == null) {
+                        var layouts = computed.layoutsByDefinitionId[definitionId];
+                        if (layouts != null && layouts.length > 0) {
+                            layoutId = layouts[0].Id;
                         }
+                    }
 
-                        if ($scope.model.value.blocks == null || $scope.model.value.blocks.length === 0) {
-                            // Only apply when there are no blocks on this page yet
-                            fn.preset.eachBlock(function (preset) {
-                                if (preset != null) {
-                                    if (!Array.isArray($scope.model.value.blocks)) {
-                                        $scope.model.value.blocks = [];
-                                    }
+                    $scope.model.value.header = fn.blocks.createEmpty(definitionId, layoutId);
 
-                                    var block = fn.preset.createBlock(preset);
-                                    $scope.model.value.blocks.push(block);
+                    fn.blocks.withCtrl($scope.model.value.header.id, function (block) {
+                        // Open block immediately
+                        block.open();
+                    });
+                }, disabledSelector);
+
+                fn.picker.open();
+            },
+
+            remove: function () {
+                if ($scope.model.value.header == null) {
+                    return;
+                }
+
+                $scope.model.value.header = null;
+            }
+        },
+
+        blocks: {
+            get: function (block, property) {
+                return block[property];
+            },
+
+            set: function (block, property, value) {
+                block[property] = value;
+            },
+
+            add: function (afterBlockId) {
+                if (!Array.isArray($scope.model.value.blocks)) {
+                    $scope.model.value.blocks = [];
+                }
+
+                function disabledSelector(category) {
+                    return category.isDisabledForBlocks;
+                }
+
+                function selectBlockCallback(definitionId, layoutId) {
+                    var layoutId = layoutId;
+
+                    if (layoutId == null) {
+                        var layouts = computed.layoutsByDefinitionId[definitionId];
+                        if (layouts != null && layouts.length > 0) {
+                            layoutId = layouts[0].Id;
+                        }
+                    }
+
+                    // Add at the end by default
+                    var idx = $scope.model.value.blocks.length - 1;
+
+                    if (afterBlockId != null) {
+                        if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
+                            idx = 0;
+                        } else {
+                            var blockIdx = fn.blocks.getIndex(afterBlockId);
+                            if (blockIdx > -1) {
+                                idx = blockIdx + 1;
+                            }
+                        }
+                    }
+
+                    var empty = fn.blocks.createEmpty(definitionId, layoutId);
+                    $scope.model.value.blocks.splice(idx, 0, empty);
+
+                    fn.blocks.withCtrl(empty.id, function (block) {
+                        // Open immediately
+                        block.open();
+                    });
+                }
+
+                fn.picker.init(selectBlockCallback, disabledSelector);
+
+                fn.picker.open();
+            },
+
+            createEmpty: function (definitionId, layoutId) {
+                var id = String.CreateGuid();
+
+                return {
+                    id: id,
+                    definitionId: definitionId,
+                    layoutId: layoutId,
+                    // Empty NestedContent model value
+                    content: [],
+                };
+            },
+
+            remove: function (id) {
+                if (!Array.isArray($scope.model.value.blocks)) {
+                    return;
+                }
+
+                var idx = fn.blocks.getIndex(id);
+                if (idx > -1) {
+                    $scope.model.value.blocks.splice(idx, 1);
+                }
+            },
+
+            registerElement: function (blockId, $element) {
+                if (blockId == null) {
+                    throw new Error("Block id should not be null / undefined!");
+                }
+
+                if ($element.length === 1) {
+                    var element = $element[0];
+
+                    state.dom.blocks[blockId] = element;
+
+                    return function removeElement() {
+                        delete state.dom.blocks[blockId];
+                    }
+                }
+            },
+
+            getElement: function (id) {
+                return state.dom.blocks[id];
+            },
+
+            registerBlockController: function (id, controller) {
+                state.blocks[id] = controller;
+
+                var onRegister = state.onBlockRegisterFns[id];
+                if (typeof onRegister === "function") {
+                    onRegister(controller);
+                }
+
+                return function deregisterController() {
+                    delete state.blocks[id];
+                }
+            },
+
+            /**
+             * Calls `callback` with the controller of the block with the given id.
+             * If the block controller has not been registered yet, the callback will be called
+             * when it does. Otherwise it is called immediately.
+             * @param {any} id Block id
+             * @param {any} callback Callback function to be called when the controller of the block is available
+             */
+            withCtrl: function (id, callback) {
+                var block = state.blocks[id];
+                if (block != null) {
+                    callback(block);
+                } else {
+                    state.onBlockRegisterFns[id] = function (block) {
+                        callback(block);
+                        delete state.onBlockRegisterFns[id];
+                    }
+                }
+            },
+
+            getIndex: function (id) {
+                return _.findIndex($scope.model.value.blocks, function (block) {
+                    return block.id === id;
+                })
+            },
+
+            getBlockName: function (block) {
+                if (block == null) {
+                    return null;
+                }
+
+                var definition = computed.definitionsById[block.definitionId];
+                if (definition == null) {
+                    return null;
+                }
+
+                return definition.Name;
+            },
+
+            layouts: {
+                getLayoutIndex: function (block) {
+                    if (block == null || block.layoutId == null || block.definitionId == null) {
+                        return null;
+                    }
+
+                    var layouts = computed.layoutsByDefinitionId[block.definitionId];
+                    if (layouts == null) {
+                        return null;
+                    }
+
+                    return _.findIndex(layouts, function (layout) {
+                        return layout.Id === block.layoutId;
+                    });
+                },
+
+                slider: {
+                    onAfterChange: function (block, slideIdx) {
+                        var layout = fn.blocks.layouts.getLayout(block, slideIdx);
+                        if (layout != null) {
+                            block.layoutId = layout.Id;
+                        }
+                    }
+                },
+
+                getLayout: function (block, index) {
+                    var layouts = computed.layoutsByDefinitionId[block.definitionId];
+                    if (layouts == null || !Array.isArray(layouts)) {
+                        return null;
+                    }
+
+                    return layouts[index];
+                },
+
+                setLayout: function (block, layoutIdx) {
+                    var layout = this.getLayout(block, layoutIdx);
+                    if (layout != null) {
+                        block.layoutId = layout.Id;
+                    }
+                },
+            },
+
+            eachBlock: function (callback) {
+                if (Array.isArray($scope.model.value.blocks)) {
+                    for (var i = 0; i < $scope.model.value.blocks.length; i++) {
+                        var block = $scope.model.value.blocks[i];
+                        callback(block);
+                    }
+                }
+            },
+
+            getInViewBlockId: function (includeCollapsed) {
+                var blocks = state.dom.blocksContainer.querySelectorAll(".p-block__item");
+
+                var prev = {
+                    id: null,
+                    ratio: null,
+                }
+
+                for (var i = 0; i < blocks.length; i++) {
+                    var block = blocks[i];
+                    var blockId = block.dataset.id;
+                    var isLast = i === blocks.length - 1;
+
+                    if (!includeCollapsed) {
+                        var blockCtrl = state.blocks[blockId]
+
+                        var skip = blockCtrl != null && !blockCtrl.state.open;
+
+                        if (skip) {
+                            if (isLast) {
+                                return prev.id;
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+
+                    var visibleRatio = fn.utils.getContentBlockVisibleRatio(block, state.dom.contentBlocksViewport);
+
+                    if (visibleRatio === 1) {
+                        // Completely visible
+                        return block.dataset.id;
+                    }
+
+                    if (visibleRatio === 0) {
+                        if (prev.id != null) {
+                            return prev.id;
+                        }
+                    }
+
+                    if (visibleRatio > 0 && visibleRatio < 1) {
+                        if (prev.id != null && prev.ratio > visibleRatio) {
+                            return prev.id;
+                        } else if (isLast) {
+                            // Last block -> show this block
+                            return blockId;
+                        } else {
+                            // Store for later
+                            prev = { id: blockId, ratio: visibleRatio };
+                        }
+                    }
+                }
+            },
+        },
+
+        upgradeVersion: function () {
+            // Add any version upgrade logic here,
+            // e.g. if(fn.getModelVersion() === 1 && state.version === 2) { ... }
+
+            if (fn.getModelVersion() < 2) {
+                fn.versionUpgrades.addGuids();
+            }
+
+            fn.setModelVersion(state.version);
+        },
+
+        setContainingGroupCssClass: function () {
+            if ($rootElement == null) {
+                return;
+            }
+
+            var tabGroup = $rootElement.closest(".umb-group-panel");
+            if (tabGroup != null) {
+                tabGroup.addClass("perplex-content-blocks__panel");
+            }
+        },
+
+        preset: {
+            apply: function () {
+                if (state.preset != null) {
+                    if ($scope.model.value.header == null && state.preset.Header != null) {
+                        // Only apply when there is no header yet on this page                            
+                        $scope.model.value.header = fn.preset.createBlock(state.preset.Header);
+                    }
+
+                    if ($scope.model.value.blocks == null || $scope.model.value.blocks.length === 0) {
+                        // Only apply when there are no blocks on this page yet
+                        fn.preset.eachBlock(function (preset) {
+                            if (preset != null) {
+                                if (!Array.isArray($scope.model.value.blocks)) {
+                                    $scope.model.value.blocks = [];
                                 }
-                            });
-                        }
+
+                                var block = fn.preset.createBlock(preset);
+                                $scope.model.value.blocks.push(block);
+                            }
+                        });
                     }
-                },
-
-                eachBlock: function (callback) {
-                    if (Array.isArray(state.preset.Blocks)) {
-                        for (var i = 0; i < state.preset.Blocks.length; i++) {
-                            var block = state.preset.Blocks[i];
-                            callback(block);
-                        }
-                    }
-                },
-
-                createBlock: function (preset) {
-                    var emptyBlock = fn.blocks.createEmpty(preset.DefinitionId, preset.LayoutId);
-                    emptyBlock.presetId = preset.Id;
-                    return emptyBlock;
-                },
-            },
-
-            versionUpgrades: {
-                addGuids: function () {
-                    if ($scope.model.value == null) {
-                        return;
-                    }
-
-                    // Header
-                    if ($scope.model.value.header != null && $scope.model.value.header.id == null) {
-                        $scope.model.value.header.id = String.CreateGuid();
-                    }
-
-                    // Blocks
-                    fn.blocks.eachBlock(function (block) {
-                        if (block != null && block.id == null) {
-                            block.id = String.CreateGuid();
-                        }
-                    })
                 }
             },
 
-            ui: {
-                toggleExpandAll: function () {
-                    fn.ui.setExpandAll(!state.ui.expandAll);
-                },
-
-                setExpandAll: function (expandAll, skipHeader) {
-                    state.ui.expandAll = !!expandAll;
-
-                    if (!skipHeader && $scope.model.value.header != null) {
-                        fn.blocks.withCtrl($scope.model.value.header.id, slideFn);
+            eachBlock: function (callback) {
+                if (Array.isArray(state.preset.Blocks)) {
+                    for (var i = 0; i < state.preset.Blocks.length; i++) {
+                        var block = state.preset.Blocks[i];
+                        callback(block);
                     }
+                }
+            },
 
+            createBlock: function (preset) {
+                var emptyBlock = fn.blocks.createEmpty(preset.DefinitionId, preset.LayoutId);
+                emptyBlock.presetId = preset.Id;
+                return emptyBlock;
+            },
+        },
+
+        versionUpgrades: {
+            addGuids: function () {
+                if ($scope.model.value == null) {
+                    return;
+                }
+
+                // Header
+                if ($scope.model.value.header != null && $scope.model.value.header.id == null) {
+                    $scope.model.value.header.id = String.CreateGuid();
+                }
+
+                // Blocks
+                fn.blocks.eachBlock(function (block) {
+                    if (block != null && block.id == null) {
+                        block.id = String.CreateGuid();
+                    }
+                })
+            }
+        },
+
+        ui: {
+            toggleExpandAll: function () {
+                fn.ui.setExpandAll(!state.ui.expandAll);
+            },
+
+            setExpandAll: function (expandAll, skipHeader) {
+                state.ui.expandAll = !!expandAll;
+
+                if (!skipHeader && $scope.model.value.header != null && config.structure.header) {
+                    fn.blocks.withCtrl($scope.model.value.header.id, slideFn);
+                }
+
+                if (config.structure.blocks) {
                     fn.blocks.eachBlock(function (block) {
                         fn.blocks.withCtrl(block.id, slideFn);
                     });
+                }
 
-                    function slideFn(block) {
-                        if (state.ui.expandAll) {
-                            block.open();
-                        } else {
-                            block.close();
-                        }
-                    }
-                },
-
-                toggleReorder: function () {
-                    state.ui.reorder = !state.ui.reorder;
-
-                    if (state.ui.reorder) {
-                        fn.ui.setExpandAll(false, true);
-                    }
-                },
-
-                fixOverlayStyling: function () {
-                    if (state.dom.leftColumn == null || state.dom.contentBlocksViewport == null) {
-                        return;
-                    }
-
-                    var overlayIsOpen = state.ui.picker.open || state.ui.layoutPicker.open;
-
-                    if (overlayIsOpen) {
-                        // Set z-index of element to -1
-                        state.dom.leftColumn.style.zIndex = -1;
-                        state.dom.contentBlocksViewport.style.zIndex = 100;
+                function slideFn(block) {
+                    if (state.ui.expandAll) {
+                        block.open();
                     } else {
-                        // Remove element z-index
-                        state.dom.leftColumn.style.zIndex = null;
-                        state.dom.contentBlocksViewport.style.zIndex = null;
+                        block.close();
                     }
-                },
-            }
-        };
+                }
+            },
 
-        vm.state = state;
-        vm.fn = fn;
-        vm.computed = computed;
-        vm.constants = constants;
-    }
-]);
+            toggleReorder: function () {
+                state.ui.reorder = !state.ui.reorder;
+
+                if (state.ui.reorder) {
+                    fn.ui.setExpandAll(false, true);
+                }
+            },
+
+            fixOverlayStyling: function () {
+                if (state.dom.leftColumn == null || state.dom.contentBlocksViewport == null) {
+                    return;
+                }
+
+                var overlayIsOpen = state.ui.picker.open || state.ui.layoutPicker.open;
+
+                if (overlayIsOpen) {
+                    // Set z-index of element to -1
+                    state.dom.leftColumn.style.zIndex = -1;
+                    state.dom.contentBlocksViewport.style.zIndex = 100;
+                } else {
+                    // Remove element z-index
+                    state.dom.leftColumn.style.zIndex = null;
+                    state.dom.contentBlocksViewport.style.zIndex = null;
+                }
+            },
+        }
+    };
+
+    vm.state = state;
+    vm.fn = fn;
+    vm.computed = computed;
+    vm.constants = constants;
+    vm.config = config;
+
+    fn.init();
+}

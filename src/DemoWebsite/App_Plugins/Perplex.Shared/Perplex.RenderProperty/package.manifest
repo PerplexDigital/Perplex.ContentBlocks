@@ -1,6 +1,0 @@
-{
-  "javascript": [
-    "~/App_Plugins/Perplex.Shared/Perplex.RenderProperty/perplex.render-property.service.js",
-    "~/App_Plugins/Perplex.Shared/Perplex.RenderProperty/perplex.render-property.directive.js"
-  ]
-}
