@@ -187,7 +187,11 @@ function perplexContentBlocksController(
             init: function () {
                 var propertyAlias = $scope.model.alias;
 
-                var unsubscribe = serverValidationManager.subscribe(propertyAlias, undefined, "", function (valid, errors, allErrors, culture) {
+                // Note that this is NOT the same as state.culture, 
+                // which is the culture of the current content variant.
+                var propertyCulture = $scope.model.culture;
+
+                var unsubscribe = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
                     // Clear validationMessages
                     state.validationMessages = {};
 
