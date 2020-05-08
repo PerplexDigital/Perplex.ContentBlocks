@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Perplex Digital")]
 [assembly: AssemblyProduct("Perplex.ContentBlocks")]
-[assembly: AssemblyCopyright("Copyright © 2020")]
+[assembly: AssemblyCopyright("© Perplex Digital")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
