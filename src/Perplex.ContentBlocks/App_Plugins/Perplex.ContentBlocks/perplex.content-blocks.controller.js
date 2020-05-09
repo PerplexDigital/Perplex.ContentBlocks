@@ -1044,48 +1044,6 @@ function perplexContentBlocksController(
                 return definition.Name;
             },
 
-            layouts: {
-                getLayoutIndex: function (block) {
-                    if (block == null || block.layoutId == null || block.definitionId == null) {
-                        return null;
-                    }
-
-                    var layouts = computed.layoutsByDefinitionId[block.definitionId];
-                    if (layouts == null) {
-                        return null;
-                    }
-
-                    return _.findIndex(layouts, function (layout) {
-                        return layout.Id === block.layoutId;
-                    });
-                },
-
-                slider: {
-                    onAfterChange: function (block, slideIdx) {
-                        var layout = fn.blocks.layouts.getLayout(block, slideIdx);
-                        if (layout != null) {
-                            block.layoutId = layout.Id;
-                        }
-                    }
-                },
-
-                getLayout: function (block, index) {
-                    var layouts = computed.layoutsByDefinitionId[block.definitionId];
-                    if (layouts == null || !Array.isArray(layouts)) {
-                        return null;
-                    }
-
-                    return layouts[index];
-                },
-
-                setLayout: function (block, layoutIdx) {
-                    var layout = this.getLayout(block, layoutIdx);
-                    if (layout != null) {
-                        block.layoutId = layout.Id;
-                    }
-                },
-            },
-
             eachBlock: function (callback) {
                 if (Array.isArray($scope.model.value.blocks)) {
                     for (var i = 0; i < $scope.model.value.blocks.length; i++) {

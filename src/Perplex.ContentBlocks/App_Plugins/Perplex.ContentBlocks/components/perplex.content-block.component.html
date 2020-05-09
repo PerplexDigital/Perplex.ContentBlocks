@@ -41,8 +41,8 @@
              ng-mouseleave="$ctrl.showLayoutPreview = false"
              ng-class="{'is-disabled': $ctrl.layouts.length === 1}">
             <div class="p-block-topbar__layout__list">
-                <slick on-after-change="$ctrl.setLayout({ block: $ctrl.block, layoutIdx: currentSlide })"
-                       initial-slide="$ctrl.getLayoutIndex({ block: $ctrl.block })"
+                <slick on-after-change="$ctrl.setLayout(currentSlide)"
+                       initial-slide="$ctrl.state.layoutIndex"
                        as-nav-for="[data-id='{{$ctrl.block.id}}'] .p-block-topbar__layout__view"
                        infinite="true">
                     <div class="p-block-topbar__layout__item layout"
@@ -108,8 +108,7 @@
             </svg>
         </span>
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
-            <slick on-after-change="$ctrl.setLayout({ block: $ctrl.block, layoutIdx: currentSlide })"
-                   initial-slide="$ctrl.getLayoutIndex({ block: $ctrl.block })"
+            <slick initial-slide="$ctrl.state.layoutIndex"
                    infinite="true"
                    class="p-block-topbar__layout__view"
                    dots="false"
