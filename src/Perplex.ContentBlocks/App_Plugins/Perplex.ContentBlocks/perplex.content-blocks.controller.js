@@ -855,14 +855,6 @@ function perplexContentBlocksController(
         },
 
         header: {
-            get: function (property) {
-                return $scope.model.value.header[property];
-            },
-
-            set: function (property, value) {
-                $scope.model.value.header[property] = value;
-            },
-
             pick: function () {
                 function disabledSelector(category) {
                     return !category.isEnabledForHeaders;
@@ -899,14 +891,6 @@ function perplexContentBlocksController(
         },
 
         blocks: {
-            get: function (block, property) {
-                return block[property];
-            },
-
-            set: function (block, property, value) {
-                block[property] = value;
-            },
-
             add: function (afterBlockId) {
                 if (!Array.isArray($scope.model.value.blocks)) {
                     $scope.model.value.blocks = [];
