@@ -322,6 +322,9 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\package.manifest" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
     <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.bindings">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
