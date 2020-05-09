@@ -47,6 +47,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
 
         // Index of current layout
         layoutIndex: 0,
+        sliderInitialized: false,
     };
 
     // Functions

@@ -256,9 +256,14 @@ perplex-content-block {
     /* layout switch */
     &__layout {
         display: block;
+        visibility: hidden;
         border-right: 1px solid @umbraco-border;
         position: relative;
         width: 16rem;
+
+        &.is-initialized {
+            visibility: visible;
+        }
 
         &__list {
             list-style: none;

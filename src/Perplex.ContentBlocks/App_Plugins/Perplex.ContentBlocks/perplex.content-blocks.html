@@ -81,8 +81,9 @@
                 <button type="button" class="p-overlay__close p-overlay__close--blue" ng-click="vm.fn.layoutPicker.close()">&times;</button>
 
                 <div class="p-overlay__inner">
-                    <div class="p-pick-layouts__list slick-this layouts">
-                        <slick dots="true">
+                    <div class="p-pick-layouts__list slick-this layouts"  
+                         ng-class="{'is-initialized': vm.state.ui.layoutPicker.sliderInitialized }">
+                        <slick dots="true" on-init="vm.state.ui.layoutPicker.sliderInitialized = true">
                             <div class="layout"
                                  ng-class="{ selected: vm.state.ui.layoutPicker.selectedLayoutId === layout.Id }"
                                  ng-repeat="layout in vm.state.ui.layoutPicker.layouts track by layout.Id">

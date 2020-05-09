@@ -162,6 +162,11 @@
 .p-pick-layouts {
 
     &__list {
+        visibility: hidden;
+
+        &.is-initialized {
+            visibility: visible;
+        }
 
         .slick-arrow {
             font-size: 0;

@@ -3,6 +3,11 @@
 // Changes:
 // - initialSlide is now a function instead of a property
 // - onAfterChange callback function receives slick, currentSlide, nextSlide parameters
+// DK | 2020-05-09
+// Changes:
+// - initialSlide reverted back to property
+// - bind to 'init' event moved to be before calling .slick()
+//   so it actually fires.
 angular.module('slick', []).directive('slick', [
     '$timeout',
     function ($timeout) {
@@ -78,7 +83,17 @@ angular.module('slick', []).directive('slick', [
                                 slick: slick,
                                 index: index
                             });
-                        };                        
+                        };                   
+
+                        slider.on('init', function (sl) {                           
+                            if (attrs.onInit) {
+                                scope.onInit();
+                            }
+                            if (currentIndex != null) {
+                                return sl.slideHandler(currentIndex);
+                            }
+                        });
+                  
                         slider.slick({
                             accessibility: scope.accessibility !== 'false',
                             adaptiveHeight: scope.adaptiveHeight === 'true',
@@ -120,14 +135,7 @@ angular.module('slick', []).directive('slick', [
                             prevArrow: scope.prevArrow ? $(scope.prevArrow) : void 0,
                             nextArrow: scope.nextArrow ? $(scope.nextArrow) : void 0
                         });
-                        slider.on('init', function (sl) {
-                            if (attrs.onInit) {
-                                scope.onInit();
-                            }
-                            if (currentIndex != null) {
-                                return sl.slideHandler(currentIndex);
-                            }
-                        });
+                       
                         slider.on('afterChange', function (event, slick, currentSlide, nextSlide) {
                             if (scope.onAfterChange) {
                                 scope.onAfterChange({ currentSlide: currentSlide });

@@ -39,9 +39,13 @@
         <div class="p-block-topbar__layout"
              ng-mouseenter="$ctrl.showLayoutPreview = true"
              ng-mouseleave="$ctrl.showLayoutPreview = false"
-             ng-class="{'is-disabled': $ctrl.layouts.length === 1}">
+             ng-class="{
+                'is-disabled': $ctrl.layouts.length === 1,
+                'is-initialized': $ctrl.state.sliderInitialized
+             }">
             <div class="p-block-topbar__layout__list">
                 <slick on-after-change="$ctrl.setLayout(currentSlide)"
+                       on-init="$ctrl.state.sliderInitialized = true"                       
                        initial-slide="$ctrl.state.layoutIndex"
                        as-nav-for="[data-id='{{$ctrl.block.id}}'] .p-block-topbar__layout__view"
                        infinite="true">
@@ -118,7 +122,7 @@
                      ng-repeat="layout in $ctrl.layouts track by layout.Id">
                     <img class="p-block-topbar__layout__img" ng-src="{{layout.PreviewImage}}" />
                 </div>
-            </slick>          
+            </slick>
         </div>
     </div>
 

@@ -70,7 +70,10 @@ function perplexContentBlocksController(
                 selectedLayoutId: null,
 
                 // Callback to run when confirming selection
-                confirmCallback: null
+                confirmCallback: null,
+
+                // True when slick slider has initialized
+                sliderInitialized: false,
             },
 
             expandAll: false,
@@ -615,6 +618,7 @@ function perplexContentBlocksController(
             close: function () {
                 state.ui.layoutPicker.open = false;
                 state.ui.layoutPicker.selectedLayoutId = null;
+                state.ui.layoutPicker.sliderInitialized = false;
 
                 fn.ui.fixOverlayStyling();
             }
