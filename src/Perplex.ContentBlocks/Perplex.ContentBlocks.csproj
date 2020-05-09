@@ -303,6 +303,8 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\tab-focus\perplex.content-blocks.tab-focus-once.directive.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\tab-focus\perplex.content-blocks.tab-focus.service.js" />
     <None Include="app.config" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.html" />
@@ -321,6 +323,7 @@
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-slicksliders.less" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\package.manifest" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\tab-focus\package.manifest" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.bindings">
       <DependentUpon>compilerconfig.json</DependentUpon>

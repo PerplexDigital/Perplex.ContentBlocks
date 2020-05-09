@@ -1,5 +1,6 @@
 <div class="perplex-content-blocks"
-     ng-controller="Perplex.ContentBlocks.Controller as vm">
+     ng-controller="Perplex.ContentBlocks.Controller as vm"
+     content-blocks-tab-focus-once="vm.fn.init()">
     <div ng-if="vm.state.initialized">
         <div class="p-overlay__container p-overlay__container--picker picker" ng-show="vm.state.ui.picker.open">
             <div class="p-overlay__wrapper">

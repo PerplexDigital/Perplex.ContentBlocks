@@ -1254,6 +1254,4 @@ function perplexContentBlocksController(
     vm.computed = computed;
     vm.constants = constants;
     vm.config = config;
-
-    fn.init();
 }

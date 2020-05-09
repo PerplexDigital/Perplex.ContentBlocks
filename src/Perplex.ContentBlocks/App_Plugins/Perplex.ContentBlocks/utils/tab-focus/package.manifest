@@ -1,0 +1,6 @@
+{
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks/utils/tab-focus/perplex.content-blocks.tab-focus.service.js",    
+    "~/App_Plugins/Perplex.ContentBlocks/utils/tab-focus/perplex.content-blocks.tab-focus-once.directive.js"    
+  ]
+}
