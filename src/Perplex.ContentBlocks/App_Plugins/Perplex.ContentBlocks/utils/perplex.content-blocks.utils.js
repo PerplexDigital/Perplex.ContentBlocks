@@ -160,7 +160,7 @@ function perplexContentBlocksUtils(editorState) {
             return variant.active;
         });
 
-        if (activeVariant !== null && activeVariant.language != null) {
+        if (activeVariant != null && activeVariant.language != null) {
             return activeVariant.language.culture;
         }
 
