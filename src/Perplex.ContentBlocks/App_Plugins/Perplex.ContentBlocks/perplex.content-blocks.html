@@ -1,5 +1,6 @@
 <div class="perplex-content-blocks"
-     ng-controller="Perplex.ContentBlocks.Controller as vm">
+     ng-controller="Perplex.ContentBlocks.Controller as vm"
+     content-blocks-tab-focus-once="vm.fn.init()">
     <div ng-if="vm.state.initialized">
         <div class="p-overlay__container p-overlay__container--picker picker" ng-show="vm.state.ui.picker.open">
             <div class="p-overlay__wrapper">
@@ -81,8 +82,9 @@
                 <button type="button" class="p-overlay__close p-overlay__close--blue" ng-click="vm.fn.layoutPicker.close()">&times;</button>
 
                 <div class="p-overlay__inner">
-                    <div class="p-pick-layouts__list slick-this layouts">
-                        <slick dots="true">
+                    <div class="p-pick-layouts__list slick-this layouts"  
+                         ng-class="{'is-initialized': vm.state.ui.layoutPicker.sliderInitialized }">
+                        <slick dots="true" on-init="vm.state.ui.layoutPicker.sliderInitialized = true">
                             <div class="layout"
                                  ng-class="{ selected: vm.state.ui.layoutPicker.selectedLayoutId === layout.Id }"
                                  ng-repeat="layout in vm.state.ui.layoutPicker.layouts track by layout.Id">
@@ -140,13 +142,11 @@
                          ng-class="{'no-contentblock': model.value.blocks != null && model.value.blocks.length == 0}">
                         <perplex-content-block block="model.value.header"
                                                definition="vm.computed.definitionsById[model.value.header.definitionId]"
-                                               layouts="vm.computed.layoutsByDefinitionId[model.value.header.definitionId]"
-                                               set-layout="vm.fn.blocks.layouts.setLayout(block, layoutIdx)"
-                                               get-layout-index="vm.fn.blocks.layouts.getLayoutIndex(block)"
+                                               layouts="vm.computed.layoutsByDefinitionId[model.value.header.definitionId]"                                              
                                                categories="vm.computed.categoriesByDefinitionId[model.value.header.definitionId]"
                                                is-mandatory="vm.computed.mandatoryBlocks[model.value.header.presetId]"
-                                               get-value="vm.fn.header.get('content')"
-                                               set-value="vm.fn.header.set('content', value)"
+                                               get-value="model.value.header.content"
+                                               set-value="model.value.header.content = value"
                                                copy-block="vm.fn.copyPaste.copyHeader(model.value.header)"
                                                paste="vm.fn.copyPaste.paste(model.value.header.id)"
                                                can-paste="vm.state.copyPaste.hasData"
@@ -192,13 +192,11 @@
                         <perplex-content-block ng-repeat="block in model.value.blocks track by block.id"
                                                block="block"
                                                definition="vm.computed.definitionsById[block.definitionId]"
-                                               layouts="vm.computed.layoutsByDefinitionId[block.definitionId]"
-                                               set-layout="vm.fn.blocks.layouts.setLayout(block, layoutIdx)"
-                                               get-layout-index="vm.fn.blocks.layouts.getLayoutIndex(block)"
+                                               layouts="vm.computed.layoutsByDefinitionId[block.definitionId]"                                               
                                                categories="vm.computed.categoriesByDefinitionId[block.definitionId]"
                                                is-mandatory="vm.computed.mandatoryBlocks[block.presetId]"
-                                               get-value="vm.fn.blocks.get(block, 'content')"
-                                               set-value="vm.fn.blocks.set(block, 'content', value)"
+                                               get-value="block.content"
+                                               set-value="block.content = value"
                                                add-block="vm.fn.blocks.add(id)"
                                                remove-block="vm.fn.blocks.remove(block.id)"
                                                paste="vm.fn.copyPaste.paste(block.id)"

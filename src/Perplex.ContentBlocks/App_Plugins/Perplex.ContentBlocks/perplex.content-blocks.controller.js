@@ -70,7 +70,10 @@ function perplexContentBlocksController(
                 selectedLayoutId: null,
 
                 // Callback to run when confirming selection
-                confirmCallback: null
+                confirmCallback: null,
+
+                // True when slick slider has initialized
+                sliderInitialized: false,
             },
 
             expandAll: false,
@@ -615,6 +618,7 @@ function perplexContentBlocksController(
             close: function () {
                 state.ui.layoutPicker.open = false;
                 state.ui.layoutPicker.selectedLayoutId = null;
+                state.ui.layoutPicker.sliderInitialized = false;
 
                 fn.ui.fixOverlayStyling();
             }
@@ -851,14 +855,6 @@ function perplexContentBlocksController(
         },
 
         header: {
-            get: function (property) {
-                return $scope.model.value.header[property];
-            },
-
-            set: function (property, value) {
-                $scope.model.value.header[property] = value;
-            },
-
             pick: function () {
                 function disabledSelector(category) {
                     return !category.isEnabledForHeaders;
@@ -895,14 +891,6 @@ function perplexContentBlocksController(
         },
 
         blocks: {
-            get: function (block, property) {
-                return block[property];
-            },
-
-            set: function (block, property, value) {
-                block[property] = value;
-            },
-
             add: function (afterBlockId) {
                 if (!Array.isArray($scope.model.value.blocks)) {
                     $scope.model.value.blocks = [];
@@ -1042,48 +1030,6 @@ function perplexContentBlocksController(
                 }
 
                 return definition.Name;
-            },
-
-            layouts: {
-                getLayoutIndex: function (block) {
-                    if (block == null || block.layoutId == null || block.definitionId == null) {
-                        return null;
-                    }
-
-                    var layouts = computed.layoutsByDefinitionId[block.definitionId];
-                    if (layouts == null) {
-                        return null;
-                    }
-
-                    return _.findIndex(layouts, function (layout) {
-                        return layout.Id === block.layoutId;
-                    });
-                },
-
-                slider: {
-                    onAfterChange: function (block, slideIdx) {
-                        var layout = fn.blocks.layouts.getLayout(block, slideIdx);
-                        if (layout != null) {
-                            block.layoutId = layout.Id;
-                        }
-                    }
-                },
-
-                getLayout: function (block, index) {
-                    var layouts = computed.layoutsByDefinitionId[block.definitionId];
-                    if (layouts == null || !Array.isArray(layouts)) {
-                        return null;
-                    }
-
-                    return layouts[index];
-                },
-
-                setLayout: function (block, layoutIdx) {
-                    var layout = this.getLayout(block, layoutIdx);
-                    if (layout != null) {
-                        block.layoutId = layout.Id;
-                    }
-                },
             },
 
             eachBlock: function (callback) {
@@ -1292,6 +1238,4 @@ function perplexContentBlocksController(
     vm.computed = computed;
     vm.constants = constants;
     vm.config = config;
-
-    fn.init();
 }

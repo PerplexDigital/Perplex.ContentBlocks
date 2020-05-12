@@ -15,8 +15,6 @@
         setValue: "&",
         removeBlock: "&?",
         copyBlock: "&?",
-        setLayout: "&",
-        getLayoutIndex: "&",
         registerElement: "&?",
         isReorder: "<?",
         showAddContentButton: "<?",
@@ -46,6 +44,10 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
 
         open: false,
         load: false,
+
+        // Index of current layout
+        layoutIndex: 0,
+        sliderInitialized: false,
     };
 
     // Functions
@@ -68,6 +70,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         }
 
         this.initName();
+        this.initLayoutIndex();
     }
 
     this.$onDestroy = function () {
@@ -82,7 +85,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         if (this.definition == null) {
             return;
         }
-        
+
         var scaffoldIdOrKey = this.definition.DataTypeId || this.definition.DataTypeKey;
         if (scaffoldIdOrKey != null) {
             scaffoldCache.getScaffold(scaffoldIdOrKey).then(function (scaffold) {
@@ -155,5 +158,26 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
 
         var slideFn = open ? $.fn.slideUp : $.fn.slideDown;
         slideFn.call($main, "fast", doneFn);
+    }
+
+    this.setLayout = function (index) {
+        if (!Array.isArray(this.layouts) || this.layouts.length < index + 1) {
+            return;
+        }
+
+        var layout = this.layouts[index];
+        if (layout != null) {
+            this.block.layoutId = layout.Id;
+        }
+
+        this.state.layoutIndex = index;
+    }
+
+    this.initLayoutIndex = function () {
+        if (Array.isArray(this.layouts)) {
+            this.state.layoutIndex = _.findIndex(this.layouts, function (layout) {
+                return layout.Id === this.block.layoutId;
+            }.bind(this));
+        }
     }
 }
