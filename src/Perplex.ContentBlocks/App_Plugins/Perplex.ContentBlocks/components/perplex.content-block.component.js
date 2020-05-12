@@ -94,16 +94,24 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
                         throw new Error("The data type editor should be \"Umbraco.NestedContent\", but is \"" + scaffold.editor + "\"");
                     }
 
-                    state.nameTemplate = scaffold.config.contentTypes[0].nameTemplate;
-                    this.updateName();
+                    if (scaffold.config != null && Array.isArray(scaffold.config.contentTypes) && scaffold.config.contentTypes.length > 0) {
+                        state.nameTemplate = scaffold.config.contentTypes[0].nameTemplate;
+                        this.updateName();
+                    }
                 }
             }.bind(this));
         }
     }
 
     this.updateName = function () {
+        if (state.nameTemplate == null || state.nameTemplate.length === 0) {
+            return;
+        }
+
         var content = this.block && this.block.content && this.block.content[0];
-        this.name = $interpolate(state.nameTemplate)(content);
+        if (content != null) {
+            this.name = $interpolate(state.nameTemplate)(content);
+        }
     }
 
     this.open = function () {
