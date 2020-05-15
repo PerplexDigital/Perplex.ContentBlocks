@@ -31,7 +31,10 @@ The package can be installed using NuGet:
 
 ## Quick Start
 
-To start in the quickest way, copy the code below to a file (e.g. `Example.cs`) and run your site.
+To start in the quickest way without writing any code, copy the code below to a new file in your project (e.g. `Example.cs`), then compile it and run your site. 
+
+If you do not have Visual Studio or another tool to compile code, you can save the code to a `.cs` file in `App_Code` in the root of your project, which should compile it on the fly. If the folder does not exist yet simply create it.
+
 For a more detailed explanation and step-by-step guide, head over to [Getting Started](#getting-started).
 
 <details>
