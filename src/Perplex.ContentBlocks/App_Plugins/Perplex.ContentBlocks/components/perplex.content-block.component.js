@@ -44,7 +44,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         nameTemplate: "",
 
         open: false,
-        load: false,
+        loadEditor: false,
 
         // Index of current layout
         layoutIndex: 0,
@@ -139,7 +139,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
     }
 
     this.open = function () {
-        state.load = true;
+        state.loadEditor = true;
 
         var onOpen = typeof this.onOpen === "function"
             ? this.onOpen.bind(null, { block: this })
