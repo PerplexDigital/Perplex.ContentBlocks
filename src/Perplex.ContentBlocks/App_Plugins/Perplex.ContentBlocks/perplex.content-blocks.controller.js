@@ -163,7 +163,9 @@ function perplexContentBlocksController(
             fn.copyPaste.init();
             fn.validation.init();
             fn.setContainingGroupCssClass();
+        },
 
+        initData: function () {
             $q.all([
                 api.getDefinitionsForPage(state.documentType, state.culture),
                 api.getAllCategories(),
@@ -1238,4 +1240,6 @@ function perplexContentBlocksController(
     vm.computed = computed;
     vm.constants = constants;
     vm.config = config;
+
+    fn.init();
 }

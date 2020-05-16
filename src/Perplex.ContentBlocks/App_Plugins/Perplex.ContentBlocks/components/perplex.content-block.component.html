@@ -2,7 +2,19 @@
      ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.validationMessages }"
      data-id="{{$ctrl.block.id}}">
     <div class="p-block-topbar"
-         ng-if="!$ctrl.definition">
+         ng-if="!$ctrl.state.initialized">
+        <div class="p-block-topbar__icon"></div>
+        <div class="p-block-topbar__text"></div>
+        <div class="p-block-topbar__settings">
+            <button type="button"
+                    class="p-block-topbar__settings__button">
+                <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="p-block-topbar"
+         ng-if="$ctrl.state.initialized && !$ctrl.definition">
         <div class="p-block-topbar__text">
             <strong>Block definition not found</strong>
             <div ng-bind="$ctrl.block.definitionId"></div>
@@ -24,7 +36,7 @@
     </div>
 
     <div class="p-block-topbar"
-         ng-if="$ctrl.definition">
+         ng-if="$ctrl.state.initialized && $ctrl.definition">
         <div class="p-block-topbar__icon">
             <svg class="l-icon l-icon--md"
                  ng-click="$ctrl.toggle()"
@@ -127,7 +139,7 @@
     </div>
 
     <div class="p-block__main"
-         ng-if="$ctrl.state.load">
+         ng-if="$ctrl.state.initialized && $ctrl.state.load">
         <div class="alert alert-error property-error"
              ng-show="$ctrl.validationMessages"
              ng-repeat="validationMessage in $ctrl.validationMessages"
