@@ -23,5 +23,6 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
         public Structure Structure { get; set; }
         public bool DisablePreview { get; set; }
         public bool HideLabel { get; set; }
+        public bool HidePropertyGroupContainer { get; set; }
     }
 }
