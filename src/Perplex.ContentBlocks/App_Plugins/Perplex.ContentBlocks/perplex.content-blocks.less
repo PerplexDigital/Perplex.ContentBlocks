@@ -1,4 +1,4 @@
-// UMBRACO COLOR VARIABLES
+﻿// UMBRACO COLOR VARIABLES
 
 @color-main: #1b264f; /* Dark purple */
 @color-sub: #2152a3; /* Blue */
@@ -35,6 +35,7 @@
 // SETUP
 
 @umbraco-shadow: 0 1px 1px 0 rgba(0,0,0,.16);
+@umbraco-border-shadow: 0px 0px 3px 0 rgba(0, 0, 0, 0.32);
 @grid-margin: 20px;
 @grid-width: 108rem;
 @block-margin: 4rem;
@@ -45,12 +46,15 @@
 
 .perplex-content-blocks {
     font-size: 80%;
-    margin-bottom: 20px;
     position: relative;
     margin-right: -20px;
 
     @media only screen and (min-width: 120em) {
         font-size: 100%;
+    }
+
+    &--standalone {
+        margin-bottom: 20px;
     }
 
     * {

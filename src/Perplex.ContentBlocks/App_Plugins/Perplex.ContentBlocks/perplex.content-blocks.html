@@ -1,4 +1,5 @@
-<div class="perplex-content-blocks"
+﻿<div class="perplex-content-blocks"
+     ng-class="{'perplex-content-blocks--standalone' : vm.config.hidePropertyGroupContainer }"
      ng-controller="Perplex.ContentBlocks.Controller as vm"
      content-blocks-tab-focus-once="vm.fn.initData()">
     <div class="p-overlay__container p-overlay__container--picker picker" ng-show="vm.state.ui.picker.open">

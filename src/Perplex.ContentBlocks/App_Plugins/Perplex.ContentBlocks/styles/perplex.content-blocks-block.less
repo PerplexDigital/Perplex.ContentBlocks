@@ -1,8 +1,18 @@
-perplex-content-block {
+﻿perplex-content-block {
     display: block;
 }
 
 // BLOCK
+
+.perplex-content-blocks--standalone {
+    .p-block__item {
+        box-shadow: @umbraco-shadow;
+
+        &:hover {
+            box-shadow: 0px 0px 7px rgba(0,0,0,0.16);
+        }
+    }
+}
 
 .p-block {
 
@@ -14,10 +24,10 @@ perplex-content-block {
     }
 
     &__item {
-        box-shadow: @umbraco-shadow;
+        box-shadow: @umbraco-border-shadow;
 
         &:hover {
-            box-shadow: 0px 0px 7px rgba(0,0,0,0.16);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.32);
         }
     }
 
@@ -53,7 +63,7 @@ perplex-content-block {
         }
     }
 
-    &__mandatory {        
+    &__mandatory {
         opacity: 1;
         display: flex;
         color: @color-light-c;
@@ -67,7 +77,7 @@ perplex-content-block {
         svg {
             width: 1.5rem;
             height: 1.5rem;
-        }     
+        }
 
         &__info {
             display: none;
@@ -281,7 +291,6 @@ perplex-content-block {
             line-height: 1.6;
             padding: 0 1rem;
         }
-        
         /* if there are no other layouts */
         &__list .slick-arrow {
             z-index: 1;
@@ -722,8 +731,8 @@ perplex-content-block {
         display: none;
     }
 
-    &__item.is-invalid {        
-        box-shadow: 0 0 2px 2px #cc0000;        
+    &__item.is-invalid {
+        box-shadow: 0 0 2px 2px #cc0000;
     }
 
     &__list.is-mandatory &-topbar__settings,
@@ -740,11 +749,6 @@ perplex-content-block {
     &__item.is-disabled &__main,
     &__item.is-disabled .umb-nested-content__item {
         background: rgba(255,255,255,0.5);
-    }
-
-    &__item.is-disabled &__main,
-    &__item.is-disabled &-topbar {
-        border: 1px solid rgba(0,0,0,0.10);
     }
 
     &__item.is-disabled &__main {

@@ -162,7 +162,10 @@ function perplexContentBlocksController(
             fn.initModelValue();
             fn.copyPaste.init();
             fn.validation.init();
-            fn.setContainingGroupCssClass();
+
+            if (config.hidePropertyGroupContainer) {
+                fn.setContainingGroupCssClass();
+            }
         },
 
         initData: function () {
