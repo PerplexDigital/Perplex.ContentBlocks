@@ -1117,6 +1117,14 @@ function perplexContentBlocksController(
                 return;
             }
 
+            var propertyContainer = $rootElement.closest(".umb-property-editor");
+            var isNestedProperty = propertyContainer.parent().closest(".umb-property-editor").length > 0;
+            if (isNestedProperty) {
+                // Do not hide the containing property group if we 
+                // are nested in some other property editor like NestedContent.
+                return;
+            }
+
             var tabGroup = $rootElement.closest(".umb-group-panel");
             if (tabGroup != null) {
                 tabGroup.addClass("perplex-content-blocks__panel");
