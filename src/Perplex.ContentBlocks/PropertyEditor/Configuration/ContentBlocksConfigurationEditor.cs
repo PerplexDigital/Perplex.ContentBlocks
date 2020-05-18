@@ -148,8 +148,15 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 
             switch (source.Version)
             {
+                case 1:
+                    // HidePropertyGroupContainer will be read as "false" when this option
+                    // did not exist before, whereas our default is "true" at the moment.
+                    // To not suddenly change existing editors upon update we should set
+                    // this setting to "true" for existing editors.
+                    source.HidePropertyGroupContainer = true;
+                    break;
+
                 default:
-                    // Nothing yet
                     break;
             }
 
