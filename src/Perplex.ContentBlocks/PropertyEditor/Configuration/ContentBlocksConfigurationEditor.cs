@@ -21,7 +21,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 
                 new ConfigurationField
                 {
-                    Name = "Disable Preview",
+                    Name = "Disable preview",
                     Description = "Disables the preview feature",
                     Key = DisablePreviewKey,
                     View = DisablePreviewViewName,
@@ -29,10 +29,18 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 
                 new ConfigurationField
                 {
-                    Name = "Hide Label",
+                    Name = "Hide label",
                     Description = "Hides the data type label",
                     Key = HideLabelKey,
                     View = HideLabelViewName,
+                },
+
+                new ConfigurationField
+                {
+                    Name = "Hide property group container",
+                    Description = "Hides the property group container that holds this editor",
+                    Key = HidePropertyGroupContainerKey,
+                    View = HidePropertyGroupContainerViewName,
                 },
             });
         }
@@ -40,7 +48,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
         /// <summary>
         /// Current configuration version.
         /// </summary>
-        public const int Version = 1;
+        public const int Version = 2;
 
         internal static readonly ContentBlocksConfiguration _defaultConfiguration = new ContentBlocksConfiguration
         {
@@ -49,6 +57,12 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
             HideLabel = true,
             Structure = Structure.Blocks | Structure.Header,
             DisablePreview = false,
+
+            // It is quite likely this will default to "false" in the future
+            // considering hiding the property group container is messing with
+            // the default Umbraco UI and also causes some flickering upon page load
+            // when the group is being hidden after our editor is initialized.
+            HidePropertyGroupContainer = true,
         };
 
         public override object DefaultConfigurationObject { get; }
@@ -59,9 +73,10 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 
         public override ContentBlocksConfiguration FromConfigurationEditor(IDictionary<string, object> editorValues, ContentBlocksConfiguration configuration)
         {
-            var hideLabel = GetHideLabel(editorValues);
+            var hideLabel = GetBool(editorValues, HideLabelKey);
             var structure = GetStructure(editorValues);
-            var disablePreview = GetDisablePreview(editorValues);
+            var disablePreview = GetBool(editorValues, DisablePreviewKey);
+            var hidePropertyGroupContainer = GetBool(editorValues, HidePropertyGroupContainerKey);
 
             return new ContentBlocksConfiguration
             {
@@ -73,6 +88,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
                 Structure = structure ?? _defaultConfiguration.Structure,
                 DisablePreview = disablePreview ?? _defaultConfiguration.DisablePreview,
                 HideLabel = hideLabel ?? _defaultConfiguration.HideLabel,
+                HidePropertyGroupContainer = hidePropertyGroupContainer ?? _defaultConfiguration.HidePropertyGroupContainer,
             };
         }
 
@@ -91,6 +107,8 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
                 [DisablePreviewKey] = configuration.DisablePreview,
 
                 [HideLabelKey] = configuration.HideLabel,
+
+                [HidePropertyGroupContainerKey] = configuration.HidePropertyGroupContainer,
             };
         }
 
@@ -105,7 +123,14 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 
             try
             {
-                return base.FromDatabase(configuration);
+                if (base.FromDatabase(configuration) is ContentBlocksConfiguration contentBlocksConfiguration)
+                {
+                    return ApplyMigrations(contentBlocksConfiguration);
+                }
+                else
+                {
+                    return _defaultConfiguration;
+                };
             }
             catch
             {
@@ -113,23 +138,37 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
             }
         }
 
-        private bool? GetDisablePreview(IDictionary<string, object> config)
+        private ContentBlocksConfiguration ApplyMigrations(ContentBlocksConfiguration source)
         {
-            if (config != null && config.TryGetValue(DisablePreviewKey, out object value) &&
-                ParseBoolean(value?.ToString()) is bool disablePreview)
+            if (source.Version == Version)
             {
-                return disablePreview;
-            };
+                // Already the latest version.
+                return source;
+            }
 
-            return null;
+            switch (source.Version)
+            {
+                case 1:
+                    // HidePropertyGroupContainer will be read as "false" when this option
+                    // did not exist before, whereas our default is "true" at the moment.
+                    // To not suddenly change existing editors upon update we should set
+                    // this setting to "true" for existing editors.
+                    source.HidePropertyGroupContainer = true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return source;
         }
 
-        private bool? GetHideLabel(IDictionary<string, object> config)
+        private bool? GetBool(IDictionary<string, object> config, string key)
         {
-            if (config != null && config.TryGetValue(HideLabelKey, out object value) &&
-                ParseBoolean(value?.ToString()) is bool hideLabel)
+            if (config != null && config.TryGetValue(key, out object value) &&
+                ParseBoolean(value?.ToString()) is bool boolValue)
             {
-                return hideLabel;
+                return boolValue;
             };
 
             return null;

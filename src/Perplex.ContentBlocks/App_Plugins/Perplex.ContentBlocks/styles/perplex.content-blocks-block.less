@@ -1,8 +1,18 @@
-perplex-content-block {
+﻿perplex-content-block {
     display: block;
 }
 
 // BLOCK
+
+.perplex-content-blocks--standalone {
+    .p-block__item {
+        box-shadow: @umbraco-shadow;
+
+        &:hover {
+            box-shadow: 0px 0px 7px rgba(0,0,0,0.16);
+        }
+    }
+}
 
 .p-block {
 
@@ -14,10 +24,10 @@ perplex-content-block {
     }
 
     &__item {
-        box-shadow: @umbraco-shadow;
+        box-shadow: @umbraco-border-shadow;
 
         &:hover {
-            box-shadow: 0px 0px 7px rgba(0,0,0,0.16);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.32);
         }
     }
 
@@ -53,7 +63,7 @@ perplex-content-block {
         }
     }
 
-    &__mandatory {        
+    &__mandatory {
         opacity: 1;
         display: flex;
         color: @color-light-c;
@@ -67,7 +77,7 @@ perplex-content-block {
         svg {
             width: 1.5rem;
             height: 1.5rem;
-        }     
+        }
 
         &__info {
             display: none;
@@ -281,13 +291,12 @@ perplex-content-block {
             line-height: 1.6;
             padding: 0 1rem;
         }
-        
         /* if there are no other layouts */
         &__list .slick-arrow {
             z-index: 1;
             background: none;
             font-size: 0;
-            height: ~"calc(3rem - 1px)";
+            height: 3rem;
             width: 2rem;
             position: absolute;
             border: 0;
@@ -295,7 +304,6 @@ perplex-content-block {
             left: -2rem;
 
             &:hover {
-                background-image: linear-gradient(to left, @color-light-a, white);
                 cursor: pointer;
             }
 
@@ -341,10 +349,6 @@ perplex-content-block {
             background-size: .3rem;
             background-position: 50%;
             background-image: url('data:image/svg+xml;base64,PHN2ZyBpZD0icGxheS1idXR0b25fNF8iIGRhdGEtbmFtZT0icGxheS1idXR0b24gKDQpIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjYuMjUiIHZpZXdCb3g9IjAgMCA1IDYuMjUiPiAgPGcgaWQ9Ikdyb3VwXzIiIGRhdGEtbmFtZT0iR3JvdXAgMiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwKSI+ICAgIDxwYXRoIGlkPSJQYXRoXzEiIGRhdGEtbmFtZT0iUGF0aCAxIiBkPSJNNC43NjEsMi43NDMsMy4zMTQsMS44LDIuMTQsMS4wMzQuNjQuMDkxQy4zMTctLjEyLDAsLjA0OSwwLC40NjdWNS43ODNjMCwuNDE3LjMxNy41ODcuNjQuMzc3bDEuNDczLS45NDNjLjMyMy0uMjEuODY1LS41NTQsMS4xODgtLjc2NWwxLjQ1NC0uOTQzQS40MjQuNDI0LDAsMCwwLDQuNzYxLDIuNzQzWiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwKSIgZmlsbD0iI2ZmZiIvPiAgPC9nPjwvc3ZnPg==');
-        }
-
-        &__list .slick-prev:hover {
-            background-image: linear-gradient(to right, @color-light-a, white);
         }
 
         &__list .slick-prev:before {
@@ -431,7 +435,7 @@ perplex-content-block {
             }
 
             &__list .slick-arrow {
-                height: ~"calc("@block-margin ~" - 1px)";
+                height: @block-margin;
                 top: -1.45rem;
                 width: 3rem;
             }
@@ -465,7 +469,6 @@ perplex-content-block {
 
             &:hover {
                 cursor: pointer;
-                background: @color-light-a;
                 color: @color-main;
             }
 
@@ -484,6 +487,7 @@ perplex-content-block {
             margin: auto;
             width: 1.25rem;
             height: 1.25rem;
+            .transition;
         }
 
         &__svg-open,
@@ -722,8 +726,12 @@ perplex-content-block {
         display: none;
     }
 
-    &__item.is-invalid {        
-        box-shadow: 0 0 2px 2px #cc0000;        
+    &__item.is-invalid {
+        box-shadow: 0 0 2px 2px #cc0000;
+
+        &:hover {
+            box-shadow: 0px 0px 7px #cc0000;
+        }
     }
 
     &__list.is-mandatory &-topbar__settings,
@@ -740,15 +748,6 @@ perplex-content-block {
     &__item.is-disabled &__main,
     &__item.is-disabled .umb-nested-content__item {
         background: rgba(255,255,255,0.5);
-    }
-
-    &__item.is-disabled &__main,
-    &__item.is-disabled &-topbar {
-        border: 1px solid rgba(0,0,0,0.10);
-    }
-
-    &__item.is-disabled &__main {
-        border-top: 0;
     }
 
     &__item.is-disabled &-topbar__text,

@@ -8,7 +8,7 @@
         categories: "<",
         isMandatory: "<",
         canPaste: "<?",
-        init: "&?",
+        onInit: "&?",
         addBlock: "&?",
         paste: "&?",
         getValue: "&",
@@ -24,6 +24,7 @@
         disableAddContent: "<?",
         validationMessages: "<?",
         allowDisable: "<?",
+        isLoading: "<",
     },
 
     controller: [
@@ -43,18 +44,47 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         nameTemplate: "",
 
         open: false,
-        load: false,
+        loadEditor: false,
 
         // Index of current layout
         layoutIndex: 0,
         sliderInitialized: false,
+        initialized: false,
     };
 
     // Functions
 
     this.$onInit = function () {
-        if (typeof this.init === "function") {
+        if (this.isLoading) {
+            return;
+        }
+
+        this.init();
+    }
+
+    this.$onDestroy = function () {
+        destroyFns.forEach(function (destroyFn) {
+            if (typeof destroyFn === "function") {
+                destroyFn();
+            }
+        });
+    }
+
+    this.$onChanges = function (changes) {
+        if (changes.isLoading && changes.isLoading.previousValue && !changes.isLoading.currentValue) {
+            // Changing from loading to not loading anymore: initialize.
             this.init();
+        }
+    }
+
+    this.init = function () {
+        if (state.initialized) {
+            // Already initialized
+            return;
+        }
+
+        if (typeof this.onInit === "function") {
+            this.onInit();
         }
 
         if (typeof this.registerElement === "function") {
@@ -71,14 +101,8 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
 
         this.initName();
         this.initLayoutIndex();
-    }
 
-    this.$onDestroy = function () {
-        destroyFns.forEach(function (destroyFn) {
-            if (typeof destroyFn === "function") {
-                destroyFn();
-            }
-        });
+        state.initialized = true;
     }
 
     this.initName = function () {
@@ -115,7 +139,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
     }
 
     this.open = function () {
-        state.load = true;
+        state.loadEditor = true;
 
         var onOpen = typeof this.onOpen === "function"
             ? this.onOpen.bind(null, { block: this })

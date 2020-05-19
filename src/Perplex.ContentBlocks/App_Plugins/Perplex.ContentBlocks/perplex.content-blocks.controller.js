@@ -94,10 +94,8 @@ function perplexContentBlocksController(
             editorsContainer: null,
 
             previewColumn: null,
-            previewIframeDesktop: null,
-            previewIframeMobile: null,
-            previewIframeFrameMobile: null,
-            previewIframeFrameDesktop: null,
+            previewIframe: null,
+            previewIframeFrame: null,
 
             blocksContainer: null,
             contentBlocksViewport: null,
@@ -162,8 +160,13 @@ function perplexContentBlocksController(
             fn.initModelValue();
             fn.copyPaste.init();
             fn.validation.init();
-            fn.setContainingGroupCssClass();
 
+            if (config.hidePropertyGroupContainer) {
+                fn.setContainingGroupCssClass();
+            }
+        },
+
+        initData: function () {
             $q.all([
                 api.getDefinitionsForPage(state.documentType, state.culture),
                 api.getAllCategories(),
@@ -278,10 +281,8 @@ function perplexContentBlocksController(
             state.dom.leftColumn = document.getElementById("leftcolumn");
 
             if (state.dom.previewColumn != null) {
-                state.dom.previewIframeDesktop = state.dom.previewColumn.querySelector(".p-sidebar__preview__root--desktop");
-                state.dom.previewIframeFrameDesktop = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame--desktop");
-                state.dom.previewIframeMobile = state.dom.previewColumn.querySelector(".p-sidebar__preview__root--mobile");
-                state.dom.previewIframeFrameMobile = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame--mobile");
+                state.dom.previewIframe = state.dom.previewColumn.querySelector(".p-sidebar__preview__root");
+                state.dom.previewIframeFrame = state.dom.previewColumn.querySelector(".p-sidebar__preview__frame");
             }
 
             /* Fix Safari bugs */
@@ -639,7 +640,7 @@ function perplexContentBlocksController(
                 }
 
                 fn.preview.initEvents();
-                fn.preview.updatePreviews();
+                fn.preview.updatePreview();
             },
 
             initEvents: function () {
@@ -655,7 +656,7 @@ function perplexContentBlocksController(
                         fn.preview.init();
                     } else {
                         // Update previews after save                    
-                        fn.preview.updatePreviews();
+                        fn.preview.updatePreview();
                     }
                 });
 
@@ -691,14 +692,13 @@ function perplexContentBlocksController(
                 }
             },
 
-            updatePreviews: function () {
+            updatePreview: function () {
                 if (state.preview.previewUrl == null) {
                     fn.preview.setPreviewUrl();
                     $timeout(fn.preview.setPreviewScale);
                 }
 
-                fn.preview.updateDesktop();
-                fn.preview.updateMobile();
+                fn.preview.updateIframe(state.dom.previewIframe);
             },
 
             setPreviewScaleOnLeftColumnResize: function (debouncedSetPreviewScale) {
@@ -726,7 +726,7 @@ function perplexContentBlocksController(
             },
 
             syncScroll: function (ignoreCollapsed) {
-                if (state.dom.previewIframeDesktop == null || state.dom.previewIframeDesktop.contentWindow == null) {
+                if (state.dom.previewIframe == null || state.dom.previewIframe.contentWindow == null) {
                     return;
                 }
 
@@ -741,7 +741,7 @@ function perplexContentBlocksController(
                 }
 
                 state.preview.visibleBlockId = visibleBlockId;
-                state.dom.previewIframeDesktop.contentWindow.postMessage({ blockId: state.preview.visibleBlockId }, window.location.origin);
+                state.dom.previewIframe.contentWindow.postMessage({ blockId: state.preview.visibleBlockId }, window.location.origin);
             },
 
             updatePreviewColumnPositionOnScroll: function (e) {
@@ -808,14 +808,6 @@ function perplexContentBlocksController(
                 fn.preview.switchTo(constants.preview.mode.mobile);
             },
 
-            updateDesktop: function () {
-                this.updateIframe(state.dom.previewIframeDesktop);
-            },
-
-            updateMobile: function () {
-                this.updateIframe(state.dom.previewIframeMobile);
-            },
-
             updateIframe: function (iframe) {
                 if (iframe == null) {
                     return;
@@ -832,16 +824,7 @@ function perplexContentBlocksController(
             },
 
             setPreviewScale: function () {
-                fn.preview.setDesktopPreviewScale();
-                fn.preview.setMobilePreviewScale();
-            },
-
-            setDesktopPreviewScale: function () {
-                fn.preview.setIframeScale(state.dom.previewIframeFrameDesktop, state.dom.previewIframeDesktop);
-            },
-
-            setMobilePreviewScale: function () {
-                fn.preview.setIframeScale(state.dom.previewIframeFrameMobile, state.dom.previewIframeMobile);
+                fn.preview.setIframeScale(state.dom.previewIframeFrame, state.dom.previewIframe);
             },
 
             setIframeScale: function (iframeFrame, iframe) {
@@ -1112,6 +1095,14 @@ function perplexContentBlocksController(
                 return;
             }
 
+            var propertyContainer = $rootElement.closest(".umb-property-editor");
+            var isNestedProperty = propertyContainer.parent().closest(".umb-property-editor").length > 0;
+            if (isNestedProperty) {
+                // Do not hide the containing property group if we 
+                // are nested in some other property editor like NestedContent.
+                return;
+            }
+
             var tabGroup = $rootElement.closest(".umb-group-panel");
             if (tabGroup != null) {
                 tabGroup.addClass("perplex-content-blocks__panel");
@@ -1238,4 +1229,6 @@ function perplexContentBlocksController(
     vm.computed = computed;
     vm.constants = constants;
     vm.config = config;
+
+    fn.init();
 }

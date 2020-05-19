@@ -1,13 +1,19 @@
-
+﻿
 
 // PREVIEW
+
+.perplex-content-blocks--standalone {
+    .p-sidebar__holder {
+        box-shadow: @umbraco-shadow;
+    }
+}
 
 .p-sidebar {
 
     &__holder {
         display: none;
         border-radius: 3px;
-        box-shadow: @umbraco-shadow;
+        box-shadow: @umbraco-border-shadow;
 
         & + & {
             margin-top: 20px;
@@ -34,7 +40,6 @@
 
         @media only screen and (min-width: 108em) {
             height: @block-margin;
-            padding: 1rem 0 1rem @grid-margin*1.5;
         }
     }
 
@@ -42,10 +47,6 @@
         background: white;
         border: 0;
         padding: @grid-margin;
-
-        @media only screen and (min-width: 108em) {
-            padding: @grid-margin*1.5;
-        }
     }
     /* PREVIEW */
     &__preview {
@@ -57,8 +58,14 @@
             flex-flow: row wrap;
             align-items: center;
             justify-content: center;
-            border-left: 1px solid @umbraco-border;
             position: relative;
+            background-color: inherit;
+            border: none;
+            border-left: 1px solid @umbraco-border;
+
+            &:hover {
+                cursor: pointer;
+            }
         }
 
         &__icon svg {
@@ -78,8 +85,9 @@
 
         &__timestamp {
             font-weight: 700;
-            margin: 0 0 1rem;
+            margin: .6rem 0;
             display: block;
+            text-align: center;
         }
 
         &__frame {
@@ -148,6 +156,10 @@
             margin-bottom: .5rem;
             font-weight: 700;
             padding: .25rem 1rem;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
 
         &__icon {

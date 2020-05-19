@@ -1,4 +1,4 @@
-// PERPLEX GRID
+﻿// PERPLEX GRID
 
 .p-grid {
 
@@ -42,7 +42,7 @@
                 margin: 0;
                 cursor: pointer;
 
-                .p-pick-blocks__inner__container {                
+                .p-pick-blocks__inner__container {
                     display: flex;
                     flex: 1;
                     flex-direction: column;
@@ -53,8 +53,7 @@
     }
 
     @media only screen and (min-width: 48em) {
-        width: calc(100% + 20px);
-        margin-left: -20px;
+        width: 100%;
     }
     // COLS
     [class*="p-col-"] {
@@ -75,8 +74,8 @@
         @media only screen and (min-width: 48em) {
             padding-left: 20px;
 
-            &:last-child {
-                padding-right: 20px;
+            &:first-child {
+                padding-left: 0;
             }
         }
     }
@@ -84,19 +83,14 @@
     @media only screen and (min-width: 48em) {
 
         &--sm {
-            margin-left: -15px;
-            width: ~"calc(100% + 60px)";
-
-            &:last-child {
-                margin-right: -15px;
-            }
+            width: 100%;
         }
 
         &--sm [class*="p-col-"] {
             padding-left: 15px;
 
-            &:last-child {
-                padding-right: 15px;
+            &:first-child {
+                padding-left: 0;
             }
         }
     }
