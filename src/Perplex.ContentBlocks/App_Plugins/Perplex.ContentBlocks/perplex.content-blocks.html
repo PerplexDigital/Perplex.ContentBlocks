@@ -242,7 +242,8 @@
 
                     <div ng-if="!vm.state.isNewPage">
                         <small class="p-sidebar__preview__timestamp"
-                               ng-show="vm.state.preview.lastUpdate">Last update: {{vm.state.preview.lastUpdate | date:'d MMM HH:mm'}}</small>
+                               ng-show="vm.state.preview.lastUpdate"
+                               ng-bind-template="Last update: {{vm.state.preview.lastUpdate | date:'HH:mm'}}"></small>
                         <button type="button" ng-click="vm.fn.save()" class="btn btn-main btn-wide">Save &amp; Refresh</button>
                     </div>
                 </div>
