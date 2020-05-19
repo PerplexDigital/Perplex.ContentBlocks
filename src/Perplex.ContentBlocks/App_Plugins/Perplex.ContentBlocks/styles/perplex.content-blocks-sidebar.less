@@ -58,8 +58,14 @@
             flex-flow: row wrap;
             align-items: center;
             justify-content: center;
-            border-left: 1px solid @umbraco-border;
             position: relative;
+            background-color: inherit;
+            border: none;
+            border-left: 1px solid @umbraco-border;
+
+            &:hover {
+                cursor: pointer;
+            }
         }
 
         &__icon svg {

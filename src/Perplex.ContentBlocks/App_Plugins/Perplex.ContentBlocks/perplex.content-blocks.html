@@ -221,17 +221,19 @@
             <div class="p-sidebar__holder" ng-if="!vm.config.disablePreview">
                 <div class="p-sidebar__heading">
                     <strong class="p-sidebar__heading__title">Smart Preview</strong>
-                    <div class="p-sidebar__preview__icon"
-                         ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.desktop}"
-                         ng-click="vm.fn.preview.switchToDesktop()">
+                    <button class="p-sidebar__preview__icon"
+                            type="button"
+                            ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.desktop}"
+                            ng-click="vm.fn.preview.switchToDesktop()">
                         <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-desktop"></use></svg>
-                    </div>
+                    </button>
 
-                    <div class="p-sidebar__preview__icon"
-                         ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.mobile}"
-                         ng-click="vm.fn.preview.switchToMobile()">
+                    <button class="p-sidebar__preview__icon"
+                            type="button"
+                            ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.mobile}"
+                            ng-click="vm.fn.preview.switchToMobile()">
                         <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-phone"></use></svg>
-                    </div>
+                    </button>
                 </div>
                 <div class="p-sidebar__main">
                     <strong ng-if="vm.state.isNewPage">Save your page first in order to preview it</strong>
