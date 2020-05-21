@@ -1196,6 +1196,16 @@ function perplexContentBlocksController(
                 }
             },
 
+            closeOtherBlockSettings: function (exceptId) {
+                Object.keys(state.blocks).forEach(function (id) {
+                    if (id === exceptId) return;
+                    var otherBlock = state.blocks[id];
+                    if (otherBlock != null) {
+                        otherBlock.closeSettings();
+                    }
+                });
+            },
+
             toggleReorder: function () {
                 state.ui.reorder = !state.ui.reorder;
 

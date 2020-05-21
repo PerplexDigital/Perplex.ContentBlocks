@@ -25,6 +25,7 @@
         validationMessages: "<?",
         allowDisable: "<?",
         isLoading: "<",
+        onOpenSettings: "&?",
     },
 
     controller: [
@@ -211,5 +212,28 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
                 return layout.Id === this.block.layoutId;
             }.bind(this));
         }
+    }
+
+    this.toggleSettings = function () {
+        if (this.state.showSettings) {
+            this.closeSettings();
+        } else {
+            this.openSettings();
+        }
+    }
+
+    this.openSettings = function () {
+        if (this.state.showSettings) return;
+
+        this.state.showSettings = true;
+        if (typeof this.onOpenSettings === "function") {
+            this.onOpenSettings({ ctrl: this });
+        }
+    }
+
+    this.closeSettings = function () {
+        if (!this.state.showSettings) return;
+
+        this.state.showSettings = false;
     }
 }

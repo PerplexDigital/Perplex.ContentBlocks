@@ -160,7 +160,8 @@
                                            on-close="vm.fn.preview.syncScroll(true)"
                                            validation-messages="vm.state.validationMessages[model.value.header.id]"
                                            allow-disable="false"
-                                           is-loading="!vm.state.initialized">
+                                           is-loading="!vm.state.initialized"
+                                           on-open-settings="vm.fn.ui.closeOtherBlockSettings(model.value.header.id)">
                     </perplex-content-block>
                 </div>
             </div>
@@ -211,7 +212,8 @@
                                            on-close="vm.fn.preview.syncScroll(true)"
                                            validation-messages="vm.state.validationMessages[block.id]"
                                            allow-disable="true"
-                                           is-loading="!vm.state.initialized">
+                                           is-loading="!vm.state.initialized"
+                                           on-open-settings="vm.fn.ui.closeOtherBlockSettings(block.id)">
                     </perplex-content-block>
                 </div>
             </div>

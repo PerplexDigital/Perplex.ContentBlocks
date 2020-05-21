@@ -12,7 +12,7 @@
             </button>
         </div>
     </div>
-    
+
     <div class="p-block-topbar"
          ng-if="$ctrl.state.initialized && !$ctrl.definition">
         <div class="p-block-topbar__text">
@@ -24,7 +24,7 @@
              ng-if="!$ctrl.isMandatory">
             <button type="button"
                     class="p-block-topbar__settings__button"
-                    ng-click="$ctrl.state.showSettings = !$ctrl.state.showSettings">
+                    ng-click="$ctrl.toggleSettings()">
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-close"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-close"></use></svg>
             </button>
@@ -57,7 +57,7 @@
              }">
             <div class="p-block-topbar__layout__list">
                 <slick on-after-change="$ctrl.setLayout(currentSlide)"
-                       on-init="$ctrl.state.sliderInitialized = true"                       
+                       on-init="$ctrl.state.sliderInitialized = true"
                        initial-slide="$ctrl.state.layoutIndex"
                        as-nav-for="[data-id='{{$ctrl.block.id}}'] .p-block-topbar__layout__view"
                        infinite="true">
@@ -74,11 +74,11 @@
              ng-if="!$ctrl.isMandatory">
             <button type="button"
                     class="p-block-topbar__settings__button"
-                    ng-click="$ctrl.state.showSettings = !$ctrl.state.showSettings">
+                    ng-click="$ctrl.toggleSettings()">
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
                 <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-close"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-close"></use></svg>
             </button>
-            <button ng-if="$ctrl.copyBlock" type="button" class="p-block-topbar__settings__duplicate duplicate" ng-click="$ctrl.copyBlock(); $ctrl.state.showSettings = false">
+            <button ng-if="$ctrl.copyBlock" type="button" class="p-block-topbar__settings__duplicate duplicate" ng-click="$ctrl.copyBlock();$ctrl.closeSettings();">
                 <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
                 <span class="p-block-topbar__settings__text">Copy</span>
             </button>
@@ -88,7 +88,7 @@
             </button>
             <button type="button" class="p-block-topbar__settings__hide"
                     ng-if="$ctrl.allowDisable || $ctrl.block.isDisabled"
-                    ng-click="$ctrl.block.isDisabled = !$ctrl.block.isDisabled; $ctrl.state.showSettings = false">
+                    ng-click="$ctrl.block.isDisabled = !$ctrl.block.isDisabled;$ctrl.closeSettings()">
                 <div ng-show="$ctrl.block.isDisabled">
                     <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-show"></use></svg>
                     <span class="p-block-topbar__settings__text">Show</span>
