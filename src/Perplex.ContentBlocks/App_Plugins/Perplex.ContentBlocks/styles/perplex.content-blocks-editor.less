@@ -1,4 +1,4 @@
-.p-editor {
+﻿.p-editor {
     &__holder {
         &.ng-hide + & {
             margin-top: 0px;
@@ -121,8 +121,8 @@
     }
 }
 
-.transitionDelay(@duration: 0.2s, @ease: ease-in-out) {
-    transition: all @duration .2s @ease;
+.transitionDelay(@duration: 0.2s, @ease: ease-in-out, @property: all) {
+    transition: @property @duration .2s @ease;
 }
 
 .empty_hover_visible() {
@@ -151,6 +151,6 @@
 
     .btn {
         opacity: 1;
-        .transitionDelay();
+        .transitionDelay(@property: opacity);
     }
 }
