@@ -49,12 +49,13 @@
                             </button>
                             <div class="p-pick-blocks__options__holder">
                                 <div class="p-pick-blocks__options__info-bar">
-                                    <div class="p-pick-blocks__options__info" title="The number of layouts of this block"><svg class="l-icon l-icon--xs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-layers"></use></svg>{{vm.computed.layoutsByDefinitionId[block.Id].length}}</div>
+                                    <div class="p-pick-blocks__options__info" title="The number of layouts of this block"><content-blocks-icon icon="layers" size="xs"></content-blocks-icon>{{vm.computed.layoutsByDefinitionId[block.Id].length}}</div>
                                 </div>
                                 <button type="button" class="p-pick-blocks__options__preview preview-layouts"
                                         ng-show="vm.computed.layoutsByDefinitionId[block.Id].length > 0"
                                         ng-click="vm.fn.layoutPicker.init(block.Id, vm.state.ui.picker.callback)">
-                                    <svg class="l-icon l-icon--xs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-zoom"></use></svg> Pick layout
+                                    <content-blocks-icon icon="zoom" size="xs"></content-blocks-icon>
+                                    <span>Pick layout</span>
                                 </button>
                             </div>
                         </div>
@@ -69,7 +70,7 @@
                 <button type="button" class="btn btn-main"
                         ng-if="vm.state.ui.picker.selectedBlockId != null"
                         ng-click="vm.fn.picker.confirm()">
-                    Insert selected <svg class="l-icon l-icon--btn"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-arrow-left"></use></svg>
+                    Insert selected <content-blocks-icon icon="arrow-left" css-class="l-icon--btn"></content-blocks-icon>
                 </button>
             </div>
         </div>
@@ -105,7 +106,7 @@
                 <button type="button" class="btn btn-main"
                         ng-if="vm.state.ui.layoutPicker.selectedLayoutId != null"
                         ng-click="vm.fn.layoutPicker.confirm()">
-                    Insert selected <svg class="l-icon l-icon--btn"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-arrow-left"></use></svg>
+                    Insert selected <content-blocks-icon icon="arrow-left" css-class="l-icon--btn"></content-blocks-icon>
                 </button>
             </div>
         </div>
@@ -123,14 +124,14 @@
                         <div class="p-editor__empty__click">
                             <button class="btn btn-sub btn-radius" type="button"
                                     ng-click="vm.fn.header.pick()">
-                                <svg class="l-icon l-icon--xxs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-plus"></use></svg>
+                                <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
                                 <span>Add header</span>
                             </button>
 
                             <button class="btn btn-sub btn-radius" type="button"
                                     ng-click="vm.fn.copyPaste.paste()"
                                     ng-show="vm.state.copyPaste.hasData">
-                                <svg class="l-icon l-icon--xs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
+                                <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
                                 <span>Paste content</span>
                             </button>
                         </div>
@@ -173,14 +174,14 @@
                     <div class="p-editor__empty__click">
                         <button class="btn btn-sub btn-radius" type="button"
                                 ng-click="vm.fn.blocks.add()">
-                            <svg class="l-icon l-icon--xxs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-plus"></use></svg>
+                            <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
                             <span>Add content</span>
                         </button>
 
                         <button class="btn btn-sub btn-radius" type="button"
                                 ng-click="vm.fn.copyPaste.paste()"
                                 ng-show="vm.state.copyPaste.hasData">
-                            <svg class="l-icon l-icon--xs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
+                            <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
                             <span>Paste content</span>
                         </button>
                     </div>
@@ -227,14 +228,14 @@
                             type="button"
                             ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.desktop}"
                             ng-click="vm.fn.preview.switchToDesktop()">
-                        <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-desktop"></use></svg>
+                        <content-blocks-icon icon="desktop"></content-blocks-icon>
                     </button>
 
                     <button class="p-sidebar__preview__icon"
                             type="button"
                             ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.mobile}"
                             ng-click="vm.fn.preview.switchToMobile()">
-                        <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-phone"></use></svg>
+                        <content-blocks-icon icon="phone"></content-blocks-icon>
                     </button>
                 </div>
                 <div class="p-sidebar__main">
@@ -262,11 +263,11 @@
                     <button type="button" class="p-sidebar__blockoption__button"
                             ng-click="vm.fn.ui.toggleExpandAll()">
                         <div ng-show="vm.state.ui.expandAll">
-                            <svg class="l-icon l-icon--xxs p-sidebar__blockoption__icon"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-grid-small"></use></svg>
+                            <content-blocks-icon icon="grid-small" size="xxs"></content-blocks-icon>
                             Close all blocks
                         </div>
                         <div ng-show="!vm.state.ui.expandAll">
-                            <svg class="l-icon l-icon--xxs p-sidebar__blockoption__icon"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-grid-big"></use></svg>
+                            <content-blocks-icon icon="grid-big" size="xxs"></content-blocks-icon>
                             Open all blocks
                         </div>
                     </button>
@@ -275,11 +276,11 @@
                           ng-show="model.value.blocks.length > 1"
                           ng-class="{'s-active': vm.state.ui.reorder === !vm.state.ui.reorder}">
                         <button type="button" class="p-sidebar__blockoption__button" ng-show="!vm.state.ui.reorder">
-                            <svg class="l-icon l-icon--xs p-sidebar__blockoption__icon"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-reorder"></use></svg>
+                            <content-blocks-icon icon="reorder" size="xs"></content-blocks-icon>
                             Reorder blocks
                         </button>
                         <button type="button" class="p-sidebar__blockoption__button is-reorder" ng-show="vm.state.ui.reorder">
-                            <svg class="l-icon l-icon--xs p-sidebar__blockoption__icon"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-checkmark"></use></svg>
+                            <content-blocks-icon icon="checkmark" size="xs"></content-blocks-icon>
                             Done reordering
                         </button>
                     </span>
@@ -287,7 +288,7 @@
                             ng-show="model.value.header != null || model.value.blocks.length > 0"
                             ng-click="vm.fn.copyPaste.copyAll()">
                         <div>
-                            <svg class="l-icon l-icon--xs p-sidebar__blockoption__icon"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
+                            <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
                             Copy all blocks
                         </div>
                     </button>

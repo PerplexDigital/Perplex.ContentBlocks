@@ -6,9 +6,8 @@
         <div class="p-block-topbar__icon"></div>
         <div class="p-block-topbar__text"></div>
         <div class="p-block-topbar__settings">
-            <button type="button"
-                    class="p-block-topbar__settings__button">
-                <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
+            <button type="button" class="p-block-topbar__settings__button">
+                <content-blocks-icon icon="settings"></content-blocks-icon>
             </button>
         </div>
     </div>
@@ -25,11 +24,11 @@
             <button type="button"
                     class="p-block-topbar__settings__button"
                     ng-click="$ctrl.toggleSettings()">
-                <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
-                <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-close"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-close"></use></svg>
+                <content-blocks-icon icon="settings" css-class="p-block-topbar__settings__svg-open"></content-blocks-icon>
+                <content-blocks-icon icon="close" css-class="p-block-topbar__settings__svg-close"></content-blocks-icon>
             </button>
             <button type="button" class="p-block-topbar__settings__remove remove" ng-click="$ctrl.removeBlock()">
-                <svg class="l-icon l-icon--sm"> <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-waste"></use></svg>
+                <content-blocks-icon icon="waste"></content-blocks-icon>
                 <span class="p-block-topbar__settings__text">Remove</span>
             </button>
         </div>
@@ -75,26 +74,26 @@
             <button type="button"
                     class="p-block-topbar__settings__button"
                     ng-click="$ctrl.toggleSettings()">
-                <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-open"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings"></use></svg>
-                <svg class="l-icon l-icon--sm p-block-topbar__settings__svg-close"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-close"></use></svg>
+                <content-blocks-icon css-class="p-block-topbar__settings__svg-open" icon="settings"></content-blocks-icon>
+                <content-blocks-icon css-class="p-block-topbar__settings__svg-close" icon="close"></content-blocks-icon>
             </button>
             <button ng-if="$ctrl.copyBlock" type="button" class="p-block-topbar__settings__duplicate duplicate" ng-click="$ctrl.copyBlock();$ctrl.closeSettings();">
-                <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
+                <content-blocks-icon icon="duplicate"></content-blocks-icon>
                 <span class="p-block-topbar__settings__text">Copy</span>
             </button>
             <button type="button" class="p-block-topbar__settings__remove remove" ng-click="$ctrl.removeBlock()">
-                <svg class="l-icon l-icon--sm"> <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-waste"></use></svg>
+                <content-blocks-icon icon="waste"></content-blocks-icon>
                 <span class="p-block-topbar__settings__text">Remove</span>
             </button>
             <button type="button" class="p-block-topbar__settings__hide"
                     ng-if="$ctrl.allowDisable || $ctrl.block.isDisabled"
                     ng-click="$ctrl.block.isDisabled = !$ctrl.block.isDisabled;$ctrl.closeSettings()">
                 <div ng-show="$ctrl.block.isDisabled">
-                    <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-show"></use></svg>
+                    <content-blocks-icon icon="show"></content-blocks-icon>
                     <span class="p-block-topbar__settings__text">Show</span>
                 </div>
                 <div ng-show="!$ctrl.block.isDisabled">
-                    <svg class="l-icon l-icon--sm"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-hide"></use></svg>
+                    <content-blocks-icon icon="hide"></content-blocks-icon>
                     <span class="p-block-topbar__settings__text">Hide</span>
                 </div>
             </button>
@@ -102,9 +101,7 @@
 
         <div class="p-block-topbar__mandatory" ng-if="$ctrl.isMandatory">
             <span class="p-block__mandatory">
-                <svg class="l-icon l-icon--sm">
-                    <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-settings-lock"></use>
-                </svg>
+                <content-blocks-icon icon="settings-lock"></content-blocks-icon>
             </span>
             <span class="p-block__mandatory__info">
                 This block is mandatory: settings cannot be changed.
@@ -114,14 +111,10 @@
         <button class="p-block-topbar__toggle" type="button"
                 ng-class="{'is-collapsed': !$ctrl.state.open }"
                 ng-click="$ctrl.toggle()">
-            <svg class="l-icon l-icon--sm">
-                <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-arrow-left"></use>
-            </svg>
+            <content-blocks-icon icon="arrow-left"></content-blocks-icon>
         </button>
         <span class="p-block__reorder" type="button">
-            <svg class="l-icon l-icon--sm">
-                <use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-reorder"></use>
-            </svg>
+            <content-blocks-icon icon="reorder"></content-blocks-icon>
         </span>
         <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
             <slick initial-slide="$ctrl.state.layoutIndex"
@@ -161,13 +154,13 @@
         <button class="btn btn-sub btn-radius" type="button"
                 ng-click="$ctrl.addBlock({ id: $ctrl.block.id })"
                 ng-show="$ctrl.addBlock">
-            <svg class="l-icon l-icon--xxs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-plus"></use></svg>
+            <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
             <span>Add content</span>
         </button>
         <button class="btn btn-sub btn-radius" type="button"
                 ng-click="$ctrl.paste()"
                 ng-show="$ctrl.canPaste && $ctrl.paste">
-            <svg class="l-icon l-icon--xs"><use href="/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-duplicate"></use></svg>
+            <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
             <span>Paste content</span>
         </button>
     </div>

@@ -297,6 +297,7 @@
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.icon.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />
@@ -310,6 +311,7 @@
     <Content Include="App_Plugins\Perplex.ContentBlocks\components\package.manifest" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\lib\package.manifest" />
     <None Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.less" />
+    <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-icon.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-block.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-editor.less" />
     <None Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-grid.less" />

@@ -140,6 +140,7 @@
     &__blockoption {
 
         &__button {
+            display: flex;
             background: @color-light-a;
             text-align: left;
             width: 100%;
@@ -153,12 +154,10 @@
             &:last-child {
                 margin-bottom: 0;
             }
-        }
 
-        &__icon {
-            margin-right: .5rem;
-            position: relative;
-            top: .1rem;
+            svg {
+                margin-right: .5rem;
+            }
         }
 
         &__button:hover {
@@ -179,8 +178,7 @@
 
             &__button {
                 padding: .5rem 1rem;
-                text-align: left;
-                font-size: 12px;
+                font-size: .75rem;
             }
         }
 
@@ -188,12 +186,11 @@
 
             &__button {
                 padding: .75rem 1rem;
-                text-align: left;
-                font-size: 15px;
-            }
+                font-size: .9375rem;
 
-            &__icon {
-                margin-right: 1rem;
+                svg {
+                    margin-right: 1rem;
+                }
             }
         }
     }
