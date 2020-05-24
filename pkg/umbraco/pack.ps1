@@ -53,7 +53,7 @@ If(Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse }
 New-Item -Path . -Name $tmpDir -ItemType "directory" | Out-Null
 
 # Copy DLL + App_Plugins files to package.xml + output dir
-$($dll; $appPluginFiles) | % {
+@($dll; $appPluginFiles) | % {
     $file = $package.CreateElement("file", $xmlns)
     $guidElement = $package.CreateElement("guid", $xmlns)
     $guid = "$([System.Guid]::NewGuid())$($_.Extension)"
