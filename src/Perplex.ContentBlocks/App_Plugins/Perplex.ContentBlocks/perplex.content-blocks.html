@@ -83,7 +83,8 @@
             <div class="p-overlay__inner">
                 <div class="p-pick-layouts__list slick-this layouts"
                      ng-class="{'is-initialized': vm.state.ui.layoutPicker.sliderInitialized }">
-                    <slick dots="true" on-init="vm.state.ui.layoutPicker.sliderInitialized = true">
+                    <slick dots="true" on-init="vm.state.ui.layoutPicker.sliderInitialized = true"
+                           as-nav-for=".layout-text-slider">
                         <div class="layout"
                              ng-class="{ selected: vm.state.ui.layoutPicker.selectedLayoutId === layout.Id }"
                              ng-repeat="layout in vm.state.ui.layoutPicker.layouts track by layout.Id">
@@ -92,9 +93,15 @@
                                 <span class="p-pick-layouts__image">
                                     <img ng-if="layout.PreviewImage" ng-src="{{layout.PreviewImage}}" />
                                 </span>
-                                <strong class="p-pick-layouts__title" ng-bind="layout.Name"></strong>
-                                <span class="p-pick-layouts__description" ng-bind="layout.Description"></span>
                             </button>
+                        </div>
+                    </slick>
+                    <slick class="layout-text-slider" dots="false" arrows="false"
+                           swipe="false" swipe-to-move="false" touch-move="false" draggable="false">
+                        <div class="p-pick-layouts__item--text"
+                             ng-repeat="layout in vm.state.ui.layoutPicker.layouts track by layout.Id">
+                            <strong class="p-pick-layouts__title" ng-bind="layout.Name"></strong>
+                            <span class="p-pick-layouts__description" ng-bind="layout.Description"></span>
                         </div>
                     </slick>
                 </div>
