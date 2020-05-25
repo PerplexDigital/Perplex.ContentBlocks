@@ -94,11 +94,11 @@
                                     <img ng-if="layout.PreviewImage" ng-src="{{layout.PreviewImage}}" />
                                 </span>
                                 <strong class="p-pick-layouts__title" ng-bind="layout.Name"></strong>
+                                <span class="p-pick-layouts__description" ng-bind="layout.Description"></span>
                             </button>
                         </div>
                     </slick>
                 </div>
-                <span class="p-pick-layouts__description" ng-bind="vm.state.ui.layoutPicker.block.Description"></span>
             </div>
             <div class="p-overlay__bottom">
                 <button type="button" class="btn btn-link" ng-click="vm.fn.layoutPicker.close()">Close</button>
