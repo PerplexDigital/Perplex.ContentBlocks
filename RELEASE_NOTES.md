@@ -2,7 +2,7 @@
 
 Summary of changes in each release. For a full changelog use `git log`.
 
-## `v1.3.0`
+## v1.3.0
 
 -   Added option "Hide property group container".
     -   This is the default behavior of our editor but could never be turned off. This hides the containing property group (= "tab" in v7) of this editor. However, when adding other property editors to the same property group this no longer looks good. Turning this option off will render our editor inside the group like other editors.
@@ -13,11 +13,11 @@ Summary of changes in each release. For a full changelog use `git log`.
 -   Restored transition effect on closing/opening settings button.
 -   Removes date from "Last update:", only showing time now.
 
-## `v1.2.1`
+## v1.2.1
 
 -   Show server validation messages properly if property is culture variant.
 -   Fixes "jumpy" layout sliders by not showing them until fully initialized.
 
-## `v1.2.0`
+## v1.2.0
 
 -   Initial public release
