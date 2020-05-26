@@ -1,12 +1,12 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
-    "$scope", "$sce", "$element", "$q", "editorState", "eventsService", "$timeout",
+    "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
     "serverValidationManager",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
-    $scope, $sce, $rootElement, $q, editorState, eventsService, $timeout,
+    $scope, $rootElement, $q, editorState, eventsService, $timeout,
     api, utils, copyPasteService, notificationsService, serverValidationManager) {
     var vm = this;
 
@@ -687,8 +687,7 @@ function perplexContentBlocksController(
             setPreviewUrl: function () {
                 var previewUrl = fn.preview.getPreviewUrl();
                 if (previewUrl != null) {
-                    state.preview.previewUrl = $sce.trustAsResourceUrl(previewUrl);
-                    state.preview.lastUpdate = Date.now();
+                    state.preview.previewUrl = previewUrl;
                 }
             },
 
@@ -813,13 +812,19 @@ function perplexContentBlocksController(
                     return;
                 }
 
-                iframe.onload = function () {
-                    // Clear visible block -- always scroll again
-                    state.preview.visibleBlockId = null;
-                    fn.preview.syncScroll();
+                if (typeof iframe.onload !== "function") {
+                    iframe.onload = function () {
+                        // Clear visible block -- always scroll again
+                        state.preview.visibleBlockId = null;
+                        fn.preview.syncScroll();
+                    }
                 }
 
-                iframe.contentWindow.location.reload();
+                if (state.preview.previewUrl != null) {
+                    // Load or reload the iframe by writing the .src attribute
+                    iframe.src = state.preview.previewUrl;
+                }
+
                 state.preview.lastUpdate = Date.now();
             },
 

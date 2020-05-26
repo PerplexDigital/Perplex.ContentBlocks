@@ -241,8 +241,7 @@
                 <div class="p-sidebar__main">
                     <strong ng-if="vm.state.isNewPage">Save your page first in order to preview it</strong>
                     <div ng-show="!vm.state.isNewPage" class="p-sidebar__preview__frame p-sidebar__preview__frame--{{vm.state.preview.mode}}">
-                        <iframe class="p-sidebar__preview__root root p-sidebar__preview__root--{{vm.state.preview.mode}}"
-                                ng-src="{{vm.state.preview.previewUrl}}"></iframe>
+                        <iframe class="p-sidebar__preview__root root p-sidebar__preview__root--{{vm.state.preview.mode}}"></iframe>
                     </div>
 
                     <div ng-if="!vm.state.isNewPage">
