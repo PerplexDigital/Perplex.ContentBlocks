@@ -74,6 +74,9 @@ function perplexContentBlocksController(
 
                 // True when slick slider has initialized
                 sliderInitialized: false,
+
+                // True when the slider with layout name + description has initialized
+                textSliderInitialized: false,
             },
 
             expandAll: false,
@@ -620,6 +623,7 @@ function perplexContentBlocksController(
                 state.ui.layoutPicker.open = false;
                 state.ui.layoutPicker.selectedLayoutId = null;
                 state.ui.layoutPicker.sliderInitialized = false;
+                state.ui.layoutPicker.textSliderInitialized = false;
 
                 fn.ui.fixOverlayStyling();
             }

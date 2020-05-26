@@ -82,7 +82,7 @@
 
             <div class="p-overlay__inner">
                 <div class="p-pick-layouts__list slick-this layouts"
-                     ng-class="{'is-initialized': vm.state.ui.layoutPicker.sliderInitialized }">
+                     ng-class="{'is-initialized': vm.state.ui.layoutPicker.sliderInitialized && vm.state.ui.layoutPicker.textSliderInitialized }">
                     <slick dots="true" on-init="vm.state.ui.layoutPicker.sliderInitialized = true"
                            as-nav-for=".layout-text-slider">
                         <div class="layout"
@@ -97,7 +97,8 @@
                         </div>
                     </slick>
                     <slick class="layout-text-slider" dots="false" arrows="false"
-                           swipe="false" swipe-to-move="false" touch-move="false" draggable="false">
+                           swipe="false" swipe-to-move="false" touch-move="false"
+                           on-init="vm.state.ui.layoutPicker.textSliderInitialized = true">
                         <div class="p-pick-layouts__item--text"
                              ng-repeat="layout in vm.state.ui.layoutPicker.layouts track by layout.Id">
                             <strong class="p-pick-layouts__title" ng-bind="layout.Name"></strong>
