@@ -1,4 +1,4 @@
-﻿
+
 
 // PICK BLOCKS
 
@@ -145,9 +145,11 @@
             }
         }
 
-        &__preview:hover {
-            background: @color-light-b;
-            .transition;
+        &__preview {
+            &:hover, &:focus {
+                background: @color-light-b;
+                .transition;
+            }
         }
     }
 }
