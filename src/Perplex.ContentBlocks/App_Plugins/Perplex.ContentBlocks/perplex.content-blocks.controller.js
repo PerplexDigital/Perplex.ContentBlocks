@@ -682,10 +682,11 @@ function perplexContentBlocksController(
                     return null;
                 }
 
-                var root = "/umbraco/backoffice/api/contentblockspreviewapi/GetPreviewForIframe";
+                var endpoint = "/umbraco/backoffice/api/contentblockspreviewapi/GetPreviewForIframe";
                 var qs = "?pageId=" + state.pageId + "&culture=" + (state.culture || "");
 
-                return root + qs;
+                // Return absolute URL
+                return window.location.origin + endpoint + qs;
             },
 
             setPreviewUrl: function () {
@@ -812,7 +813,7 @@ function perplexContentBlocksController(
             },
 
             updateIframe: function (iframe) {
-                if (iframe == null) {
+                if (iframe == null || state.preview.previewUrl == null) {
                     return;
                 }
 
@@ -824,8 +825,11 @@ function perplexContentBlocksController(
                     }
                 }
 
-                if (state.preview.previewUrl != null) {
-                    // Load or reload the iframe by writing the .src attribute
+                if (iframe.src === state.preview.previewUrl) {
+                    // Reload existing iframe to maintain scroll position
+                    iframe.contentWindow.location.reload();
+                } else {
+                    // Load the iframe
                     iframe.src = state.preview.previewUrl;
                 }
 
