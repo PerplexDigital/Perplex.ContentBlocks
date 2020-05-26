@@ -54,7 +54,7 @@ namespace DemoWebsite
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             Name = "Red",
-                            Description = "",
+                            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae interdum dolor, sit amet luctus odio.",
                             PreviewImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAATSURBVAiZYzzDwPCfAQqYGJAAACokAc/b6i7NAAAAAElFTkSuQmCC",
                             ViewPath = "~/Views/Partials/ExampleBlock/Red.cshtml"
                         },
@@ -62,7 +62,7 @@ namespace DemoWebsite
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             Name = "Green",
-                            Description = "",
+                            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae interdum dolor, sit amet luctus odio. Nam laoreet at odio eu faucibus. Vivamus non rhoncus erat, sit amet efficitur ipsum.",
                             PreviewImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAATSURBVAiZYyy+JPafAQqYGJAAADcdAl5UlCmyAAAAAElFTkSuQmCC",
                             ViewPath = "~/Views/Partials/ExampleBlock/Green.cshtml"
                         },
@@ -70,7 +70,7 @@ namespace DemoWebsite
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             Name = "Blue",
-                            Description = "",
+                            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae interdum dolor, sit amet luctus odio. Nam laoreet at odio eu faucibus. Vivamus non rhoncus erat, sit amet efficitur ipsum. Pellentesque tempus tellus eu posuere varius. Nulla elementum lacus lacus. Curabitur elementum faucibus velit sed mollis.",
                             PreviewImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAATSURBVAiZYzRJXfKfAQqYGJAAADOAAkAWXApqAAAAAElFTkSuQmCC",
                             ViewPath = "~/Views/Partials/ExampleBlock/Blue.cshtml",
                         },
@@ -97,7 +97,7 @@ namespace DemoWebsite
                         {
                             Id = new Guid("66666666-6666-6666-6666-666666666666"),
                             Name = "Yellow",
-                            Description = "",
+                            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae interdum dolor, sit amet luctus odio.",
                             PreviewImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAATSURBVAiZY/zz0v8/AxQwMSABAEvFAzckGfK1AAAAAElFTkSuQmCC",
                             ViewPath = "~/Views/Partials/ExampleHeader/Yellow.cshtml"
                         },
@@ -105,7 +105,7 @@ namespace DemoWebsite
                         {
                             Id = new Guid("77777777-7777-7777-7777-777777777777"),
                             Name = "Magenta",
-                            Description = "",
+                            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vitae interdum dolor, sit amet luctus odio. Nam laoreet at odio eu faucibus. Vivamus non rhoncus erat, sit amet efficitur ipsum.",
                             PreviewImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAATSURBVAiZY/zP8P8/AxQwMSABAEYIAwEl5g6iAAAAAElFTkSuQmCC",
                             ViewPath = "~/Views/Partials/ExampleHeader/Magenta.cshtml"
                         },
