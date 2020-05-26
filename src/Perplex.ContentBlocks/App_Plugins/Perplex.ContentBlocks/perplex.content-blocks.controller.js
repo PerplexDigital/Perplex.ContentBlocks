@@ -184,11 +184,9 @@ function perplexContentBlocksController(
             }).finally(function () {
                 state.initialized = true;
 
-                $timeout(function () {
-                    fn.initDom();
-                    fn.initEvents();
-                    fn.preview.init();
-                });
+                fn.initDom();
+                fn.initEvents();
+                fn.preview.init();
             });
         },
 
@@ -699,7 +697,7 @@ function perplexContentBlocksController(
             updatePreview: function () {
                 if (state.preview.previewUrl == null) {
                     fn.preview.setPreviewUrl();
-                    $timeout(fn.preview.setPreviewScale);
+                    fn.preview.setPreviewScale();
                 }
 
                 fn.preview.updateIframe(state.dom.previewIframe);
