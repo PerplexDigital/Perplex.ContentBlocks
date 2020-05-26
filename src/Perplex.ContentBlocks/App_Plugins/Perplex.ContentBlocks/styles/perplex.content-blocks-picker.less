@@ -1,4 +1,4 @@
-
+﻿
 
 // PICK BLOCKS
 
@@ -43,12 +43,12 @@
             pointer-events: none;
         }
 
-        &:hover, &.selected {
+        &:hover, &.selected, &:focus-within {
             background: @color-light-a;
             border-color: @color-sub;
         }
 
-        &:hover:after, &.selected:after, &.selected:before {
+        &:hover:after, &:focus-within:after, &.selected:after, &.selected:before {
             opacity: 1;
         }
 
