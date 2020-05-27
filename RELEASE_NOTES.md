@@ -2,6 +2,13 @@
 
 Summary of changes in each release. For a full changelog use `git log`.
 
+## v1.4.0
+-   Layout descriptions are now shown in the layout picker
+    -   Thanks to @jveer for the issue to get this started
+-   Close all other block settings when opening settings on another block
+-   Added <content-blocks-icon> component to help render icons
+-   Fixes preview not working in Edge Legacy
+
 ## v1.3.0
 
 -   Added option "Hide property group container".
