@@ -348,7 +348,7 @@ A layout is described using an implementation of `IContentBlockLayout`, which ha
 -   Name
     -   Name of this layout.
 -   Description
-    -   Description of this layout. This property is _not displayed_ in the UI (yet).
+    -   Description of this layout. This is displayed in the layout picker (Add Content > Pick Layout).
 -   PreviewImage
     -   Preview image to use in the layout picker UI. Should be a full path from the root of your site to the image, e.g. `"/img/exampleBlock/red.png"`
 -   ViewPath
