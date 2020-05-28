@@ -1,6 +1,6 @@
 # Release Notes
 
-Summary of changes in each release. For a full changelog use `git log`.
+Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
 ## v1.4.0
 -   Layout descriptions are now shown in the layout picker
