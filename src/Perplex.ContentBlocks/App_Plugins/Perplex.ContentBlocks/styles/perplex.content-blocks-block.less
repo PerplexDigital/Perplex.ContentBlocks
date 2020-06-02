@@ -127,7 +127,7 @@
     z-index: 1;
     border-radius: 3px;
 
-    &:hover, &:focus {
+    &:hover, &:focus-within {
         z-index: 10;
     }
 
@@ -166,12 +166,14 @@
             margin: auto;
         }
 
-        &:hover, &:focus {
+        &:hover {
             background: @color-light-b;
         }
 
-        &:hover svg {
-            color: @color-main;
+        &:hover, &:focus {
+            svg {
+                color: @color-main;
+            }
         }
 
         @media only screen and (min-width: 108em) {
@@ -179,7 +181,7 @@
         }
     }
 
-    &:hover &__toggle {
+    &:hover &__toggle, &:focus-within &__toggle {
         opacity: 1;
     }
     /* left icon */
@@ -422,8 +424,11 @@
             }
 
             &__preview {
-                display: block;
                 right: 4.5rem;
+
+                &.is-active {
+                    display: block;
+                }
             }
         }
 
@@ -514,7 +519,7 @@
             padding: 0;
             width: @block-margin/1.25;
             height: @block-margin/1.25;
-            display: block;
+            display: none;
             border-radius: 50%;
             position: absolute;
             opacity: 0;
@@ -593,6 +598,7 @@
             pointer-events: all;
             box-shadow: 2px 2px 25px rgba(0,0,0,0.25);
             opacity: 0;
+            display: block;
         }
 
         &.s-active &__duplicate {

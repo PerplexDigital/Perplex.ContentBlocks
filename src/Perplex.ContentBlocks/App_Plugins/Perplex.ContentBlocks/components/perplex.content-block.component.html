@@ -36,14 +36,22 @@
 
     <div class="p-block-topbar"
          ng-if="$ctrl.state.initialized && $ctrl.definition">
+
+        <button class="p-block-topbar__toggle" type="button"
+                ng-class="{'is-collapsed': !$ctrl.state.open }"
+                ng-click="$ctrl.toggle()">
+            <content-blocks-icon icon="arrow-left"></content-blocks-icon>
+        </button>
+
         <div class="p-block-topbar__icon">
             <svg class="l-icon l-icon--md"
+                 tabindex="-1"
                  ng-click="$ctrl.toggle()"
                  ng-if="$ctrl.categories.length > 0">
                 <use href="{{$ctrl.categories[0].Icon}}"></use>
             </svg>
         </div>
-        <div class="p-block-topbar__text" ng-click="!$ctrl.isReorder && $ctrl.toggle()">
+        <div class="p-block-topbar__text" tabindex="-1" ng-click="!$ctrl.isReorder && $ctrl.toggle()">
             <strong ng-bind="$ctrl.name"></strong>
             <div ng-bind="$ctrl.definition.Name"></div>
         </div>
@@ -108,11 +116,6 @@
             </span>
         </div>
 
-        <button class="p-block-topbar__toggle" type="button"
-                ng-class="{'is-collapsed': !$ctrl.state.open }"
-                ng-click="$ctrl.toggle()">
-            <content-blocks-icon icon="arrow-left"></content-blocks-icon>
-        </button>
         <span class="p-block__reorder" type="button">
             <content-blocks-icon icon="reorder"></content-blocks-icon>
         </span>
