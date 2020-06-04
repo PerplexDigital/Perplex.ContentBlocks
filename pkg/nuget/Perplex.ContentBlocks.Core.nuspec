@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>$id$.Core</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <description>$description$</description>
+    <authors>$authors$</authors>
+    <owners>$owners$</owners>
+    <license type="expression">$license$</license>
+    <requireLicenseAcceptance>$requireLicenseAcceptance$</requireLicenseAcceptance>
+    <projectUrl>$projectUrl$</projectUrl>
+    <releaseNotes>$releaseNotes$</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <tags>$tags$</tags>
+    <repository type="git" url="$repositoryUrl$" />
+    <icon>images\icon.png</icon>
+     <dependencies>
+        <group targetFramework=".NETFramework4.7.2">
+          <dependency id="UmbracoCms.Web" version="8.1.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\src\Perplex.ContentBlocks\bin\Release\Perplex.ContentBlocks.dll" target="lib\net472" />
+    <file src="icon.png" target="images" />
+  </files>
+</package>
