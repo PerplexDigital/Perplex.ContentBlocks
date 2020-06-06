@@ -111,7 +111,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
             return;
         }
 
-        var scaffoldIdOrKey = this.definition.DataTypeId || this.definition.DataTypeKey;
+        var scaffoldIdOrKey = this.definition.DataTypeId == null ? this.definition.DataTypeKey : this.definition.DataTypeId;
         if (scaffoldIdOrKey != null) {
             scaffoldCache.getScaffold(scaffoldIdOrKey).then(function (scaffold) {
                 if (scaffold != null) {

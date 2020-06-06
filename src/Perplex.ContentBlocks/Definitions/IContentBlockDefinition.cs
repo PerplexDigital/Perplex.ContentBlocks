@@ -9,7 +9,17 @@ namespace Perplex.ContentBlocks.Definitions
         string Name { get; }
         string Description { get; }
         string PreviewImage { get; }
+
+        /// <summary>
+        /// Data type id of the Nested Content data type used for this Content Block definition.
+        /// Provide either DataTypeId OR DataTypeKey, not both. Leave one of them NULL.
+        /// </summary>
         int? DataTypeId { get; }
+
+        /// <summary>
+        /// Data type key of the Nested Content data type used for this Content Block definition.
+        /// Provide either DataTypeId OR DataTypeKey, not both. Leave one of them NULL.
+        /// </summary>
         Guid? DataTypeKey { get; }
 
         IEnumerable<Guid> CategoryIds { get; }

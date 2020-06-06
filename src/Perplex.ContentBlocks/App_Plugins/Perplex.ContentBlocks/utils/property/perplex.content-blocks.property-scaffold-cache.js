@@ -1,4 +1,4 @@
-angular.module("perplexContentBlocks").service("contentBlocksPropertyScaffoldCache", [
+﻿angular.module("perplexContentBlocks").service("contentBlocksPropertyScaffoldCache", [
     "contentTypeResource",
     "dataTypeResource",
     function contentBlocksPropertyScaffoldCache(contentTypeResource, dataTypeResource) {
@@ -13,7 +13,7 @@ angular.module("perplexContentBlocks").service("contentBlocksPropertyScaffoldCac
          */
         var dataTypeKeyToId = {};
 
-        function getByKey(key) {            
+        function getByKey(key) {
             if (dataTypeKeyToId[key] == null) {
                 dataTypeKeyToId[key] = dataTypeResource.getAll().then(function (dataTypes) {
                     var dataType = _.find(dataTypes, function (dataType) {
@@ -21,7 +21,7 @@ angular.module("perplexContentBlocks").service("contentBlocksPropertyScaffoldCac
                     });
                     if (dataType == null) {
                         throw new Error("No data type found with key \"" + key + "\"");
-                    } 
+                    }
 
                     return dataType.id;
                 });
@@ -42,7 +42,7 @@ angular.module("perplexContentBlocks").service("contentBlocksPropertyScaffoldCac
             return scaffoldsById[id].then(function (value) {
                 return angular.copy(value);
             }, function () {
-                throw new Error("No data type found with id \"" + id + "\"");
+                throw new Error("No data type found with id " + id);
             });
         }
 

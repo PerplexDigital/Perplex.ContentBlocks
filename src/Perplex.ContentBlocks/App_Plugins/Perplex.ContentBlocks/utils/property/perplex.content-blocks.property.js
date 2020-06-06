@@ -1,4 +1,4 @@
-angular.module("perplexContentBlocks").component("contentBlocksProperty", {
+﻿angular.module("perplexContentBlocks").component("contentBlocksProperty", {
     templateUrl: "/App_Plugins/Perplex.ContentBlocks/utils/property/perplex.content-blocks.property.html",
     bindings: {
         datatypeId: "<?",
@@ -27,7 +27,7 @@ function contentBlocksPropertyController(properyScaffoldCache) {
         }
 
         properyScaffoldCache
-            .getScaffold(this.datatypeId || this.datatypeKey)
+            .getScaffold(this.datatypeId == null ? this.datatypeKey : this.datatypeId)
             .then(this.applyScaffold.bind(this), this.handleError.bind(this));
     }
 
