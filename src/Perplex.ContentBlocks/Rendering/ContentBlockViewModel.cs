@@ -19,7 +19,5 @@ namespace Perplex.ContentBlocks.Rendering
             DefinitionId = definitionId;
             LayoutId = layoutId;
         }
-
-
     }
 }
