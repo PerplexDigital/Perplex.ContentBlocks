@@ -1,10 +1,16 @@
+﻿# Convert hashtable to nuget pack property format (key=value)
+Function Get-NuGetProps() {
+    Param([Parameter(Mandatory = $true)] [hashtable]$Tokens)
+    ($Tokens.Keys | %{ "$_=$($Tokens[$_])" }) -join ";"
+}
+
 Push-Location $PSScriptRoot
 
 Write-Host "Packing for NuGet ..."
 
 $version = ..\version.ps1
 
-$nuspecTokens = @{
+$tokens = @{
     id = "Perplex.ContentBlocks";
     version = $version;
     title = $id;
@@ -20,11 +26,17 @@ $nuspecTokens = @{
     repositoryUrl = "https://github.com/PerplexDigital/Perplex.ContentBlocks.git";
 }
 
-$props = ($nuspecTokens.Keys | %{ "$_=$($nuspecTokens[$_])" }) -join ";"
+$tokensCore = $tokens.Clone()
+$tokensCore.description = "Perplex.ContentBlocks assembly only"
 
-# Generate .nupkgs
+$props = Get-NuGetProps($tokens)
+$propsCore = Get-NuGetProps($tokensCore)
+
+# Perplex.ContentBlocks
 .\nuget pack Perplex.ContentBlocks.nuspec -p "$props" -p NoWarn=NU5105,NU5128
-.\nuget pack Perplex.ContentBlocks.Core.nuspec -p "$props" -p NoWarn=NU5105
+
+# Perplex.ContentBlocks.Core
+.\nuget pack Perplex.ContentBlocks.Core.nuspec -p "$propsCore" -p NoWarn=NU5105
 
 Write-Host "Done!"
 
