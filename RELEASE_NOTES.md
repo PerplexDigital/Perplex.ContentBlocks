@@ -2,7 +2,16 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.4.1
+
+-   NuGet package is split into two:
+    -   `Perplex.ContentBlocks.Core`: Assembly only
+    -   `Perplex.ContentBlocks`: Full package, except it only contains `App_Plugins` itself and depends on `Perplex.ContentBlocks.Core` for the assembly.
+-   Minor bugfix: handling of dataTypeId in JavaScript aligned with C#.
+    -   JavaScript would skip a zero as it's falsy whereas in C# we check for `null`. Logic in JS has been adjusted to behave the same as in C# now.
+
 ## v1.4.0
+
 -   Layout descriptions are now shown in the layout picker
     -   Thanks to @jveer for the issue to get this started
 -   Close all other block settings when opening settings on another block
