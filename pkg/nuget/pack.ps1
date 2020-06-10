@@ -1,56 +1,47 @@
+﻿# Convert hashtable to nuget pack property format (key=value)
+Function Get-NuGetProps() {
+    Param([Parameter(Mandatory = $true)] [hashtable]$Tokens)
+    ($Tokens.Keys | %{ "$_=$($Tokens[$_])" }) -join ";"
+}
+
 Push-Location $PSScriptRoot
 
 Write-Host "Packing for NuGet ..."
 
-.\nuget pack "..\..\src\Perplex.ContentBlocks\Perplex.ContentBlocks.csproj" -p NoWarn=NU5128 -p Configuration=Release
-
 $version = ..\version.ps1
-$nugetFile = Get-ChildItem -Filter "*$version.nupkg"
-if(!$nugetFile) {
-    Throw "No NuGet file found!"
+
+$tokens = @{
+    id = "Perplex.ContentBlocks";
+    version = $version;
+    title = $id;
+    authors = "Perplex Digital";
+    owners = $authors;
+    description = "Block based content editor for Umbraco";
+    license = "MIT";
+    requireLicenseAcceptance = "false";
+    projectUrl = "https://github.com/PerplexDigital/Perplex.ContentBlocks";
+    copyright = "© Perplex Digital";
+    tags = "umbraco property editor content block";
+    releaseNotes = "https://github.com/PerplexDigital/Perplex.ContentBlocks/blob/master/RELEASE_NOTES.md";
+    repositoryUrl = "https://github.com/PerplexDigital/Perplex.ContentBlocks.git";
 }
 
-$tmpDir = "_tmp"
+$tokensCore = $tokens.Clone()
+$tokensCore.description = "Perplex.ContentBlocks assembly only"
 
-if(Test-Path $tmpDir) {
-    Remove-Item $tmpDir -Recurse
-}
+$props = Get-NuGetProps($tokens)
+$propsCore = Get-NuGetProps($tokensCore)
 
-# Rename to .zip to use in Expand-Archive
-$nugetZip = "$nugetFile.zip"
-Rename-Item $nugetFile $nugetZip
+# Perplex.ContentBlocks
+.\nuget pack Perplex.ContentBlocks.nuspec -p "$props" -p NoWarn=NU5105,NU5128
 
-# Unzip
-Expand-Archive $nugetZip $tmpDir
-
-# Read .nuspec
-$nuspecFile = "$tmpDir\Perplex.ContentBlocks.nuspec"
-[xml]$nuspec = Get-Content $nuspecFile
-
-# Add <group targetFramework=".NETFramework4.7.2">
-$group = $nuspec.CreateElement("group", $nuspec.package.NamespaceURI)
-$group.SetAttribute("targetFramework", ".NETFramework4.7.2")
-
-$dependencies = $nuspec.package.metadata.dependencies
-
-# Add all <dependency> elements to <group
-$dependencies.dependency | % { $group.AppendChild($_) } | Out-Null
-$dependencies.AppendChild($group) | Out-Null
-
-$nuspec.Save("$pwd\$nuspecFile")
-
-# Update Zip
-Compress-Archive $nuspecFile $nugetZip -Update
-
-# Rename back to .nupkg
-Rename-Item $nugetZip $nugetFile
-
-# Remove temporary directory
-Remove-Item $tmpDir -Recurse
+# Perplex.ContentBlocks.Core
+.\nuget pack Perplex.ContentBlocks.Core.nuspec -p "$propsCore" -p NoWarn=NU5105
 
 Write-Host "Done!"
 
-# Write resulting .nupkg file to Pipeline
-Write-Output (Get-Item $nugetFile)
+# Write resulting .nupkgs file to pipeline
+$nugetFiles = Get-ChildItem -Filter "*$version.nupkg"
+Write-Output $nugetFiles
 
 Pop-Location
