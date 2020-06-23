@@ -697,7 +697,9 @@ function perplexContentBlocksController(
             updatePreview: function () {
                 if (state.preview.previewUrl == null) {
                     fn.preview.setPreviewUrl();
-                    fn.preview.setPreviewScale();
+                    // In $timeout to run after iframe DOM element has initialized
+                    // for new pages that have not been saved yet.
+                    $timeout(fn.preview.setPreviewScale);
                 }
 
                 fn.preview.updateIframe(state.dom.previewIframe);
