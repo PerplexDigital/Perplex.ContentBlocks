@@ -31,7 +31,7 @@ The package can be installed using NuGet:
 
 ## Quick Start
 
-To start in the quickest way without writing any code, copy the code below to a new file in your project (e.g. `Example.cs`), then compile it and run your site. 
+To start in the quickest way without writing any code, copy the code below to a new file in your project (e.g. `Example.cs`), then compile it and run your site.
 
 If you do not have Visual Studio or another tool to compile code, you can save the code to a `.cs` file in `App_Code` in the root of your project, which should compile it on the fly. If the folder does not exist yet simply create it.
 
@@ -419,15 +419,16 @@ For example, if you have the ContentBlock `ExampleBlock` and instead of the defa
 1.  Create your View Model with some additional properties.
     -   This custom view model should implement `IContentBlockViewModel`
     -   The example below inherits from the built-in class `ContentBlockViewModel<TContent>`, this is the easiest way
+    -   Note the `IEnvironment` we add to the view model is **only an example**. Likewise, we inject some `IEnvironmentProvider` to obtain that `IEnvironment` which is also an example to show how you would inject your own classes.
 
 ```csharp
 public class ExampleBlockViewModel : ContentBlockViewModel<ExampleBlock>
 {
-    // We want to add the current Environment (Development / Production)
-    // to our view model.
+    // In this example we add some "IEnvironment" property to our view model.
+    // Note this is just an example, there is no need to include this property on your
+    // custom view model to make it work.
     public IEnvironment Environment { get; }
 
-    // We inject our IEnvironmentProvider to obtain the environment
     public ExampleBlockViewModel(ExampleBlock content, Guid id, Guid definitionId, Guid layoutId,
         IEnvironmentProvider environmentProvider)
         : base(content, id, definitionId, layoutId)
@@ -438,13 +439,17 @@ public class ExampleBlockViewModel : ContentBlockViewModel<ExampleBlock>
 ```
 
 2. Create a View Model factory that is used to create this view model:
+    - This factory should implement `IContentBlockViewModelFactory<TContent>`.
+    - The easiest way is to inherit from `ContentBlockViewModelFactory<TContent>` like we do below, and override its `Create` method.
 
 ```csharp
 public class ExampleBlockViewModelFactory : ContentBlockViewModelFactory<ExampleBlock>
 {
     private readonly IEnvironmentProvider _environmentProvider;
 
-    // Inject the required dependencies into the factory
+    // Inject the required dependencies into the factory.
+    // Note the "IEnvironmentProvider" is just an example,
+    // you want to inject your own dependencies here.
     public ExampleBlockViewModelFactory(IEnvironmentProvider environmentProvider)
     {
         _environmentProvider = environmentProvider;
@@ -453,7 +458,9 @@ public class ExampleBlockViewModelFactory : ContentBlockViewModelFactory<Example
     public override IContentBlockViewModel<ExampleBlock> Create(
         ExampleBlock content, Guid id, Guid definitionId, Guid layoutId)
     {
-        // Pass dependencies to ExampleBlockViewModel
+        // Pass dependencies to the ExampleBlockViewModel constructor,
+        // we pass our IEnvironmentProvider in this example but
+        // you want to pass your own dependencies instead.
         return new ExampleBlockViewModel(content, id, definitionId, layoutId, _environmentProvider);
     }
 }
@@ -468,13 +475,12 @@ composition.Register(
     Lifetime.Scope);
 ```
 
-4. Use the view model in your view
+4. Use the view model in your view (`ExampleBlock.cshtml`):
 
-```
--- ExampleBlock.cshtml
+```csharp
 @model ExampleBlockViewModel
 
-@if(Model.Environment == "Development") {
+@if(Model.Environment.IsDevelopment()) {
     @RenderDebugInfo()
 }
 
