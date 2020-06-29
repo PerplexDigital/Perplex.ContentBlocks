@@ -2,12 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
-## v1.4.2
+## v1.4.2 - <sub><sup>2020-06-29</sup></sub>
 
 -   Fixes incorrect scale of preview window contents when loading the iframe the first time on new pages.
     -   Page content inside the iframe would not be scaled as usual and would display much bigger than it should. Refreshing the preview fixed the issue, but now it will be displayed properly immediately.
 
-## v1.4.1
+## v1.4.1 - <sub><sup>2020-06-10</sup></sub>
 
 -   NuGet package is split into two:
     -   `Perplex.ContentBlocks.Core`: Assembly only
@@ -15,7 +15,7 @@ Summary of changes in each release. For a full changelog see [the commit history
 -   Minor bugfix: handling of dataTypeId in JavaScript aligned with C#.
     -   JavaScript would skip a zero as it's falsy whereas in C# we check for `null`. Logic in JS has been adjusted to behave the same as in C# now.
 
-## v1.4.0
+## v1.4.0 - <sub><sup>2020-05-27</sup></sub>
 
 -   Layout descriptions are now shown in the layout picker
     -   Thanks to @jveer for the issue to get this started
@@ -23,7 +23,7 @@ Summary of changes in each release. For a full changelog see [the commit history
 -   Added `<content-blocks-icon>` component to help render icons
 -   Fixes preview not working in Edge Legacy
 
-## v1.3.0
+## v1.3.0 - <sub><sup>2020-05-19</sup></sub>
 
 -   Added option "Hide property group container".
     -   This is the default behavior of our editor but could never be turned off. This hides the containing property group (= "tab" in v7) of this editor. However, when adding other property editors to the same property group this no longer looks good. Turning this option off will render our editor inside the group like other editors.
@@ -34,11 +34,11 @@ Summary of changes in each release. For a full changelog see [the commit history
 -   Restored transition effect on closing/opening settings button.
 -   Removes date from "Last update:", only showing time now.
 
-## v1.2.1
+## v1.2.1 - <sub><sup>2020-05-15</sup></sub>
 
 -   Show server validation messages properly if property is culture variant.
 -   Fixes "jumpy" layout sliders by not showing them until fully initialized.
 
-## v1.2.0
+## v1.2.0 - <sub><sup>2020-05-08</sup></sub>
 
 -   Initial public release
