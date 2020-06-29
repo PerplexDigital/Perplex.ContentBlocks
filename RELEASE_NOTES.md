@@ -2,6 +2,11 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.4.2
+
+-   Fixes incorrect scale of preview window contents when loading the iframe the first time on new pages.
+    -   Page content inside the iframe would not be scaled as usual and would display much bigger than it should. Refreshing the preview fixed the issue, but now it will be displayed properly immediately.
+
 ## v1.4.1
 
 -   NuGet package is split into two:
