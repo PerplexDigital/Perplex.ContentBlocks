@@ -92,28 +92,16 @@ namespace Perplex.ContentBlocks.Preview
                 return originalHtml;
             }
 
-            var node = HtmlNode.CreateNode(originalHtml);
-            if (node.NodeType != HtmlNodeType.Document && node.NodeType != HtmlNodeType.Element)
-            {
-                // The original HTML is not a document or element,
-                // probably completely empty.
-                return originalHtml;
-            }
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(originalHtml);
 
-            var doc = new HtmlDocument();
-            doc.DocumentNode.AppendChild(node);
-
-            doc.DocumentNode.FirstChild.AddClass("perplex-preview");
-
-            var previewLabel = doc.DocumentNode.SelectSingleNode("//*[@id='umbracoPreviewBadge']");
-            if (previewLabel != null)
+            if (doc.DocumentNode.SelectSingleNode("//*[@id='umbracoPreviewBadge']") is HtmlNode previewLabel)
             {
                 // Remove Umbraco Preview Badge
                 previewLabel.Remove();
             }
 
-            var body = doc.DocumentNode.SelectSingleNode("//body");
-            if (body != null)
+            if (doc.DocumentNode.SelectSingleNode("//body") is HtmlNode body)
             {
                 AppendScrollScript(body);
             }
