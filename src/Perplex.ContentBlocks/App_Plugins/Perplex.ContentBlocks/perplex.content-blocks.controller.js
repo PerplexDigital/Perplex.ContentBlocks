@@ -510,10 +510,7 @@ function perplexContentBlocksController(
                 copyPasteService.pasteAll(function (header, blocks) {
                     if (header != null && config.structure.header) {
                         if ($scope.model.value.header != null) {
-                            notificationsService.warning("Cannot paste a header on a page with another header. If the header should be replaced, remove it first.");
-
-                            // Do not paste blocks either, just stop.
-                            return;
+                            notificationsService.warning("The copied header was not inserted because there was another header present.");
                         } else {
                             var definition = computed.definitionsById[header.definitionId];
                             if (definition == null) {
