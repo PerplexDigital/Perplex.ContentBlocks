@@ -306,9 +306,12 @@ function perplexContentBlocksController(
                     return;
                 }
 
-                // Prioriteit: eerst layoutpicker sluiten
-                // en als die niet open is dan eventueel de blockpicker.
-                // In een $timeout zodat de wijzigingen door Angular worden verwerkt
+                // Close the overlays in this order:
+                // 1) Layout picker
+                // 2) Block picker    
+                // This order is important as the layout picker will be opened
+                // from within the block picker. The close action should always close
+                // the top level overlay first.
                 $timeout(function () {
                     if (state.ui.layoutPicker.open) {
                         fn.layoutPicker.close();
