@@ -19,6 +19,9 @@
 
                 public const string HidePropertyGroupContainerKey = "hidePropertyGroupContainer";
                 public const string HidePropertyGroupContainerViewName = "boolean";
+
+                public const string AllowBlocksWithoutHeaderKey = "allowBlocksWithoutHeader";
+                public const string AllowBlocksWithoutHeaderViewName = "boolean";
             }
         }
     }

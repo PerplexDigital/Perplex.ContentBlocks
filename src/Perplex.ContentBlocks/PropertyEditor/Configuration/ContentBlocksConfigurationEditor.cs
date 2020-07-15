@@ -42,13 +42,21 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
                     Key = HidePropertyGroupContainerKey,
                     View = HidePropertyGroupContainerViewName,
                 },
+
+                new ConfigurationField
+                {
+                    Name = "Allow adding blocks without header",
+                    Description = "Blocks can be added without having to set a header first",
+                    Key = AllowBlocksWithoutHeaderKey,
+                    View = AllowBlocksWithoutHeaderViewName,
+                },
             });
         }
 
         /// <summary>
         /// Current configuration version.
         /// </summary>
-        public const int Version = 2;
+        public const int Version = 3;
 
         internal static readonly ContentBlocksConfiguration _defaultConfiguration = new ContentBlocksConfiguration
         {
@@ -63,6 +71,8 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
             // the default Umbraco UI and also causes some flickering upon page load
             // when the group is being hidden after our editor is initialized.
             HidePropertyGroupContainer = true,
+
+            AllowBlocksWithoutHeader = false,
         };
 
         public override object DefaultConfigurationObject { get; }
@@ -77,6 +87,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
             var structure = GetStructure(editorValues);
             var disablePreview = GetBool(editorValues, DisablePreviewKey);
             var hidePropertyGroupContainer = GetBool(editorValues, HidePropertyGroupContainerKey);
+            var requireHeaderForBlocks = GetBool(editorValues, AllowBlocksWithoutHeaderKey);
 
             return new ContentBlocksConfiguration
             {
@@ -89,6 +100,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
                 DisablePreview = disablePreview ?? _defaultConfiguration.DisablePreview,
                 HideLabel = hideLabel ?? _defaultConfiguration.HideLabel,
                 HidePropertyGroupContainer = hidePropertyGroupContainer ?? _defaultConfiguration.HidePropertyGroupContainer,
+                AllowBlocksWithoutHeader = requireHeaderForBlocks ?? _defaultConfiguration.AllowBlocksWithoutHeader,
             };
         }
 
@@ -109,6 +121,8 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
                 [HideLabelKey] = configuration.HideLabel,
 
                 [HidePropertyGroupContainerKey] = configuration.HidePropertyGroupContainer,
+
+                [AllowBlocksWithoutHeaderKey] = configuration.AllowBlocksWithoutHeader,
             };
         }
 
