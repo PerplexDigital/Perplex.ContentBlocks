@@ -2,6 +2,13 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.5.0 - <sub><sup>2020-07-24</sup></sub>
+
+-   Copy/paste blocks: do not abort entirely when header cannot be pasted (#20)
+-   Added option to allow adding blocks even when header is not set yet (#24)
+-   Fixed crash in preview mode for HTML with multiple root nodes
+-   Some small layout fixes
+
 ## v1.4.2 - <sub><sup>2020-06-29</sup></sub>
 
 -   Fixes incorrect scale of preview window contents when loading the iframe the first time on new pages.
