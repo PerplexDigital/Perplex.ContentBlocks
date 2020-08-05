@@ -2,6 +2,10 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.5.1 - <sub><sup>2020-08-05</sup></sub>
+
+-   Block picker: fixes mouse hover causing blocks to jump in some situations due to scrollbar appearing
+
 ## v1.5.0 - <sub><sup>2020-07-24</sup></sub>
 
 -   Copy/paste blocks: do not abort entirely when header cannot be pasted (#20)
