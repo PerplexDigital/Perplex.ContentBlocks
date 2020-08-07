@@ -32,11 +32,12 @@
         "$element",
         "$interpolate",
         "contentBlocksPropertyScaffoldCache",
+        "$scope",
         perplexContentBlockController
     ]
 });
 
-function perplexContentBlockController($element, $interpolate, scaffoldCache) {
+function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope) {
     var destroyFns = [];
 
     // State
@@ -75,6 +76,14 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         if (changes.isLoading && changes.isLoading.previousValue && !changes.isLoading.currentValue) {
             // Changing from loading to not loading anymore: initialize.
             this.init();
+        }
+
+        if (changes.isReorder && !changes.isReorder.previousValue && changes.isReorder.currentValue) {
+            // Editor data is saved and the editor is unloaded.
+            // This is necessary to prevent a bug with RTE data disappearing
+            // after reorder when the editor remains active.
+            // Unloading first fixes this.
+            this.unloadEditor();
         }
     }
 
@@ -235,5 +244,16 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache) {
         if (!this.state.showSettings) return;
 
         this.state.showSettings = false;
+    }
+
+    this.unloadEditor = function () {
+        if (this.state.loadEditor) {
+            // Signal Nested Content to save data -- calls our setValue().
+            // If there is a better way than through this event: let us know.
+            $scope.$broadcast("formSubmitting");
+
+            // Unload
+            this.state.loadEditor = false;
+        }
     }
 }
