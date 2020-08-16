@@ -1,26 +1,22 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+using Perplex.ContentBlocks.Utils;
 using System.Collections.Generic;
-using Umbraco.Core.Composing;
 using Umbraco.Core.PropertyEditors;
-using Umbraco.Core.Services;
 
 namespace Perplex.ContentBlocks.PropertyEditor
 {
     public class ContentBlocksPropertyEditor : IDataEditor
     {
-        private readonly IDataTypeService _dataTypeService;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
-        private readonly IFactory _factory;
+        private readonly ContentBlockUtils _utils;
 
         public ContentBlocksPropertyEditor(
-            IDataTypeService dataTypeService,
             ContentBlocksModelValueDeserializer deserializer,
-            IFactory factory)
+            ContentBlockUtils utils)
         {
-            _dataTypeService = dataTypeService;
             _deserializer = deserializer;
-            _factory = factory;
+            _utils = utils;
         }
 
         public string Alias { get; } = Constants.PropertyEditor.Alias;
@@ -47,12 +43,12 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
         public IDataValueEditor GetValueEditor(object configuration)
         {
-            var validator = new ContentBlocksValidator(_dataTypeService, _deserializer, _factory);
+            var validator = new ContentBlocksValidator(_deserializer, _utils);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
 
-            return new DataValueEditor(Constants.PropertyEditor.ViewPath, validator)
+            return new ContentBlocksValueEditor(Constants.PropertyEditor.ViewPath, _deserializer, _utils, validator)
             {
                 Configuration = configuration,
                 HideLabel = hideLabel,

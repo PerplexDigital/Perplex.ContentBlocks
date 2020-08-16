@@ -267,6 +267,7 @@
     <Compile Include="Preview\CookieBasedPreviewModeProvider.cs" />
     <Compile Include="Preview\IPreviewModeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyEditor\ContentBlocksValueEditor.cs" />
     <Compile Include="Providers\ContentBlockProvidersComposer.cs" />
     <Compile Include="Providers\DocumentTypeAliasProvider.cs" />
     <Compile Include="Providers\IDocumentTypeAliasProvider.cs" />
@@ -292,6 +293,8 @@
     <Compile Include="PropertyEditor\Configuration\ContentBlocksConfigurationEditor.cs" />
     <Compile Include="PropertyEditor\ContentBlocksPropertyEditor.cs" />
     <Compile Include="PropertyEditor\ContentBlocksValidator.cs" />
+    <Compile Include="Utils\ContentBlockUtilsComposer.cs" />
+    <Compile Include="Utils\ContentBlockUtils.cs" />
     <Compile Include="Utils\Cookies\CookiesComposer.cs" />
     <Compile Include="Utils\Cookies\HttpCookiesAccessor.cs" />
     <Compile Include="Utils\Cookies\IHttpCookiesAccessor.cs" />
