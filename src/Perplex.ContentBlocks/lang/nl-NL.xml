@@ -12,13 +12,13 @@
 		<key alias="copyAllBlocks">All blokken kopiëren</key>
 		<key alias="noContentBlocksFound">Geen Content Block definities gevonden</key>
 		<key alias="noContentBlocksFoundDesc">
-      Raadpleeg <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">de documentatie</a> om te beginnen.
+			Raadpleeg <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">de documentatie</a> om te beginnen.
 		</key>
 		<key alias="pickLayout">
 			Kies layout
 		</key>
 		<key alias="numberOfLayouts">
-      Het aantal layouts voor dit blok
+			Het aantal layouts voor dit blok
 		</key>
 		<key alias="cancel">
 			Annuleren
@@ -39,7 +39,7 @@
 			Voeg inhoud toe
 		</key>
 		<key alias="savePageToPreviewIt">
-      Sla je pagina eerst op om het voorbeeld te kunnen zien
+			Sla je pagina eerst op om het voorbeeld te kunnen zien
 		</key>
 		<key alias="hide">
 			Verberg
@@ -54,7 +54,7 @@
 			Kopieer
 		</key>
 		<key alias="blockSettingsMandatory">
-      Dit blok is verplicht: instellingen kunnen niet veranderd worden.
+			Dit blok is verplicht: instellingen kunnen niet veranderd worden.
 		</key>
 		<key alias="copied">
 			Gekopieerd
@@ -63,16 +63,16 @@
 			Alle blokken gekopieerd
 		</key>
 		<key alias="copiedHeaderNotInsertedHeaderIsPresent">
-      The gekopieerde header is niet ingevoegd, omdat er al een header aanwezig is.
+			The gekopieerde header is niet ingevoegd, omdat er al een header aanwezig is.
 		</key>
 		<key alias="copiedHeaderNotAvailable">
-      The gekopieerde header is niet beschikbaar op deze pagina en wordt overgeslagen.
+			The gekopieerde header is niet beschikbaar op deze pagina en wordt overgeslagen.
 		</key>
 		<key alias="copied1BlockNotAvailable">
-      1 gekopieerde blok is niet beschikbaar op deze pagina is wordt overgeslagen.
+			1 gekopieerde blok is niet beschikbaar op deze pagina is wordt overgeslagen.
 		</key>
 		<key alias="copiedMultipleBlockNotAvailable">
-      gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
+			gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
 		</key>
 	</area>
 </language>
