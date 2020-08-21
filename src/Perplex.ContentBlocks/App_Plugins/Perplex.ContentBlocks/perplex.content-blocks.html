@@ -24,9 +24,13 @@
             <div class="p-overlay__inner">
                 <div class="umb-alert umb-alert--warning"
                      ng-if="vm.state.definitions.length === 0">
-                    <h3>No Content Block definitions found</h3>
+                    <h3>
+                        <localize key="perplexContentBlocks_noContentBlocksFound">No Content Block definitions found</localize>
+                    </h3>
                     <p>
-                        Please refer to <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">the documentation</a> to get started.
+                        <localize key="perplexContentBlocks_noContentBlocksFoundDesc">
+                            Please refer to <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">the documentation</a> to get started.
+                        </localize>
                     </p>
                 </div>
 
@@ -49,13 +53,15 @@
                             </button>
                             <div class="p-pick-blocks__options__holder">
                                 <div class="p-pick-blocks__options__info-bar">
-                                    <div class="p-pick-blocks__options__info" title="The number of layouts of this block"><content-blocks-icon icon="layers" size="xs"></content-blocks-icon>{{vm.computed.layoutsByDefinitionId[block.Id].length}}</div>
+                                    <div class="p-pick-blocks__options__info" title="@perplexContentBlocks_numberOfLayouts"><content-blocks-icon icon="layers" size="xs"></content-blocks-icon>{{vm.computed.layoutsByDefinitionId[block.Id].length}}</div>
                                 </div>
                                 <button type="button" class="p-pick-blocks__options__preview preview-layouts"
                                         ng-show="vm.computed.layoutsByDefinitionId[block.Id].length > 0"
                                         ng-click="vm.fn.layoutPicker.init(block.Id, vm.state.ui.picker.callback)">
                                     <content-blocks-icon icon="zoom" size="xs"></content-blocks-icon>
-                                    <span>Pick layout</span>
+                                    <span>
+                                        <localize key="perplexContentBlocks_pickLayout">Pick layout</localize>   
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -65,12 +71,13 @@
 
             <div class="p-overlay__bottom">
                 <button type="button" class="btn btn-link" ng-click="vm.fn.picker.close()">
-                    Cancel
+                    <localize key="perplexContentBlocks_cancel">Cancel</localize>
                 </button>
                 <button type="button" class="btn btn-main"
                         ng-if="vm.state.ui.picker.selectedBlockId != null"
                         ng-click="vm.fn.picker.confirm()">
-                    Insert selected <content-blocks-icon icon="arrow-left" css-class="l-icon--btn"></content-blocks-icon>
+                    <localize key="perplexContentBlocks_insertSelected">Insert selected</localize>
+                    <content-blocks-icon icon="arrow-left" css-class="l-icon--btn"></content-blocks-icon>
                 </button>
             </div>
         </div>
@@ -109,11 +116,14 @@
                 </div>
             </div>
             <div class="p-overlay__bottom">
-                <button type="button" class="btn btn-link" ng-click="vm.fn.layoutPicker.close()">Close</button>
+                <button type="button" class="btn btn-link" ng-click="vm.fn.layoutPicker.close()">
+                    <localize key="perplexContentBlocks_close">Close</localize>
+                </button>
                 <button type="button" class="btn btn-main"
                         ng-if="vm.state.ui.layoutPicker.selectedLayoutId != null"
                         ng-click="vm.fn.layoutPicker.confirm()">
-                    Insert selected <content-blocks-icon icon="arrow-left" css-class="l-icon--btn"></content-blocks-icon>
+                    <localize key="perplexContentBlocks_insertSelected">Insert selected</localize>
+                    <content-blocks-icon icon="arrow-left" css-class="l-icon--btn"></content-blocks-icon>
                 </button>
             </div>
         </div>
@@ -132,14 +142,18 @@
                             <button class="btn btn-sub btn-radius" type="button"
                                     ng-click="vm.fn.header.pick()">
                                 <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
-                                <span>Add header</span>
+                                <span>
+                                    <localize key="perplexContentBlocks_addHeader">Add header</localize>
+                                </span>
                             </button>
 
                             <button class="btn btn-sub btn-radius" type="button"
                                     ng-click="vm.fn.copyPaste.paste()"
                                     ng-show="vm.state.copyPaste.hasData">
                                 <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
-                                <span>Paste content</span>
+                                <span>
+                                    <localize key="perplexContentBlocks_pasteContent">Paste content</localize>
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -182,14 +196,18 @@
                         <button class="btn btn-sub btn-radius" type="button"
                                 ng-click="vm.fn.blocks.add()">
                             <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
-                            <span>Add content</span>
+                            <span>
+                                <localize key="perplexContentBlocks_addContent">Add content</localize>
+                            </span>
                         </button>
 
                         <button class="btn btn-sub btn-radius" type="button"
                                 ng-click="vm.fn.copyPaste.paste()"
                                 ng-show="vm.state.copyPaste.hasData">
                             <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
-                            <span>Paste content</span>
+                            <span>
+                                <localize key="perplexContentBlocks_pasteContent">Paste content</localize>
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -226,11 +244,10 @@
                 </div>
             </div>
         </div>
-
         <div class="p-col--md-1-4">
             <div class="p-sidebar__holder" ng-if="!vm.config.disablePreview">
                 <div class="p-sidebar__heading">
-                    <strong class="p-sidebar__heading__title">Smart Preview</strong>
+                    <strong class="p-sidebar__heading__title"><localize key="perplexContentBlocks_smartPreview">Smart Preview</localize></strong>
                     <button class="p-sidebar__preview__icon"
                             type="button"
                             ng-class="{'s-active': vm.state.preview.mode === vm.constants.preview.mode.desktop}"
@@ -246,16 +263,22 @@
                     </button>
                 </div>
                 <div class="p-sidebar__main">
-                    <strong ng-if="vm.state.isNewPage">Save your page first in order to preview it</strong>
+                    <strong ng-if="vm.state.isNewPage"><localize key="perplexContentBlocks_savePageToPreviewIt">Save your page first in order to preview it</localize></strong>
                     <div ng-show="!vm.state.isNewPage" class="p-sidebar__preview__frame p-sidebar__preview__frame--{{vm.state.preview.mode}}">
                         <iframe class="p-sidebar__preview__root root p-sidebar__preview__root--{{vm.state.preview.mode}}"></iframe>
                     </div>
 
                     <div ng-if="!vm.state.isNewPage">
                         <small class="p-sidebar__preview__timestamp"
-                               ng-show="vm.state.preview.lastUpdate"
-                               ng-bind-template="Last update: {{vm.state.preview.lastUpdate | date:'HH:mm'}}"></small>
-                        <button type="button" ng-click="vm.fn.save()" class="btn btn-main btn-wide">Save &amp; Refresh</button>
+                               ng-show="vm.state.preview.lastUpdate">
+                            <span>
+                                <localize key="perplexContentBlocks_lastUpdate">Last update</localize>:
+                            </span>
+                            <span ng-bind-template="{{vm.state.preview.lastUpdate | date:'HH:mm'}}"></span>
+                        </small>
+                        <button type="button" ng-click="vm.fn.save()" class="btn btn-main btn-wide">
+                            <localize key="perplexContentBlocks_saveAndRefresh">Save &amp; Refresh</localize>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -263,18 +286,22 @@
             <div class="p-sidebar__holder"
                  ng-show="model.value.header != null || model.value.blocks.length > 0">
                 <div class="p-sidebar__heading">
-                    <strong class="p-sidebar__heading__title">Options</strong>
+                    <strong class="p-sidebar__heading__title">
+                        <localize key="perplexContentBlocks_options">Options</localize>
+                    </strong>
                 </div>
                 <div class="p-sidebar__main">
                     <button type="button" class="p-sidebar__blockoption__button"
                             ng-click="vm.fn.ui.toggleExpandAll()">
                         <div ng-show="vm.state.ui.expandAll">
                             <content-blocks-icon icon="grid-small" size="xxs"></content-blocks-icon>
-                            Close all blocks
+                            <localize key="perplexContentBlocks_closeAllBlocks">Close all blocks</localize>
                         </div>
                         <div ng-show="!vm.state.ui.expandAll">
                             <content-blocks-icon icon="grid-big" size="xxs"></content-blocks-icon>
-                            Open all blocks
+                            <localize key="perplexContentBlocks_openAllBlocks">
+                                Open all blocks
+                            </localize>
                         </div>
                     </button>
                     <span ng-if="vm.config.structure.blocks"
@@ -283,11 +310,15 @@
                           ng-class="{'s-active': vm.state.ui.reorder === !vm.state.ui.reorder}">
                         <button type="button" class="p-sidebar__blockoption__button" ng-show="!vm.state.ui.reorder">
                             <content-blocks-icon icon="reorder" size="xs"></content-blocks-icon>
-                            Reorder blocks
+                            <localize key="perplexContentBlocks_reorderBlocks">
+                                Reorder blocks
+                            </localize>
                         </button>
                         <button type="button" class="p-sidebar__blockoption__button is-reorder" ng-show="vm.state.ui.reorder">
                             <content-blocks-icon icon="checkmark" size="xs"></content-blocks-icon>
-                            Done reordering
+                            <localize key="perplexContentBlocks_doneReordering">
+                                Done reordering
+                            </localize>
                         </button>
                     </span>
                     <button type="button" class="p-sidebar__blockoption__button"
@@ -295,7 +326,9 @@
                             ng-click="vm.fn.copyPaste.copyAll()">
                         <div>
                             <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
-                            Copy all blocks
+                            <localize key="perplexContentBlocks_copyAllBlocks">
+                                Copy all blocks
+                            </localize>
                         </div>
                     </button>
                 </div>

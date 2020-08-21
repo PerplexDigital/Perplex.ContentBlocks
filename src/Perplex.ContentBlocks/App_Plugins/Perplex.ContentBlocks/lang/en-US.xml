@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+	<area alias="perplexContentBlocks">
+		<key alias="smartPreview">Smart Preview</key>
+		<key alias="saveAndRefresh">Save &amp; Refresh</key>
+		<key alias="lastUpdate">Last update</key>
+		<key alias="options">Options</key>
+		<key alias="closeAllBlocks">Close all blocks</key>
+		<key alias="openAllBlocks">Open all blocks</key>
+		<key alias="reorderBlocks">Reorder blocks</key>
+		<key alias="doneReordering">Done reordering</key>
+		<key alias="copyAllBlocks">Copy all blocks</key>
+		<key alias="noContentBlocksFound">No Content Block definitions found</key>
+		<key alias="noContentBlocksFoundDesc">
+			Please refer to <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">the documentation</a> to get started.
+		</key>
+		<key alias="pickLayout">
+			Pick layout
+		</key>
+		<key alias="numberOfLayouts">
+			The number of layouts of this block
+		</key>
+		<key alias="cancel">
+			Cancel
+		</key>
+		<key alias="close">
+			Close
+		</key>
+		<key alias="insertSelected">
+			Insert selected
+		</key>
+		<key alias="addHeader">
+			Add header
+		</key>
+		<key alias="pasteContent">
+			Paste content
+		</key>
+		<key alias="addContent">
+			Add content
+		</key>
+		<key alias="savePageToPreviewIt">
+			Save your page first in order to preview it
+		</key>
+		<key alias="hide">
+			Hide
+		</key>
+		<key alias="show">
+			Show
+		</key>
+		<key alias="remove">
+			Remove
+		</key>
+		<key alias="copy">
+			Copy
+		</key>
+		<key alias="blockSettingsMandatory">
+			This block is mandatory: settings cannot be changed.
+		</key>
+		<key alias="copied">
+			Copied
+		</key>
+		<key alias="copiedAllBlocks">
+			Copied all blocks
+		</key>
+		<key alias="copiedHeaderNotInsertedHeaderIsPresent">
+			The copied header was not inserted because there was another header present.
+		</key>
+		<key alias="copiedHeaderNotAvailable">
+			The copied header is not available on this page and will be skipped.
+		</key>
+		<key alias="copied1BlockNotAvailable">
+			1 copied block is not available on this page and is skipped.
+		</key>
+		<key alias="copiedMultipleBlockNotAvailable">
+			copied blocks are not available for this page and are skipped.
+		</key>
+	</area>
+</language>
