@@ -1,33 +1,26 @@
-﻿using Perplex.ContentBlocks.Definitions;
-using Perplex.ContentBlocks.PropertyEditor.Configuration;
+﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
-using System;
+using Perplex.ContentBlocks.Utils;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Umbraco.Core;
-using Umbraco.Core.Composing;
 using Umbraco.Core.Models;
 using Umbraco.Core.PropertyEditors;
-using Umbraco.Core.Services;
 
 namespace Perplex.ContentBlocks.PropertyEditor
 {
     public class ContentBlocksValidator : IValueValidator
     {
-        private readonly IDataTypeService _dataTypeService;
+        private readonly ContentBlockUtils _utils;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
-        private readonly Lazy<IContentBlockDefinitionRepository> _definitionRepository;
 
         public ContentBlocksValidator(
-            IDataTypeService dataTypeService,
             ContentBlocksModelValueDeserializer deserializer,
-            IFactory factory)
+            ContentBlockUtils utils)
         {
-            _dataTypeService = dataTypeService;
             _deserializer = deserializer;
-            _definitionRepository = new Lazy<IContentBlockDefinitionRepository>(() => factory.GetInstance<IContentBlockDefinitionRepository>());
+            _utils = utils;
         }
 
         public IEnumerable<ValidationResult> Validate(object value, string valueType, object dataTypeConfiguration)
@@ -65,27 +58,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return Enumerable.Empty<ValidationResult>();
             }
 
-            var repository = _definitionRepository.Value;
-            if (repository == null)
-            {
-                return Enumerable.Empty<ValidationResult>();
-            }
-
-            var definition = repository.GetById(blockValue.DefinitionId);
-            if (definition == null)
-            {
-                return Enumerable.Empty<ValidationResult>();
-            }
-
-            IDataType dataType = null;
-            if (definition.DataTypeId is int dataTypeId)
-            {
-                dataType = _dataTypeService.GetDataType(dataTypeId);
-            }
-            else if (definition.DataTypeKey is Guid dataTypeKey)
-            {
-                dataType = _dataTypeService.GetDataType(dataTypeKey);
-            }
+            IDataType dataType = _utils.GetDataType(blockValue.DefinitionId);
 
             if (dataType == null)
             {
