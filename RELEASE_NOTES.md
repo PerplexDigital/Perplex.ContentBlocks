@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.5.2 - <sub><sup>2020-08-24</sup></sub>
+
+-   Fix an issue where RTEs inside blocks are "killed" when reordering ContentBlocks (#28)
+-   Fix macro issues when macro is inserted in an RTE in a ContentBlock (#31)
+    -   Macro property value was not transformed correctly and therefore not rendered correctly in the frontend.
+
 ## v1.5.1 - <sub><sup>2020-08-05</sup></sub>
 
 -   Block picker: fixes mouse hover causing blocks to jump in some situations due to scrollbar appearing
