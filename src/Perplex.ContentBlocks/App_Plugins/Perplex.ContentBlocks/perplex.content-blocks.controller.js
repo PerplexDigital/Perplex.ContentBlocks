@@ -1,13 +1,13 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager",
+    "serverValidationManager","localizationService",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
-    api, utils, copyPasteService, notificationsService, serverValidationManager) {
+    api, utils, copyPasteService, notificationsService, serverValidationManager, localizationService) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -476,7 +476,9 @@ function perplexContentBlocksController(
             confirmCopy: function (block) {
                 var name = fn.blocks.getBlockName(block);
                 if (name != null) {
-                    notificationsService.info("Copied " + name);
+                    localizationService.localize("perplexContentBlocks_copied").then(function (value) {
+                        notificationsService.info(value + " " + name);
+                    });
                 }
             },
 
@@ -506,19 +508,25 @@ function perplexContentBlocksController(
                 }
 
                 copyPasteService.copyAll(data);
-                notificationsService.info("Copied all blocks");
+                localizationService.localize("perplexContentBlocks_copiedAllBlocks").then(function (value) {
+                    notificationsService.info(value);
+                });
             },
 
             paste: function (afterBlockId) {
                 copyPasteService.pasteAll(function (header, blocks) {
                     if (header != null && config.structure.header) {
                         if ($scope.model.value.header != null) {
-                            notificationsService.warning("The copied header was not inserted because there was another header present.");
+                            localizationService.localize("perplexContentBlocks_copiedHeaderNotInsertedHeaderIsPresent").then(function (value) {
+                                notificationsService.warning(value);
+                            });
                         } else {
                             var definition = computed.definitionsById[header.definitionId];
                             if (definition == null) {
                                 // Header definition not found, either because unavailable for this page or removed in general.
-                                notificationsService.warning("The copied header is not available on this page and will be skipped.");
+                                localizationService.localize("perplexContentBlocks_copiedHeaderNotAvailable").then(function (value) {
+                                    notificationsService.warning(value);
+                                });
                             } else {
                                 $scope.model.value.header = header;
                             }
@@ -547,9 +555,13 @@ function perplexContentBlocksController(
                         var skippedBlocks = blocks.length - availableBlocks.length;
                         if (skippedBlocks > 0) {
                             if (skippedBlocks === 1) {
-                                notificationsService.warning("1 copied block is not available on this page and is skipped.");
+                                localizationService.localize("perplexContentBlocks_copied1BlockNotAvailable").then(function (value) {
+                                    notificationsService.warning(value);
+                                });
                             } else {
-                                notificationsService.warning(skippedBlocks + " copied blocks are not available for this page and are skipped.");
+                                localizationService.localize("perplexContentBlocks_copiedMultipleBlockNotAvailable").then(function (value) {
+                                    notificationsService.warning(skippedBlocks + " " + value);
+                                });
                             }
                         }
 

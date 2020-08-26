@@ -301,6 +301,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.icon.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lang\da-DK.xml" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lang\en-US.xml" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lang\nl-NL.xml" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
     <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />

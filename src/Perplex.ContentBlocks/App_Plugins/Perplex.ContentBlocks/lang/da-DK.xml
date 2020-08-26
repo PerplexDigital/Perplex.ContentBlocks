@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+	<area alias="perplexContentBlocks">
+		<key alias="smartPreview">Smart forhåndsvisning</key>
+		<key alias="saveAndRefresh">Gem &amp; genindlæs</key>
+		<key alias="lastUpdate">Senest opdateret</key>
+		<key alias="options">Muligheder</key>
+		<key alias="closeAllBlocks">Luk alle blokke</key>
+		<key alias="openAllBlocks">Åben alle blokke</key>
+		<key alias="reorderBlocks">Sortér blokke</key>
+		<key alias="doneReordering">Afslut sotering</key>
+		<key alias="copyAllBlocks">Kopier alle blokke</key>
+		<key alias="noContentBlocksFound">Ingen indholdsblokke definitioner fundet</key>
+		<key alias="noContentBlocksFoundDesc">
+			Læs venligst <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">dokumentationen</a> for at komme igang.
+		</key>
+		<key alias="pickLayout">
+			Vælg layout
+		</key>
+		<key alias="numberOfLayouts">
+			Antal af layouts på denne blok
+		</key>
+		<key alias="cancel">
+			Fortryd
+		</key>
+		<key alias="cancel">
+			Fortryd
+		</key>
+		<key alias="close">
+			Luk
+		</key>
+		<key alias="insertSelected">
+			Indsæt valgte
+		</key>
+		<key alias="addHeader">
+			Tilføj banner
+		</key>
+		<key alias="pasteContent">
+			Indsæt indhold
+		</key>
+		<key alias="addContent">
+			Tilføj indhold
+		</key>
+		<key alias="savePageToPreviewIt">
+			Du skal gemme siden før du kan se en forhåndsvisning af den
+		</key>
+		<key alias="hide">
+			Skjul
+		</key>
+		<key alias="show">
+			Vis
+		</key>
+		<key alias="remove">
+			Fjern
+		</key>
+		<key alias="copy">
+			Kopier
+		</key>
+		<key alias="blockSettingsMandatory">
+			Denne blok er obligatorisk: indstillinger kan ikke ændres.
+		</key>
+		<key alias="copied">
+			Kopieret
+		</key>
+		<key alias="copiedAllBlocks">
+			Alle blokke kopieret
+		</key>
+		<key alias="copiedHeaderNotInsertedHeaderIsPresent">
+			Det kopieret banner blev ikke indsat fordi der allerede var en anden banner.
+		</key>
+		<key alias="copiedHeaderNotAvailable">
+			Det kopieret banner er ikke tilgængeligt på denne side og vil blive sprunget over. 
+		</key>
+		<key alias="copied1BlockNotAvailable">
+			1 kopieret blok er ikke tilgængelig på denne side og er blevet sprunget over.
+		</key>
+		<key alias="copiedMultipleBlockNotAvailable">
+			kopieret blokke er ikke tilgængelig på denne side og er blevet sprunget over.
+		</key>
+	</area>
+</language>

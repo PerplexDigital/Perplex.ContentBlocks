@@ -29,7 +29,7 @@
             </button>
             <button type="button" class="p-block-topbar__settings__remove remove" ng-click="$ctrl.removeBlock()">
                 <content-blocks-icon icon="waste"></content-blocks-icon>
-                <span class="p-block-topbar__settings__text">Remove</span>
+                <span class="p-block-topbar__settings__text"><localize key="perplexContentBlocks_remove">Remove</localize></span>
             </button>
         </div>
     </div>
@@ -79,22 +79,22 @@
             </button>
             <button ng-if="$ctrl.copyBlock" type="button" class="p-block-topbar__settings__duplicate duplicate" ng-click="$ctrl.copyBlock();$ctrl.closeSettings();">
                 <content-blocks-icon icon="duplicate"></content-blocks-icon>
-                <span class="p-block-topbar__settings__text">Copy</span>
+                <span class="p-block-topbar__settings__text"><localize key="perplexContentBlocks_copy">Copy</localize></span>
             </button>
             <button type="button" class="p-block-topbar__settings__remove remove" ng-click="$ctrl.removeBlock()">
                 <content-blocks-icon icon="waste"></content-blocks-icon>
-                <span class="p-block-topbar__settings__text">Remove</span>
+                <span class="p-block-topbar__settings__text"><localize key="perplexContentBlocks_remove">Remove</localize></span>
             </button>
             <button type="button" class="p-block-topbar__settings__hide"
                     ng-if="$ctrl.allowDisable || $ctrl.block.isDisabled"
                     ng-click="$ctrl.block.isDisabled = !$ctrl.block.isDisabled;$ctrl.closeSettings()">
                 <div ng-show="$ctrl.block.isDisabled">
                     <content-blocks-icon icon="show"></content-blocks-icon>
-                    <span class="p-block-topbar__settings__text">Show</span>
+                    <span class="p-block-topbar__settings__text"><localize key="perplexContentBlocks_show">Show</localize></span>
                 </div>
                 <div ng-show="!$ctrl.block.isDisabled">
                     <content-blocks-icon icon="hide"></content-blocks-icon>
-                    <span class="p-block-topbar__settings__text">Hide</span>
+                    <span class="p-block-topbar__settings__text"><localize key="perplexContentBlocks_hide">Hide</localize></span>
                 </div>
             </button>
         </div>
@@ -104,7 +104,9 @@
                 <content-blocks-icon icon="settings-lock"></content-blocks-icon>
             </span>
             <span class="p-block__mandatory__info">
-                This block is mandatory: settings cannot be changed.
+                <localize key="perplexContentBlocks_blockSettingsMandatory">
+                    This block is mandatory: settings cannot be changed.
+                </localize>
             </span>
         </div>
 
@@ -155,13 +157,17 @@
                 ng-click="$ctrl.addBlock({ id: $ctrl.block.id })"
                 ng-show="$ctrl.addBlock">
             <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
-            <span>Add content</span>
+            <span>
+                <localize key="perplexContentBlocks_addContent">Add content</localize>
+            </span>
         </button>
         <button class="btn btn-sub btn-radius" type="button"
                 ng-click="$ctrl.paste()"
                 ng-show="$ctrl.canPaste && $ctrl.paste">
             <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
-            <span>Paste content</span>
+            <span>
+                <localize key="perplexContentBlocks_pasteContent">Paste content</localize>
+            </span>
         </button>
     </div>
 </div>
