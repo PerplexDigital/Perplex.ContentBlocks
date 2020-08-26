@@ -60,19 +60,19 @@
 			Gekopieerd
 		</key>
 		<key alias="copiedAllBlocks">
-			Alle blokken gekopieerd
+			Alle blokken zijn gekopieerd
 		</key>
 		<key alias="copiedHeaderNotInsertedHeaderIsPresent">
-			The gekopieerde header is niet ingevoegd, omdat er al een header aanwezig is.
+			De gekopieerde header is niet ingevoegd, omdat er al een header aanwezig is.
 		</key>
 		<key alias="copiedHeaderNotAvailable">
-			The gekopieerde header is niet beschikbaar op deze pagina en wordt overgeslagen.
+			De gekopieerde header is niet beschikbaar op deze pagina en wordt overgeslagen.
 		</key>
 		<key alias="copied1BlockNotAvailable">
-			1 gekopieerde blok is niet beschikbaar op deze pagina is wordt overgeslagen.
+			1 gekopieerd blok is niet beschikbaar op deze pagina is wordt overgeslagen.
 		</key>
 		<key alias="copiedMultipleBlockNotAvailable">
-			gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
+			meerdere gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
 		</key>
 	</area>
 </language>
