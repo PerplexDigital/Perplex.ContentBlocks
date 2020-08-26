@@ -71,8 +71,8 @@
 		<key alias="copied1BlockNotAvailable">
 			1 gekopieerd blok is niet beschikbaar op deze pagina is wordt overgeslagen.
 		</key>
-		<key alias="copiedMultipleBlockNotAvailable">
-			meerdere gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
+		<key alias="copiedMultipleBlockNotAvailable">			
+                        gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
 		</key>
 	</area>
 </language>
