@@ -85,8 +85,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
                     var ncPropType = new PropertyType(dataType);
+                    if (culture != null) ncPropType.Variations |= ContentVariation.Culture;
+                    if (segment != null) ncPropType.Variations |= ContentVariation.Segment;
+
                     var ncProperty = new Property(ncPropType);
-                    ncProperty.SetValue(block.Content?.ToString());
+                    ncProperty.SetValue(block.Content?.ToString(), culture, segment);
                     if (valueEditor.ToEditor(ncProperty, dataTypeService, culture, segment) is List<JObject> ncValue)
                     {
                         return JArray.FromObject(ncValue);
