@@ -50,7 +50,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     }
                 }
 
-                return null;
+                // Fallback: return the original value
+                return block.Content;
             }
 
             if (modelValue.Header != null)
@@ -92,7 +93,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     }
                 }
 
-                return null;
+                // Fallback: return the original value
+                return block.Content;
             }
 
             if (modelValue.Header != null)
