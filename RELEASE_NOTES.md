@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.5.3 - <sub><sup>2020-08-28</sup></sub>
+
+-   Fix disappearing content in the backoffice (#38)
+    -   This issue occurred in multilingual setups and was introduced in 1.5.2.
+    -   Content is still present in the database but did not show up in the backoffice editor.
+
 ## v1.5.2 - <sub><sup>2020-08-24</sup></sub>
 
 -   Fix an issue where RTEs inside blocks are "killed" when reordering ContentBlocks (#28)
