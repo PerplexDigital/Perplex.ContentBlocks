@@ -25,15 +25,10 @@ namespace Perplex.ContentBlocks.PropertyEditor
         public override object FromEditor(ContentPropertyData editorValue, object currentValue)
         {
             string json = editorValue.Value?.ToString();
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return null;
-            }
-
             var modelValue = _deserializer.Deserialize(json);
             if (modelValue == null)
             {
-                return null;
+                return base.FromEditor(editorValue, currentValue);
             }
 
             JArray fromEditor(ContentBlockModelValue block)
@@ -76,7 +71,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             var modelValue = _deserializer.Deserialize(json);
             if (modelValue == null)
             {
-                return null;
+                return base.ToEditor(property, dataTypeService, culture, segment);
             }
 
             JArray toEditor(ContentBlockModelValue block)
