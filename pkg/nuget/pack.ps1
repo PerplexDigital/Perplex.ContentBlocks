@@ -13,9 +13,7 @@ $version = ..\version.ps1
 $tokens = @{
     id = "Perplex.ContentBlocks";
     version = $version;
-    title = $id;
     authors = "Perplex Digital";
-    owners = $authors;
     description = "Block based content editor for Umbraco";
     license = "MIT";
     requireLicenseAcceptance = "false";
@@ -27,6 +25,7 @@ $tokens = @{
 }
 
 $tokensCore = $tokens.Clone()
+$tokensCore.id = "Perplex.ContentBlocks.Core"
 $tokensCore.description = "Perplex.ContentBlocks assembly only"
 
 $props = Get-NuGetProps($tokens)

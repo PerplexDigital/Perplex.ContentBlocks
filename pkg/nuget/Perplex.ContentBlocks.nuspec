@@ -3,10 +3,8 @@
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
-    <title>$title$</title>
     <description>$description$</description>
     <authors>$authors$</authors>
-    <owners>$owners$</owners>
     <license type="expression">$license$</license>
     <requireLicenseAcceptance>$requireLicenseAcceptance$</requireLicenseAcceptance>
     <projectUrl>$projectUrl$</projectUrl>
