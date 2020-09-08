@@ -29,7 +29,7 @@ namespace Perplex.ContentBlocks.Utils
             var definition = _definitionRepository.Value.GetById(definitionId);
             if (definition == null)
             {
-                throw new InvalidOperationException($"No ContentBlock definition found for id \"{definitionId}\"");
+                return null;
             }
 
             return GetDataType(definition);
