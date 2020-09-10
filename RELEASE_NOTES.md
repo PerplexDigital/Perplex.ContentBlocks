@@ -2,6 +2,15 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.6.0 - <sub><sup>2020-09-10</sup></sub>
+
+-   Editor UI can now be localized (#22)
+    -   Using Umbraco's built-in `<localize>` directive and `lang/` XML files.
+    -   Looks at language of logged in Umbraco user.
+    -   Thanks to @AndersBrohus for the PR and Danish translations
+    -   Thanks to @stefankip for the Dutch translations
+-   Fix crash in back-office when editor contains block definitions that do not exist in the repository.
+
 ## v1.5.3 - <sub><sup>2020-08-28</sup></sub>
 
 -   Fix disappearing content in the backoffice (#38)
