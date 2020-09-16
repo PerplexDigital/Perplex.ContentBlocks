@@ -24,6 +24,11 @@ $projectDir = Get-Item ..\..\src\Perplex.ContentBlocks
 
 $version = ..\version.ps1
 
+# Create temp dir
+$tmpDir = "_tmp"
+If(Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse }
+New-Item -Path . -Name $tmpDir -ItemType "directory" | Out-Null
+
 # Get Umbraco version from NuGet packages.config file
 [xml]$nugetPackages = Get-Content $projectDir\packages.config
 $umbVersion = $nugetPackages.packages.package | ? {
@@ -33,35 +38,30 @@ $umbVersion = $nugetPackages.packages.package | ? {
 $packageXmlIn = "package.xml"
 $packageXmlOut = "$tmpDir\package.xml"
 
-[xml]$package = Get-Content $packageXmlIn
-$package.umbPackage.info.package.version = $version
-$requirements = $package.umbPackage.info.package.requirements
+[xml]$packageXml = Get-Content $packageXmlIn
+$packageXml.umbPackage.info.package.version = $version
+$requirements = $packageXml.umbPackage.info.package.requirements
 $requirements.major = "$($umbVersion.Major)"
 $requirements.minor = "$($umbVersion.Minor)"
 $requirements.patch = "$($umbVersion.Patch)"
 
-$files = $package.umbPackage.SelectSingleNode("files")
-$xmlns = $package.umbPackage.NamespaceURI
+$files = $packageXml.umbPackage.SelectSingleNode("files")
+$xmlns = $packageXml.umbPackage.NamespaceURI
 
 $dll = Get-Item "$projectDir\bin\Release\Perplex.ContentBlocks.dll"
 $appPluginRoot = "$projectDir\App_Plugins\Perplex.ContentBlocks"
 $appPluginFiles = Get-ChildItem $appPluginRoot\* -File -Exclude @("*.less") -Recurse
 
-# Create temp dir
-$tmpDir = "_tmp"
-If(Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse }
-New-Item -Path . -Name $tmpDir -ItemType "directory" | Out-Null
-
 # Copy DLL + App_Plugins files to package.xml + output dir
 @($dll; $appPluginFiles) | % {
-    $file = $package.CreateElement("file", $xmlns)
-    $guidElement = $package.CreateElement("guid", $xmlns)
+    $file = $packageXml.CreateElement("file", $xmlns)
+    $guidElement = $packageXml.CreateElement("guid", $xmlns)
     $guid = "$([System.Guid]::NewGuid())$($_.Extension)"
     $guidElement.InnerText = $guid
 
-    $orgName = $package.CreateElement("orgName", $xmlns)
+    $orgName = $packageXml.CreateElement("orgName", $xmlns)
     $orgName.InnerText = $_.Name
-    $orgPath = $package.CreateElement("orgPath", $xmlns)
+    $orgPath = $packageXml.CreateElement("orgPath", $xmlns)
 
     if($_.Extension -eq ".dll") {
         $orgPath.InnerText = "~/bin"
@@ -82,8 +82,7 @@ New-Item -Path . -Name $tmpDir -ItemType "directory" | Out-Null
     Copy-Item $_.FullName $tmpDir\$guid
 }
 
-$packageOut = "$tmpDir\package.xml"
-$package.Save("$pwd\$packageOut")
+$packageXml.Save("$pwd\$packageXmlOut")
 
 # Zip
 $packageOut = "Perplex.ContentBlocks_$version.zip"
