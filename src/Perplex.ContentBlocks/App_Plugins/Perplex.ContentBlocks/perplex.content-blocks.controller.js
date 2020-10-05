@@ -1,7 +1,7 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager","localizationService",
+    "serverValidationManager", "localizationService",
     perplexContentBlocksController,
 ]);
 
@@ -198,24 +198,37 @@ function perplexContentBlocksController(
                 // which is the culture of the current content variant.
                 var propertyCulture = $scope.model.culture;
 
-                var unsubscribe = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
-                    // Clear validationMessages
+                var unsubscribeFormSubmitting = $scope.$on("formSubmitting", function () {
                     state.validationMessages = {};
+                });
 
+                var unsubscribeServerValidation = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
                     if (!valid) {
                         errors.forEach(function (error) {
-                            var match = error.fieldName.match(/#content-blocks-id:([^#]+)#/);
-                            if (match != null && match.length === 2) {
+                            var match = error.fieldName.match(/#content-blocks-id:([^#]+)#(.*)?/);
+                            if (match != null && match.length >= 2) {
                                 var blockId = match[1];
                                 var errorMessage = error.errorMsg;
+                                var propertyPath = match[2];
+
                                 state.validationMessages[blockId] = state.validationMessages[blockId] || [];
-                                state.validationMessages[blockId].push(errorMessage);
+                                state.validationMessages[blockId].push({
+                                    errorMessage: errorMessage,
+                                    propertyPath: propertyPath,
+                                });
                             }
                         });
+
+                        // We need to tell Umbraco it is allowed to Save/Publish again immediately as we do not 
+                        // do any client side validation. 
+                        serverValidationManager.removePropertyError(propertyAlias, propertyCulture, "");
                     }
                 });
 
-                $scope.$on("$destroy", unsubscribe);
+                $scope.$on("$destroy", function () {
+                    unsubscribeFormSubmitting();
+                    unsubscribeServerValidation();
+                });
             }
         },
 

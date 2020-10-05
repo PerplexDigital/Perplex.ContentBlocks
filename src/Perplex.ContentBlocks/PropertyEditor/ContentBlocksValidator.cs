@@ -1,4 +1,5 @@
-﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
+﻿using Newtonsoft.Json.Linq;
+using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
 using System.Collections.Generic;
@@ -76,20 +77,54 @@ namespace Perplex.ContentBlocks.PropertyEditor
             string memberNamePrefix = $"#content-blocks-id:{blockValue.Id}#";
 
             // Validate the value using all validators that have been defined for the datatype
-            try
+
+            try 
             {
-                return valueEditor.Validators
-                    .SelectMany(ve => ve
-                        .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
-                        .Select(vr =>
+                return valueEditor.Validators.SelectMany(ve => ve
+                    .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
+                    .SelectMany(vr =>
+                    {
+                        // Umbraco 8.7 revamped validation and introduced a ComplexEditorValidationResult class 
+                        // which inherits from the ValidationResult class. This is in itself a great addition.
+                        // However, ContentBlocks is compiled with Umbraco 8.1 and does not know about this type so we cannot
+                        // do anything with it here.
+                        // We could of course recompile ContentBlocks for 8.7+ and handle this type but that would break compatibility
+                        // with all older versions so this is not an option.                    
+                        // As a workaround we will handle the ComplexEditorValidationResult class using JToken instead.                    
+
+                        var validationResult = JToken.FromObject(vr);
+                        var isComplex = validationResult.SelectToken("ValidationResults", false) != null;
+                        if (isComplex)
                         {
+                            // Umbraco 8.7+
+
+                            return validationResult
+                                ?.SelectTokens("..ValidationResults[?(@.PropertyTypeAlias != '' && @.ValidationResults[0].ErrorMessage != '')]", false)
+                                ?.Select(jt =>
+                                {
+                                    var pathToProperty = string.Join(" > ", jt.AncestorsAndSelf()
+                                        .OfType<JObject>()
+                                        .Select(jo => jo.Value<string>("PropertyTypeAlias"))
+                                        .Where(alias => !string.IsNullOrEmpty(alias))
+                                        .Reverse());
+
+                                    var errorMessage = jt.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
+                                    return new ValidationResult(errorMessage, new[] { memberNamePrefix + pathToProperty });
+                                })
+                                ?? Enumerable.Empty<ValidationResult>();
+                        }
+                        else
+                        {
+                            // < Umbraco 8.7
+
                             var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
                             var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
-                            return new ValidationResult(errorMessage, memberNames);
-                        })
-                    )
-                    .ToList();
-            }
+
+                            return new[] { new ValidationResult(errorMessage, memberNames) };
+                        }
+                    })
+                );
+            }                
             catch
             {
                 // Nested Content validation will throw in some situations,
