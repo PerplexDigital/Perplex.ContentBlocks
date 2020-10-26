@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.6.1 - <sub><sup>2020-10-26</sup></sub>
+
+-   Fixed data disappearing in the back office in some cases since 8.7
+    -   This occurred with some property editors, e.g. when using Nested Content inside a block.
+-   Removed new border around Nested Content items inside block in 8.7+
+
 ## v1.6.0 - <sub><sup>2020-09-10</sup></sub>
 
 -   Editor UI can now be localized (#22)
