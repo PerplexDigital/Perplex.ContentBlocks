@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using Umbraco.Core.Models;
 using Umbraco.Core.Models.Editors;
@@ -85,9 +85,18 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
                     var ncProperty = new Property(ncPropType);
                     ncProperty.SetValue(block.Content?.ToString(), culture, segment);
-                    if (valueEditor.ToEditor(ncProperty, dataTypeService, culture, segment) is List<JObject> ncValue)
+
+                    var ncValue = valueEditor.ToEditor(ncProperty, dataTypeService, culture, segment);
+                    if (ncValue != null)
                     {
-                        return JArray.FromObject(ncValue);
+                        try
+                        {
+                            return JArray.FromObject(ncValue);
+                        }
+                        catch (ArgumentException)
+                        {
+                            return block.Content;
+                        }
                     }
                 }
 
