@@ -76,15 +76,26 @@ namespace Perplex.ContentBlocks.PropertyEditor
             string memberNamePrefix = $"#content-blocks-id:{blockValue.Id}#";
 
             // Validate the value using all validators that have been defined for the datatype
-            return valueEditor.Validators.SelectMany(ve => ve
-                .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
-                .Select(vr =>
-                {
-                    var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
-                    var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
-                    return new ValidationResult(errorMessage, memberNames);
-                })
-            );
+            try
+            {
+                return valueEditor.Validators
+                    .SelectMany(ve => ve
+                        .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
+                        .Select(vr =>
+                        {
+                            var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
+                            var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
+                            return new ValidationResult(errorMessage, memberNames);
+                        })
+                    )
+                    .ToList();
+            }
+            catch
+            {
+                // Nested Content validation will throw in some situations,
+                // e.g. when a ContentBlock document type has no properties.
+                return Enumerable.Empty<ValidationResult>();
+            }
         }
     }
 }
