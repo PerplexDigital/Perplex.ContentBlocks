@@ -36,11 +36,19 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
                     var propertyData = new ContentPropertyData(block.Content.ToString(), dataType.Configuration);
-                    var ncJson = valueEditor.FromEditor(propertyData, null)?.ToString();
 
-                    if (!string.IsNullOrWhiteSpace(ncJson))
+                    try
                     {
-                        return JArray.Parse(ncJson);
+                        var ncJson = valueEditor.FromEditor(propertyData, null)?.ToString();
+
+                        if (!string.IsNullOrWhiteSpace(ncJson))
+                        {
+                            return JArray.Parse(ncJson);
+                        }
+                    }
+                    catch
+                    {
+                        return block.Content;
                     }
                 }
 
