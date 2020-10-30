@@ -2,6 +2,10 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.6.2 - <sub><sup>2020-10-30</sup></sub>
+
+-   Handles a couple of rare exceptions
+
 ## v1.6.1 - <sub><sup>2020-10-26</sup></sub>
 
 -   Fixed data disappearing in the back office in some cases since 8.7
