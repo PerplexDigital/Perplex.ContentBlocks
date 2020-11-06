@@ -137,8 +137,8 @@
          ng-if="$ctrl.state.initialized && $ctrl.state.loadEditor">
         <div ng-show="$ctrl.validationMessages"
              ng-repeat="validationMessage in $ctrl.validationMessages track by validationMessage.error+validationMessage.propertyPath">
-            <span ng-bind="validationMessage.errorMessage" ng-show="validationMessage.errorMessage" class="alert alert-error"></span>
             <code ng-bind="validationMessage.propertyPath" ng-show="validationMessage.propertyPath" class="alert alert-info"></code>
+            <span ng-bind="validationMessage.errorMessage" ng-show="validationMessage.errorMessage" class="alert alert-error"></span>
         </div>
         <content-blocks-property datatype-id="$ctrl.definition.DataTypeId"
                                  datatype-key="$ctrl.definition.DataTypeKey"
