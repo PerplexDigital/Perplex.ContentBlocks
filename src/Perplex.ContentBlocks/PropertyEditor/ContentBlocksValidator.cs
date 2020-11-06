@@ -78,53 +78,57 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             // Validate the value using all validators that have been defined for the datatype
 
-            try 
+            try
             {
                 return valueEditor.Validators.SelectMany(ve => ve
                     .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
-                    .SelectMany(vr =>
+                .SelectMany(vr =>
+                {
+                    // Umbraco 8.7 revamped validation and introduced a ComplexEditorValidationResult class
+                    // which inherits from the ValidationResult class. This is in itself a great addition.
+                    // However, ContentBlocks is compiled with Umbraco 8.1 and does not know about this type so we cannot
+                    // do anything with it here.
+                    // We could of course recompile ContentBlocks for 8.7+ and handle this type but that would break compatibility
+                    // with all older versions so this is not an option.
+                    // As a workaround we will handle the ComplexEditorValidationResult class using JToken instead.
+
+                    var validationResult = JToken.FromObject(vr);
+                    var isComplex = validationResult.SelectToken("ValidationResults", false) != null;
+                    if (isComplex)
                     {
-                        // Umbraco 8.7 revamped validation and introduced a ComplexEditorValidationResult class 
-                        // which inherits from the ValidationResult class. This is in itself a great addition.
-                        // However, ContentBlocks is compiled with Umbraco 8.1 and does not know about this type so we cannot
-                        // do anything with it here.
-                        // We could of course recompile ContentBlocks for 8.7+ and handle this type but that would break compatibility
-                        // with all older versions so this is not an option.                    
-                        // As a workaround we will handle the ComplexEditorValidationResult class using JToken instead.                    
+                        // Umbraco 8.7+
 
-                        var validationResult = JToken.FromObject(vr);
-                        var isComplex = validationResult.SelectToken("ValidationResults", false) != null;
-                        if (isComplex)
-                        {
-                            // Umbraco 8.7+
+                        return validationResult
+                            ?.SelectTokens("..ValidationResults[?(@.PropertyTypeAlias != '' && @.ValidationResults[0].ErrorMessage != '')]", false)
+                            ?.Select(jt =>
+                            {
+                                string propertyAlias = jt.Value<string>("PropertyTypeAlias");
 
-                            return validationResult
-                                ?.SelectTokens("..ValidationResults[?(@.PropertyTypeAlias != '' && @.ValidationResults[0].ErrorMessage != '')]", false)
-                                ?.Select(jt =>
-                                {
-                                    var pathToProperty = string.Join(" > ", jt.AncestorsAndSelf()
-                                        .OfType<JObject>()
-                                        .Select(jo => jo.Value<string>("PropertyTypeAlias"))
-                                        .Where(alias => !string.IsNullOrEmpty(alias))
-                                        .Reverse());
+                                //var pathToProperty = string.Join(" > ", jt.AncestorsAndSelf()
+                                //    .OfType<JObject>()
+                                //    .Select(jo => jo.Value<string>("PropertyTypeAlias"))
+                                //    .Where(alias => !string.IsNullOrEmpty(alias))
+                                //    .Reverse());
 
-                                    var errorMessage = jt.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
-                                    return new ValidationResult(errorMessage, new[] { memberNamePrefix + pathToProperty });
-                                })
-                                ?? Enumerable.Empty<ValidationResult>();
-                        }
-                        else
-                        {
-                            // < Umbraco 8.7
+                                var errorMessage = jt.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
+                                //return new ValidationResult(errorMessage, new[] { blockValue.Id + "/" + propertyAlias });
 
-                            var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
-                            var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
+                                string json = $@"[{{""$id"":""{blockValue.Id}/c9bf5f00-f6fb-4d36-96ac-d55d74c117c3"",""$elementTypeAlias"":""exampleBlock"",""ModelState"":{{""_Properties.title.invariant.null.value"":[""Value cannot be empty""],""_Properties.contentPicker.invariant.null.value"":[""Custom mandatory message!""]}}}}]";
+                                return new ValidationResult(json);
+                            })
+                            ?? Enumerable.Empty<ValidationResult>();
+                    }
+                    else
+                    {
+                        // < Umbraco 8.7
 
-                            return new[] { new ValidationResult(errorMessage, memberNames) };
-                        }
-                    })
-                );
-            }                
+                        var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
+                        var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
+
+                        return new[] { new ValidationResult(errorMessage, memberNames) };
+                    }
+                }));
+            }
             catch
             {
                 // Nested Content validation will throw in some situations,
