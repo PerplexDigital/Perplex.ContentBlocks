@@ -2,11 +2,13 @@
 using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
+using Semver;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.PropertyEditors;
 
@@ -15,14 +17,17 @@ namespace Perplex.ContentBlocks.PropertyEditor
     public class ContentBlocksValidator : IValueValidator
     {
         private readonly ContentBlockUtils _utils;
+        private readonly IRuntimeState _runtimeState;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
 
         public ContentBlocksValidator(
             ContentBlocksModelValueDeserializer deserializer,
-            ContentBlockUtils utils)
+            ContentBlockUtils utils,
+            IRuntimeState runtimeState)
         {
             _deserializer = deserializer;
             _utils = utils;
+            _runtimeState = runtimeState;
         }
 
         public IEnumerable<ValidationResult> Validate(object value, string valueType, object dataTypeConfiguration)
@@ -33,44 +38,83 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return Enumerable.Empty<ValidationResult>();
             }
 
-            var validationResults = new List<ValidationResult>();
-
-            Structure layout = (dataTypeConfiguration as ContentBlocksConfiguration)?.Structure
+            Structure structure = (dataTypeConfiguration as ContentBlocksConfiguration)?.Structure
                 // No configuration passed in -> assume everything
                 ?? Structure.All;
 
-            JArray complexResults = new JArray();
-            if (modelValue.Header?.IsDisabled == false && layout.HasFlag(Structure.Header))
+            var blocksToValidate = GetBlocksToValidate(modelValue, structure);
+
+            if (_runtimeState.SemanticVersion >= new SemVersion(8, 7))
             {
-                var vrs = Validate(modelValue.Header);
-                foreach (var vr in vrs)
+                // Umbraco 8.7's new complex validation needs to be handled very differently.
+                return ValidateComplex(blocksToValidate);
+            }
+            else
+            {
+                return ValidateSimple(blocksToValidate);
+            }
+        }
+
+        private IEnumerable<ValidationResult> ValidateComplex(IEnumerable<ContentBlockModelValue> blocksToValidate)
+        {
+            var complexValidationResults = new JArray();
+
+            foreach (var block in blocksToValidate)
+            {
+                foreach (var validationResult in Validate(block))
                 {
-                    var token = JToken.FromObject(vr);
-                    var arr = ParseInternal(token, modelValue.Header.Id) as JArray;
-                    foreach (var t in arr) complexResults.Add(t);
+                    var jObj = JObject.FromObject(validationResult);
+                    if (Parse(jObj, block.Id) is JObject complexValidationResult)
+                    {
+                        complexValidationResults.Add(complexValidationResult);
+                    };
                 }
             }
 
-            var blockValidations = modelValue.Blocks
-                .Where(block => !block.IsDisabled && layout.HasFlag(Structure.Blocks))
-                .SelectMany(Validate);
-
-            foreach (var block in modelValue.Blocks)
+            if (complexValidationResults.Count == 0)
             {
-                var vrs = Validate(block);
-                foreach (var vr in vrs)
+                return Enumerable.Empty<ValidationResult>();
+            }
+            else
+            {
+                var errorMessage = complexValidationResults.ToString(Newtonsoft.Json.Formatting.None);
+                return new[] { new ValidationResult(errorMessage) };
+            }
+        }
+
+        private IEnumerable<ValidationResult> ValidateSimple(IEnumerable<ContentBlockModelValue> blocksToValidate)
+        {
+            return blocksToValidate.SelectMany(block =>
+            {
+                // We add a prefix to memberNames of fields with errors
+                // so we can display it at the correct Content Block
+                string memberNamePrefix = $"#content-blocks-id:{block.Id}#";
+                return Validate(block).Select(vr =>
                 {
-                    var token = JToken.FromObject(vr);
-                    var arr = ParseInternal(token, block.Id) as JArray;
-                    foreach (var t in arr) complexResults.Add(t);
-                }
+                    var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
+                    var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
+                    return new ValidationResult(errorMessage, memberNames);
+                });
+            });
+        }
+
+        private IEnumerable<ContentBlockModelValue> GetBlocksToValidate(ContentBlocksModelValue modelValue, Structure structure)
+        {
+            if (modelValue.Header?.IsDisabled == false && structure.HasFlag(Structure.Header))
+            {
+                yield return modelValue.Header;
             }
 
-            return new[] { new ValidationResult(complexResults.ToString(formatting: Newtonsoft.Json.Formatting.None)) };
-
-            validationResults.AddRange(blockValidations);
-
-            return validationResults;
+            if (structure.HasFlag(Structure.Blocks))
+            {
+                foreach (var block in modelValue.Blocks)
+                {
+                    if (block?.IsDisabled == false)
+                    {
+                        yield return block;
+                    }
+                }
+            }
         }
 
         private IEnumerable<ValidationResult> Validate(ContentBlockModelValue blockValue)
@@ -93,43 +137,10 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return Enumerable.Empty<ValidationResult>();
             }
 
-            // We add a prefix to memberNames of fields with errors
-            // so we can display it at the correct Content Block
-            string memberNamePrefix = $"#content-blocks-id:{blockValue.Id}#";
-
-            // Validate the value using all validators that have been defined for the datatype
-
             try
             {
-                return valueEditor.Validators.SelectMany(ve => ve
-                    .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
-                    .Select(vr =>
-                    {
-                        // Umbraco 8.7 revamped validation and introduced a ComplexEditorValidationResult class
-                        // which inherits from the ValidationResult class. This is in itself a great addition.
-                        // However, ContentBlocks is compiled with Umbraco 8.1 and does not know about this type so we cannot
-                        // do anything with it here.
-                        // We could of course recompile ContentBlocks for 8.7+ and handle this type but that would break compatibility
-                        // with all older versions so this is not an option.
-                        // As a workaround we will handle the ComplexEditorValidationResult class using JToken instead.
-
-                        var validationResult = JToken.FromObject(vr);
-                        var isComplex = validationResult.SelectToken("ValidationResults", false) != null;
-                        if (isComplex)
-                        {
-                            // Umbraco 8.7+
-                            return vr;
-                        }
-                        else
-                        {
-                            // < Umbraco 8.7
-
-                            var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
-                            var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
-
-                            return new ValidationResult(errorMessage, memberNames);
-                        }
-                    }));
+                // Validate the value using all validators that have been defined for the datatype
+                return valueEditor.Validators.SelectMany(ve => ve.Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration));
             }
             catch
             {
@@ -139,24 +150,26 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private static JToken ParseInternal(JToken token, Guid? contentBlockId)
+        private static JObject Parse(JToken token, Guid? contentBlockId)
         {
-            var blockId = token.Value<Guid>("BlockId");
-            if (blockId != default)
+            if (token["BlockId"] != null)
             {
                 return ParseBlock(token, contentBlockId);
             }
+            else if (token.SelectToken("ValidationResults[0]", false) is JObject nested)
+            {
+                return Parse(nested, contentBlockId);
+            }
             else
             {
-                var validationResults = token.SelectToken("ValidationResults", false) as JArray;
-                return new JArray(validationResults.Select(nest => ParseInternal(nest, contentBlockId)));
+                throw new ArgumentException("Invalid input", nameof(token));
             }
         }
 
         private static JObject ParseBlock(JToken token, Guid? contentBlockId)
         {
             var nestedContentKey = token.Value<Guid>("BlockId");
-            string elementTypeAlias = token.Value<string>("ElementTypeAlias");
+            var elementTypeAlias = token.Value<string>("ElementTypeAlias");
             var validationResults = token.SelectToken("ValidationResults", false) as JArray;
 
             var block = new JObject
@@ -168,30 +181,28 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             foreach (var validationResult in validationResults)
             {
-                ParseProperty(block, validationResult, contentBlockId);
+                ParseProperty(block, validationResult);
             }
 
             return block;
         }
 
-        private static JObject ParseProperty(JObject block, JToken token, Guid? contentBlockId)
+        private static JObject ParseProperty(JObject block, JToken token)
         {
-            string propertyTypeAlias = token.Value<string>("PropertyTypeAlias");
-
-            string errorMessage = token.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
-            var nested = token.SelectToken("ValidationResults[0].ValidationResults", false) as JArray;
+            var propertyTypeAlias = token.Value<string>("PropertyTypeAlias");
             var modelState = block.SelectToken("ModelState");
 
-            if (nested != null)
+            if (token.SelectToken("ValidationResults[0].ValidationResults", false) is JArray nested)
             {
                 // Complex
-                block[propertyTypeAlias] = new JArray(nested.Select(item => ParseInternal(item, null)));
-                modelState[$"_Properties.{propertyTypeAlias}.invariant.null"] = new JArray(new string[] { "" });
+                block[propertyTypeAlias] = new JArray(nested.Select(obj => Parse(obj, null)));
+                modelState[$"_Properties.{propertyTypeAlias}.invariant.null"] = new JArray(new[] { "" });
             }
             else
             {
                 // Simple
-                modelState[$"_Properties.{propertyTypeAlias}.invariant.null.value"] = new JArray(new string[] { errorMessage });
+                var errorMessage = token.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
+                modelState[$"_Properties.{propertyTypeAlias}.invariant.null.value"] = new JArray(new[] { errorMessage });
             }
 
             return block;

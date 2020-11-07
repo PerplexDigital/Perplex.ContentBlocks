@@ -2,6 +2,7 @@
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
 using System.Collections.Generic;
+using Umbraco.Core;
 using Umbraco.Core.PropertyEditors;
 
 namespace Perplex.ContentBlocks.PropertyEditor
@@ -10,13 +11,16 @@ namespace Perplex.ContentBlocks.PropertyEditor
     {
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
+        private readonly IRuntimeState _runtimeState;
 
         public ContentBlocksPropertyEditor(
             ContentBlocksModelValueDeserializer deserializer,
-            ContentBlockUtils utils)
+            ContentBlockUtils utils,
+            IRuntimeState runtimeState)
         {
             _deserializer = deserializer;
             _utils = utils;
+            _runtimeState = runtimeState;
         }
 
         public string Alias { get; } = Constants.PropertyEditor.Alias;
@@ -43,7 +47,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
         public IDataValueEditor GetValueEditor(object configuration)
         {
-            var validator = new ContentBlocksValidator(_deserializer, _utils);
+            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
