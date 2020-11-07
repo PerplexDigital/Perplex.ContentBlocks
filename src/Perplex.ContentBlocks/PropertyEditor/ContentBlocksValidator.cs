@@ -39,14 +39,34 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 // No configuration passed in -> assume everything
                 ?? Structure.All;
 
+            JArray complexResults = new JArray();
             if (modelValue.Header?.IsDisabled == false && layout.HasFlag(Structure.Header))
             {
-                validationResults.AddRange(Validate(modelValue.Header));
+                var vrs = Validate(modelValue.Header);
+                foreach (var vr in vrs)
+                {
+                    var token = JToken.FromObject(vr);
+                    var arr = ParseInternal(token, modelValue.Header.Id) as JArray;
+                    foreach (var t in arr) complexResults.Add(t);
+                }
             }
 
             var blockValidations = modelValue.Blocks
                 .Where(block => !block.IsDisabled && layout.HasFlag(Structure.Blocks))
                 .SelectMany(Validate);
+
+            foreach (var block in modelValue.Blocks)
+            {
+                var vrs = Validate(block);
+                foreach (var vr in vrs)
+                {
+                    var token = JToken.FromObject(vr);
+                    var arr = ParseInternal(token, block.Id) as JArray;
+                    foreach (var t in arr) complexResults.Add(t);
+                }
+            }
+
+            return new[] { new ValidationResult(complexResults.ToString(formatting: Newtonsoft.Json.Formatting.None)) };
 
             validationResults.AddRange(blockValidations);
 
@@ -98,9 +118,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                         if (isComplex)
                         {
                             // Umbraco 8.7+
-                            var parsed = ParseInternal(validationResult, blockValue.Id);
-                            string json = parsed.ToString(formatting: Newtonsoft.Json.Formatting.None);
-                            return new ValidationResult(json);
+                            return vr;
                         }
                         else
                         {
@@ -121,7 +139,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private static JToken ParseInternal(JToken token, Guid contentBlockId)
+        private static JToken ParseInternal(JToken token, Guid? contentBlockId)
         {
             var blockId = token.Value<Guid>("BlockId");
             if (blockId != default)
@@ -135,7 +153,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private static JObject ParseBlock(JToken token, Guid contentBlockId)
+        private static JObject ParseBlock(JToken token, Guid? contentBlockId)
         {
             var nestedContentKey = token.Value<Guid>("BlockId");
             string elementTypeAlias = token.Value<string>("ElementTypeAlias");
@@ -143,7 +161,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             var block = new JObject
             {
-                ["$id"] = $"{contentBlockId}/{nestedContentKey}",
+                ["$id"] = contentBlockId.HasValue ? $"{contentBlockId}/{nestedContentKey}" : $"{nestedContentKey}",
                 ["$elementTypeAlias"] = elementTypeAlias,
                 ["ModelState"] = new JObject()
             };
@@ -156,7 +174,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             return block;
         }
 
-        private static JObject ParseProperty(JObject block, JToken token, Guid contentBlockId)
+        private static JObject ParseProperty(JObject block, JToken token, Guid? contentBlockId)
         {
             string propertyTypeAlias = token.Value<string>("PropertyTypeAlias");
 
@@ -167,7 +185,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             if (nested != null)
             {
                 // Complex
-                block[propertyTypeAlias] = new JArray(nested.Select(item => ParseInternal(item, contentBlockId)));
+                block[propertyTypeAlias] = new JArray(nested.Select(item => ParseInternal(item, null)));
                 modelState[$"_Properties.{propertyTypeAlias}.invariant.null"] = new JArray(new string[] { "" });
             }
             else
