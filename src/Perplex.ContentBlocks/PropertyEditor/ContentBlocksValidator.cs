@@ -2,6 +2,7 @@
 using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -82,52 +83,35 @@ namespace Perplex.ContentBlocks.PropertyEditor
             {
                 return valueEditor.Validators.SelectMany(ve => ve
                     .Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration)
-                .SelectMany(vr =>
-                {
-                    // Umbraco 8.7 revamped validation and introduced a ComplexEditorValidationResult class
-                    // which inherits from the ValidationResult class. This is in itself a great addition.
-                    // However, ContentBlocks is compiled with Umbraco 8.1 and does not know about this type so we cannot
-                    // do anything with it here.
-                    // We could of course recompile ContentBlocks for 8.7+ and handle this type but that would break compatibility
-                    // with all older versions so this is not an option.
-                    // As a workaround we will handle the ComplexEditorValidationResult class using JToken instead.
-
-                    var validationResult = JToken.FromObject(vr);
-                    var isComplex = validationResult.SelectToken("ValidationResults", false) != null;
-                    if (isComplex)
+                    .Select(vr =>
                     {
-                        // Umbraco 8.7+
+                        // Umbraco 8.7 revamped validation and introduced a ComplexEditorValidationResult class
+                        // which inherits from the ValidationResult class. This is in itself a great addition.
+                        // However, ContentBlocks is compiled with Umbraco 8.1 and does not know about this type so we cannot
+                        // do anything with it here.
+                        // We could of course recompile ContentBlocks for 8.7+ and handle this type but that would break compatibility
+                        // with all older versions so this is not an option.
+                        // As a workaround we will handle the ComplexEditorValidationResult class using JToken instead.
 
-                        return validationResult
-                            ?.SelectTokens("..ValidationResults[?(@.PropertyTypeAlias != '' && @.ValidationResults[0].ErrorMessage != '')]", false)
-                            ?.Select(jt =>
-                            {
-                                string propertyAlias = jt.Value<string>("PropertyTypeAlias");
+                        var validationResult = JToken.FromObject(vr);
+                        var isComplex = validationResult.SelectToken("ValidationResults", false) != null;
+                        if (isComplex)
+                        {
+                            // Umbraco 8.7+
+                            var parsed = ParseInternal(validationResult, blockValue.Id);
+                            string json = parsed.ToString(formatting: Newtonsoft.Json.Formatting.None);
+                            return new ValidationResult(json);
+                        }
+                        else
+                        {
+                            // < Umbraco 8.7
 
-                                //var pathToProperty = string.Join(" > ", jt.AncestorsAndSelf()
-                                //    .OfType<JObject>()
-                                //    .Select(jo => jo.Value<string>("PropertyTypeAlias"))
-                                //    .Where(alias => !string.IsNullOrEmpty(alias))
-                                //    .Reverse());
+                            var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
+                            var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
 
-                                var errorMessage = jt.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
-                                //return new ValidationResult(errorMessage, new[] { blockValue.Id + "/" + propertyAlias });
-
-                                string json = $@"[{{""$id"":""{blockValue.Id}/c9bf5f00-f6fb-4d36-96ac-d55d74c117c3"",""$elementTypeAlias"":""exampleBlock"",""ModelState"":{{""_Properties.title.invariant.null.value"":[""Value cannot be empty""],""_Properties.contentPicker.invariant.null.value"":[""Custom mandatory message!""]}}}}]";
-                                return new ValidationResult(json);
-                            })
-                            ?? Enumerable.Empty<ValidationResult>();
-                    }
-                    else
-                    {
-                        // < Umbraco 8.7
-
-                        var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
-                        var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
-
-                        return new[] { new ValidationResult(errorMessage, memberNames) };
-                    }
-                }));
+                            return new ValidationResult(errorMessage, memberNames);
+                        }
+                    }));
             }
             catch
             {
@@ -135,6 +119,64 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 // e.g. when a ContentBlock document type has no properties.
                 return Enumerable.Empty<ValidationResult>();
             }
+        }
+
+        private static JToken ParseInternal(JToken token, Guid contentBlockId)
+        {
+            var blockId = token.Value<Guid>("BlockId");
+            if (blockId != default)
+            {
+                return ParseBlock(token, contentBlockId);
+            }
+            else
+            {
+                var validationResults = token.SelectToken("ValidationResults", false) as JArray;
+                return new JArray(validationResults.Select(nest => ParseInternal(nest, contentBlockId)));
+            }
+        }
+
+        private static JObject ParseBlock(JToken token, Guid contentBlockId)
+        {
+            var nestedContentKey = token.Value<Guid>("BlockId");
+            string elementTypeAlias = token.Value<string>("ElementTypeAlias");
+            var validationResults = token.SelectToken("ValidationResults", false) as JArray;
+
+            var block = new JObject
+            {
+                ["$id"] = $"{contentBlockId}/{nestedContentKey}",
+                ["$elementTypeAlias"] = elementTypeAlias,
+                ["ModelState"] = new JObject()
+            };
+
+            foreach (var validationResult in validationResults)
+            {
+                ParseProperty(block, validationResult, contentBlockId);
+            }
+
+            return block;
+        }
+
+        private static JObject ParseProperty(JObject block, JToken token, Guid contentBlockId)
+        {
+            string propertyTypeAlias = token.Value<string>("PropertyTypeAlias");
+
+            string errorMessage = token.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
+            var nested = token.SelectToken("ValidationResults[0].ValidationResults", false) as JArray;
+            var modelState = block.SelectToken("ModelState");
+
+            if (nested != null)
+            {
+                // Complex
+                block[propertyTypeAlias] = new JArray(nested.Select(item => ParseInternal(item, contentBlockId)));
+                modelState[$"_Properties.{propertyTypeAlias}.invariant.null"] = new JArray(new string[] { "" });
+            }
+            else
+            {
+                // Simple
+                modelState[$"_Properties.{propertyTypeAlias}.invariant.null.value"] = new JArray(new string[] { errorMessage });
+            }
+
+            return block;
         }
     }
 }
