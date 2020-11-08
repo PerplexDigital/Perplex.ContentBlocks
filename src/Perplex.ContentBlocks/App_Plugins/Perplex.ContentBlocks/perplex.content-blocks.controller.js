@@ -213,17 +213,12 @@ function perplexContentBlocksController(
                 var unsubscribeServerValidation = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
                     if (!valid) {
                         errors.forEach(function (error) {
-                            var match = error.fieldName.match(/#content-blocks-id:([^#]+)#(.*)?/);
-                            if (match != null && match.length >= 2) {
+                            var match = error.fieldName.match(/#content-blocks-id:([^#]+)#/);
+                            if (match != null && match.length === 2) {
                                 var blockId = match[1];
                                 var errorMessage = error.errorMsg;
-                                var propertyPath = match[2];
-
                                 state.validationMessages[blockId] = state.validationMessages[blockId] || [];
-                                state.validationMessages[blockId].push({
-                                    errorMessage: errorMessage,
-                                    propertyPath: propertyPath,
-                                });
+                                state.validationMessages[blockId].push(errorMessage);
                             }
                         });
                     }
