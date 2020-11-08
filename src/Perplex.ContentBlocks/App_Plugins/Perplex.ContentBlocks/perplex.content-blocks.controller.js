@@ -199,6 +199,14 @@ function perplexContentBlocksController(
                 var propertyCulture = $scope.model.culture;
 
                 var unsubscribeFormSubmitting = $scope.$on("formSubmitting", function () {
+                    // We need to tell Umbraco it is allowed to Save/Publish again immediately as we do not 
+                    // do any client side validation. Otherwise the Save/Publish action would remain blocked.
+                    serverValidationManager.removePropertyError(propertyAlias, propertyCulture, "", null, { matchType: "prefix" });
+                    serverValidationManager.getPropertyCallbacks(propertyAlias, propertyCulture, "", null).forEach(function (cb) {
+                        // Tell all callbacks this property editor is valid again.
+                        cb.callback.apply(null, [true, [], [], cb.culture, cb.segment]);
+                    });
+
                     state.validationMessages = {};
                 });
 
@@ -218,10 +226,6 @@ function perplexContentBlocksController(
                                 });
                             }
                         });
-
-                        // We need to tell Umbraco it is allowed to Save/Publish again immediately as we do not 
-                        // do any client side validation. 
-                        serverValidationManager.removePropertyError(propertyAlias, propertyCulture, "");
                     }
                 });
 
