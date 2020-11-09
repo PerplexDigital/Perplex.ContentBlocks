@@ -140,7 +140,9 @@
              ng-repeat="validationMessage in $ctrl.validationMessages"
              ng-bind="validationMessage">
         </div>
-        <content-blocks-property datatype-id="$ctrl.definition.DataTypeId"
+
+        <content-blocks-property content-block-id="$ctrl.block.id"
+                                 datatype-id="$ctrl.definition.DataTypeId"
                                  datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"
                                  set-value="$ctrl.setValue({ value: value })"

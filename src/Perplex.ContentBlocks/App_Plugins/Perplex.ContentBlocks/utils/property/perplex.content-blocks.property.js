@@ -3,6 +3,7 @@
     bindings: {
         datatypeId: "<?",
         datatypeKey: "<?",
+        contentBlockId: "<?",
         config: "<?",
         getValue: "&?",
         setValue: "&?",

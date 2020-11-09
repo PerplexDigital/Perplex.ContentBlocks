@@ -1,7 +1,7 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager","localizationService",
+    "serverValidationManager", "localizationService",
     perplexContentBlocksController,
 ]);
 
@@ -198,10 +198,11 @@ function perplexContentBlocksController(
                 // which is the culture of the current content variant.
                 var propertyCulture = $scope.model.culture;
 
-                var unsubscribe = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
-                    // Clear validationMessages
+                var unsubscribeFormSubmitting = $scope.$on("formSubmitting", function () {
                     state.validationMessages = {};
+                });
 
+                var unsubscribeServerValidation = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
                     if (!valid) {
                         errors.forEach(function (error) {
                             var match = error.fieldName.match(/#content-blocks-id:([^#]+)#/);
@@ -215,7 +216,10 @@ function perplexContentBlocksController(
                     }
                 });
 
-                $scope.$on("$destroy", unsubscribe);
+                $scope.$on("$destroy", function () {
+                    unsubscribeFormSubmitting();
+                    unsubscribeServerValidation();
+                });
             }
         },
 
