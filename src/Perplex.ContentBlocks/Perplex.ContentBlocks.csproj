@@ -268,6 +268,7 @@
     <Compile Include="Preview\IPreviewModeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyEditor\ContentBlocksValueEditor.cs" />
+    <Compile Include="PropertyEditor\ModelValue\ContentBlocksModelValueComponent.cs" />
     <Compile Include="Providers\ContentBlockProvidersComposer.cs" />
     <Compile Include="Providers\DocumentTypeAliasProvider.cs" />
     <Compile Include="Providers\IDocumentTypeAliasProvider.cs" />
