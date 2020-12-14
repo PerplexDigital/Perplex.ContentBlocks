@@ -130,3 +130,45 @@
         padding: 0;
     }
 }
+
+// When splitview is active
+
+.umb-split-views > .umb-split-view:not(:only-child) {
+    & .control-group.umb-control-group > .alert.property-error {
+        position: absolute;
+        top: 20px;
+        z-index: 11;
+    }
+
+    & .p-grid > [class*="p-col--md-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+    & .p-grid > .p-col--md-1-4 {
+        order: -1 !important;
+        margin-bottom: 20px !important;
+        z-index: 10;
+        
+        .p-sidebar__holder--smart-preview {
+            display: none;
+        }
+        .p-sidebar__holder {
+            margin: -20px -20px 0 -20px;
+            border: 0;
+        }
+        .p-sidebar__heading {
+            display: none;
+        }
+        .p-sidebar__main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            & > *, & .p-sidebar__blockoption__button{
+                margin: 0;
+            }
+        }
+    }
+}

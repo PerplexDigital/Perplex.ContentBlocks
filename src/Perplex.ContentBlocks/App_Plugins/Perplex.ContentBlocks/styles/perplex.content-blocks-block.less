@@ -356,26 +356,27 @@
         }
 
         &__preview {
-            display: none;
+            display: block;
             pointer-events: none;
             opacity: 0;
             z-index: 5;
             position: absolute;
-            top: 1.5rem;
+            top: 100%;
             left: auto;
-            right: 3.2rem;
-            width: 13rem;
-            height: 6.4rem;
+            right: 30px;
+            width: 200px;
+            height: 100px;
             border-radius: 3px;
-            border: 0.3rem solid @color-light-b;
+            border: 3px solid @color-light-b;
             background-color: @color-light-a;
             box-shadow: 5px 5px 8px rgba(0,0,0,0.35);
             overflow: hidden;
+            transition: all 0.1s ease-out;
         }
 
         &__preview.is-active {
             opacity: 1;
-            top: 3.5rem;
+            top: calc(100% + 10px);
         }
 
         &__preview:after {
@@ -420,11 +421,6 @@
             &__list .slick-arrow:before {
                 background-size: 15% !important;
             }
-
-            &__preview {
-                display: block;
-                right: 4.5rem;
-            }
         }
 
         @media only screen and (min-width: 108em) {
@@ -445,7 +441,7 @@
             }
 
             &__preview {
-                right: 7.5rem;
+                right: 65px;
             }
         }
     }
