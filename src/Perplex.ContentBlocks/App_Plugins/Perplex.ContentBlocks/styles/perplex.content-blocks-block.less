@@ -371,12 +371,13 @@
             background-color: @color-light-a;
             box-shadow: 5px 5px 8px rgba(0,0,0,0.35);
             overflow: hidden;
-            transition: all 0.1s ease-out;
+            transform: translateY(0px);
+            transition: transform 0.15s ease;
         }
 
         &__preview.is-active {
             opacity: 1;
-            top: calc(100% + 10px);
+            transform: translateY(10px);
         }
 
         &__preview:after {
