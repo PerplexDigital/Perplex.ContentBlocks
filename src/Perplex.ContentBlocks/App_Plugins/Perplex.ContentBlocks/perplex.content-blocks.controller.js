@@ -1,7 +1,7 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager","localizationService",
+    "serverValidationManager", "localizationService",
     perplexContentBlocksController,
 ]);
 
@@ -1138,8 +1138,12 @@ function perplexContentBlocksController(
             apply: function () {
                 if (state.preset != null) {
                     if ($scope.model.value.header == null && state.preset.Header != null) {
-                        // Only apply when there is no header yet on this page                            
-                        $scope.model.value.header = fn.preset.createBlock(state.preset.Header);
+                        // Only apply when there is no header yet on this page
+                        var block = fn.preset.createBlock(state.preset.Header);
+                        $scope.model.value.header = block;
+                        fn.blocks.withCtrl(block.id, function (blockCtrl) {
+                            blockCtrl.open();
+                        });
                     }
 
                     if ($scope.model.value.blocks == null || $scope.model.value.blocks.length === 0) {
@@ -1152,6 +1156,9 @@ function perplexContentBlocksController(
 
                                 var block = fn.preset.createBlock(preset);
                                 $scope.model.value.blocks.push(block);
+                                fn.blocks.withCtrl(block.id, function (blockCtrl) {
+                                    blockCtrl.open();
+                                });
                             }
                         });
                     }
