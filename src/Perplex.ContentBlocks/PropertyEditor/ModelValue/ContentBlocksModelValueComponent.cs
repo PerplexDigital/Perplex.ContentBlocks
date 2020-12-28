@@ -20,26 +20,29 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 
         public void Initialize()
         {
-            ContentService.Copying += ContentService_Copying;
-        }
-
-        private void ContentService_Copying(Umbraco.Core.Services.IContentService sender, Umbraco.Core.Events.CopyEventArgs<Umbraco.Core.Models.IContent> e)
-        {
-            UpdateContentBlocksKeys(e.Copy);
+            ContentService.Copying += (_, e) => UpdateContentBlocksKeys(e.Copy);
         }
 
         private void UpdateContentBlocksKeys(IContent entity)
         {
             try
             {
-                var properties = entity.Properties.Where(p => p.PropertyType.PropertyEditorAlias == "Perplex.ContentBlocks");
+                var properties = entity.Properties.Where(p => p.PropertyType.PropertyEditorAlias == Constants.PropertyEditor.Alias);
                 foreach (var prop in properties)
                 {
-                    var cbJson = (string)prop.GetValue();
-
-                    if (!string.IsNullOrEmpty(cbJson))
+                    // Update all property values -- i.e. all variants
+                    foreach (var propValue in prop.Values)
                     {
-                        var contentBlocks = JsonConvert.DeserializeObject<JObject>(cbJson);
+                        string culture = propValue.Culture;
+                        string segment = propValue.Segment;
+
+                        string value = propValue.EditedValue as string;
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            continue;
+                        }
+
+                        var contentBlocks = JsonConvert.DeserializeObject<JObject>(value);
 
                         var header = contentBlocks.Value<JObject>("header");
                         if (header != null)
@@ -52,7 +55,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
                             UpdateContentBlockKeys(block);
                         }
 
-                        prop.SetValue(JsonConvert.SerializeObject(contentBlocks));
+                        prop.SetValue(JsonConvert.SerializeObject(contentBlocks), culture: culture, segment: segment);
                     }
                 }
             }
@@ -64,7 +67,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 
         private void UpdateContentBlockKeys(JObject block)
         {
-            block.Property("id").Value = Guid.NewGuid().ToString();
+            block["id"] = Guid.NewGuid();
 
             var nestedContentItems = block.Value<JArray>("content");
 
@@ -76,33 +79,53 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 
         private void UpdateNestedContentKey(JObject nestedContent)
         {
-            if (nestedContent == null || string.IsNullOrEmpty(nestedContent.Value<string>("key")))
+            if (nestedContent == null || nestedContent["key"] == null)
             {
                 return;
             }
 
-            nestedContent.Property("key").Value = Guid.NewGuid().ToString();
+            nestedContent["key"] = Guid.NewGuid();
 
             // Also update any nested Nested Content items inside this nestedContent
             foreach (var property in nestedContent.Properties())
             {
-                var value = property.Value as JArray;
-
-                if (value == null || !IsNestedContentValue(value))
+                // NestedContent stores nested NestedContent as strings rather than arrays for some reason,
+                // i.e. if one of the properties inside this object is also
+                // a NestedContent its value will be a string that looks like this:
+                // "[{ \"key\": \" ... \" }]" instead of a real array like [{ "key": "..." }]
+                // This means we have to actually parse each value to check if it's a JArray or not.
+                if (
+                    property.Value is JValue value &&
+                    value.Type == JTokenType.String &&
+                    value.ToString() is string rawValue &&
+                    rawValue.TrimStart().StartsWith("[")
+                )
                 {
-                    continue;
-                }
+                    try
+                    {
+                        var array = JArray.Parse(value.ToString());
 
-                foreach (var child in value.Children<JObject>())
-                {
-                    UpdateNestedContentKey(child);
+                        if (IsNestedContentValue(array))
+                        {
+                            foreach (var child in array.Children<JObject>())
+                            {
+                                UpdateNestedContentKey(child);
+                            }
+
+                            nestedContent[property.Name] = JsonConvert.SerializeObject(array);
+                        }
+                    }
+                    catch (JsonReaderException)
+                    {
+                        // Not actually an Array -- just ignore
+                    }
                 }
             }
         }
 
         private bool IsNestedContentValue(JArray value)
         {
-            return value.Count > 0 && value.First().Value<string>("key") != null && value.First().Value<string>("ncContentTypeAlias") != null;
+            return value.First is JObject obj && obj["key"] != null && obj["ncContentTypeAlias"] != null;
         }
 
         public void Terminate()
