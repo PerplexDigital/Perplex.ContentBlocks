@@ -514,7 +514,7 @@ An `IContentBlocksPreset` has the following properties:
 
 There are no specialized APIs in our package to create Content Blocks through code but you can use Umbraco's `IContentService` and use `SetValue()` to set a ContentBlocks property value. The value should be a JSON string and the structure is shown below. The main task is generating that "Nested Content data" part.
 
-```json
+```javascript
 {
     /* version can change in the future if the model value structure changes, but that is unlikely */
     "version": 2,
