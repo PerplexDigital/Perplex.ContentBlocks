@@ -9,6 +9,7 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
         public void Compose(Composition composition)
         {
             composition.Register<ContentBlocksModelValueDeserializer>(Lifetime.Singleton);
+            composition.Components().Append<ContentBlocksModelValueComponent>();
         }
     }
 }
