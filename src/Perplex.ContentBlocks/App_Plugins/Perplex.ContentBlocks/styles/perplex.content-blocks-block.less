@@ -279,17 +279,32 @@
             list-style: none;
             padding: 0 2rem;
             margin: 0;
-            top: .9rem;
             position: relative;
             color: @color-dark;
+            & .slick-initialized .slick-slide {
+                display: flex !important;
+            }
+            &, .slick-slide, .slick-list, .slick-track, .slick-arrow {
+                height: 3rem;
+            }
         }
 
         &__item {
             font-weight: 700;
             text-align: center;
             position: relative;
-            line-height: 1.6;
-            padding: 0 1rem;
+            line-height: 1.1;
+            padding: 0 0.2rem;
+            flex-direction: column;
+            justify-content: center;
+
+            & > span {
+                /* limits the text over three lines */
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
         }
         /* if there are no other layouts */
         &__list .slick-arrow {
@@ -300,7 +315,7 @@
             width: 2rem;
             position: absolute;
             border: 0;
-            top: -0.9rem;
+            top: 0;
             left: -2rem;
 
             &:hover {
@@ -405,12 +420,10 @@
 
         @media only screen and (min-width: 48em) {
             &__item {
-                line-height: 1.6;
+                line-height: 1.2;
             }
 
             &__list .slick-arrow {
-                height: 3rem;
-                top: -0.9rem;
                 width: 2.5rem;
             }
 
@@ -425,24 +438,25 @@
         }
 
         @media only screen and (min-width: 108em) {
-            width: 200px;
+            width: 260px;
 
-            &__item {
-                line-height: 1.1;
+            &__list {
+                &, .slick-slide, .slick-list, .slick-track, .slick-arrow {
+                    height: 4rem;
+                }
             }
 
             &__list .slick-arrow {
                 height: @block-margin;
-                top: -1.45rem;
                 width: 3rem;
             }
 
-            &__list {
-                top: 1.45rem;
+            &__item {
+                padding: 0 1rem;
             }
 
             &__preview {
-                right: 65px;
+                right: 95px;
             }
         }
     }
