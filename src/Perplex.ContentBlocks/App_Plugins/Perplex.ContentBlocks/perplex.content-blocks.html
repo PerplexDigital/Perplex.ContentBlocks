@@ -40,7 +40,7 @@
                     <div class="p-col--1-1">
                         <input class="p-pick-blocks__searchinput js-contentBlockCategorySearchInput"
                                placeholder="Search for contentblocks in this category"
-                               ng-model="vm.state.ui.picker.search" focus>
+                               ng-model="vm.state.ui.picker.search">
                     </div>
                     <div class="p-col--lg-1-3"
                          ng-repeat="block in category.blocks | filter:{ Name: vm.state.ui.picker.search} as filteredResults track by block.Id">
