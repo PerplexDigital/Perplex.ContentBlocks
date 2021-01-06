@@ -81,6 +81,7 @@ function perplexContentBlocksController(
 
             expandAll: false,
             reorder: false,
+            isIE11: false,
         },
 
         // Array of IContentBlockDefinition
@@ -163,6 +164,7 @@ function perplexContentBlocksController(
             fn.initModelValue();
             fn.copyPaste.init();
             fn.validation.init();
+            fn.checkBrowser.checkIfIE();
 
             if (config.hidePropertyGroupContainer) {
                 fn.setContainingGroupCssClass();
@@ -588,6 +590,13 @@ function perplexContentBlocksController(
             }
         },
 
+        checkBrowser: {
+            checkIfIE: function() {
+                state.ui.isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+                return state.ui.isIE11;
+            }
+        },
+
         layoutPicker: {
             init: function (definitionId, blockCallback) {
                 function selectLayoutCallback(layoutId) {
@@ -660,7 +669,11 @@ function perplexContentBlocksController(
             initEvents: function () {
                 var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
                 state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
-                state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
+
+                if(state.ui.isIE11) {
+                    // Stickyness will be applied with CSS on modern browsers. Fallback for IE browser.
+                    state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
+                }
 
                 var debouncedSetPreviewScale = fn.utils.debounce(fn.preview.setPreviewScale, 200);
                 window.addEventListener("resize", debouncedSetPreviewScale);
@@ -678,7 +691,10 @@ function perplexContentBlocksController(
 
                 $scope.$on("$destroy", function () {
                     state.dom.editorsContainer.removeEventListener("scroll", debouncedSyncScroll);
-                    state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
+                    if(state.ui.isIE11) {
+                        // Stickyness will be applied with CSS on modern browsers. Fallback for IE browser.
+                        state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
+                    }
                     window.removeEventListener("resize", debouncedSetPreviewScale);
 
                     if (typeof unsubscribe === "function") {
@@ -765,7 +781,7 @@ function perplexContentBlocksController(
                     return;
                 }
 
-                fn.preview.updatePreviewColumnPosition(e.srcElement.scrollTop);
+                fn.preview.updatePreviewColumnPosition(e.srcElement.scrollTop);                
             },
 
             updatePreviewColumnPosition: function (scrollTop) {
