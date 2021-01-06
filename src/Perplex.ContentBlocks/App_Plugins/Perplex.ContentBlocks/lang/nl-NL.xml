@@ -11,8 +11,12 @@
 		<key alias="doneReordering">Klaar met herschikken</key>
 		<key alias="copyAllBlocks">All blokken kopiëren</key>
 		<key alias="noContentBlocksFound">Geen Content Block definities gevonden</key>
+		<key alias="searchPickerInput">Zoek Content Blocks in deze categorie</key>
 		<key alias="noContentBlocksFoundDesc">
 			Raadpleeg <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">de documentatie</a> om te beginnen.
+		</key>
+		<key alias="noContentBlocksMatchedYourSearch">
+			Geen Content Blocks gevonden voor zoekwoord 
 		</key>
 		<key alias="pickLayout">
 			Kies layout

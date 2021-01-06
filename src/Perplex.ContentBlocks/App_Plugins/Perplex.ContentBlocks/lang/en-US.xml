@@ -11,8 +11,12 @@
 		<key alias="doneReordering">Done reordering</key>
 		<key alias="copyAllBlocks">Copy all blocks</key>
 		<key alias="noContentBlocksFound">No Content Block definitions found</key>
+		<key alias="searchPickerInput">Search for contentblocks in this category</key>
 		<key alias="noContentBlocksFoundDesc">
 			Please refer to <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">the documentation</a> to get started.
+		</key>
+		<key alias="noContentBlocksMatchedYourSearch">
+			No contentblocks matched your search with 
 		</key>
 		<key alias="pickLayout">
 			Pick layout
