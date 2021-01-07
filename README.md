@@ -509,3 +509,30 @@ An `IContentBlocksPreset` has the following properties:
     -   Cultures to apply this preset to (e.g. `"en-US"`)
 -   ApplyToDocumentTypes
     -   Document type alias to apply this preset to (e.g. `"homepage"`)
+
+### Creating Content Blocks programmatically
+
+There are no specialized APIs in our package to create Content Blocks through code but you can use Umbraco's `IContentService` and use `SetValue()` to set a ContentBlocks property value. The value should be a JSON string and the structure is shown below. The main task is generating that "Nested Content data" part.
+
+```javascript
+{
+    /* version can change in the future if the model value structure changes, but that is unlikely */
+    "version": 2,
+    "header": {
+        "id": "...",
+        "definitionId": "...",
+        "layoutId": "...",
+        "presetId": null,
+        "isDisabled": false,
+        "content": [
+            {
+                /* Nested Content data */
+            }
+        ]
+    },
+
+    "blocks": [
+        /* Same format as header */
+    ]
+}
+```

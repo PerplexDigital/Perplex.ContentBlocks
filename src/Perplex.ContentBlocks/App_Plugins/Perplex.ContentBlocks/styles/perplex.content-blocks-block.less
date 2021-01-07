@@ -269,7 +269,7 @@
         visibility: hidden;
         border-right: 1px solid @umbraco-border;
         position: relative;
-        width: 16rem;
+        width: 160px;
 
         &.is-initialized {
             visibility: visible;
@@ -279,17 +279,32 @@
             list-style: none;
             padding: 0 2rem;
             margin: 0;
-            top: .9rem;
             position: relative;
             color: @color-dark;
+            & .slick-initialized .slick-slide {
+                display: flex !important;
+            }
+            &, .slick-slide, .slick-list, .slick-track, .slick-arrow {
+                height: 3rem;
+            }
         }
 
         &__item {
             font-weight: 700;
             text-align: center;
             position: relative;
-            line-height: 1.6;
-            padding: 0 1rem;
+            line-height: 1.1;
+            padding: 0 0.2rem;
+            flex-direction: column;
+            justify-content: center;
+
+            & > span {
+                /* limits the text over three lines */
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
         }
         /* if there are no other layouts */
         &__list .slick-arrow {
@@ -300,7 +315,7 @@
             width: 2rem;
             position: absolute;
             border: 0;
-            top: -0.9rem;
+            top: 0;
             left: -2rem;
 
             &:hover {
@@ -356,26 +371,28 @@
         }
 
         &__preview {
-            display: none;
+            display: block;
             pointer-events: none;
             opacity: 0;
             z-index: 5;
             position: absolute;
-            top: 1.5rem;
+            top: 100%;
             left: auto;
-            right: 3.2rem;
-            width: 13rem;
-            height: 6.4rem;
+            right: 30px;
+            width: 200px;
+            height: 100px;
             border-radius: 3px;
-            border: 0.3rem solid @color-light-b;
+            border: 3px solid @color-light-b;
             background-color: @color-light-a;
             box-shadow: 5px 5px 8px rgba(0,0,0,0.35);
             overflow: hidden;
+            transform: translateY(0px);
+            transition: transform 0.15s ease;
         }
 
         &__preview.is-active {
             opacity: 1;
-            top: 3.5rem;
+            transform: translateY(10px);
         }
 
         &__preview:after {
@@ -403,12 +420,10 @@
 
         @media only screen and (min-width: 48em) {
             &__item {
-                line-height: 1.6;
+                line-height: 1.2;
             }
 
             &__list .slick-arrow {
-                height: 3rem;
-                top: -0.9rem;
                 width: 2.5rem;
             }
 
@@ -420,32 +435,28 @@
             &__list .slick-arrow:before {
                 background-size: 15% !important;
             }
-
-            &__preview {
-                display: block;
-                right: 4.5rem;
-            }
         }
 
         @media only screen and (min-width: 108em) {
-            width: 20rem;
+            width: 260px;
 
-            &__item {
-                line-height: 1.1;
+            &__list {
+                &, .slick-slide, .slick-list, .slick-track, .slick-arrow {
+                    height: 4rem;
+                }
             }
 
             &__list .slick-arrow {
                 height: @block-margin;
-                top: -1.45rem;
                 width: 3rem;
             }
 
-            &__list {
-                top: 1.45rem;
+            &__item {
+                padding: 0 1rem;
             }
 
             &__preview {
-                right: 7.5rem;
+                right: 95px;
             }
         }
     }

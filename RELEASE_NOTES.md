@@ -2,6 +2,18 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.6.3 - <sub><sup>2020-12-30</sup></sub>
+
+-   Fixed Content Block `id` + Nested Content `key` properties not getting new values when a content node is copied (#45).
+
+    -   These properties are supposed to be unique. NestedContent uses the `key` property as a cache key so having multiple Content Blocks on different pages share the same `key` can lead to issues. These properties will now be recursively updated to new unique keys when a node is copied.
+    -   Note this was only an issue when copying an entire content node. Copying blocks using the ContentBlocks UI already updated these properties correctly.
+
+    -   Thanks to @glombek for reporting this issue and for providing code.
+
+-   Fixed preset blocks not initializing any property value until expanded
+    -   This meant if preset blocks were not opened manually by the user in Umbraco they would not appear in the model value of your content, as if the blocks are not on the page at all. In this case the blocks would be empty anyway since the user has not provided any content but this was not intended so has been fixed.
+
 ## v1.6.2 - <sub><sup>2020-10-30</sup></sub>
 
 -   Handles a couple of rare exceptions
