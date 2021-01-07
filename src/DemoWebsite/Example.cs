@@ -1,4 +1,5 @@
-﻿using Perplex.ContentBlocks.Definitions;
+﻿using Perplex.ContentBlocks.Categories;
+using Perplex.ContentBlocks.Definitions;
 using System;
 using System.Linq;
 using Umbraco.Core.Composing;
@@ -19,23 +20,35 @@ namespace DemoWebsite
         private readonly PropertyEditorCollection _propertyEditors;
         private readonly IDataTypeService _dataTypeService;
         private readonly IContentTypeService _contentTypeService;
+        private readonly IContentBlockCategoryRepository _categoryRepository;
 
         public ExampleComponent(
             IContentBlockDefinitionRepository definitions,
             PropertyEditorCollection propertyEditors,
             IDataTypeService dataTypeService,
-            IContentTypeService contentTypeService)
+            IContentTypeService contentTypeService,
+            IContentBlockCategoryRepository categoryRepository
+            )
         {
             _definitions = definitions;
             _propertyEditors = propertyEditors;
             _dataTypeService = dataTypeService;
             _contentTypeService = contentTypeService;
+            this._categoryRepository = categoryRepository;
         }
 
         public void Initialize()
         {
             Guid dataTypeKey = new Guid("ec17fffe-3a33-4a08-a61a-3a6b7008e20f");
             CreateExampleBlock("exampleBlock", dataTypeKey);
+
+            var specialCategoryId = new Guid("AAC6EE6A-EA54-4E90-A33B-049E39786BF5");
+            _categoryRepository.Add(new ContentBlockCategory
+            {
+                Id = specialCategoryId,
+                Name = "Specials",
+                Icon = "/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-cat-special"
+            });
 
             // Block
             var block = new ContentBlockDefinition
@@ -79,6 +92,7 @@ namespace DemoWebsite
                 CategoryIds = new[]
                 {
                     Perplex.ContentBlocks.Constants.Categories.Content,
+                    specialCategoryId,
                 }
             };
 
