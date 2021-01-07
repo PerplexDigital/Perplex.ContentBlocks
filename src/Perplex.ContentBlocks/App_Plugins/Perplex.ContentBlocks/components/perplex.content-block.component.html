@@ -1,5 +1,5 @@
 ﻿<div class="p-block__item"
-     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.isInvalid }"
+     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.isInvalid || $ctrl.validationMessages.length > 0 }"
      data-id="{{$ctrl.block.id}}">
     <div class="p-block-topbar"
          ng-if="!$ctrl.state.initialized">
