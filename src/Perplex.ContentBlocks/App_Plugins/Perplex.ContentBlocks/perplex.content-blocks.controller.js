@@ -52,6 +52,9 @@ function perplexContentBlocksController(
 
                 // Callback to run when confirming selection
                 confirmCallback: null,
+
+                // View only blocks that match searchvalue
+                search: "",
             },
 
             layoutPicker: {
@@ -469,6 +472,11 @@ function perplexContentBlocksController(
             open: function () {
                 state.ui.picker.open = true;
                 fn.ui.fixOverlayStyling();
+
+                // Autofocus the searchinput inside the picker.
+                $timeout(function () {
+                    $(".js-contentBlockCategorySearchInput").focus();
+                })
             },
 
             close: function () {
@@ -476,6 +484,9 @@ function perplexContentBlocksController(
 
                 state.ui.picker.selectedBlockId = null;
                 state.ui.picker.selectedCategoryId = null;
+
+                // Clear searched value
+                state.ui.picker.search = "";
 
                 fn.ui.fixOverlayStyling();
             }
