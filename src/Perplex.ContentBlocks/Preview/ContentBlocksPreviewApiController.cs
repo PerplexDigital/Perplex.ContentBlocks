@@ -13,9 +13,20 @@ namespace Perplex.ContentBlocks.Preview
 {
     public class ContentBlocksPreviewApiController : UmbracoAuthorizedApiController
     {
-        private static readonly HttpClientHandler _httpClientHandler = new HttpClientHandler { UseCookies = false };
-        private static readonly HttpClient _httpClient = new HttpClient(_httpClientHandler);
+        private static readonly HttpClient _httpClient;
         private readonly IPreviewScrollScriptProvider _scrollScriptProvider;
+
+        static ContentBlocksPreviewApiController()
+        {
+            var handler = new HttpClientHandler
+            {
+                UseCookies = false,
+                // Do not validate any certificates, which fails on self signed certificates and causes the preview to fail.
+                ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true
+            };
+
+            _httpClient = new HttpClient(handler);
+        }
 
         public ContentBlocksPreviewApiController(IPreviewScrollScriptProvider scrollScriptProvider)
         {
