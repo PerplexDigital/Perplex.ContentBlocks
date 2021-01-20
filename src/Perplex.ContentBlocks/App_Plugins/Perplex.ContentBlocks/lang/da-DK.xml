@@ -11,8 +11,12 @@
 		<key alias="doneReordering">Afslut sotering</key>
 		<key alias="copyAllBlocks">Kopier alle blokke</key>
 		<key alias="noContentBlocksFound">Ingen indholdsblokke definitioner fundet</key>
+		<key alias="searchPickerInput">Søg efter indholdsblokke i denne kategori</key>
 		<key alias="noContentBlocksFoundDesc">
 			Læs venligst <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">dokumentationen</a> for at komme igang.
+		</key>
+		<key alias="noContentBlocksMatchedYourSearch">
+			Ingen indholdsblokke matchede din søgning med
 		</key>
 		<key alias="pickLayout">
 			Vælg layout
