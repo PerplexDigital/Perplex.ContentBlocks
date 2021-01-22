@@ -9,7 +9,7 @@ using Umbraco.Core.Services;
 using Umbraco.Web.PropertyEditors;
 using static Umbraco.Core.Constants;
 
-namespace DemoWebsite
+namespace DemoWebsite.Legacy
 {
     [RuntimeLevel(MinLevel = Umbraco.Core.RuntimeLevel.Run)]
     public class ExampleComposer : ComponentComposer<ExampleComponent> { }

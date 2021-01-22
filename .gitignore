@@ -49,10 +49,10 @@ ood.flag
 !**/[Uu]mbraco/[Dd]eveloper/[Pp]ackages
 
 # DemoWebsite
-src/DemoWebsite/App_Plugins/Perplex.ContentBlocks
-src/DemoWebsite/App_Data/Models
-src/DemoWebsite/App_Data/Umbraco.sdf
-src/DemoWebsite/[Uu]mbraco/
+src/DemoWebsite*/App_Plugins/Perplex.ContentBlocks
+src/DemoWebsite*/App_Data/Models
+src/DemoWebsite*/App_Data/Umbraco.sdf
+src/DemoWebsite*/[Uu]mbraco/
 *.css
 
 # NuGet / Our Umbraco packages
