@@ -35,7 +35,11 @@
         "$scope",
         "serverValidationManager",
         perplexContentBlockController
-    ]
+    ],
+
+    require: {
+        formCtrl: "^^form",
+    },
 });
 
 function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope, serverValidationManager) {
@@ -262,10 +266,18 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     this.initValidation = function () {
         // Note, even in multi-lingual scenarios we have to subscribe with culture = null. 
         // The inner property errors in NestedContent are always for the invariant culture.
-        var unsubscribe = serverValidationManager.subscribe(this.block.id, null, null, function (valid) {
+        var unsubscribe = serverValidationManager.subscribe(this.block.id, "invariant", "", function (valid) {
             this.isInvalid = !valid;
         }.bind(this), null, { matchType: "contains" });
 
         destroyFns.push(unsubscribe);
+
+        // Also clear any validation errors for this block when destroyed.
+        destroyFns.push(function () {
+            // For some reason Umbraco requires the form to be dirty before it will
+            // clear validation on parent properties.
+            this.formCtrl.$setDirty();
+            serverValidationManager.removePropertyError(this.block.id, "invariant", null, null, { matchType: "contains" });
+        }.bind(this));
     }
 }
