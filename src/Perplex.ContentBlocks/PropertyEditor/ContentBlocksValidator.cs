@@ -2,7 +2,6 @@
 using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
-using Semver;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -44,7 +43,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             var blocksToValidate = GetBlocksToValidate(modelValue, structure);
 
-            if (_runtimeState.SemanticVersion >= new SemVersion(8, 7))
+            if (_runtimeState.SemanticVersion >= "8.7.0")
             {
                 // Umbraco 8.7's new complex validation needs to be handled very differently.
                 return ValidateComplex(blocksToValidate);
