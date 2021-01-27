@@ -1,13 +1,14 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager", "localizationService",
+    "serverValidationManager", "localizationService", "versionHelper",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
-    api, utils, copyPasteService, notificationsService, serverValidationManager, localizationService) {
+    api, utils, copyPasteService, notificationsService, serverValidationManager,
+    localizationService, versionHelper) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -205,7 +206,9 @@ function perplexContentBlocksController(
                     $errorMsg.remove();
                 }
 
-                if (state.umbracoVersion < "8.7.0") {
+                if (versionHelper.versionCompare(state.umbracoVersion, "8.7.0") < 0) {
+                    // < 8.7.0
+
                     var propertyAlias = $scope.model.alias;
 
                     // Note that this is NOT the same as state.culture, 
