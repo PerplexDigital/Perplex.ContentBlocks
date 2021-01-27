@@ -1,0 +1,5 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Page>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Perplex.ContentBlocks.Rendering;
+
+@Html.RenderContentBlocks(Model.ContentBlocks)
