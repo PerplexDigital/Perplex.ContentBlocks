@@ -1,6 +1,7 @@
 ﻿using Perplex.ContentBlocks.Definitions;
 using Perplex.ContentBlocks.Preview;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -46,22 +47,7 @@ namespace Perplex.ContentBlocks.Rendering
         }
 
         public IHtmlString RenderBlocks(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
-        {
-            if (contentBlocks?.Blocks?.Any() != true)
-            {
-                return MvcHtmlString.Empty;
-            }
-
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var block in contentBlocks.Blocks)
-            {
-                IHtmlString blockHtml = RenderBlock(block, htmlHelper);
-                sb.Append(blockHtml.ToString());
-            }
-
-            return new HtmlString(sb.ToString());
-        }
+            => RenderBlocks(contentBlocks?.Blocks, htmlHelper);
 
         public IHtmlString RenderBlock(IContentBlockViewModel contentBlockViewModel, HtmlHelper htmlHelper)
         {
@@ -88,6 +74,24 @@ namespace Perplex.ContentBlocks.Rendering
                 string blockIdAnchor = $"<a id=\"{contentBlockViewModel.Id}\"></a>";
                 return new MvcHtmlString(blockIdAnchor + contentBlockHtml);
             }
+        }
+
+        public IHtmlString RenderBlocks(IEnumerable<IContentBlockViewModel> contentBlocks, HtmlHelper htmlHelper)
+        {
+            if (contentBlocks?.Any() != true)
+            {
+                return MvcHtmlString.Empty;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var block in contentBlocks)
+            {
+                IHtmlString blockHtml = RenderBlock(block, htmlHelper);
+                sb.Append(blockHtml.ToString());
+            }
+
+            return new HtmlString(sb.ToString());
         }
 
         private string GetViewPath(Guid definitionId, Guid layoutId)
