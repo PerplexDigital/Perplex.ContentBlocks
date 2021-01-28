@@ -137,7 +137,7 @@
          ng-if="$ctrl.state.initialized && $ctrl.state.loadEditor">
         <div class="alert alert-error property-error"
              ng-show="$ctrl.validationMessages"
-             ng-repeat="validationMessage in $ctrl.validationMessages"
+             ng-repeat="validationMessage in $ctrl.validationMessages track by $index"
              ng-bind="validationMessage">
         </div>
 
