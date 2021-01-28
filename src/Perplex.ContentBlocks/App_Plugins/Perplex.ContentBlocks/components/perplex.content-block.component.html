@@ -135,10 +135,11 @@
 
     <div class="p-block__main"
          ng-if="$ctrl.state.initialized && $ctrl.state.loadEditor">
-        <div class="alert alert-error property-error"
-             ng-show="$ctrl.validationMessages"
-             ng-repeat="validationMessage in $ctrl.validationMessages track by $index"
-             ng-bind="validationMessage">
+        <div ng-show="$ctrl.validationMessages"
+             ng-repeat="validationMessage in $ctrl.validationMessages track by validationMessage.property+validationMessage.errorMessage"
+             style="display: flex;">
+            <code ng-bind="validationMessage.property" ng-show="validationMessage.property" class="alert alert-info property-error"></code>
+            <div ng-bind="validationMessage.errorMessage" ng-show="validationMessage.errorMessage" class="alert alert-error property-error"></div>
         </div>
 
         <content-blocks-property content-block-id="$ctrl.block.id"
