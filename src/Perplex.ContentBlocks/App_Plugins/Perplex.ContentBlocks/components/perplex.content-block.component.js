@@ -53,8 +53,8 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         open: false,
         loadEditor: false,
 
-        // Index of current layout
-        layoutIndex: 0,
+        initialLayoutIndex: null,
+        missingLayoutId: null,
         sliderInitialized: false,
         initialized: false,
     };
@@ -209,23 +209,33 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     }
 
     this.setLayout = function (index) {
-        if (!Array.isArray(this.layouts) || this.layouts.length < index + 1) {
-            return;
+        if (this.state.missingLayoutId && index === this.layouts.length) {
+            // Special case when this block has a missing layout. 
+            // In that case index will always be equal to the layout length.
+            // If we switch to that entry we do want to set the missing layout again.
+            this.block.layoutId = this.state.missingLayoutId;
+        } else if (Array.isArray(this.layouts) && this.layouts.length > index) {
+            var layout = this.layouts[index];
+            if (layout != null) {
+                this.block.layoutId = layout.Id;
+            }
         }
-
-        var layout = this.layouts[index];
-        if (layout != null) {
-            this.block.layoutId = layout.Id;
-        }
-
-        this.state.layoutIndex = index;
     }
 
     this.initLayoutIndex = function () {
         if (Array.isArray(this.layouts)) {
-            this.state.layoutIndex = _.findIndex(this.layouts, function (layout) {
-                return layout.Id === this.block.layoutId;
-            }.bind(this));
+            for (var i = 0; i < this.layouts.length; i++) {
+                var layout = this.layouts[i];
+                if (layout.Id === this.block.layoutId) {
+                    this.state.initialLayoutIndex = i;
+                    break;
+                }
+            }
+
+            if (this.state.initialLayoutIndex == null) {
+                this.state.missingLayoutId = this.block.layoutId;
+                this.state.initialLayoutIndex = this.layouts.length;
+            }
         }
     }
 

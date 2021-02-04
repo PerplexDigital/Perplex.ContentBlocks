@@ -51,19 +51,25 @@
              ng-mouseenter="$ctrl.showLayoutPreview = true"
              ng-mouseleave="$ctrl.showLayoutPreview = false"
              ng-class="{
-                'is-disabled': $ctrl.layouts.length === 1,
+                'is-disabled' : $ctrl.layouts.length &lt;= 1,
                 'is-initialized': $ctrl.state.sliderInitialized
              }">
             <div class="p-block-topbar__layout__list">
                 <slick on-after-change="$ctrl.setLayout(currentSlide)"
                        on-init="$ctrl.state.sliderInitialized = true"
-                       initial-slide="$ctrl.state.layoutIndex"
+                       initial-slide="$ctrl.state.initialLayoutIndex"
                        as-nav-for="[data-id='{{$ctrl.block.id}}'] .p-block-topbar__layout__view"
                        infinite="true">
                     <div class="p-block-topbar__layout__item layout"
                          ng-class="{ selected: layout.Id === $ctrl.block.layoutId }"
                          ng-repeat="layout in $ctrl.layouts track by layout.Id">
                         <span ng-bind="layout.Name"></span>
+                    </div>
+
+                    <div class="p-block-topbar__layout__item p-block-topbar__layout__item--missing layout"
+                         ng-if="$ctrl.state.missingLayoutId"
+                         title="{{$ctrl.state.missingLayoutId}}">
+                        <span>layout missing</span>
                     </div>
                 </slick>
             </div>
@@ -118,8 +124,9 @@
         <span class="p-block__reorder" type="button">
             <content-blocks-icon icon="reorder"></content-blocks-icon>
         </span>
-        <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
-            <slick initial-slide="$ctrl.state.layoutIndex"
+        <div class="p-block-topbar__layout__preview"
+             ng-class="{'is-active': $ctrl.showLayoutPreview}">
+            <slick initial-slide="$ctrl.state.initialLayoutIndex"
                    infinite="true"
                    class="p-block-topbar__layout__view"
                    dots="false"
@@ -128,6 +135,9 @@
                      ng-class="{ selected: layout.Id === $ctrl.block.layoutId }"
                      ng-repeat="layout in $ctrl.layouts track by layout.Id">
                     <img class="p-block-topbar__layout__img" ng-src="{{layout.PreviewImage}}" />
+                </div>
+                <div class="p-block-topbar__layout__imageholder layout"
+                     ng-if="$ctrl.state.missingLayoutId">
                 </div>
             </slick>
         </div>
