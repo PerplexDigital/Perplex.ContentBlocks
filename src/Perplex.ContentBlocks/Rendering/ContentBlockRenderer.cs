@@ -71,7 +71,7 @@ namespace Perplex.ContentBlocks.Rendering
             else
             {
                 // Preview mode: add block id for scroll synchronisation
-                string blockIdAnchor = $"<a id=\"{contentBlockViewModel.Id}\"></a>";
+                string blockIdAnchor = $"<a id=\"{contentBlockViewModel.Id}\" class=\"perplex-content-blocks-preview-anchor\"></a>";
                 return new MvcHtmlString(blockIdAnchor + contentBlockHtml);
             }
         }
