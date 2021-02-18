@@ -1,13 +1,14 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager", "localizationService",
+    "serverValidationManager", "localizationService", "versionHelper",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
-    api, utils, copyPasteService, notificationsService, serverValidationManager, localizationService) {
+    api, utils, copyPasteService, notificationsService, serverValidationManager,
+    localizationService, versionHelper) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -133,6 +134,8 @@ function perplexContentBlocksController(
 
         // blockId => [validationMessage]
         validationMessages: {},
+
+        umbracoVersion: Umbraco.Sys.ServerVariables.application.version,
     };
 
     var computed = {
@@ -197,30 +200,51 @@ function perplexContentBlocksController(
 
         validation: {
             init: function () {
-                var propertyAlias = $scope.model.alias;
+                // Hide the generic error message above this property editor.
+                var $errorMsg = $rootElement.closest(".umb-control-group").find("> .property-error");
+                if ($errorMsg.length > 0) {
+                    $errorMsg.remove();
+                }
 
-                // Note that this is NOT the same as state.culture, 
-                // which is the culture of the current content variant.
-                var propertyCulture = $scope.model.culture;
+                if (versionHelper.versionCompare(state.umbracoVersion, "8.7.0") < 0) {
+                    // < 8.7.0
 
-                var unsubscribe = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
-                    // Clear validationMessages
-                    state.validationMessages = {};
+                    var propertyAlias = $scope.model.alias;
 
-                    if (!valid) {
-                        errors.forEach(function (error) {
-                            var match = error.fieldName.match(/#content-blocks-id:([^#]+)#/);
-                            if (match != null && match.length === 2) {
-                                var blockId = match[1];
-                                var errorMessage = error.errorMsg;
-                                state.validationMessages[blockId] = state.validationMessages[blockId] || [];
-                                state.validationMessages[blockId].push(errorMessage);
-                            }
-                        });
-                    }
-                });
+                    // Note that this is NOT the same as state.culture, 
+                    // which is the culture of the current content variant.
+                    var propertyCulture = $scope.model.culture;
+                    var propertySegment = $scope.model.segment;
 
-                $scope.$on("$destroy", unsubscribe);
+                    var unsubscribeFormSubmitting = $scope.$on("formSubmitting", function () {
+                        state.validationMessages = {};
+                    });
+
+                    var unsubscribeServerValidation = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
+                        if (!valid) {
+                            state.validationMessages = {};
+
+                            errors.forEach(function (error) {
+                                var match = error.fieldName.match(/#content-blocks-id:([^#]+)#(.*)?/);
+                                if (match != null && match.length >= 2) {
+                                    var blockId = match[1];
+                                    var property = match[2];
+                                    var errorMessage = error.errorMsg;
+                                    state.validationMessages[blockId] = state.validationMessages[blockId] || [];
+                                    state.validationMessages[blockId].push({
+                                        errorMessage: errorMessage,
+                                        property: property,
+                                    });
+                                }
+                            });
+                        }
+                    }, propertySegment);
+
+                    $scope.$on("$destroy", function () {
+                        unsubscribeFormSubmitting();
+                        unsubscribeServerValidation();
+                    });
+                }
             }
         },
 
@@ -602,7 +626,7 @@ function perplexContentBlocksController(
         },
 
         checkBrowser: {
-            checkIfIE: function() {
+            checkIfIE: function () {
                 state.ui.isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
                 return state.ui.isIE11;
             }
@@ -681,7 +705,7 @@ function perplexContentBlocksController(
                 var debouncedSyncScroll = fn.utils.debounce(fn.preview.syncScroll, 500);
                 state.dom.editorsContainer.addEventListener("scroll", debouncedSyncScroll);
 
-                if(state.ui.isIE11) {
+                if (state.ui.isIE11) {
                     // Stickyness will be applied with CSS on modern browsers. Fallback for IE browser.
                     state.dom.editorsContainer.addEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
                 }
@@ -702,7 +726,7 @@ function perplexContentBlocksController(
 
                 $scope.$on("$destroy", function () {
                     state.dom.editorsContainer.removeEventListener("scroll", debouncedSyncScroll);
-                    if(state.ui.isIE11) {
+                    if (state.ui.isIE11) {
                         // Stickyness will be applied with CSS on modern browsers. Fallback for IE browser.
                         state.dom.editorsContainer.removeEventListener("scroll", fn.preview.updatePreviewColumnPositionOnScroll);
                     }
@@ -792,7 +816,7 @@ function perplexContentBlocksController(
                     return;
                 }
 
-                fn.preview.updatePreviewColumnPosition(e.srcElement.scrollTop);                
+                fn.preview.updatePreviewColumnPosition(e.srcElement.scrollTop);
             },
 
             updatePreviewColumnPosition: function (scrollTop) {

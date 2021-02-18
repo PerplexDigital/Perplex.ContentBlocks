@@ -1,5 +1,5 @@
 ﻿<div class="p-block__item"
-     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.validationMessages }"
+     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.isInvalid || $ctrl.validationMessages.length > 0 }"
      data-id="{{$ctrl.block.id}}">
     <div class="p-block-topbar"
          ng-if="!$ctrl.state.initialized">
@@ -51,19 +51,25 @@
              ng-mouseenter="$ctrl.showLayoutPreview = true"
              ng-mouseleave="$ctrl.showLayoutPreview = false"
              ng-class="{
-                'is-disabled': $ctrl.layouts.length === 1,
+                'is-disabled' : $ctrl.layouts.length &lt;= 1,
                 'is-initialized': $ctrl.state.sliderInitialized
              }">
             <div class="p-block-topbar__layout__list">
                 <slick on-after-change="$ctrl.setLayout(currentSlide)"
                        on-init="$ctrl.state.sliderInitialized = true"
-                       initial-slide="$ctrl.state.layoutIndex"
+                       initial-slide="$ctrl.state.initialLayoutIndex"
                        as-nav-for="[data-id='{{$ctrl.block.id}}'] .p-block-topbar__layout__view"
                        infinite="true">
                     <div class="p-block-topbar__layout__item layout"
                          ng-class="{ selected: layout.Id === $ctrl.block.layoutId }"
                          ng-repeat="layout in $ctrl.layouts track by layout.Id">
                         <span ng-bind="layout.Name"></span>
+                    </div>
+
+                    <div class="p-block-topbar__layout__item p-block-topbar__layout__item--missing layout"
+                         ng-if="$ctrl.state.missingLayoutId"
+                         title="{{$ctrl.state.missingLayoutId}}">
+                        <span>layout missing</span>
                     </div>
                 </slick>
             </div>
@@ -118,8 +124,9 @@
         <span class="p-block__reorder" type="button">
             <content-blocks-icon icon="reorder"></content-blocks-icon>
         </span>
-        <div class="p-block-topbar__layout__preview" ng-class="{'is-active': $ctrl.showLayoutPreview}">
-            <slick initial-slide="$ctrl.state.layoutIndex"
+        <div class="p-block-topbar__layout__preview"
+             ng-class="{'is-active': $ctrl.showLayoutPreview}">
+            <slick initial-slide="$ctrl.state.initialLayoutIndex"
                    infinite="true"
                    class="p-block-topbar__layout__view"
                    dots="false"
@@ -129,18 +136,24 @@
                      ng-repeat="layout in $ctrl.layouts track by layout.Id">
                     <img class="p-block-topbar__layout__img" ng-src="{{layout.PreviewImage}}" />
                 </div>
+                <div class="p-block-topbar__layout__imageholder layout"
+                     ng-if="$ctrl.state.missingLayoutId">
+                </div>
             </slick>
         </div>
     </div>
 
     <div class="p-block__main"
          ng-if="$ctrl.state.initialized && $ctrl.state.loadEditor">
-        <div class="alert alert-error property-error"
-             ng-show="$ctrl.validationMessages"
-             ng-repeat="validationMessage in $ctrl.validationMessages"
-             ng-bind="validationMessage">
+        <div ng-show="$ctrl.validationMessages"
+             ng-repeat="validationMessage in $ctrl.validationMessages track by validationMessage.property+validationMessage.errorMessage"
+             style="display: flex;">
+            <code ng-bind="validationMessage.property" ng-show="validationMessage.property" class="alert alert-info property-error"></code>
+            <div ng-bind="validationMessage.errorMessage" ng-show="validationMessage.errorMessage" class="alert alert-error property-error"></div>
         </div>
-        <content-blocks-property datatype-id="$ctrl.definition.DataTypeId"
+
+        <content-blocks-property content-block-id="$ctrl.block.id"
+                                 datatype-id="$ctrl.definition.DataTypeId"
                                  datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="$ctrl.getValue()"
                                  set-value="$ctrl.setValue({ value: value })"

@@ -313,6 +313,16 @@
     <Content Include="Views\Partials\Grid\Editors\Base.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
     <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Page.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\_ExampleBlock.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\Blue.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\Green.cshtml" />
+    <Content Include="Views\Partials\ExampleBlock\Red.cshtml" />
+    <Content Include="Views\Partials\ExampleHeader\_ExampleHeader.cshtml" />
+    <Content Include="Views\Partials\ExampleHeader\Magenta.cshtml" />
+    <Content Include="Views\Partials\ExampleHeader\Yellow.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

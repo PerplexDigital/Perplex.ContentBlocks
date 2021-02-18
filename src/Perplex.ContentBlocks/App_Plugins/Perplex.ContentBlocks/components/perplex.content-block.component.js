@@ -33,11 +33,16 @@
         "$interpolate",
         "contentBlocksPropertyScaffoldCache",
         "$scope",
+        "serverValidationManager",
         perplexContentBlockController
-    ]
+    ],
+
+    require: {
+        formCtrl: "^^form",
+    },
 });
 
-function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope) {
+function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope, serverValidationManager) {
     var destroyFns = [];
 
     // State
@@ -48,8 +53,8 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         open: false,
         loadEditor: false,
 
-        // Index of current layout
-        layoutIndex: 0,
+        initialLayoutIndex: null,
+        missingLayoutId: null,
         sliderInitialized: false,
         initialized: false,
     };
@@ -111,6 +116,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
 
         this.initName();
         this.initLayoutIndex();
+        this.initValidation();
 
         state.initialized = true;
     }
@@ -203,23 +209,33 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     }
 
     this.setLayout = function (index) {
-        if (!Array.isArray(this.layouts) || this.layouts.length < index + 1) {
-            return;
+        if (this.state.missingLayoutId && index === this.layouts.length) {
+            // Special case when this block has a missing layout. 
+            // In that case index will always be equal to the layout length.
+            // If we switch to that entry we do want to set the missing layout again.
+            this.block.layoutId = this.state.missingLayoutId;
+        } else if (Array.isArray(this.layouts) && this.layouts.length > index) {
+            var layout = this.layouts[index];
+            if (layout != null) {
+                this.block.layoutId = layout.Id;
+            }
         }
-
-        var layout = this.layouts[index];
-        if (layout != null) {
-            this.block.layoutId = layout.Id;
-        }
-
-        this.state.layoutIndex = index;
     }
 
     this.initLayoutIndex = function () {
         if (Array.isArray(this.layouts)) {
-            this.state.layoutIndex = _.findIndex(this.layouts, function (layout) {
-                return layout.Id === this.block.layoutId;
-            }.bind(this));
+            for (var i = 0; i < this.layouts.length; i++) {
+                var layout = this.layouts[i];
+                if (layout.Id === this.block.layoutId) {
+                    this.state.initialLayoutIndex = i;
+                    break;
+                }
+            }
+
+            if (this.state.initialLayoutIndex == null) {
+                this.state.missingLayoutId = this.block.layoutId;
+                this.state.initialLayoutIndex = this.layouts.length;
+            }
         }
     }
 
@@ -255,5 +271,23 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
             // Unload
             this.state.loadEditor = false;
         }
+    }
+
+    this.initValidation = function () {
+        // Note, even in multi-lingual scenarios we have to subscribe with culture = null. 
+        // The inner property errors in NestedContent are always for the invariant culture.
+        var unsubscribe = serverValidationManager.subscribe(this.block.id, "invariant", "", function (valid) {
+            this.isInvalid = !valid;
+        }.bind(this), null, { matchType: "contains" });
+
+        destroyFns.push(unsubscribe);
+
+        // Also clear any validation errors for this block when destroyed.
+        destroyFns.push(function () {
+            // For some reason Umbraco requires the form to be dirty before it will
+            // clear validation on parent properties.
+            this.formCtrl.$setDirty();
+            serverValidationManager.removePropertyError(this.block.id, "invariant", null, null, { matchType: "contains" });
+        }.bind(this));
     }
 }
