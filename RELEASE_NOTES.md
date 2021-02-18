@@ -2,6 +2,16 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.7.0 - <sub><sup>2021-02-18</sup></sub>
+
+-   Support for complex validation introduced in Umbraco 8.7
+-   Added a search bar to filter blocks in the picker UI
+-   Added convenience extensions methods to `HtmlHelper` to render a subset of ContentBlocks rather than everything.
+    -   `@Html.RenderContentBlock(IContentBlockViewModel)` to render one specific block
+    -   `@Html.RenderContentBlocks(IEnumerable<IContentBlockViewModel>)` to render some specific blocks
+    -   One use case is to render the header separately from the blocks in a different part of the page.
+-   Some styling improvements
+
 ## v1.6.3 - <sub><sup>2020-12-30</sup></sub>
 
 -   Fixed Content Block `id` + Nested Content `key` properties not getting new values when a content node is copied (#45).
