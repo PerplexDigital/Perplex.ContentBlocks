@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Perplex.ContentBlocks.Presets
 {
@@ -8,5 +9,7 @@ namespace Perplex.ContentBlocks.Presets
         public Guid DefinitionId { get; set; }
         public Guid LayoutId { get; set; }
         public bool IsMandatory { get; set; }
+        public IDictionary<string, object> Values { get; set; }
+            = new Dictionary<string, object>();
     }
 }

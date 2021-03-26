@@ -1,14 +1,15 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager", "localizationService", "versionHelper",
+    "serverValidationManager", "localizationService", "versionHelper", "contentBlocksPropertyScaffoldCache",
+    "contentResource",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
     api, utils, copyPasteService, notificationsService, serverValidationManager,
-    localizationService, versionHelper) {
+    localizationService, versionHelper, scaffoldCache, contentResource) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -187,8 +188,8 @@ function perplexContentBlocksController(
                 state.categories = responses[1].data;
                 state.preset = responses[2].data;
 
-                fn.preset.apply();
                 fn.updateComputed();
+                fn.preset.apply();
             }).finally(function () {
                 state.initialized = true;
 
@@ -1190,10 +1191,8 @@ function perplexContentBlocksController(
                 if (state.preset != null) {
                     if ($scope.model.value.header == null && state.preset.Header != null) {
                         // Only apply when there is no header yet on this page
-                        var block = fn.preset.createBlock(state.preset.Header);
-                        $scope.model.value.header = block;
-                        fn.blocks.withCtrl(block.id, function (blockCtrl) {
-                            blockCtrl.open();
+                        fn.preset.createBlock(state.preset.Header).then(function (block) {
+                            $scope.model.value.header = block;
                         });
                     }
 
@@ -1205,10 +1204,8 @@ function perplexContentBlocksController(
                                     $scope.model.value.blocks = [];
                                 }
 
-                                var block = fn.preset.createBlock(preset);
-                                $scope.model.value.blocks.push(block);
-                                fn.blocks.withCtrl(block.id, function (blockCtrl) {
-                                    blockCtrl.open();
+                                fn.preset.createBlock(preset).then(function (block) {
+                                    $scope.model.value.blocks.push(block);
                                 });
                             }
                         });
@@ -1228,7 +1225,49 @@ function perplexContentBlocksController(
             createBlock: function (preset) {
                 var emptyBlock = fn.blocks.createEmpty(preset.DefinitionId, preset.LayoutId);
                 emptyBlock.presetId = preset.Id;
-                return emptyBlock;
+
+                return fn.preset.getNcContentType(preset).then(function (ncContentType) {
+                    if (ncContentType == null) return emptyBlock;
+
+                    var ncContentTypeAlias = ncContentType.ncAlias;
+                    return contentResource.getScaffold(-20, ncContentTypeAlias).then(function (scaffold) {
+                        var content = emptyBlock.content[0] = {
+                            key: String.CreateGuid(),
+                            ncContentTypeAlias: ncContentType.ncAlias,
+                        };
+
+                        // Set all properties to their default value
+                        var tab = _.find(scaffold.variants[0].tabs, function (tab) {
+                            return tab.id !== 0 && (tab.alias.toLowerCase() === ncContentType.ncTabAlias.toLowerCase() || ncContentType.ncTabAlias === "");
+                        });
+
+                        if (tab != null) {
+                            _.each(tab.properties, function (property) {
+                                content[property.alias] = property.value;
+                            });
+                        }
+
+                        // Preset content
+                        _.each(preset.Values, function (value, alias) {
+                            content[alias] = value;
+                        });
+
+                        return emptyBlock;
+                    });
+                });
+            },
+
+            getNcContentType: function (preset) {
+                var definition = computed.definitionsById[preset.DefinitionId];
+                if (definition == null) return $q.when(null);
+
+                return scaffoldCache.getScaffold(definition.DataTypeId == null ? definition.DataTypeKey : definition.DataTypeId).then(function (scaffold) {
+                    if (scaffold.config == null || !Array.isArray(scaffold.config.contentTypes) || scaffold.config.contentTypes.length === 0) {
+                        return null;
+                    }
+
+                    return scaffold.config.contentTypes[0];
+                });
             },
         },
 
