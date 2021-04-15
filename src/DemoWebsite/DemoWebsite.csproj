@@ -268,6 +268,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\OsmMaps\assets\css\osmmaps.css" />
+    <Content Include="App_Plugins\OsmMaps\assets\leaflet\leaflet.css" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\assets\icons.svg" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-block.component.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-block.component.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.icon.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\perplex.content-blocks.configuration.structure.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lang\da-DK.xml" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lang\en-US.xml" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lang\nl-NL.xml" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lib\angular-slick.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lib\slick.min.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.api.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.controller.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.css" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.requires.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\perplex.content-blocks.copy-paste-service.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\perplex.content-blocks.utils.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property-scaffold-cache.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.html" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\perplex.content-blocks.property.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\tab-focus\perplex.content-blocks.tab-focus-once.directive.js" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\tab-focus\perplex.content-blocks.tab-focus.service.js" />
     <Content Include="config\grid.editors.config.js" />
     <Content Include="config\Lang\cs-CZ.user.xml" />
     <Content Include="config\Lang\da-DK.user.xml" />
@@ -289,6 +314,7 @@
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="config\logviewer.searches.config.js" />
     <Content Include="Global.asax" />
+    <Content Include="Media\icons.svg" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +344,23 @@
     <Content Include="config\serilog.config" />
     <Content Include="config\HealthChecks.config" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\components\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\configuration\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\lib\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\perplex.content-blocks.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-block.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-editor.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-grid.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-icon.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-icons.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-overlay.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-picker.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-sidebar.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\styles\perplex.content-blocks-slicksliders.less" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\property\package.manifest" />
+    <Content Include="App_Plugins\Perplex.ContentBlocks\utils\tab-focus\package.manifest" />
     <None Include="packages.config" />
     <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
     <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
@@ -341,7 +384,13 @@
       <Name>Perplex.ContentBlocks</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Plugins\OsmMaps\assets\leaflet\images\" />
+    <Folder Include="App_Plugins\OsmMaps\langs\" />
+    <Folder Include="App_Plugins\StarterKit\backoffice\tours\" />
+    <Folder Include="App_Plugins\StarterKit\lang\" />
+    <Folder Include="App_Plugins\StarterKit\tours\views\medialibrary\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
