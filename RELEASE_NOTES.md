@@ -2,6 +2,27 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.8.0 - <sub><sup>2021-05-27</sup></sub>
+
+-   Presets can now contain initial values for properties.    
+    - Example code to set initial values:
+    ```csharp
+    new ContentBlockPreset
+    {
+        Id = ...,
+        DefinitionId = ...,
+        LayoutId = ...,
+        Values =
+        {
+            // Set initial values for properties "title" and "text"
+            // of the Content Block
+            ["title"] = "Default title here",
+            ["text"] = "<p>Lorem ipsum ...</p>"
+        },
+    },
+    ```
+    - This is a breaking change to `Perplex.ContentBlocks.Presets.IContentBlockPreset` since we add a property to it (`IDictionary<string, object> Values`) but this will only actually break if you use a custom implementation of this interface. If you simply use the built-in `Perplex.ContentBlocks.Presets.ContentBlockPreset` existing code will not be affected.
+
 ## v1.7.0 - <sub><sup>2021-02-18</sup></sub>
 
 -   Support for complex validation introduced in Umbraco 8.7
