@@ -1,5 +1,6 @@
 ﻿using Perplex.ContentBlocks.Categories;
 using Perplex.ContentBlocks.Definitions;
+using Perplex.ContentBlocks.Presets;
 using System;
 using System.Linq;
 using Umbraco.Core.Composing;
@@ -21,13 +22,17 @@ namespace DemoWebsite
         private readonly IDataTypeService _dataTypeService;
         private readonly IContentTypeService _contentTypeService;
         private readonly IContentBlockCategoryRepository _categoryRepository;
+        private readonly IContentBlocksPresetRepository _presetRepository;
 
         public ExampleComponent(
             IContentBlockDefinitionRepository definitions,
             PropertyEditorCollection propertyEditors,
             IDataTypeService dataTypeService,
             IContentTypeService contentTypeService,
-            IContentBlockCategoryRepository categoryRepository
+            IContentBlockCategoryRepository categoryRepository,
+            IContentBlocksPresetRepository presetRepository
+
+
             )
         {
             _definitions = definitions;
@@ -35,6 +40,7 @@ namespace DemoWebsite
             _dataTypeService = dataTypeService;
             _contentTypeService = contentTypeService;
             _categoryRepository = categoryRepository;
+            _presetRepository = presetRepository;
         }
 
         public void Initialize()
@@ -164,6 +170,25 @@ namespace DemoWebsite
                     _definitions.Add(newDef);
                 }
             }
+
+            _presetRepository.Add(new ContentBlocksPreset
+            {
+                Id = new Guid("72d1b24f-ed6d-4c27-ad21-8fec48b6060c"),
+                Name = "Test",
+                Blocks = new[]
+                {
+                    new ContentBlockPreset
+                    {
+                        Id = new Guid("198bec2a-3404-409a-80e5-cb002aa5858e"),
+                        DefinitionId = new Guid("11111111-1111-1111-1111-111111111111"),
+                        LayoutId = new Guid("33333333-3333-3333-3333-333333333333"),
+                        Values =
+                        {
+                            ["title"] = "Preset Title value",
+                        },
+                    },
+                }
+            });
         }
 
         private void CreateExampleBlock(string contentTypeAlias, Guid dataTypeKey)
