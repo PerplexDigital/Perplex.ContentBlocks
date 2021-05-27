@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Perplex.ContentBlocks.Presets
 {
@@ -12,5 +13,10 @@ namespace Perplex.ContentBlocks.Presets
         /// When set to true, the block specified by this preset cannot be hidden or removed.
         /// </summary>
         bool IsMandatory { get; }
+
+        /// <summary>
+        /// The initial values of the generated Content Block per alias
+        /// </summary>
+        IDictionary<string, object> Values { get; }
     }
 }
