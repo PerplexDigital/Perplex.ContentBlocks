@@ -47,7 +47,7 @@ namespace DemoWebsite.Legacy
             {
                 Id = specialCategoryId,
                 Name = "Specials",
-                Icon = "/App_Plugins/Perplex.ContentBlocks/assets/icons.svg#icon-cat-special"
+                Icon = "/Media/icons.svg#icon-cat-special"
             });
 
             // Block
