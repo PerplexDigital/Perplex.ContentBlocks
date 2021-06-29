@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
@@ -10,7 +11,7 @@ using Umbraco.Core.Services;
 
 namespace Perplex.ContentBlocks.PropertyEditor
 {
-    public class ContentBlocksValueEditor : DataValueEditor
+    public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     {
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
@@ -124,6 +125,40 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
 
             return JObject.FromObject(modelValue);
+        }
+
+        public IEnumerable<UmbracoEntityReference> GetReferences(object value)
+        {
+            var result = new List<UmbracoEntityReference>();
+            var json = value?.ToString();
+
+            var modelValue = _deserializer.Deserialize(json);
+            if (modelValue is null)
+                return result;
+
+            if (modelValue.Header != null)
+            {
+                result.AddRange(GetReferencesByBlock(modelValue.Header));
+            }
+
+            if (modelValue.Blocks?.Any() is true)
+            {
+                foreach (var block in modelValue.Blocks)
+                {
+                    result.AddRange(GetReferencesByBlock(block));
+                }
+            }
+
+            IEnumerable<UmbracoEntityReference> GetReferencesByBlock(ContentBlockModelValue model)
+            {
+                if (_utils.GetDataType(model.DefinitionId) is IDataType dataType && dataType.Editor?.GetValueEditor() is IDataValueReference valueEditor)
+                {
+                    return valueEditor.GetReferences(model.Content?.ToString());
+                }
+                return Enumerable.Empty<UmbracoEntityReference>();
+            }
+
+            return result;
         }
     }
 }
