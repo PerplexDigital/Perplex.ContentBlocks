@@ -15,7 +15,7 @@
     <icon>images\icon.png</icon>
      <dependencies>
         <group targetFramework=".NETFramework4.7.2">
-          <dependency id="UmbracoCms.Web" version="8.1.0" />
+          <dependency id="UmbracoCms.Web" version="8.6.0" />
       </group>
     </dependencies>
   </metadata>
