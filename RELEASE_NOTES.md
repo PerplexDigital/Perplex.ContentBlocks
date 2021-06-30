@@ -2,9 +2,14 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v1.9.0 - <sub><sup>2021-06-30</sup></sub>
+- Added support for [Media Tracking](https://umbraco.com/blog/umbraco-86-release/#media) introduced in Umbraco 8.6.0
+    - The minimum required Umbraco version is raised to 8.6.0
+    - Thanks to [@patrickdemooij9](https://github.com/patrickdemooij9) for providing a PR.
+
 ## v1.8.0 - <sub><sup>2021-05-27</sup></sub>
 
--   Presets can now contain initial values for properties.    
+-   Presets can now contain initial values for properties.
     - Example code to set initial values:
     ```csharp
     new ContentBlockPreset
