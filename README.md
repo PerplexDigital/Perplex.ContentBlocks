@@ -510,6 +510,25 @@ An `IContentBlocksPreset` has the following properties:
 -   ApplyToDocumentTypes
     -   Document type alias to apply this preset to (e.g. `"homepage"`)
 
+### Preset initial property values
+
+Starting from version 1.8.0 it is possible to provide initial property values for an `IContentBlockPreset` using its `Values` property which is an `IDictionary<string, object>`. Usage:
+
+```csharp
+new ContentBlockPreset
+{
+    Id = ...,
+    DefinitionId = ...,
+    LayoutId = ...,
+    Values =
+    {
+        // For example, to set the initial values for properties "title" and "text":
+        ["title"] = "Default title here",
+        ["text"] = "<p>Lorem ipsum ...</p>"
+    },
+},
+```
+
 ### Creating Content Blocks programmatically
 
 There are no specialized APIs in our package to create Content Blocks through code but you can use Umbraco's `IContentService` and use `SetValue()` to set a ContentBlocks property value. The value should be a JSON string and the structure is shown below. The main task is generating that "Nested Content data" part.
