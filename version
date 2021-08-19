@@ -11,22 +11,24 @@ fi
 version_info=$(echo $1 | sed 's/-.*//')
 
 # Save any open work
-git stash > /dev/null 2>&1
+stash_name="pre-$version"
+stash_result=`git stash save $stash_name`
 
-projectDir=src/Perplex.ContentBlocks
+csproj=src/Perplex.ContentBlocks/Perplex.ContentBlocks.csproj
+csprojCore=src/Perplex.ContentBlocks.Core/Perplex.ContentBlocks.Core.csproj
 
-# Update version
-# AssemblyInfo: x.y.z
-sed -i "s/^\(\[assembly: AssemblyVersion(\"\)[^\"]\+/\1${version_info}/g" $projectDir/Properties/AssemblyInfo.cs
-
-# AssemblyInformationalVersion: x.y.z
-sed -i "s/^\(\[assembly: AssemblyInformationalVersion(\"\)[^\"]\+/\1${version}/g" $projectDir/Properties/AssemblyInfo.cs
+# Update versions
+sed -i "s/<\(Version\)>.*<\/\1>/<\1>$version<\/\1>/" $csproj
+sed -i "s/<\(Version\)>.*<\/\1>/<\1>$version<\/\1>/" $csprojCore
 
 # Add
-git add $projectDir/Properties/AssemblyInfo.cs > /dev/null 2>&1
+git add $csproj > /dev/null 2>&1
+git add $csprojCore > /dev/null 2>&1
 
 # Commit
 git commit -m "Version ${version}" > /dev/null 2>&1
 
-# Restore previous work
-git stash pop --index > /dev/null 2>&1
+# Restore previous work -- if any
+if [ "$(echo $stash_result | grep $stash_name)" ]; then
+    git stash pop --index > /dev/null 2>&1
+fi

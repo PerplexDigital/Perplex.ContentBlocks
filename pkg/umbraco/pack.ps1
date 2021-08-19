@@ -20,7 +20,12 @@ Push-Location $PSScriptRoot
 
 Write-Host "Packing for Umbraco ..."
 
+..\build.ps1
+
 $projectDir = Get-Item ..\..\src\Perplex.ContentBlocks
+
+$projectDirCore = Get-Item ..\..\src\Perplex.ContentBlocks.Core
+$csprojFileCore = "$projectDirCore\Perplex.ContentBlocks.Core.csproj"
 
 $version = ..\version.ps1
 
@@ -29,11 +34,11 @@ $tmpDir = "_tmp"
 If(Test-Path $tmpDir) { Remove-Item $tmpDir -Recurse }
 New-Item -Path . -Name $tmpDir -ItemType "directory" | Out-Null
 
-# Get Umbraco version from NuGet packages.config file
-[xml]$nugetPackages = Get-Content $projectDir\packages.config
-$umbVersion = $nugetPackages.packages.package | ? {
-    $_.GetAttribute("id") -eq "UmbracoCms.Web"
-} | % { $_.version } | Get-SemVer
+# Get Umbraco version from UmbracoCms.Web NuGet dependency
+[xml]$csprojCore = Get-Content $csprojFileCore
+$umbVersion = $csprojCore.Project.ItemGroup.PackageReference | ? {
+    $_.Include -eq "UmbracoCms.Web"
+} | %{ $_.Version } | Get-SemVer
 
 $packageXmlIn = "package.xml"
 $packageXmlOut = "$tmpDir\package.xml"
@@ -48,7 +53,7 @@ $requirements.patch = "$($umbVersion.Patch)"
 $files = $packageXml.umbPackage.SelectSingleNode("files")
 $xmlns = $packageXml.umbPackage.NamespaceURI
 
-$dll = Get-Item "$projectDir\bin\Release\Perplex.ContentBlocks.dll"
+$dll = Get-Item "$projectDirCore\bin\Release\net472\Perplex.ContentBlocks.dll"
 $appPluginRoot = "$projectDir\App_Plugins\Perplex.ContentBlocks"
 $appPluginFiles = Get-ChildItem $appPluginRoot\* -File -Exclude @("*.less") -Recurse
 

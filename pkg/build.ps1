@@ -1,17 +1,11 @@
 Push-Location $PSScriptRoot
 
-$msBuild = .\vswhere -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
-if (!$msBuild) {
-    Throw "MSBuild not found"
-}
+$projectFile = "..\src\Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj"
 
-$nuget = "nuget\nuget.exe"
-$projectFile = "..\src\Perplex.ContentBlocks\Perplex.ContentBlocks.csproj"
-
-Write-Host "Restoring NuGet packages ..."
-& $nuget restore $projectFile
+Write-Host "Cleaning project ..."
+dotnet clean $projectFile -c Release -v q --nologo
 
 Write-Host "Building project ..."
-& $msBuild $projectFile -t:rebuild /p:Configuration=Release -v:minimal
+dotnet build $projectFile -c Release -v q --nologo
 
 Pop-Location
