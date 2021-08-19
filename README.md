@@ -17,6 +17,16 @@ This package works on top of NestedContent but provides a more advanced user int
     -   This helps editors to distinguish better between available blocks
     -   Pickers show blocks in categories to help organization when available block count is high
 
+## Umbraco 9 / .NET 5
+
+A beta release of ContentBlocks 2.0 which supports Umbraco 9 / .NET 5 is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks/2.0.0-beta.1). This package can be installed in both v8 and v9 websites.
+
+It can be installed as usual via NuGet, just make sure to tick "Include prerelease" or use
+
+`Install-Package -Pre Perplex.ContentBlocks`
+
+This is direct port of `v1.9.0` and the API is almost identical. There is a small change in the way you render the Content Blocks in your Razor view. See [Rendering Content Blocks](#rendering-content-blocks) for details.
+
 ## Demo
 
 A short demo video can be viewed below.
@@ -377,18 +387,29 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
 1. Using the extension method:
 
 ```csharp
+// Umbraco v8
 @using Perplex.ContentBlocks.Rendering;
 @Html.RenderContentBlocks(Model.ContentBlocks)
+
+// Umbraco v9
+@using Perplex.ContentBlocks.Rendering;
+@inject IContentBlockRenderer Renderer
+@await Html.RenderContentBlocks(Model.ContentBlocks, Renderer)
 ```
 
 2. Using the renderer:
 
 ```csharp
+// Umbraco v8
 @{
     // Inject
     IContentBlocksRenderer renderer;
 }
 @renderer.Render(Model.ContentBlocks)
+
+// Umbraco v9
+@inject IContentBlockRenderer Renderer
+@await Renderer.Render(Model.ContentBlocks, Html.PartialAsync)
 ```
 
 ### Rendering a Content Block
