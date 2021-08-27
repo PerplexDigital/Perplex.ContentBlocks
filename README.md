@@ -380,7 +380,7 @@ OR
 
 ## Rendering Content Blocks
 
-To render all Content Blocks from the page containing the blocks, you can either use the `IContentBlocksRenderer` directly, or call an extension method with the Content Blocks model value (of type `IContentBlocks`).
+To render all Content Blocks from the page containing the blocks, you can either use the `IContentBlockRenderer` directly, or call an extension method with the Content Blocks model value (of type `IContentBlocks`).
 
 The examples assume the property alias of the Perplex.ContentBlocks property is `"contentBlocks"` which translates to a ModelsBuilder property of `ContentBlocks`. In both cases we run the example code in the Razor view file of the document type that contains the Content Blocks (e.g. `Homepage.cshtml`):
 
@@ -403,7 +403,7 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
 // Umbraco v8
 @{
     // Inject
-    IContentBlocksRenderer renderer;
+    IContentBlockRenderer renderer;
 }
 @renderer.Render(Model.ContentBlocks)
 
