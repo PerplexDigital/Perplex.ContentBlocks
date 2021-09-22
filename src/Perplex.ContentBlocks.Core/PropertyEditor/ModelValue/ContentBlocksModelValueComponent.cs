@@ -54,6 +54,15 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
                         foreach (JObject block in contentBlocks.Value<JArray>("blocks"))
                         {
                             UpdateContentBlockKeys(block);
+
+                            var variants = block.Value<JArray>("variants");
+                            if (variants != null)
+                            {
+                                foreach (JObject variant in variants)
+                                {
+                                    UpdateContentBlockKeys(variant);
+                                }
+                            }
                         }
 
                         prop.SetValue(JsonConvert.SerializeObject(contentBlocks), culture: culture, segment: segment);
