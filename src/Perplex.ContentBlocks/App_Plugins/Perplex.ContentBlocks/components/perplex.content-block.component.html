@@ -47,6 +47,12 @@
             <strong ng-bind="$ctrl.name"></strong>
             <div ng-bind="$ctrl.definition.Name"></div>
         </div>
+        <div class="p-block-topbar__text">
+            <button type="button" ng-click="$ctrl.addVariant('xyz')">
+                <localize key="perplexContentBlocks_addVariant">Add variant</localize>
+            </button>
+        </div>
+
         <div class="p-block-topbar__layout"
              ng-mouseenter="$ctrl.showLayoutPreview = true"
              ng-mouseleave="$ctrl.showLayoutPreview = false"
@@ -159,6 +165,20 @@
                                  set-value="$ctrl.setValue({ value: value })"
                                  on-change="$ctrl.updateName()">
         </content-blocks-property>
+
+        <hr />
+
+        <div ng-show="$ctrl.block.variants.length > 0">
+            <div ng-repeat="variant in $ctrl.block.variants track by variant.id">
+                <content-blocks-property content-block-id="$ctrl.block.id"
+                                         variant-id="variant.id"
+                                         datatype-id="$ctrl.definition.DataTypeId"
+                                         datatype-key="$ctrl.definition.DataTypeKey"
+                                         get-value="variant.content"
+                                         set-value="variant.content = value">
+                </content-blocks-property>
+            </div>
+        </div>
     </div>
 </div>
 

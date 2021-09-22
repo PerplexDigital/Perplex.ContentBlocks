@@ -290,4 +290,26 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
             serverValidationManager.removePropertyError(this.block.id, "invariant", null, null, { matchType: "contains" });
         }.bind(this));
     }
+
+    this.addVariant = function (alias) {
+        var variant = this.createEmptyVariant(alias);
+        if (this.block == null) {
+            return;
+        }
+
+        if (this.block.variants == null) {
+            this.block.variants = [];
+        }
+
+        this.block.variants.push(variant);
+    }
+
+    this.createEmptyVariant = function (alias) {
+        return {
+            id: String.CreateGuid(),
+            alias: alias,
+            // Empty Nested Content
+            content: [],
+        }
+    }
 }
