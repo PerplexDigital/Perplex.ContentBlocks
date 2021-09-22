@@ -9,8 +9,8 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
         [JsonProperty("id")]
         public Guid Id { get; set; }
 
-        [JsonProperty("variant")]
-        public string Variant { get; set; }
+        [JsonProperty("alias")]
+        public string Alias { get; set; }
 
         /// <summary>
         /// JSON NestedContent

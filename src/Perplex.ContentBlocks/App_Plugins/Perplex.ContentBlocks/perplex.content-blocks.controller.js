@@ -26,7 +26,7 @@ function perplexContentBlocksController(
     var state = {
         // The current version of the model, useful for possible future model changes
         // if we have to transform data.
-        version: 2,
+        version: 3,
 
         initialized: false,
         pageId: null,
@@ -1163,6 +1163,8 @@ function perplexContentBlocksController(
             if (fn.getModelVersion() < 2) {
                 fn.versionUpgrades.addGuids();
             }
+
+            // Any future data transformations after v2 are done server side.
 
             fn.setModelVersion(state.version);
         },

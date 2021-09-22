@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 {
@@ -18,12 +19,39 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 
             try
             {
-                return JsonConvert.DeserializeObject<ContentBlocksModelValue>(json);
+                var modelValue = JsonConvert.DeserializeObject<ContentBlocksModelValue>(json);
+
+                return MaybeTransformData(modelValue);
             }
             catch
             {
                 return null;
             }
+        }
+
+        private ContentBlocksModelValue MaybeTransformData(ContentBlocksModelValue modelValue)
+        {
+            if (modelValue.Version < 3)
+            {
+                // We added a Variants property in v3, for any older version we will ensure this property becomes an empty Array.
+                if (modelValue.Header != null && modelValue.Header.Variants == null)
+                {
+                    modelValue.Header.Variants = new List<ContentBlockVariantModelValue>();
+                }
+
+                if (modelValue.Blocks != null)
+                {
+                    foreach (var block in modelValue.Blocks)
+                    {
+                        if (block.Variants == null)
+                        {
+                            block.Variants = new List<ContentBlockVariantModelValue>();
+                        }
+                    }
+                }
+            }
+
+            return modelValue;
         }
     }
 }
