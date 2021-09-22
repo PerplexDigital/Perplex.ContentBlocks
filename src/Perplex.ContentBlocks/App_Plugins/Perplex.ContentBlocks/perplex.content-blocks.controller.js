@@ -1007,6 +1007,7 @@ function perplexContentBlocksController(
                     layoutId: layoutId,
                     // Empty NestedContent model value
                     content: [],
+                    variants: [],
                 };
             },
 
