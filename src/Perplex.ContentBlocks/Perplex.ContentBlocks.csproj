@@ -11,7 +11,7 @@
     <Version>2.0.0-beta.1</Version>
     <Authors>Perplex Digital</Authors>
     <Description>Block based content editor for Umbraco</Description>
-    <PackageTags>umbraco property editor content block</PackageTags>
+    <PackageTags>Umbraco;Property Editor;Content Block</PackageTags>
     <PackageProjectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl />
