@@ -34,6 +34,7 @@
         "contentBlocksPropertyScaffoldCache",
         "$scope",
         "serverValidationManager",
+        "perplexContentBlocksCustomComponents",
         perplexContentBlockController
     ],
 
@@ -42,7 +43,7 @@
     },
 });
 
-function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope, serverValidationManager) {
+function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope, serverValidationManager, customComponents) {
     var destroyFns = [];
 
     // State
@@ -52,6 +53,8 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
 
         open: false,
         loadEditor: false,
+
+        customComponents: customComponents,
 
         initialLayoutIndex: null,
         missingLayoutId: null,
@@ -293,10 +296,6 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
 
     this.addVariant = function (alias) {
         var variant = this.createEmptyVariant(alias);
-        if (this.block == null) {
-            return;
-        }
-
         if (this.block.variants == null) {
             this.block.variants = [];
         }
@@ -310,6 +309,13 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
             alias: alias,
             // Empty Nested Content
             content: [],
+        }
+    }
+
+    this.removeVariant = function (alias) {
+        var idx = _.findIndex(this.block.variants, function (variant) { return variant.alias === alias });
+        if (idx > -1) {
+            this.block.variants.splice(idx, 1);
         }
     }
 }

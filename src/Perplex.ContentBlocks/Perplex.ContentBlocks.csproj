@@ -41,6 +41,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.custom-component.js" />
+    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.custom-components.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj" />
   </ItemGroup>
 
