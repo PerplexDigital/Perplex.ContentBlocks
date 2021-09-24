@@ -1,6 +1,7 @@
 ﻿{
   "javascript": [
-    "~/App_Plugins/MyContentBlocksAddon/init.js",
-    "~/App_Plugins/MyContentBlocksAddon/component.js"
+    "~/App_Plugins/MyContentBlocksAddon/mcba-init.js",
+    "~/App_Plugins/MyContentBlocksAddon/mcba-main.js",
+    "~/App_Plugins/MyContentBlocksAddon/mcba-button.js"
   ]
 }

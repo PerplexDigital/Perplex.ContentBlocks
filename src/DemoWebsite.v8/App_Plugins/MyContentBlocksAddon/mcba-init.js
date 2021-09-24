@@ -4,5 +4,6 @@ angular.module("umbraco").requires.push("MyContentBlocksAddon");
 angular.module("MyContentBlocksAddon").run([
     "perplexContentBlocksCustomComponents",
     function (customComponents) {
-        customComponents.block.main = "component";
+        customComponents.block.main = "mcba-main";
+        customComponents.block.button = "mcba-button";
     }]);

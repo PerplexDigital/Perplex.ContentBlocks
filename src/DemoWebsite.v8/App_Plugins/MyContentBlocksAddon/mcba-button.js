@@ -1,5 +1,5 @@
-﻿angular.module("MyContentBlocksAddon").component("component", {
-    templateUrl: "/App_Plugins/MyContentBlocksAddon/component.html",
+﻿angular.module("MyContentBlocksAddon").component("mcbaButton", {
+    templateUrl: "/App_Plugins/MyContentBlocksAddon/mcba-button.html",
 
     bindings: {
         block: "<",
@@ -11,7 +11,7 @@
     },
 
     controller: [
-        function componentController() {
+        function mcbaButton() {
             this.$onInit = function () {
                 // TODO
             }
