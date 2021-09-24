@@ -5,5 +5,5 @@ angular.module("MyContentBlocksAddon").run([
     "perplexContentBlocksCustomComponents",
     function (customComponents) {
         customComponents.block.main = "mcba-main";
-        customComponents.block.button = "mcba-button";
+        customComponents.block.buttons.push("mcba-button", "mcba-personalize");
     }]);
