@@ -9,12 +9,4 @@
     require: {
         blockCtrl: "^perplexContentBlock"
     },
-
-    controller: [
-        function mcbaButton() {
-            this.$onInit = function () {
-                // TODO
-            }
-        }
-    ],
 });

@@ -1,31 +1,31 @@
-﻿<div style="border: 2px solid #f0f;">
-    <content-blocks-property content-block-id="$ctrl.block.id"
-                             datatype-id="$ctrl.definition.DataTypeId"
-                             datatype-key="$ctrl.definition.DataTypeKey"
-                             get-value="$ctrl.blockCtrl.getValue()"
-                             set-value="$ctrl.blockCtrl.setValue({ value: value })"
-                             on-change="$ctrl.blockCtrl.updateName()">
-    </content-blocks-property>
+﻿
+<content-blocks-property content-block-id="$ctrl.block.id"
+                         datatype-id="$ctrl.definition.DataTypeId"
+                         datatype-key="$ctrl.definition.DataTypeKey"
+                         get-value="$ctrl.blockCtrl.getValue()"
+                         set-value="$ctrl.blockCtrl.setValue({ value: value })"
+                         on-change="$ctrl.blockCtrl.updateName()">
+</content-blocks-property>
 
-    <hr />
+<hr />
 
-    <div ng-show="$ctrl.block.variants.length > 0">
-        <div ng-repeat="variant in $ctrl.block.variants track by variant.id" style="border: 1px solid #f0f; padding: 2rem;">
-            <content-blocks-property content-block-id="$ctrl.block.id"
-                                     variant-id="variant.id"
-                                     datatype-id="$ctrl.definition.DataTypeId"
-                                     datatype-key="$ctrl.definition.DataTypeKey"
-                                     get-value="variant.content"
-                                     set-value="variant.content = value">
-            </content-blocks-property>
+<div ng-show="$ctrl.block.variants.length > 0">
+    <div ng-repeat="variant in $ctrl.block.variants track by variant.id">
+        <pre ng-bind="variant.alias"></pre>
 
-            <button type="button" ng-click="$ctrl.blockCtrl.removeVariant(variant.alias)">Remove variant</button>
-        </div>
-    </div>
+        <content-blocks-property content-block-id="$ctrl.block.id"
+                                 variant-id="variant.id"
+                                 datatype-id="$ctrl.definition.DataTypeId"
+                                 datatype-key="$ctrl.definition.DataTypeKey"
+                                 get-value="variant.content"
+                                 set-value="variant.content = value">
+        </content-blocks-property>
 
-    <div>
-        <input type="text" ng-model="$ctrl.newVariantAlias" placeholder="new variant alias" />
-        <button type="button" ng-click="$ctrl.blockCtrl.addVariant($ctrl.newVariantAlias)">Add variant</button>
+        <button type="button" ng-click="$ctrl.blockCtrl.removeVariant(variant.alias)">Remove variant</button>
     </div>
 </div>
 
+<div>
+    <input type="text" ng-model="$ctrl.newVariantAlias" placeholder="new variant alias" />
+    <button type="button" ng-click="$ctrl.blockCtrl.addVariant($ctrl.newVariantAlias)">Add variant</button>
+</div>
