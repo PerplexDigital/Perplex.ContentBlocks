@@ -1,0 +1,6 @@
+﻿{
+  "javascript": [
+    "~/App_Plugins/MyContentBlocksAddon/init.js",
+    "~/App_Plugins/MyContentBlocksAddon/component.js"
+  ]
+}

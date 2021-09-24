@@ -302,6 +302,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Plugins\MyContentBlocksAddon\init.js" />
+    <Content Include="App_Plugins\MyContentBlocksAddon\component.html" />
+    <Content Include="App_Plugins\MyContentBlocksAddon\component.js" />
     <Content Include="App_Plugins\OsmMaps\assets\css\osmmaps.css" />
     <Content Include="App_Plugins\OsmMaps\assets\leaflet\leaflet.css" />
     <Content Include="config\grid.editors.config.js" />
@@ -355,6 +358,7 @@
     <Content Include="config\serilog.config" />
     <Content Include="config\HealthChecks.config" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
+    <Content Include="App_Plugins\MyContentBlocksAddon\package.manifest" />
     <None Include="packages.config" />
     <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
     <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
