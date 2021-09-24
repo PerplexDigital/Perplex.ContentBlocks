@@ -18,8 +18,14 @@
                                      get-value="variant.content"
                                      set-value="variant.content = value">
             </content-blocks-property>
+
+            <button type="button" ng-click="$ctrl.blockCtrl.removeVariant(variant.alias)">Remove variant</button>
         </div>
     </div>
 
+    <div>
+        <input type="text" ng-model="$ctrl.newVariantAlias" placeholder="new variant alias" />
+        <button type="button" ng-click="$ctrl.blockCtrl.addVariant($ctrl.newVariantAlias)">Add variant</button>
+    </div>
 </div>
 
