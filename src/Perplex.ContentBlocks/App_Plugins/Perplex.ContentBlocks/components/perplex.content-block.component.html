@@ -75,6 +75,12 @@
                 </slick>
             </div>
         </div>
+
+        <div class="p-block-topbar__custom" ng-repeat="component in $ctrl.state.customComponents.block.buttons track by $index">
+            <perplex-content-blocks-custom-component component="component"
+                                                     data="{block:$ctrl.block,definition:$ctrl.definition}"></perplex-content-blocks-custom-component>
+        </div>
+
         <div class="p-block-topbar__settings"
              ng-class="{ 's-active': $ctrl.state.showSettings }"
              ng-if="!$ctrl.isMandatory">

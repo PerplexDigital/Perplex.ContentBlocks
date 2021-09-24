@@ -468,7 +468,7 @@
         }
     }
     /* settings */
-    &__settings, &__mandatory {
+    &__settings, &__mandatory, &__custom {
         width: @block-margin - 1rem;
         border: 0;
         position: relative;
@@ -682,6 +682,10 @@
         &:hover .p-block__mandatory__info {
             display: block;
         }
+    }
+
+    &__custom {
+        border-right: 1px solid @umbraco-border;
     }
 }
 
