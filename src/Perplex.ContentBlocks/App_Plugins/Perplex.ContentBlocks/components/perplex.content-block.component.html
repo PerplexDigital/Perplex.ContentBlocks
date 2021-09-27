@@ -132,7 +132,7 @@
             <content-blocks-icon icon="reorder"></content-blocks-icon>
         </span>
         <div class="p-block-topbar__layout__preview"
-             ng-class="{'is-active': $ctrl.showLayoutPreview}">
+             ng-class="{'is-active': $ctrl.showLayoutPreview, 'custom-buttons-{{$ctrl.state.customComponents.block.buttons.length}}': $ctrl.state.customComponents.block.buttons.length > 0}">
             <slick initial-slide="$ctrl.state.initialLayoutIndex"
                    infinite="true"
                    class="p-block-topbar__layout__view"
