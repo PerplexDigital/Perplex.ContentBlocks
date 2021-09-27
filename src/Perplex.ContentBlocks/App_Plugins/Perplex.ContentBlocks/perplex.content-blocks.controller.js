@@ -136,7 +136,8 @@ function perplexContentBlocksController(
         // blockId => [validationMessage]
         validationMessages: {},
 
-        umbracoVersion: Umbraco.Sys.ServerVariables.application.version,
+        // Any Umbraco version < 8.7.0 is considered legacy
+        isLegacyUmbraco: versionHelper.versionCompare(Umbraco.Sys.ServerVariables.application.version, "8.7.0") < 0,
     };
 
     var computed = {
@@ -207,7 +208,7 @@ function perplexContentBlocksController(
                     $errorMsg.remove();
                 }
 
-                if (versionHelper.versionCompare(state.umbracoVersion, "8.7.0") < 0) {
+                if (state.isLegacyUmbraco) {
                     // < 8.7.0
 
                     var propertyAlias = $scope.model.alias;
