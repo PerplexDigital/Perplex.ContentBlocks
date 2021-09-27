@@ -1,4 +1,5 @@
-﻿
+﻿<perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.blockCtrl.validationMessages[null]" />
+
 <content-blocks-property content-block-id="$ctrl.block.id"
                          datatype-id="$ctrl.definition.DataTypeId"
                          datatype-key="$ctrl.definition.DataTypeKey"
@@ -16,6 +17,7 @@
     <div ng-repeat="variant in $ctrl.block.variants track by variant.id">
         <pre ng-bind="variant.alias"></pre>
 
+        <perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.blockCtrl.validationMessages[variant.id]" />
         <content-blocks-property content-block-id="$ctrl.block.id"
                                  variant-id="variant.id"
                                  datatype-id="$ctrl.definition.DataTypeId"
