@@ -285,7 +285,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     }
 
     this.initValidation = function () {
-        // Regex to extract blockId / variantId / property from the validation message property alias
+        // Regex to extract blockId / variantId / ncKey / property from the validation message property alias
         var re = /^contentBlocks\/(?<blockId>[^\/]+)\/(?<variantId>[^\/]+)\/(?<ncKey>[^\/]+)\/(?<property>[A-z_-]+)$/;
 
         // Note, even in multi-lingual scenarios we have to subscribe with culture = null. 
@@ -295,7 +295,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
 
             // Check variants
             this.state.invalidVariants = {};
-            if (!valid) {
+            if (!valid && this.block.variants.length > 0) {
                 for (var i = 0; i < invalidProperties.length; i++) {
                     var invalidProperty = invalidProperties[i];
                     var match = re.exec(invalidProperty.propertyAlias);
