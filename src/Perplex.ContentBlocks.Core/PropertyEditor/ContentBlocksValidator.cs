@@ -68,13 +68,16 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             foreach (var block in blocksToValidate)
             {
-                foreach (var validationResult in Validate(block))
+                foreach (var (variantId, validationResults) in Validate(block))
                 {
-                    var jObj = JObject.FromObject(validationResult);
-                    if (Parse(jObj, block.Id) is JObject complexValidationResult)
+                    foreach (var validationResult in validationResults)
                     {
-                        complexValidationResults.Add(complexValidationResult);
-                    };
+                        var jObj = JObject.FromObject(validationResult);
+                        if (Parse(jObj, block.Id, variantId) is JObject complexValidationResult)
+                        {
+                            complexValidationResults.Add(complexValidationResult);
+                        };
+                    }
                 }
             }
 
@@ -93,14 +96,20 @@ namespace Perplex.ContentBlocks.PropertyEditor
         {
             return blocksToValidate.SelectMany(block =>
             {
-                // We add a prefix to memberNames of fields with errors
-                // so we can display it at the correct Content Block
-                string memberNamePrefix = $"#content-blocks-id:{block.Id}#";
-                return Validate(block).Select(vr =>
+                return Validate(block).SelectMany(tup =>
                 {
-                    var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
-                    var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
-                    return new ValidationResult(errorMessage, memberNames);
+                    var (variantId, validationResults) = tup;
+
+                    // We add a prefix to memberNames of fields with errors
+                    // so we can display it at the correct Content Block
+                    string memberNamePrefix = $"#content-blocks-id:{block.Id}{(variantId.HasValue ? "/" + variantId : "")}#";
+
+                    return validationResults.Select(vr =>
+                    {
+                        var memberNames = vr.MemberNames.Select(memberName => memberNamePrefix + memberName);
+                        var errorMessage = Regex.Replace(vr.ErrorMessage ?? "", @"^Item \d+:?\s*", "");
+                        return new ValidationResult(errorMessage, memberNames);
+                    });
                 });
             });
         }
@@ -124,48 +133,77 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private IEnumerable<ValidationResult> Validate(ContentBlockModelValue blockValue)
+        private IEnumerable<(Guid? variantId, IEnumerable<ValidationResult> validationResults)> Validate(ContentBlockModelValue blockValue)
         {
+            var validationResults = new List<(Guid?, IEnumerable<ValidationResult>)>();
+
             if (blockValue == null)
             {
-                return Enumerable.Empty<ValidationResult>();
+                return validationResults;
             }
 
             IDataType dataType = _utils.GetDataType(blockValue.DefinitionId);
 
             if (dataType == null)
             {
-                return Enumerable.Empty<ValidationResult>();
+                return validationResults;
             }
 
             var valueEditor = dataType.Editor?.GetValueEditor();
             if (valueEditor == null)
             {
-                return Enumerable.Empty<ValidationResult>();
+                return validationResults;
             }
 
             try
             {
                 // Validate the value using all validators that have been defined for the datatype
-                return valueEditor.Validators.SelectMany(ve => ve.Validate(blockValue.Content, ValueTypes.Json, dataType.Configuration));
+
+                // Block
+                validationResults.Add((null, ValidateContent(blockValue.Content)));
+
+                // Variants
+                if (blockValue.Variants != null)
+                {
+                    foreach (var variant in blockValue.Variants)
+                    {
+                        validationResults.Add((variant.Id, ValidateContent(variant.Content)));
+                    }
+                }
             }
             catch
             {
                 // Nested Content validation will throw in some situations,
-                // e.g. when a ContentBlock document type has no properties.
-                return Enumerable.Empty<ValidationResult>();
+                // e.g. when a ContentBlock document type has no properties.                
+            }
+
+            return validationResults;
+
+            IEnumerable<ValidationResult> ValidateContent(JArray content)
+            {
+                try
+                {
+                    // Validate the value using all validators that have been defined for the datatype
+                    return valueEditor.Validators.SelectMany(ve => ve.Validate(content, ValueTypes.Json, dataType.Configuration));
+                }
+                catch
+                {
+                    // Nested Content validation will throw in some situations,
+                    // e.g. when a ContentBlock document type has no properties.                
+                    return Enumerable.Empty<ValidationResult>();
+                }
             }
         }
 
-        private static JObject Parse(JToken token, Guid? contentBlockId)
+        private static JObject Parse(JToken token, Guid? contentBlockId, Guid? variantId)
         {
             if (token["BlockId"] != null)
             {
-                return ParseBlock(token, contentBlockId);
+                return ParseBlock(token, contentBlockId, variantId);
             }
             else if (token.SelectToken("ValidationResults[0]", false) is JObject nested)
             {
-                return Parse(nested, contentBlockId);
+                return Parse(nested, contentBlockId, variantId);
             }
             else
             {
@@ -173,7 +211,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private static JObject ParseBlock(JToken token, Guid? contentBlockId)
+        private static JObject ParseBlock(JToken token, Guid? contentBlockId, Guid? variantId)
         {
             var nestedContentKey = token.Value<Guid>("BlockId");
             var elementTypeAlias = token.Value<string>("ElementTypeAlias");
@@ -181,7 +219,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             var block = new JObject
             {
-                ["$id"] = contentBlockId.HasValue ? $"{contentBlockId}/{nestedContentKey}" : $"{nestedContentKey}",
+                ["$id"] = contentBlockId.HasValue
+                    ? variantId.HasValue
+                        ? $"{contentBlockId}/{variantId}/{nestedContentKey}"
+                        : $"{contentBlockId}/{nestedContentKey}"
+                    : $"{nestedContentKey}",
                 ["$elementTypeAlias"] = elementTypeAlias,
                 ["ModelState"] = new JObject()
             };
@@ -202,7 +244,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             if (token.SelectToken("ValidationResults[0].ValidationResults", false) is JArray nested)
             {
                 // Complex
-                block[propertyTypeAlias] = new JArray(nested.Select(obj => Parse(obj, null)));
+                block[propertyTypeAlias] = new JArray(nested.Select(obj => Parse(obj, null, null)));
                 modelState[$"_Properties.{propertyTypeAlias}.invariant.null"] = new JArray(new[] { "" });
             }
             else

@@ -1,6 +1,6 @@
 ﻿<umb-property ng-if="$ctrl.property"
               property="$ctrl.property"
-              property-alias="{{$ctrl.contentBlockId}}">
+              property-alias="{{$ctrl.contentBlockId + ($ctrl.variantId != null ? '/' + $ctrl.variantId : '')}}">
     <umb-property-editor model="$ctrl.property"></umb-property-editor>
 </umb-property>
 <div class="umb-alert umb-alert--warning" ng-if="$ctrl.errorMsg" ng-bind="$ctrl.errorMsg"></div>

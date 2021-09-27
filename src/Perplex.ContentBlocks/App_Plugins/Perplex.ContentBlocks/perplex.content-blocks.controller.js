@@ -225,14 +225,19 @@ function perplexContentBlocksController(
                         if (!valid) {
                             state.validationMessages = {};
 
+                            var re = /#content-blocks-id:(?<blockId>[^/#]+)(?:\/(?<variantId>[^#]+))?#(?<property>.*)?/;
+
                             errors.forEach(function (error) {
-                                var match = error.fieldName.match(/#content-blocks-id:([^#]+)#(.*)?/);
+                                var match = re.exec(error.fieldName);
                                 if (match != null && match.length >= 2) {
-                                    var blockId = match[1];
-                                    var property = match[2];
+                                    var blockId = match.groups.blockId;
+                                    var variantId = match.groups.variantId || null;
+                                    var property = match.groups.property;
                                     var errorMessage = error.errorMsg;
-                                    state.validationMessages[blockId] = state.validationMessages[blockId] || [];
-                                    state.validationMessages[blockId].push({
+
+                                    state.validationMessages[blockId] = state.validationMessages[blockId] || {};
+                                    state.validationMessages[blockId][variantId] = state.validationMessages[blockId][variantId] || [];
+                                    state.validationMessages[blockId][variantId].push({
                                         errorMessage: errorMessage,
                                         property: property,
                                     });

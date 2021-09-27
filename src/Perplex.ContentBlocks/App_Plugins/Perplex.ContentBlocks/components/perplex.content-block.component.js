@@ -93,6 +93,10 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
             // Unloading first fixes this.
             this.unloadEditor();
         }
+
+        if (changes.validationMessages) {
+            this.isInvalid = changes.validationMessages.currentValue != null && Object.keys(changes.validationMessages.currentValue).length > 0;
+        }
     }
 
     this.init = function () {

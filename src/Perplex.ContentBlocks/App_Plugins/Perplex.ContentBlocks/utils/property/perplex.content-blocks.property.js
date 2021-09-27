@@ -4,6 +4,7 @@
         datatypeId: "<?",
         datatypeKey: "<?",
         contentBlockId: "<?",
+        variantId: "<?",
         config: "<?",
         getValue: "&?",
         setValue: "&?",
