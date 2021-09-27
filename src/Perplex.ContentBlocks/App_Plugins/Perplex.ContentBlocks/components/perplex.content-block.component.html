@@ -152,25 +152,21 @@
 
     <div class="p-block__main"
          ng-if="$ctrl.state.initialized && $ctrl.state.loadEditor">
-        <div ng-show="$ctrl.validationMessages"
-             ng-repeat="validationMessage in $ctrl.validationMessages track by validationMessage.property+validationMessage.errorMessage"
-             style="display: flex;">
-            <code ng-bind="validationMessage.property" ng-show="validationMessage.property" class="alert alert-info property-error"></code>
-            <div ng-bind="validationMessage.errorMessage" ng-show="validationMessage.errorMessage" class="alert alert-error property-error"></div>
-        </div>
-
         <perplex-content-blocks-custom-component ng-if="$ctrl.state.customComponents.block.main"
                                                  component="$ctrl.state.customComponents.block.main"
                                                  data="{block:$ctrl.block,definition:$ctrl.definition}"></perplex-content-blocks-custom-component>
 
-        <content-blocks-property ng-if="$ctrl.state.customComponents.block.main == null"
-                                 content-block-id="$ctrl.block.id"
-                                 datatype-id="$ctrl.definition.DataTypeId"
-                                 datatype-key="$ctrl.definition.DataTypeKey"
-                                 get-value="$ctrl.getValue()"
-                                 set-value="$ctrl.setValue({ value: value })"
-                                 on-change="$ctrl.updateName()">
-        </content-blocks-property>
+        <div ng-if="$ctrl.state.customComponents.block.main == null">
+            <perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.validationMessages[null]" />
+
+            <content-blocks-property content-block-id="$ctrl.block.id"
+                                     datatype-id="$ctrl.definition.DataTypeId"
+                                     datatype-key="$ctrl.definition.DataTypeKey"
+                                     get-value="$ctrl.getValue()"
+                                     set-value="$ctrl.setValue({ value: value })"
+                                     on-change="$ctrl.updateName()">
+            </content-blocks-property>
+        </div>
     </div>
 </div>
 
