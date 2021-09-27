@@ -60,6 +60,10 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         missingLayoutId: null,
         sliderInitialized: false,
         initialized: false,
+
+        isInvalid: false,
+        // variantId -> true if invalid, otherwise no entry in this object.
+        invalidVariants: {},
     };
 
     // Functions
@@ -95,7 +99,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         }
 
         if (changes.validationMessages) {
-            this.isInvalid = changes.validationMessages.currentValue != null && Object.keys(changes.validationMessages.currentValue).length > 0;
+            this.state.isInvalid = changes.validationMessages.currentValue != null && Object.keys(changes.validationMessages.currentValue).length > 0;
         }
     }
 
@@ -281,10 +285,26 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     }
 
     this.initValidation = function () {
+        // Regex to extract blockId / variantId / property from the validation message property alias
+        var re = /^contentBlocks\/(?<blockId>[^\/]+)\/(?<variantId>[^\/]+)\/(?<ncKey>[^\/]+)\/(?<property>[A-z_-]+)$/;
+
         // Note, even in multi-lingual scenarios we have to subscribe with culture = null. 
         // The inner property errors in NestedContent are always for the invariant culture.
-        var unsubscribe = serverValidationManager.subscribe(this.block.id, "invariant", "", function (valid) {
-            this.isInvalid = !valid;
+        var unsubscribe = serverValidationManager.subscribe(this.block.id, "invariant", "", function (valid, invalidProperties) {
+            this.state.isInvalid = !valid;
+
+            // Check variants
+            this.state.invalidVariants = {};
+            if (!valid) {
+                for (var i = 0; i < invalidProperties.length; i++) {
+                    var invalidProperty = invalidProperties[i];
+                    var match = re.exec(invalidProperty.propertyAlias);
+                    if (match != null && match.groups.variantId != null) {
+                        // This variant is invalid as it appears in the invalidProperties
+                        this.state.invalidVariants[match.groups.variantId] = true;
+                    }
+                }
+            }
         }.bind(this), null, { matchType: "contains" });
 
         destroyFns.push(unsubscribe);
