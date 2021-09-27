@@ -44,6 +44,10 @@ function perplexContentBlocksUtils(editorState) {
             copy.content.forEach(updateNestedContentKey);
         }
 
+        if (Array.isArray(copy.variants)) {
+            copy.variants = copy.variants.map(copyContentBlock);
+        }
+
         /**
          * Updates the key of this Nested Content and all its inner Nested Content items
          * @param {object} nestedContent Nested Content item
@@ -103,7 +107,7 @@ function perplexContentBlocksUtils(editorState) {
         var visibleHeight = visibleBottom - visibleTop;
         return visibleHeight / ep.height;
 
-        function getContentBlocksViewport() {            
+        function getContentBlocksViewport() {
             var bcr = viewport.getBoundingClientRect();
 
             var top = bcr.top;
