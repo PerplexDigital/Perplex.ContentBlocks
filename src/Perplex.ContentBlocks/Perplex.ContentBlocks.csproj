@@ -41,6 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.add-block.html" />
+    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.add-block.js" />
     <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.custom-component.js" />
     <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.custom-components.js" />
     <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.legacy-validation-messages.js" />

@@ -170,25 +170,4 @@
     </div>
 </div>
 
-<div class="p-editor__empty__hover"
-     ng-if="!$ctrl.disableAddContent"
-     ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
-    <div class="p-editor__empty__click">
-        <button class="btn btn-sub btn-radius" type="button"
-                ng-click="$ctrl.addBlock({ id: $ctrl.block.id })"
-                ng-show="$ctrl.addBlock">
-            <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
-            <span>
-                <localize key="perplexContentBlocks_addContent">Add content</localize>
-            </span>
-        </button>
-        <button class="btn btn-sub btn-radius" type="button"
-                ng-click="$ctrl.paste()"
-                ng-show="$ctrl.canPaste && $ctrl.paste">
-            <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
-            <span>
-                <localize key="perplexContentBlocks_pasteContent">Paste content</localize>
-            </span>
-        </button>
-    </div>
-</div>
+<ng-transclude />

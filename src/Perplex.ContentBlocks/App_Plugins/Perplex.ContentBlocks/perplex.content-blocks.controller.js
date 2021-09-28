@@ -578,7 +578,8 @@ function perplexContentBlocksController(
                     }
 
                     if (blocks != null && config.structure.blocks) {
-                        var idx = $scope.model.value.blocks.length - 1;
+                        // Paste as first block by default.
+                        var idx = 0;
                         if (afterBlockId != null) {
                             if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
                                 idx = 0;
@@ -977,7 +978,7 @@ function perplexContentBlocksController(
                     }
 
                     // Add at the end by default
-                    var idx = $scope.model.value.blocks.length - 1;
+                    var idx = $scope.model.value.blocks.length;
 
                     if (afterBlockId != null) {
                         if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
