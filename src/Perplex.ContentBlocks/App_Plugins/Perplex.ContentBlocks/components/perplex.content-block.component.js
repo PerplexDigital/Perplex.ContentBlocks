@@ -295,7 +295,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
 
             // Check variants
             this.state.invalidVariants = {};
-            if (!valid && this.block.variants.length > 0) {
+            if (!valid && this.block.variants != null && this.block.variants.length > 0) {
                 for (var i = 0; i < invalidProperties.length; i++) {
                     var invalidProperty = invalidProperties[i];
                     var match = re.exec(invalidProperty.propertyAlias);
