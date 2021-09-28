@@ -201,9 +201,14 @@ namespace Perplex.ContentBlocks.PropertyEditor
             {
                 if (_utils.GetDataType(model.DefinitionId) is IDataType dataType && dataType.Editor?.GetValueEditor() is IDataValueReference valueEditor)
                 {
-                    return valueEditor.GetReferences(model.Content?.ToString());
+                    var blockReferences = valueEditor.GetReferences(model.Content?.ToString());
+                    var variantReferences = model.Variants?.SelectMany(v => valueEditor.GetReferences(v.Content?.ToString())) ?? Enumerable.Empty<UmbracoEntityReference>();
+                    return blockReferences.Concat(variantReferences);
                 }
-                return Enumerable.Empty<UmbracoEntityReference>();
+                else
+                {
+                    return Enumerable.Empty<UmbracoEntityReference>();
+                }
             }
 
             return result;
