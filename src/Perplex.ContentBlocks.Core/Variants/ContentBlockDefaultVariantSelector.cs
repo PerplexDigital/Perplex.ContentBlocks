@@ -1,4 +1,5 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+using System.Linq;
 
 #if NET472
 using Umbraco.Core.Models.PublishedContent;
@@ -14,6 +15,6 @@ namespace Perplex.ContentBlocks.Variants
     public class ContentBlockDefaultVariantSelector : IContentBlockVariantSelector
     {
         public ContentBlockVariantModelValue SelectVariant(ContentBlockModelValue block, IPublishedElement content, bool preview)
-            => null;
+            => block.Variants.FirstOrDefault(v => v.Alias == "ums-segment-456");
     }
 }

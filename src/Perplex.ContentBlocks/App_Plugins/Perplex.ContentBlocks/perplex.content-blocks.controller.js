@@ -1018,6 +1018,14 @@ function perplexContentBlocksController(
                 };
             },
 
+            createEmptyVariant: function (alias) {
+                return {
+                    id: String.CreateGuid(),
+                    alias: alias,
+                    content: [],
+                }
+            },
+
             remove: function (id) {
                 if (!Array.isArray($scope.model.value.blocks)) {
                     return;
@@ -1241,26 +1249,45 @@ function perplexContentBlocksController(
 
                     var ncContentTypeAlias = ncContentType.ncAlias;
                     return contentResource.getScaffold(-20, ncContentTypeAlias).then(function (scaffold) {
-                        var content = emptyBlock.content[0] = {
-                            key: String.CreateGuid(),
-                            ncContentTypeAlias: ncContentType.ncAlias,
-                        };
+                        function getPresetContent(presetValues) {
+                            var content = {
+                                key: String.CreateGuid(),
+                                ncContentTypeAlias: ncContentType.ncAlias,
+                            };
 
-                        // Set all properties to their default value
-                        var tab = _.find(scaffold.variants[0].tabs, function (tab) {
-                            return tab.id !== 0 && (tab.alias.toLowerCase() === ncContentType.ncTabAlias.toLowerCase() || ncContentType.ncTabAlias === "");
-                        });
-
-                        if (tab != null) {
-                            _.each(tab.properties, function (property) {
-                                content[property.alias] = property.value;
+                            // Set all properties to their default value
+                            var tab = _.find(scaffold.variants[0].tabs, function (tab) {
+                                return tab.id !== 0 && (tab.alias.toLowerCase() === ncContentType.ncTabAlias.toLowerCase() || ncContentType.ncTabAlias === "");
                             });
+
+                            if (tab != null) {
+                                _.each(tab.properties, function (property) {
+                                    content[property.alias] = property.value;
+                                });
+                            }
+
+                            // Preset content
+                            _.each(presetValues, function (value, alias) {
+                                content[alias] = value;
+                            });
+
+                            return content;
                         }
 
-                        // Preset content
-                        _.each(preset.Values, function (value, alias) {
-                            content[alias] = value;
-                        });
+                        // Block
+                        var presetContent = getPresetContent(preset.Values);
+                        emptyBlock.content.push(presetContent);
+
+                        // Variants
+                        if (Array.isArray(preset.Variants)) {
+                            for (var i = 0; i < preset.Variants.length; i++) {
+                                var presetVariant = preset.Variants[i];
+                                var emptyVariant = fn.blocks.createEmptyVariant(presetVariant.Alias);
+                                var presetVariantContent = getPresetContent(presetVariant.Values);
+                                emptyVariant.content.push(presetVariantContent);
+                                emptyBlock.variants.push(emptyVariant);
+                            }
+                        }
 
                         return emptyBlock;
                     });
