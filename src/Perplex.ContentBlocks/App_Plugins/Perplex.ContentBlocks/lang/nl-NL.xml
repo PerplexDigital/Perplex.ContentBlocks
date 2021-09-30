@@ -13,10 +13,10 @@
 		<key alias="noContentBlocksFound">Geen Content Block definities gevonden</key>
 		<key alias="searchPickerInput">Zoek Content Blocks in deze categorie</key>
 		<key alias="noContentBlocksFoundDesc">
-			Raadpleeg <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">de documentatie</a> om te beginnen.
+			Raadpleeg de documentatie om te beginnen: https://github.com/PerplexDigital/Perplex.ContentBlocks.
 		</key>
 		<key alias="noContentBlocksMatchedYourSearch">
-			Geen Content Blocks gevonden voor zoekwoord 
+			Geen Content Blocks gevonden voor zoekwoord
 		</key>
 		<key alias="pickLayout">
 			Kies layout
@@ -75,7 +75,7 @@
 		<key alias="copied1BlockNotAvailable">
 			1 gekopieerd blok is niet beschikbaar op deze pagina is wordt overgeslagen.
 		</key>
-		<key alias="copiedMultipleBlockNotAvailable">			
+		<key alias="copiedMultipleBlockNotAvailable">
                         gekopieerde blokken zijn niet beschikbaar op deze pagina en worden overgeslagen.
 		</key>
 	</area>
