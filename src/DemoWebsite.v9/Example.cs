@@ -239,6 +239,7 @@ namespace DemoWebsite.v9
                         },
                     }))
                     {
+                        Alias = "content",
                         Name = "Content",
                     }
                 })
