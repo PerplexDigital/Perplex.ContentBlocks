@@ -25,6 +25,7 @@ namespace DemoWebsite.v9
         private readonly IContentBlocksPresetRepository _presetRepository;
         private readonly IShortStringHelper _shortStringHelper;
         private readonly IConfigurationEditorJsonSerializer _configurationEditorJsonSerializer;
+        private readonly IRuntimeState _runtimeState;
 
         public ExampleComponent(
             IContentBlockDefinitionRepository definitions,
@@ -34,7 +35,8 @@ namespace DemoWebsite.v9
             IContentBlockCategoryRepository categoryRepository,
             IContentBlocksPresetRepository presetRepository,
             IShortStringHelper shortStringHelper,
-            IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
+            IConfigurationEditorJsonSerializer configurationEditorJsonSerializer,
+            IRuntimeState runtimeState)
         {
             _definitions = definitions;
             _propertyEditors = propertyEditors;
@@ -44,10 +46,16 @@ namespace DemoWebsite.v9
             _presetRepository = presetRepository;
             _shortStringHelper = shortStringHelper;
             _configurationEditorJsonSerializer = configurationEditorJsonSerializer;
+            _runtimeState = runtimeState;
         }
 
         public void Initialize()
         {
+            if (_runtimeState.Level != Umbraco.Cms.Core.RuntimeLevel.Run)
+            {
+                return;
+            }
+
             Guid dataTypeKey = new Guid("ec17fffe-3a33-4a08-a61a-3a6b7008e20f");
             CreateExampleBlock("exampleBlock", dataTypeKey);
 
