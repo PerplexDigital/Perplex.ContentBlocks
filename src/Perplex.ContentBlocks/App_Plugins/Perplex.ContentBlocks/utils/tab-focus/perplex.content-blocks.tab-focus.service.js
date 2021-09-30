@@ -195,9 +195,9 @@ function tabFocusService($rootScope, $timeout) {
      * @returns {HTMLElement}
      */
     function getTab($element) {
-        // Content Tab: .umb-group-panel__content
+        // Content Tab: .umb-group-panel
         // Content App: .umb-editor-sub-view__content
-        return $element.closest(".umb-group-panel__content,.umb-editor-sub-view__content")[0];
+        return $element.closest(".umb-group-panel,.umb-editor-sub-view__content")[0];
     }
 
     /**
