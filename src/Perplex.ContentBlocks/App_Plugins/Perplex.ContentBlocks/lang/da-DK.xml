@@ -13,7 +13,7 @@
 		<key alias="noContentBlocksFound">Ingen indholdsblokke definitioner fundet</key>
 		<key alias="searchPickerInput">Søg efter indholdsblokke i denne kategori</key>
 		<key alias="noContentBlocksFoundDesc">
-			Læs venligst <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">dokumentationen</a> for at komme igang.
+			Læs venligst dokumentationen> for at komme igang: https://github.com/PerplexDigital/Perplex.ContentBlocks.
 		</key>
 		<key alias="noContentBlocksMatchedYourSearch">
 			Ingen indholdsblokke matchede din søgning med
@@ -73,7 +73,7 @@
 			Det kopieret banner blev ikke indsat fordi der allerede var en anden banner.
 		</key>
 		<key alias="copiedHeaderNotAvailable">
-			Det kopieret banner er ikke tilgængeligt på denne side og vil blive sprunget over. 
+			Det kopieret banner er ikke tilgængeligt på denne side og vil blive sprunget over.
 		</key>
 		<key alias="copied1BlockNotAvailable">
 			1 kopieret blok er ikke tilgængelig på denne side og er blevet sprunget over.

@@ -13,10 +13,10 @@
 		<key alias="noContentBlocksFound">No Content Block definitions found</key>
 		<key alias="searchPickerInput">Search for Content Blocks in this category</key>
 		<key alias="noContentBlocksFoundDesc">
-			Please refer to <a style="text-decoration: underline;" href="https://github.com/PerplexDigital/Perplex.ContentBlocks">the documentation</a> to get started.
+			Please refer to the documentation to get started: https://github.com/PerplexDigital/Perplex.ContentBlocks.
 		</key>
 		<key alias="noContentBlocksMatchedYourSearch">
-			No Content Blocks matched your search with 
+			No Content Blocks matched your search with
 		</key>
 		<key alias="pickLayout">
 			Pick layout
