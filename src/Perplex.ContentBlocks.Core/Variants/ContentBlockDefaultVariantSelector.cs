@@ -15,6 +15,6 @@ namespace Perplex.ContentBlocks.Variants
     public class ContentBlockDefaultVariantSelector : IContentBlockVariantSelector
     {
         public ContentBlockVariantModelValue SelectVariant(ContentBlockModelValue block, IPublishedElement content, bool preview)
-            => block.Variants.FirstOrDefault(v => v.Alias == "ums-segment-456");
+            => null;
     }
 }
