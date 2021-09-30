@@ -1,0 +1,37 @@
+﻿<perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.blockCtrl.validationMessages[null]"></perplex-content-blocks-legacy-validation-messages>
+
+<content-blocks-property content-block-id="$ctrl.block.id"
+                         datatype-id="$ctrl.definition.DataTypeId"
+                         datatype-key="$ctrl.definition.DataTypeKey"
+                         get-value="$ctrl.blockCtrl.getValue()"
+                         set-value="$ctrl.blockCtrl.setValue({ value: value })"
+                         on-change="$ctrl.blockCtrl.updateName()">
+</content-blocks-property>
+
+<pre ng-show="$ctrl.show" ng-bind="$ctrl.block | json"></pre>
+<button type="button" ng-click="$ctrl.show = !$ctrl.show">toggle</button>
+
+<hr />
+
+<div ng-show="$ctrl.block.variants.length > 0">
+    <div ng-repeat="variant in $ctrl.block.variants track by variant.id">
+        <pre ng-bind="variant.alias"></pre>
+
+        <perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.blockCtrl.validationMessages[variant.id]"></perplex-content-blocks-legacy-validation-messages>
+
+        <content-blocks-property content-block-id="$ctrl.block.id"
+                                 variant-id="variant.id"
+                                 datatype-id="$ctrl.definition.DataTypeId"
+                                 datatype-key="$ctrl.definition.DataTypeKey"
+                                 get-value="variant.content"
+                                 set-value="variant.content = value">
+        </content-blocks-property>
+
+        <button type="button" ng-click="$ctrl.blockCtrl.removeVariant(variant.alias)">Remove variant</button>
+    </div>
+</div>
+
+<div>
+    <input type="text" ng-model="$ctrl.newVariantAlias" placeholder="new variant alias" />
+    <button type="button" ng-click="$ctrl.blockCtrl.addVariant($ctrl.newVariantAlias)">Add variant</button>
+</div>
