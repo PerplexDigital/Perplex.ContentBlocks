@@ -11,7 +11,7 @@ using Umbraco.Core.Composing;
 namespace Perplex.ContentBlocks.Variants
 {
 #if NET5_0
-    public class ContentBlocksVariantsComposer : IUserComposer
+    public class ContentBlocksVariantsComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
         {
