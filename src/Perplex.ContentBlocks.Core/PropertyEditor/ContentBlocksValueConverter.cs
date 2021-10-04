@@ -71,8 +71,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             var interValue = new ContentBlocksInterValue
             {
-                Header = modelValue.Header == null ? null : selectBlock(modelValue.Header),
-                Blocks = modelValue.Blocks == null ? new List<ContentBlockInterValue>() : modelValue.Blocks.Select(selectBlock).ToList(),
+                Header = selectBlock(modelValue.Header),
+                Blocks = modelValue.Blocks?.Select(selectBlock).ToList() ?? new List<ContentBlockInterValue>(),
             };
 
             var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>();
@@ -82,7 +82,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 : null;
 
             var blocks = config.Structure.HasFlag(Structure.Blocks)
-                ? interValue.Blocks.Select(createViewModel).Where(rm => rm != null).ToList()
+                ? interValue.Blocks.Select(createViewModel).Where(vm => vm != null).ToList()
                 : Enumerable.Empty<IContentBlockViewModel>();
 
             return new Rendering.ContentBlocks
@@ -93,6 +93,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             ContentBlockInterValue selectBlock(ContentBlockModelValue original)
             {
+                if (original == null || original.IsDisabled)
+                {
+                    return null;
+                }
+
                 // Start with default content
                 var block = new ContentBlockInterValue
                 {
