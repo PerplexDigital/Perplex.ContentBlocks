@@ -156,9 +156,28 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
             return;
         }
 
-        var content = this.block && this.block.content && this.block.content[0];
-        if (content != null) {
-            this.name = $interpolate(state.nameTemplate)(content);
+        function getName(block) {
+            var content = block && block.content && block.content[0];
+            if (content != null) {
+                return $interpolate(state.nameTemplate)(content);
+            } else {
+                return null;
+            }
+        }
+
+        var name = getName(this.block);
+        if (name != null) {
+            this.name = name;
+        } else if (Array.isArray(this.block.variants)) {
+            // Fallback to first available variant name if default content is missing.
+            for (var i = 0; i < this.block.variants.length; i++) {
+                var variant = this.block.variants[i];
+                name = getName(variant);
+                if (name != null) {
+                    this.name = name;
+                    break;
+                }
+            }
         }
     }
 
