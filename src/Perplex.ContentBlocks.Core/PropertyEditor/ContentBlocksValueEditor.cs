@@ -60,7 +60,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             JArray fromEditor(ContentBlockModelValue block)
             {
-                if (_utils.GetDataType(block.DefinitionId) is IDataType dataType &&
+                if (block?.Content != null &&
+                    _utils.GetDataType(block.DefinitionId) is IDataType dataType &&
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
                     var propertyData = new ContentPropertyData(block.Content.ToString(), dataType.Configuration);
@@ -120,7 +121,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             JArray toEditor(ContentBlockModelValue block)
             {
-                if (_utils.GetDataType(block.DefinitionId) is IDataType dataType &&
+                if (block?.Content != null &&
+                    _utils.GetDataType(block.DefinitionId) is IDataType dataType &&
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
 #if NET5_0
@@ -131,12 +133,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     if (culture != null) ncPropType.Variations |= ContentVariation.Culture;
                     if (segment != null) ncPropType.Variations |= ContentVariation.Segment;
 
-#if NET5_0
                     var ncProperty = new Property(ncPropType);
-#elif NET472
-                    var ncProperty = new Property(ncPropType);
-#endif
-                    ncProperty.SetValue(block.Content?.ToString(), culture, segment);
+                    ncProperty.SetValue(block.Content.ToString(), culture, segment);
 
                     try
                     {
