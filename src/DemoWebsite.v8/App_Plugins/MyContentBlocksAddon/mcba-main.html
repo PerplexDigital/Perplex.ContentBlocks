@@ -31,7 +31,8 @@
                                  datatype-id="$ctrl.definition.DataTypeId"
                                  datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="variant.content"
-                                 set-value="variant.content = value">
+                                 set-value="variant.content = value"
+                                 on-change="$ctrl.blockCtrl.updateName()">
         </content-blocks-property>
 
         <button type="button" ng-click="$ctrl.blockCtrl.removeVariant(variant.alias)">Remove variant</button>
