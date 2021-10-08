@@ -10,6 +10,9 @@
         setValue: "&?",
         onChange: "&?",
     },
+    require: {
+        umbPropCtrl: "^^umbProperty",
+    },
     controller: [
         "contentBlocksPropertyScaffoldCache",
         contentBlocksPropertyController
@@ -47,6 +50,12 @@ function contentBlocksPropertyController(properyScaffoldCache) {
         }
 
         this.property = propertyTypeScaffold;
+
+        if (this.umbPropCtrl != null) {
+            // Use the same culture + segment as the parent property
+            this.property.culture = this.umbPropCtrl.property.culture;
+            this.property.segment = this.umbPropCtrl.property.segment;
+        }
 
         // For use in ContentBlocks the label should be hidden.    
         // If/when we add a custom label/description binding we could
