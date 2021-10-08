@@ -149,6 +149,15 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
                 }
             }.bind(this));
         }
+
+        destroyFns.push(
+            // When NestedContent saves it fires the formSubmitting event.
+            // We want to update our name at that point
+            $scope.$on("formSubmitting", function () {
+                // The NestedContent value is updated in the same cycle so we operate 1 tick later.
+                setTimeout(this.updateName.bind(this), 0);
+            }.bind(this))
+        );
     }
 
     this.updateName = function () {
@@ -168,14 +177,18 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         var name = getName(this.block);
         if (name != null) {
             this.name = name;
-        } else if (Array.isArray(this.block.variants)) {
-            // Fallback to first available variant name if default content is missing.
-            for (var i = 0; i < this.block.variants.length; i++) {
-                var variant = this.block.variants[i];
-                name = getName(variant);
-                if (name != null) {
-                    this.name = name;
-                    break;
+        } else {
+            // Default content is missing, clear name but check variants (if any) for a name instead.
+            this.name = "";
+
+            if (Array.isArray(this.block.variants)) {
+                for (var i = 0; i < this.block.variants.length; i++) {
+                    var variant = this.block.variants[i];
+                    name = getName(variant);
+                    if (name != null) {
+                        this.name = name;
+                        break;
+                    }
                 }
             }
         }
