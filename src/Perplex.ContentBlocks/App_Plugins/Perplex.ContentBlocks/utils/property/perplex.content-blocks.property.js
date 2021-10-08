@@ -11,7 +11,7 @@
         onChange: "&?",
     },
     require: {
-        umbPropCtrl: "^^umbProperty",
+        umbPropCtrl: "?^^umbProperty",
     },
     controller: [
         "contentBlocksPropertyScaffoldCache",
