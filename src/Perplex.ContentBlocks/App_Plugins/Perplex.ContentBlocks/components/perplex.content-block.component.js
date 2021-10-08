@@ -37,6 +37,7 @@
 
     require: {
         formCtrl: "^^form",
+        umbPropCtrl: "^^umbProperty",
     },
 });
 
@@ -317,9 +318,11 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         // Regex to extract blockId / variantId / ncKey / property from the validation message property alias
         var re = /^contentBlocks\/(?<blockId>[^\/]+)\/(?<variantId>[^\/]+)\/(?<ncKey>[^\/]+)\/(?<property>[A-z_-]+)$/;
 
-        // Note, even in multi-lingual scenarios we have to subscribe with culture = null. 
-        // The inner property errors in NestedContent are always for the invariant culture.
-        var unsubscribe = serverValidationManager.subscribe(this.block.id, "invariant", "", function (valid, invalidProperties) {
+        // Use the culture + segment from the parent property
+        var culture = this.umbPropCtrl.property.culture;
+        var segment = this.umbPropCtrl.property.segment;
+
+        var unsubscribe = serverValidationManager.subscribe(this.block.id, culture, segment, function (valid, invalidProperties) {
             this.state.isInvalid = !valid;
 
             // Check variants
