@@ -5,8 +5,7 @@
                          datatype-id="$ctrl.definition.DataTypeId"
                          datatype-key="$ctrl.definition.DataTypeKey"
                          get-value="$ctrl.blockCtrl.getValue()"
-                         set-value="$ctrl.blockCtrl.setValue({ value: value })"
-                         on-change="$ctrl.blockCtrl.updateName()">
+                         set-value="$ctrl.blockCtrl.setValue({ value: value })">
 </content-blocks-property>
 
 <pre ng-show="$ctrl.show" ng-bind="$ctrl.block | json"></pre>
@@ -31,8 +30,7 @@
                                  datatype-id="$ctrl.definition.DataTypeId"
                                  datatype-key="$ctrl.definition.DataTypeKey"
                                  get-value="variant.content"
-                                 set-value="variant.content = value"
-                                 on-change="$ctrl.blockCtrl.updateName()">
+                                 set-value="variant.content = value">
         </content-blocks-property>
 
         <button type="button" ng-click="$ctrl.blockCtrl.removeVariant(variant.alias)">Remove variant</button>
