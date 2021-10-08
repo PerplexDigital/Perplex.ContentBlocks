@@ -7,15 +7,19 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Web;
 
 #if NET5_0
+using Microsoft.AspNetCore.Http;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
 #elif NET472
+using System.Collections.Specialized;
 using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.PropertyEditors;
+using Umbraco.Web;
 #endif
 
 
@@ -25,16 +29,19 @@ namespace Perplex.ContentBlocks.PropertyEditor
     {
         private readonly ContentBlockUtils _utils;
         private readonly IRuntimeState _runtimeState;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
 
         public ContentBlocksValidator(
             ContentBlocksModelValueDeserializer deserializer,
             ContentBlockUtils utils,
-            IRuntimeState runtimeState)
+            IRuntimeState runtimeState,
+            IHttpContextAccessor httpContextAccessor)
         {
             _deserializer = deserializer;
             _utils = utils;
             _runtimeState = runtimeState;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IEnumerable<ValidationResult> Validate(object value, string valueType, object dataTypeConfiguration)
@@ -62,8 +69,48 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
+        private (string culture, string segment) GetCultureAndSegment()
+        {
+            // "invariant" / "null" is how Umbraco treats null/null in their front-end.
+            string culture = "invariant";
+            string segment = "null";
+
+#if NET5_0
+            if (_httpContextAccessor.HttpContext is HttpContext httpCtx &&
+                httpCtx?.Request?.Headers is IHeaderDictionary headers)
+            {
+                if (headers.TryGetValue("X-UMB-CULTURE", out var cultureValue) && cultureValue.Any())
+                {
+                    culture = cultureValue.First();
+                }
+
+                if (headers.TryGetValue("X-UMB-SEGMENT", out var segmentValue) && segmentValue.Any())
+                {
+                    segment = segmentValue.First();
+                }
+            };
+#elif NET472
+            if (_httpContextAccessor.HttpContext is HttpContext httpCtx &&
+                        httpCtx?.Request?.Headers is NameValueCollection headers)
+            {
+                if (headers["X-UMB-CULTURE"] is string cv && !string.IsNullOrEmpty(cv))
+                {
+                    culture = cv;
+                }
+
+                if (headers["X-UMB-SEGMENT"] is string sv && !string.IsNullOrEmpty(sv))
+                {
+                    segment = sv;
+                }
+            };
+#endif
+            return (culture, segment);
+        }
+
         private IEnumerable<ValidationResult> ValidateComplex(IEnumerable<ContentBlockModelValue> blocksToValidate)
         {
+            (string culture, string segment) = GetCultureAndSegment();
+
             var complexValidationResults = new JArray();
 
             foreach (var block in blocksToValidate)
@@ -73,7 +120,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     foreach (var validationResult in validationResults)
                     {
                         var jObj = JObject.FromObject(validationResult);
-                        if (Parse(jObj, block.Id, variantId) is JObject complexValidationResult)
+                        if (Parse(jObj, block.Id, variantId, culture, segment) is JObject complexValidationResult)
                         {
                             complexValidationResults.Add(complexValidationResult);
                         };
@@ -195,15 +242,15 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private static JObject Parse(JToken token, Guid? contentBlockId, Guid? variantId)
+        private static JObject Parse(JToken token, Guid? contentBlockId, Guid? variantId, string culture, string segment)
         {
             if (token["BlockId"] != null)
             {
-                return ParseBlock(token, contentBlockId, variantId);
+                return ParseBlock(token, contentBlockId, variantId, culture, segment);
             }
             else if (token.SelectToken("ValidationResults[0]", false) is JObject nested)
             {
-                return Parse(nested, contentBlockId, variantId);
+                return Parse(nested, contentBlockId, variantId, culture, segment);
             }
             else
             {
@@ -211,7 +258,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-        private static JObject ParseBlock(JToken token, Guid? contentBlockId, Guid? variantId)
+        private static JObject ParseBlock(JToken token, Guid? contentBlockId, Guid? variantId, string culture, string segment)
         {
             var nestedContentKey = token.Value<Guid>("BlockId");
             var elementTypeAlias = token.Value<string>("ElementTypeAlias");
@@ -230,13 +277,13 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
             foreach (var validationResult in validationResults)
             {
-                ParseProperty(block, validationResult);
+                ParseProperty(block, validationResult, culture, segment);
             }
 
             return block;
         }
 
-        private static JObject ParseProperty(JObject block, JToken token)
+        private static JObject ParseProperty(JObject block, JToken token, string culture, string segment)
         {
             var propertyTypeAlias = token.Value<string>("PropertyTypeAlias");
             var modelState = block.SelectToken("ModelState");
@@ -244,14 +291,14 @@ namespace Perplex.ContentBlocks.PropertyEditor
             if (token.SelectToken("ValidationResults[0].ValidationResults", false) is JArray nested)
             {
                 // Complex
-                block[propertyTypeAlias] = new JArray(nested.Select(obj => Parse(obj, null, null)));
-                modelState[$"_Properties.{propertyTypeAlias}.invariant.null"] = new JArray(new[] { "" });
+                block[propertyTypeAlias] = new JArray(nested.Select(obj => Parse(obj, null, null, culture, segment)));
+                modelState[$"_Properties.{propertyTypeAlias}.{culture}.{segment}"] = new JArray(new[] { "" });
             }
             else
             {
                 // Simple
                 var errorMessage = token.SelectToken("ValidationResults[0].ErrorMessage", false)?.Value<string>();
-                modelState[$"_Properties.{propertyTypeAlias}.invariant.null.value"] = new JArray(new[] { errorMessage });
+                modelState[$"_Properties.{propertyTypeAlias}.{culture}.{segment}.value"] = new JArray(new[] { errorMessage });
             }
 
             return block;

@@ -4,6 +4,7 @@ using Perplex.ContentBlocks.Utils;
 using System.Collections.Generic;
 
 #if NET5_0
+using Microsoft.AspNetCore.Http;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
@@ -14,6 +15,7 @@ using Umbraco.Cms.Core.Strings;
 using Umbraco.Core;
 using Umbraco.Core.IO;
 using Umbraco.Core.PropertyEditors;
+using Umbraco.Web;
 #endif
 
 namespace Perplex.ContentBlocks.PropertyEditor
@@ -23,6 +25,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
         private readonly IRuntimeState _runtimeState;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 #if NET5_0
         private readonly IIOHelper _iOHelper;
@@ -37,7 +40,8 @@ namespace Perplex.ContentBlocks.PropertyEditor
             IIOHelper iOHelper,
             ILocalizedTextService localizedTextService,
             IShortStringHelper shortStringHelper,
-            IJsonSerializer jsonSerializer)
+            IJsonSerializer jsonSerializer,
+            IHttpContextAccessor httpContextAccessor)
         {
             _deserializer = deserializer;
             _utils = utils;
@@ -46,16 +50,19 @@ namespace Perplex.ContentBlocks.PropertyEditor
             _localizedTextService = localizedTextService;
             _shortStringHelper = shortStringHelper;
             _jsonSerializer = jsonSerializer;
+            _httpContextAccessor = httpContextAccessor;
         }
 #elif NET472
         public ContentBlocksPropertyEditor(
             ContentBlocksModelValueDeserializer deserializer,
             ContentBlockUtils utils,
-            IRuntimeState runtimeState)
+            IRuntimeState runtimeState,
+            IHttpContextAccessor httpContextAccessor)
         {
             _deserializer = deserializer;
             _utils = utils;
             _runtimeState = runtimeState;
+            _httpContextAccessor = httpContextAccessor;
         }
 #endif
 
@@ -88,7 +95,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         public IDataValueEditor GetValueEditor(object configuration)
         {
 #if NET5_0
-            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState);
+            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState, _httpContextAccessor);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
@@ -102,7 +109,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 Validators = { validator }
             };
 #elif NET472
-            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState);
+            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState, _httpContextAccessor);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
