@@ -269,12 +269,23 @@ namespace ExampleSite
 
 This code will:
 
-1. Create a Document Type with alias "exampleBlock"
-2. Create a NestedContent data type for it
+1. Create a Document Type "Example Block" with the alias "exampleBlock" and two properties "Title" (text) and "Text" (rich text editor)
+2. Create a NestedContent data type for it called "Perplex.Contentblocks - ExampleBlock"
 3. Configure a Header and a Block to use the data type
 
-If you now create a **new data type** based on the `Perplex.ContentBlocks` property editor and add it to a document type of your choice you should be able to pick blocks.
+What you now can do in your solution is:
+1. Create a **new data type** based on the `Perplex.ContentBlocks` property editor. Call it "Perplex Contentblocks"
+    
+![perplex contentblocks](https://user-images.githubusercontent.com/12457148/137145854-f09786d4-c00f-4d44-9453-e96d0fb94764.png)
+    
+2. Add this property to a document type of your choice
 
+    ![Add to document type](https://user-images.githubusercontent.com/12457148/137146090-13c0962a-4480-492b-b07f-c2610e74297f.png)
+    
+3. You should now be able to pick blocks on a content page of the document type.
+
+![Contentpage](https://user-images.githubusercontent.com/12457148/137146271-76dcf700-5bbc-44a5-9054-ad8aed211fdf.png)
+    
 Also note this does not cover the front-end rendering yet, so nothing will happen there yet.
 Head over to the [Rendering Content Blocks](#rendering-content-blocks) section for an explanation about that.
 
