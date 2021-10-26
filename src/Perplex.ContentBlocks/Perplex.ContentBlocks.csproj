@@ -36,7 +36,7 @@
       </None>
       <None Include="build\**">
           <Pack>True</Pack>
-          <PackagePath>buildTransitive\net5.0</PackagePath>
+          <PackagePath>buildTransitive\net472;buildTransitive\net5.0</PackagePath>
       </None>
   </ItemGroup>
 
