@@ -49,6 +49,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BuildWebCompiler" Version="1.12.394" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj" />
   </ItemGroup>
 
