@@ -171,9 +171,19 @@ function perplexContentBlocksUtils(editorState) {
         return null;
     }
 
+    /**
+     * Normalizes the GUID to the format returned by C#'s Guid.ToString("N")
+     * @param {string} guid Guid to normalize
+     * @returns {string}
+     */
+    function normalizeGuid(guid) {
+        return guid.toLowerCase().replace(/-/g, "");
+    }
+
     this.copyContentBlock = copyContentBlock;
     this.copyAll = copyAll;
     this.getContentBlockVisibleRatio = getContentBlockVisibleRatio;
     this.debounce = debounce;
     this.getCurrentCulture = getCurrentCulture;
+    this.normalizeGuid = normalizeGuid;
 }

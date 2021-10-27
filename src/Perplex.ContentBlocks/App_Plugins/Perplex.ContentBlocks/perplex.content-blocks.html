@@ -168,7 +168,6 @@
                                            register-ctrl="vm.fn.blocks.registerBlockController(model.value.header.id, ctrl)"
                                            on-open="vm.fn.preview.syncScroll()"
                                            on-close="vm.fn.preview.syncScroll(true)"
-                                           validation-messages="vm.state.validationMessages[model.value.header.id]"
                                            allow-disable="false"
                                            is-loading="!vm.state.initialized"
                                            on-open-settings="vm.fn.ui.closeOtherBlockSettings(model.value.header.id)">
@@ -213,7 +212,6 @@
                                            register-ctrl="vm.fn.blocks.registerBlockController(block.id, ctrl)"
                                            on-open="vm.fn.preview.syncScroll()"
                                            on-close="vm.fn.preview.syncScroll(true)"
-                                           validation-messages="vm.state.validationMessages[block.id]"
                                            allow-disable="true"
                                            is-loading="!vm.state.initialized"
                                            on-open-settings="vm.fn.ui.closeOtherBlockSettings(block.id)">

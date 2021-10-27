@@ -1,6 +1,4 @@
-﻿<perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.blockCtrl.validationMessages[null]"></perplex-content-blocks-legacy-validation-messages>
-
-<content-blocks-property ng-if="$ctrl.block.content != null"
+﻿<content-blocks-property ng-if="$ctrl.block.content != null"
                          content-block-id="$ctrl.block.id"
                          datatype-id="$ctrl.definition.DataTypeId"
                          datatype-key="$ctrl.definition.DataTypeKey"
@@ -21,8 +19,6 @@
 
         <button type="button" ng-show="variant.content != null" ng-click="variant.content = null">disable variant</button>
         <button type="button" ng-show="variant.content == null" ng-click="variant.content = []">enable variant</button>
-
-        <perplex-content-blocks-legacy-validation-messages validation-messages="$ctrl.blockCtrl.validationMessages[variant.id]"></perplex-content-blocks-legacy-validation-messages>
 
         <content-blocks-property ng-if="variant.content != null"
                                  content-block-id="$ctrl.block.id"

@@ -1,15 +1,15 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager", "localizationService", "versionHelper", "contentBlocksPropertyScaffoldCache",
+    "localizationService", "contentBlocksPropertyScaffoldCache",
     "contentResource",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
-    api, utils, copyPasteService, notificationsService, serverValidationManager,
-    localizationService, versionHelper, scaffoldCache, contentResource) {
+    api, utils, copyPasteService, notificationsService,
+    localizationService, scaffoldCache, contentResource) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -132,12 +132,6 @@ function perplexContentBlocksController(
 
         // blockId -> callback function to run when a block with that id registers itself
         onBlockRegisterFns: {},
-
-        // blockId => [validationMessage]
-        validationMessages: {},
-
-        // Any Umbraco version < 8.7.0 is considered legacy
-        isLegacyUmbraco: versionHelper.versionCompare(Umbraco.Sys.ServerVariables.application.version, "8.7.0") < 0,
     };
 
     var computed = {
@@ -206,51 +200,6 @@ function perplexContentBlocksController(
                 var $errorMsg = $rootElement.closest(".umb-control-group").find("> .property-error");
                 if ($errorMsg.length > 0) {
                     $errorMsg.remove();
-                }
-
-                if (state.isLegacyUmbraco) {
-                    // < 8.7.0
-
-                    var propertyAlias = $scope.model.alias;
-
-                    // Note that this is NOT the same as state.culture, 
-                    // which is the culture of the current content variant.
-                    var propertyCulture = $scope.model.culture;
-                    var propertySegment = $scope.model.segment;
-
-                    var unsubscribeFormSubmitting = $scope.$on("formSubmitting", function () {
-                        state.validationMessages = {};
-                    });
-
-                    var unsubscribeServerValidation = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
-                        if (!valid) {
-                            state.validationMessages = {};
-
-                            var re = /#content-blocks-id:(?<blockId>[^/#]+)(?:\/(?<variantId>[^#]+))?#(?<property>.*)?/;
-
-                            errors.forEach(function (error) {
-                                var match = re.exec(error.fieldName);
-                                if (match != null && match.length >= 2) {
-                                    var blockId = match.groups.blockId;
-                                    var variantId = match.groups.variantId || null;
-                                    var property = match.groups.property;
-                                    var errorMessage = error.errorMsg;
-
-                                    state.validationMessages[blockId] = state.validationMessages[blockId] || {};
-                                    state.validationMessages[blockId][variantId] = state.validationMessages[blockId][variantId] || [];
-                                    state.validationMessages[blockId][variantId].push({
-                                        errorMessage: errorMessage,
-                                        property: property,
-                                    });
-                                }
-                            });
-                        }
-                    }, propertySegment);
-
-                    $scope.$on("$destroy", function () {
-                        unsubscribeFormSubmitting();
-                        unsubscribeServerValidation();
-                    });
                 }
             }
         },
