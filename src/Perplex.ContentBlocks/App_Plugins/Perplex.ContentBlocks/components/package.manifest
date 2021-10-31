@@ -4,6 +4,7 @@
     "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-blocks.icon.js",
     "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-blocks.custom-component.js",
     "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-blocks.custom-components.js",
-    "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-blocks.add-block.js"
+    "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-blocks.add-block.js",
+    "~/App_Plugins/Perplex.ContentBlocks/components/perplex.content-blocks.nested-content-patch.js"
   ]
 }
