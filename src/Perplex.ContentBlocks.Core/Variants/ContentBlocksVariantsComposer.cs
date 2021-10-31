@@ -19,7 +19,7 @@ namespace Perplex.ContentBlocks.Variants
         }
     }
 #elif NET472
-    [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
+    [RuntimeLevel(MinLevel = RuntimeLevel.Boot)]
     public class ContentBlocksVariantsComposer : IUserComposer
     {
         public void Compose(Composition composition)
