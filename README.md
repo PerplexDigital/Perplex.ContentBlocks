@@ -31,7 +31,7 @@ This is direct port of `v1.9.0` and the API is almost identical. There is a smal
 
 A short demo video can be viewed below.
 
-[![Watch on Vimeo](https://i.vimeocdn.com/video/889556999.webp?mw=320)](https://vimeo.com/383278501/ebd95baa0d)
+[![Watch on Vimeo](https://i.vimeocdn.com/video/889556999-4525a3bf7d90804ae264c1c51cdb4f24264fbefe532f883c24924eb721c564cb-d?mw=320)](https://vimeo.com/383278501/ebd95baa0d)
 
 ## Installation
 
