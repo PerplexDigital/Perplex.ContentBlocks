@@ -1,0 +1,9 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Home>
+@inject IContentBlockRenderer Renderer
+
+@await Html.RenderContentBlocks(Model.ContentBlocks, Renderer)
+
+@*
+    Alternatively, use renderer directly:
+    @await Renderer.Render(Model.ContentBlocks, Html.PartialAsync)
+*@

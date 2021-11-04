@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net5.0;net472</TargetFrameworks>
+  </PropertyGroup>
+
+  <!-- NuGet Package -->
+  <PropertyGroup>
+    <PackageId>Perplex.ContentBlocks.Core</PackageId>
+    <Version>2.0.0-rc.1</Version>
+    <Authors>Perplex Digital</Authors>
+    <Description>Perplex.ContentBlocks assembly only</Description>
+    <PackageTags>umbraco property editor content block</PackageTags>
+    <PackageProjectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</PackageProjectUrl>
+    <AssemblyName>Perplex.ContentBlocks</AssemblyName>
+    <RootNamespace>Perplex.ContentBlocks</RootNamespace>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="UmbracoCms.Web" Version="8.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\pkg\nuget\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

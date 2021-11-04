@@ -52,7 +52,8 @@ ood.flag
 src/DemoWebsite*/App_Plugins/Perplex.ContentBlocks
 src/DemoWebsite*/App_Data/Models
 src/DemoWebsite*/App_Data/Umbraco.sdf
-src/DemoWebsite*/[Uu]mbraco/
+src/DemoWebsite*/[Uu]mbraco/*
+!src/DemoWebsite.v9/[Uu]mbraco/models
 *.css
 
 # NuGet / Our Umbraco packages

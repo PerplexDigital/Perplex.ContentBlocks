@@ -1,4 +1,4 @@
-{
+﻿{
   "compilers": {
     "less": {
       "autoPrefix": "",
@@ -10,7 +10,7 @@
       "rootPath": "",
       "sourceMapRoot": "",
       "sourceMapBasePath": "",
-      "sourceMap": true
+      "sourceMap": false
     },
     "sass": {
       "autoPrefix": "",
