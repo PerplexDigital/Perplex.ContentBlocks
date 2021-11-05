@@ -1,28 +1,24 @@
 ﻿angular.module("perplexContentBlocks").component("perplexContentBlock", {
     templateUrl: "/App_Plugins/Perplex.ContentBlocks/components/perplex.content-block.component.html",
 
+    transclude: true,
+
     bindings: {
         block: "<",
         definition: "<",
         layouts: "<",
         categories: "<",
         isMandatory: "<",
-        canPaste: "<?",
         onInit: "&?",
-        addBlock: "&?",
-        paste: "&?",
         getValue: "&",
         setValue: "&",
         removeBlock: "&?",
         copyBlock: "&?",
         registerElement: "&?",
         isReorder: "<?",
-        showAddContentButton: "<?",
         registerCtrl: "&?",
         onOpen: "&?",
         onClose: "&?",
-        disableAddContent: "<?",
-        validationMessages: "<?",
         allowDisable: "<?",
         isLoading: "<",
         onOpenSettings: "&?",
@@ -34,15 +30,18 @@
         "contentBlocksPropertyScaffoldCache",
         "$scope",
         "serverValidationManager",
+        "perplexContentBlocksCustomComponents",
+        "contentBlocksUtils",
         perplexContentBlockController
     ],
 
     require: {
         formCtrl: "^^form",
+        umbPropCtrl: "^^umbProperty",
     },
 });
 
-function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope, serverValidationManager) {
+function perplexContentBlockController($element, $interpolate, scaffoldCache, $scope, serverValidationManager, customComponents, utils) {
     var destroyFns = [];
 
     // State
@@ -53,10 +52,18 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         open: false,
         loadEditor: false,
 
+        customComponents: customComponents,
+
         initialLayoutIndex: null,
         missingLayoutId: null,
         sliderInitialized: false,
         initialized: false,
+
+        isInvalid: false,
+        // variantId -> true if invalid, otherwise no entry in this object.
+        invalidVariants: {},
+        // Validation path to this block
+        validationPath: null,
     };
 
     // Functions
@@ -141,6 +148,15 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
                 }
             }.bind(this));
         }
+
+        destroyFns.push(
+            // When NestedContent saves it fires the formSubmitting event.
+            // We want to update our name at that point
+            $scope.$on("formSubmitting", function () {
+                // The NestedContent value is updated in the same cycle so we operate 1 tick later.
+                setTimeout(this.updateName.bind(this), 0);
+            }.bind(this))
+        );
     }
 
     this.updateName = function () {
@@ -148,9 +164,32 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
             return;
         }
 
-        var content = this.block && this.block.content && this.block.content[0];
-        if (content != null) {
-            this.name = $interpolate(state.nameTemplate)(content);
+        function getName(block) {
+            var content = block && block.content && block.content[0];
+            if (content != null) {
+                return $interpolate(state.nameTemplate)(content);
+            } else {
+                return null;
+            }
+        }
+
+        var name = getName(this.block);
+        if (name != null) {
+            this.name = name;
+        } else {
+            // Default content is missing, clear name but check variants (if any) for a name instead.
+            this.name = "";
+
+            if (Array.isArray(this.block.variants)) {
+                for (var i = 0; i < this.block.variants.length; i++) {
+                    var variant = this.block.variants[i];
+                    name = getName(variant);
+                    if (name != null) {
+                        this.name = name;
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -274,20 +313,92 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     }
 
     this.initValidation = function () {
-        // Note, even in multi-lingual scenarios we have to subscribe with culture = null. 
-        // The inner property errors in NestedContent are always for the invariant culture.
-        var unsubscribe = serverValidationManager.subscribe(this.block.id, "invariant", "", function (valid) {
-            this.isInvalid = !valid;
-        }.bind(this), null, { matchType: "contains" });
+        this.state.validationPath = this.umbPropCtrl.getValidationPath() + "/" + this.block.id;
+
+        // Regex to check invalid variants from the validation message property alias
+        var re = new RegExp("^" + this.state.validationPath + "/content_variant_(?<variantId>[^/]+)$");
+
+        // Use the culture + segment from the parent property
+        var culture = this.umbPropCtrl.property.culture;
+        var segment = this.umbPropCtrl.property.segment;
+
+        var unsubscribe = serverValidationManager.subscribe(this.state.validationPath, culture, undefined, function (valid, invalidProperties) {
+            this.state.isInvalid = !valid;
+
+            // Check variants
+            this.state.invalidVariants = {};
+            if (!valid && this.block.variants != null && this.block.variants.length > 0) {
+                for (var i = 0; i < invalidProperties.length; i++) {
+                    var invalidProperty = invalidProperties[i];
+                    var match = re.exec(invalidProperty.propertyAlias);
+                    if (match != null && match.groups.variantId != null) {
+                        // This variant is invalid as it appears in the invalidProperties.
+                        // The variantId is formatted without dashes due to Umbraco character
+                        // limitations in property aliases but the actual id does have them.
+                        // In order to properly match the ids we restore the dashes here.
+                        var variantId = match.groups.variantId.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5");
+                        this.state.invalidVariants[variantId] = true;
+                    }
+                }
+            }
+        }.bind(this), segment, { matchType: "prefix" });
 
         destroyFns.push(unsubscribe);
 
         // Also clear any validation errors for this block when destroyed.
-        destroyFns.push(function () {
-            // For some reason Umbraco requires the form to be dirty before it will
-            // clear validation on parent properties.
-            this.formCtrl.$setDirty();
-            serverValidationManager.removePropertyError(this.block.id, "invariant", null, null, { matchType: "contains" });
-        }.bind(this));
+        destroyFns.push(this.clearValidationErrors.bind(this));
+    }
+
+    this.addVariant = function (alias) {
+        var variant = this.createEmptyVariant(alias);
+        if (this.block.variants == null) {
+            this.block.variants = [];
+        }
+
+        this.block.variants.push(variant);
+    }
+
+    this.createEmptyVariant = function (alias) {
+        return {
+            id: String.CreateGuid(),
+            alias: alias,
+            // Empty Nested Content
+            content: [],
+        }
+    }
+
+    this.removeVariant = function (alias) {
+        var idx = _.findIndex(this.block.variants, function (variant) { return variant.alias === alias });
+        if (idx > -1) {
+            var variant = this.block.variants[idx];
+            this.block.variants.splice(idx, 1);
+            this.clearVariantValidationErrors(variant);
+        }
+    }
+
+    this.clearValidationErrors = function () {
+        // For some reason Umbraco requires the form to be dirty before it will
+        // clear validation on parent properties.
+        this.formCtrl.$setDirty();
+        serverValidationManager.removePropertyError(this.state.validationPath, this.umbPropCtrl.property.culture, undefined, this.umbPropCtrl.property.segment, { matchType: "prefix" });
+    }
+
+    this.clearVariantValidationErrors = function (variant) {
+        this.formCtrl.$setDirty();
+
+        // Normalize GUID to .ToString("N") format.
+        var variantId = utils.normalizeGuid(variant.id);
+
+        // We have to remove both nested validation errors as well as the variant itself since "prefix"
+        // does not match the variant validation errors itself
+        var culture = this.umbPropCtrl.property.culture;
+        var segment = this.umbPropCtrl.property.segment;
+        var alias = this.state.validationPath + "/content_variant_" + variantId;
+
+        // Exact
+        serverValidationManager.removePropertyError(alias, culture, undefined, segment);
+
+        // Prefix
+        serverValidationManager.removePropertyError(alias, culture, undefined, segment, { matchType: "prefix" });
     }
 }

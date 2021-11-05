@@ -1,15 +1,15 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.Controller", [
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
-    "serverValidationManager", "localizationService", "versionHelper", "contentBlocksPropertyScaffoldCache",
+    "localizationService", "contentBlocksPropertyScaffoldCache",
     "contentResource",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
-    api, utils, copyPasteService, notificationsService, serverValidationManager,
-    localizationService, versionHelper, scaffoldCache, contentResource) {
+    api, utils, copyPasteService, notificationsService,
+    localizationService, scaffoldCache, contentResource) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -26,7 +26,7 @@ function perplexContentBlocksController(
     var state = {
         // The current version of the model, useful for possible future model changes
         // if we have to transform data.
-        version: 2,
+        version: 3,
 
         initialized: false,
         pageId: null,
@@ -132,11 +132,6 @@ function perplexContentBlocksController(
 
         // blockId -> callback function to run when a block with that id registers itself
         onBlockRegisterFns: {},
-
-        // blockId => [validationMessage]
-        validationMessages: {},
-
-        umbracoVersion: Umbraco.Sys.ServerVariables.application.version,
     };
 
     var computed = {
@@ -205,46 +200,6 @@ function perplexContentBlocksController(
                 var $errorMsg = $rootElement.closest(".umb-control-group").find("> .property-error");
                 if ($errorMsg.length > 0) {
                     $errorMsg.remove();
-                }
-
-                if (versionHelper.versionCompare(state.umbracoVersion, "8.7.0") < 0) {
-                    // < 8.7.0
-
-                    var propertyAlias = $scope.model.alias;
-
-                    // Note that this is NOT the same as state.culture, 
-                    // which is the culture of the current content variant.
-                    var propertyCulture = $scope.model.culture;
-                    var propertySegment = $scope.model.segment;
-
-                    var unsubscribeFormSubmitting = $scope.$on("formSubmitting", function () {
-                        state.validationMessages = {};
-                    });
-
-                    var unsubscribeServerValidation = serverValidationManager.subscribe(propertyAlias, propertyCulture, "", function (valid, errors) {
-                        if (!valid) {
-                            state.validationMessages = {};
-
-                            errors.forEach(function (error) {
-                                var match = error.fieldName.match(/#content-blocks-id:([^#]+)#(.*)?/);
-                                if (match != null && match.length >= 2) {
-                                    var blockId = match[1];
-                                    var property = match[2];
-                                    var errorMessage = error.errorMsg;
-                                    state.validationMessages[blockId] = state.validationMessages[blockId] || [];
-                                    state.validationMessages[blockId].push({
-                                        errorMessage: errorMessage,
-                                        property: property,
-                                    });
-                                }
-                            });
-                        }
-                    }, propertySegment);
-
-                    $scope.$on("$destroy", function () {
-                        unsubscribeFormSubmitting();
-                        unsubscribeServerValidation();
-                    });
                 }
             }
         },
@@ -572,7 +527,8 @@ function perplexContentBlocksController(
                     }
 
                     if (blocks != null && config.structure.blocks) {
-                        var idx = $scope.model.value.blocks.length - 1;
+                        // Paste as first block by default.
+                        var idx = 0;
                         if (afterBlockId != null) {
                             if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
                                 idx = 0;
@@ -971,7 +927,7 @@ function perplexContentBlocksController(
                     }
 
                     // Add at the end by default
-                    var idx = $scope.model.value.blocks.length - 1;
+                    var idx = $scope.model.value.blocks.length;
 
                     if (afterBlockId != null) {
                         if ($scope.model.value.header != null && $scope.model.value.header.id === afterBlockId) {
@@ -1007,7 +963,16 @@ function perplexContentBlocksController(
                     layoutId: layoutId,
                     // Empty NestedContent model value
                     content: [],
+                    variants: [],
                 };
+            },
+
+            createEmptyVariant: function (alias) {
+                return {
+                    id: String.CreateGuid(),
+                    alias: alias,
+                    content: [],
+                }
             },
 
             remove: function (id) {
@@ -1164,6 +1129,8 @@ function perplexContentBlocksController(
                 fn.versionUpgrades.addGuids();
             }
 
+            // Any future data transformations after v2 are done server side.
+
             fn.setModelVersion(state.version);
         },
 
@@ -1231,26 +1198,45 @@ function perplexContentBlocksController(
 
                     var ncContentTypeAlias = ncContentType.ncAlias;
                     return contentResource.getScaffold(-20, ncContentTypeAlias).then(function (scaffold) {
-                        var content = emptyBlock.content[0] = {
-                            key: String.CreateGuid(),
-                            ncContentTypeAlias: ncContentType.ncAlias,
-                        };
+                        function getPresetContent(presetValues) {
+                            var content = {
+                                key: String.CreateGuid(),
+                                ncContentTypeAlias: ncContentType.ncAlias,
+                            };
 
-                        // Set all properties to their default value
-                        var tab = _.find(scaffold.variants[0].tabs, function (tab) {
-                            return tab.id !== 0 && (tab.alias.toLowerCase() === ncContentType.ncTabAlias.toLowerCase() || ncContentType.ncTabAlias === "");
-                        });
-
-                        if (tab != null) {
-                            _.each(tab.properties, function (property) {
-                                content[property.alias] = property.value;
+                            // Set all properties to their default value
+                            var tab = _.find(scaffold.variants[0].tabs, function (tab) {
+                                return tab.id !== 0 && (tab.alias.toLowerCase() === ncContentType.ncTabAlias.toLowerCase() || ncContentType.ncTabAlias === "");
                             });
+
+                            if (tab != null) {
+                                _.each(tab.properties, function (property) {
+                                    content[property.alias] = property.value;
+                                });
+                            }
+
+                            // Preset content
+                            _.each(presetValues, function (value, alias) {
+                                content[alias] = value;
+                            });
+
+                            return content;
                         }
 
-                        // Preset content
-                        _.each(preset.Values, function (value, alias) {
-                            content[alias] = value;
-                        });
+                        // Block
+                        var presetContent = getPresetContent(preset.Values);
+                        emptyBlock.content.push(presetContent);
+
+                        // Variants
+                        if (Array.isArray(preset.Variants)) {
+                            for (var i = 0; i < preset.Variants.length; i++) {
+                                var presetVariant = preset.Variants[i];
+                                var emptyVariant = fn.blocks.createEmptyVariant(presetVariant.Alias);
+                                var presetVariantContent = getPresetContent(presetVariant.Values);
+                                emptyVariant.content.push(presetVariantContent);
+                                emptyBlock.variants.push(emptyVariant);
+                            }
+                        }
 
                         return emptyBlock;
                     });

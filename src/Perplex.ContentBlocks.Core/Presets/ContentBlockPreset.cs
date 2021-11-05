@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Perplex.ContentBlocks.Presets
 {
@@ -11,5 +12,8 @@ namespace Perplex.ContentBlocks.Presets
         public bool IsMandatory { get; set; }
         public IDictionary<string, object> Values { get; set; }
             = new Dictionary<string, object>();
+
+        public IEnumerable<IContentBlockVariantPreset> Variants { get; set; }
+            = Enumerable.Empty<IContentBlockVariantPreset>();
     }
 }

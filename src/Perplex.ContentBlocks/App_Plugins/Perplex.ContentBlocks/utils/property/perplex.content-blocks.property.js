@@ -4,23 +4,34 @@
         datatypeId: "<?",
         datatypeKey: "<?",
         contentBlockId: "<?",
+        variantId: "<?",
         config: "<?",
         getValue: "&?",
         setValue: "&?",
         onChange: "&?",
     },
+    require: {
+        umbPropCtrl: "?^^umbProperty",
+    },
     controller: [
         "contentBlocksPropertyScaffoldCache",
+        "contentBlocksUtils",
         contentBlocksPropertyController
     ]
 });
 
-function contentBlocksPropertyController(properyScaffoldCache) {
+function contentBlocksPropertyController(properyScaffoldCache, utils) {
     var $ctrl = this;
 
     // The property that will be passed to <umb-property>
     // It is initialized in $onInit based on bindings.
     this.property = null;
+
+    // The property alias passed to the NestedContent property used to determine
+    // the validation path for the ContentBlock. This will either be the string
+    // "content" or "content_variant_<VARIANT_ID>", depending on whether we render
+    // a ContentBlock or a ContentBlock variant.
+    this.propertyAlias = null;
 
     this.$onInit = function () {
         if (this.datatypeId == null && this.datatypeKey == null) {
@@ -30,6 +41,19 @@ function contentBlocksPropertyController(properyScaffoldCache) {
         properyScaffoldCache
             .getScaffold(this.datatypeId == null ? this.datatypeKey : this.datatypeId)
             .then(this.applyScaffold.bind(this), this.handleError.bind(this));
+    }
+
+    this.$onChanges = function (changes) {
+        if (changes.contentBlockId || changes.variantId) {
+            if (changes.variantId && changes.variantId.currentValue) {
+                // Normalize GUID like C# .ToString("N")
+                var normalizedId = utils.normalizeGuid(changes.variantId.currentValue);
+                this.propertyAlias = "content_variant_" + normalizedId;
+            } else {
+                // Default block is rendered.
+                this.propertyAlias = "content";
+            }
+        }
     }
 
     this.handleError = function handleError(error) {
@@ -46,6 +70,12 @@ function contentBlocksPropertyController(properyScaffoldCache) {
         }
 
         this.property = propertyTypeScaffold;
+
+        if (this.umbPropCtrl != null) {
+            // Use the same culture + segment as the parent property
+            this.property.culture = this.umbPropCtrl.property.culture;
+            this.property.segment = this.umbPropCtrl.property.segment;
+        }
 
         // For use in ContentBlocks the label should be hidden.    
         // If/when we add a custom label/description binding we could

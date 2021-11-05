@@ -1,9 +1,11 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
+using System;
 using System.Collections.Generic;
 
 #if NET5_0
+using Microsoft.AspNetCore.Http;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
@@ -14,6 +16,8 @@ using Umbraco.Cms.Core.Strings;
 using Umbraco.Core;
 using Umbraco.Core.IO;
 using Umbraco.Core.PropertyEditors;
+using Umbraco.Core.Services;
+using Umbraco.Web;
 #endif
 
 namespace Perplex.ContentBlocks.PropertyEditor
@@ -22,40 +26,48 @@ namespace Perplex.ContentBlocks.PropertyEditor
     {
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
-        private readonly IRuntimeState _runtimeState;
 
 #if NET5_0
         private readonly IIOHelper _iOHelper;
         private readonly ILocalizedTextService _localizedTextService;
         private readonly IShortStringHelper _shortStringHelper;
         private readonly IJsonSerializer _jsonSerializer;
+        private readonly IPropertyValidationService _validationService;
 
         public ContentBlocksPropertyEditor(
             ContentBlocksModelValueDeserializer deserializer,
             ContentBlockUtils utils,
-            IRuntimeState runtimeState,
             IIOHelper iOHelper,
             ILocalizedTextService localizedTextService,
             IShortStringHelper shortStringHelper,
-            IJsonSerializer jsonSerializer)
+            IJsonSerializer jsonSerializer,
+            IPropertyValidationService validationService)
         {
             _deserializer = deserializer;
             _utils = utils;
-            _runtimeState = runtimeState;
             _iOHelper = iOHelper;
             _localizedTextService = localizedTextService;
             _shortStringHelper = shortStringHelper;
             _jsonSerializer = jsonSerializer;
+            _validationService = validationService;
         }
 #elif NET472
+        private readonly Lazy<PropertyEditorCollection> _propertyEditorCollection;
+        private readonly IDataTypeService _dataTypeService;
+        private readonly ILocalizedTextService _textService;
+
         public ContentBlocksPropertyEditor(
             ContentBlocksModelValueDeserializer deserializer,
             ContentBlockUtils utils,
-            IRuntimeState runtimeState)
+            Lazy<PropertyEditorCollection> propertyEditorCollection,
+            IDataTypeService dataTypeService,
+            ILocalizedTextService textService)
         {
             _deserializer = deserializer;
             _utils = utils;
-            _runtimeState = runtimeState;
+            _propertyEditorCollection = propertyEditorCollection;
+            _dataTypeService = dataTypeService;
+            _textService = textService;
         }
 #endif
 
@@ -88,7 +100,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         public IDataValueEditor GetValueEditor(object configuration)
         {
 #if NET5_0
-            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState);
+            var validator = new ContentBlocksValidator(_deserializer, _utils, _validationService, _shortStringHelper);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
@@ -102,7 +114,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 Validators = { validator }
             };
 #elif NET472
-            var validator = new ContentBlocksValidator(_deserializer, _utils, _runtimeState);
+            var validator = new ContentBlocksValidator(_deserializer, _utils, _propertyEditorCollection.Value, _dataTypeService, _textService);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
                 ?? ContentBlocksConfigurationEditor._defaultConfiguration.HideLabel;
@@ -113,7 +125,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 HideLabel = hideLabel,
                 ValueType = ValueTypes.Json,
             };
-#endif      
+#endif
         }
     }
 }

@@ -30,10 +30,7 @@ namespace DemoWebsite
             IDataTypeService dataTypeService,
             IContentTypeService contentTypeService,
             IContentBlockCategoryRepository categoryRepository,
-            IContentBlocksPresetRepository presetRepository
-
-
-            )
+            IContentBlocksPresetRepository presetRepository)
         {
             _definitions = definitions;
             _propertyEditors = propertyEditors;
@@ -175,6 +172,7 @@ namespace DemoWebsite
             {
                 Id = new Guid("72d1b24f-ed6d-4c27-ad21-8fec48b6060c"),
                 Name = "Test",
+                ApplyToDocumentTypes = new[] { "contentPage" },
                 Blocks = new[]
                 {
                     new ContentBlockPreset
@@ -186,6 +184,29 @@ namespace DemoWebsite
                         {
                             ["title"] = "Preset Title value",
                         },
+
+                        Variants = new[]
+                        {
+                            new ContentBlockVariantPreset
+                            {
+                                Id = new Guid("b08be547-4cd5-4a57-b4e7-97c15c3f3d6c"),
+                                Alias = "ums-segment-456",
+                                Values =
+                                {
+                                    ["title"] = "UMS SEGMENT TEST",
+                                }
+                            },
+
+                            new ContentBlockVariantPreset
+                            {
+                                Id = new Guid("c08be547-4cd5-4a57-b4e7-97c15c3f3d6c"),
+                                Alias = "ums-segment-xyz",
+                                Values =
+                                {
+                                    ["text"] = "TEXT",
+                                }
+                            }
+                        }
                     },
                 }
             });

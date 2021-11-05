@@ -44,6 +44,10 @@ function perplexContentBlocksUtils(editorState) {
             copy.content.forEach(updateNestedContentKey);
         }
 
+        if (Array.isArray(copy.variants)) {
+            copy.variants = copy.variants.map(copyContentBlock);
+        }
+
         /**
          * Updates the key of this Nested Content and all its inner Nested Content items
          * @param {object} nestedContent Nested Content item
@@ -103,7 +107,7 @@ function perplexContentBlocksUtils(editorState) {
         var visibleHeight = visibleBottom - visibleTop;
         return visibleHeight / ep.height;
 
-        function getContentBlocksViewport() {            
+        function getContentBlocksViewport() {
             var bcr = viewport.getBoundingClientRect();
 
             var top = bcr.top;
@@ -167,9 +171,19 @@ function perplexContentBlocksUtils(editorState) {
         return null;
     }
 
+    /**
+     * Normalizes the GUID to the format returned by C#'s Guid.ToString("N")
+     * @param {string} guid Guid to normalize
+     * @returns {string}
+     */
+    function normalizeGuid(guid) {
+        return guid.toLowerCase().replace(/-/g, "");
+    }
+
     this.copyContentBlock = copyContentBlock;
     this.copyAll = copyAll;
     this.getContentBlockVisibleRatio = getContentBlockVisibleRatio;
     this.debounce = debounce;
     this.getCurrentCulture = getCurrentCulture;
+    this.normalizeGuid = normalizeGuid;
 }

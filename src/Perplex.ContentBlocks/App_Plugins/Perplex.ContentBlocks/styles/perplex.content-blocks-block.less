@@ -395,6 +395,7 @@
             overflow: hidden;
             transform: translateY(0px);
             transition: transform 0.15s ease;
+            .custom-buttons-spacing-mobile(30px, 8);
         }
 
         &__preview.is-active {
@@ -464,11 +465,12 @@
 
             &__preview {
                 right: 95px;
+                .custom-buttons-spacing(95px, 8);
             }
         }
     }
     /* settings */
-    &__settings, &__mandatory {
+    &__settings, &__mandatory, &__custom {
         width: @block-margin - 1rem;
         border: 0;
         position: relative;
@@ -683,6 +685,10 @@
             display: block;
         }
     }
+
+    &__custom {
+        border-right: 1px solid @umbraco-border;
+    }
 }
 
 // STATES
@@ -791,5 +797,21 @@
 
     &__item .umb-nested-content__item--single {
         border: none;
+    }
+}
+
+.custom-buttons-spacing-mobile(@origPx, @n) when (@n > 0) {
+    .custom-buttons-spacing-mobile(@origPx, (@n - 1));
+
+    &.custom-buttons-@{n} {
+        right: calc(@origPx + @n * (@block-margin - 1rem));
+    }
+}
+
+.custom-buttons-spacing(@origPx, @n) when (@n > 0) {
+    .custom-buttons-spacing(@origPx, (@n - 1));
+
+    &.custom-buttons-@{n} {
+        right: calc(@origPx + @n * @block-margin);
     }
 }
