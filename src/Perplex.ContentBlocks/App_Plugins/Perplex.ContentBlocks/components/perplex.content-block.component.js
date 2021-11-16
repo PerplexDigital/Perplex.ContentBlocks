@@ -60,6 +60,7 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         initialized: false,
 
         isInvalid: false,
+        defaultIsInvalid: false,
         // variantId -> true if invalid, otherwise no entry in this object.
         invalidVariants: {},
         // Validation path to this block
@@ -315,8 +316,10 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
     this.initValidation = function () {
         this.state.validationPath = this.umbPropCtrl.getValidationPath() + "/" + this.block.id;
 
-        // Regex to check invalid variants from the validation message property alias
-        var re = new RegExp("^" + this.state.validationPath + "/content_variant_(?<variantId>[^/]+)$");
+        // Regex to check if the default block is invalid
+        var re = new RegExp("^" + this.state.validationPath + "/content$");
+        // Regex to check if any variant is invalid
+        var variantRe = new RegExp("^" + this.state.validationPath + "/content_variant_(?<variantId>[^/]+)$");
 
         // Use the culture + segment from the parent property
         var culture = this.umbPropCtrl.property.culture;
@@ -325,12 +328,19 @@ function perplexContentBlockController($element, $interpolate, scaffoldCache, $s
         var unsubscribe = serverValidationManager.subscribe(this.state.validationPath, culture, undefined, function (valid, invalidProperties) {
             this.state.isInvalid = !valid;
 
-            // Check variants
+            this.state.defaultIsInvalid = false;
             this.state.invalidVariants = {};
-            if (!valid && this.block.variants != null && this.block.variants.length > 0) {
+
+            if (!valid) {
                 for (var i = 0; i < invalidProperties.length; i++) {
                     var invalidProperty = invalidProperties[i];
-                    var match = re.exec(invalidProperty.propertyAlias);
+
+                    if (re.test(invalidProperty.propertyAlias)) {
+                        this.state.defaultIsInvalid = true;
+                        continue;
+                    }
+
+                    var match = variantRe.exec(invalidProperty.propertyAlias);
                     if (match != null && match.groups.variantId != null) {
                         // This variant is invalid as it appears in the invalidProperties.
                         // The variantId is formatted without dashes due to Umbraco character
