@@ -2,6 +2,31 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.0 - <sub><sup>TBD</sup></sub>
+
+-   Improved complex validation support
+
+    -   We now implement `ComplexEditorValidator` directly to achieve this
+    -   Umbraco dependency was increased to 8.7.0 to make this possible
+
+-   Added support to customize some parts of the ContentBlocks editor UI
+
+    -   The body of the content block editor can be replaced with a custom AngularJS component
+    -   Buttons can be added to the top bar of each content block, next to the settings button
+    -   An example of an addon that replaces the body and adds a button is [available here](src/DemoWebsite.v9/App_Plugins/MyContentBlocksAddon)
+
+-   Added support for block variants
+
+    -   It is now possible to create block variants
+        -   The core package does not provide any UI to visualize or manage these variants
+        -   If you want to use it you will have to write some custom code and provide custom components to render the UI
+    -   The variant to render in the front-end will be selected in C# using the new service `IContentBlockVariantSelector`
+        -   By default this package will never render a variant and will simply render the default block
+        -   To customize this behavior, provide a custom implementation
+    -   The data model is completely backwards compatible and existing data will not be touched. If you do not use variants you will not notice any difference compared to the previous version.
+    -   Full disclosure: the trigger to create this functionality is our package [uMarketingSuite.ContentBlocks](https://www.nuget.org/packages/uMarketingSuite.ContentBlocks/) that adds some uMarketingSuite features to ContentBlocks as an addon.
+        -   Just to make it clear; there is no direct connection/dependency between Perplex.ContentBlocks and uMarketingSuite and this will not happen in the future. This package now provides very generic support for variants and any uMarketingSuite related code is isolated within the separate uMarketingSuite.ContentBlocks package.
+
 ## v2.0.0 - <sub><sup>2021-11-05</sup></sub>
 
 -   Added .NET 5 + Umbraco 9 support
