@@ -302,8 +302,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Plugins\MyContentBlocksAddon\mcba-personalize.html" />
-    <Content Include="App_Plugins\MyContentBlocksAddon\mcba-personalize.js" />
     <Content Include="App_Plugins\MyContentBlocksAddon\mcba-button.js" />
     <Content Include="App_Plugins\MyContentBlocksAddon\mcba-init.js" />
     <Content Include="App_Plugins\MyContentBlocksAddon\mcba-button.html" />
