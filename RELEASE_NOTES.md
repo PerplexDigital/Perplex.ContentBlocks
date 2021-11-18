@@ -2,15 +2,22 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.0.0 - <sub><sup>2021-11-05</sup></sub>
+
+-   Added .NET 5 + Umbraco 9 support
+    -   The package can now be installed in both v8 and v9 websites
+    -   The API and features are the same as in v1.9.0.
+
 ## v1.9.0 - <sub><sup>2021-06-30</sup></sub>
-- Added support for [Media Tracking](https://umbraco.com/blog/umbraco-86-release/#media) introduced in Umbraco 8.6.0
-    - The minimum required Umbraco version is raised to 8.6.0
-    - Thanks to [@patrickdemooij9](https://github.com/patrickdemooij9) for providing a PR.
+
+-   Added support for [Media Tracking](https://umbraco.com/blog/umbraco-86-release/#media) introduced in Umbraco 8.6.0
+    -   The minimum required Umbraco version is raised to 8.6.0
+    -   Thanks to [@patrickdemooij9](https://github.com/patrickdemooij9) for providing a PR.
 
 ## v1.8.0 - <sub><sup>2021-05-27</sup></sub>
 
 -   Presets can now contain initial values for properties.
-    - Example code to set initial values:
+    -   Example code to set initial values:
     ```csharp
     new ContentBlockPreset
     {
@@ -26,7 +33,7 @@ Summary of changes in each release. For a full changelog see [the commit history
         },
     },
     ```
-    - This is a breaking change to `Perplex.ContentBlocks.Presets.IContentBlockPreset` since we add a property to it (`IDictionary<string, object> Values`) but this will only actually break if you use a custom implementation of this interface. If you simply use the built-in `Perplex.ContentBlocks.Presets.ContentBlockPreset` existing code will not be affected.
+    -   This is a breaking change to `Perplex.ContentBlocks.Presets.IContentBlockPreset` since we add a property to it (`IDictionary<string, object> Values`) but this will only actually break if you use a custom implementation of this interface. If you simply use the built-in `Perplex.ContentBlocks.Presets.ContentBlockPreset` existing code will not be affected.
 
 ## v1.7.0 - <sub><sup>2021-02-18</sup></sub>
 
