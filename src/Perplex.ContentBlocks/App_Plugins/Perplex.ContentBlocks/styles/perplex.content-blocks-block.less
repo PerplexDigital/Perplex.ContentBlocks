@@ -591,6 +591,15 @@
     }
     /* settings ACTIVE */
     &__settings {
+        --remove-in-x: -220%;
+        --hide-in-x: -175%;
+        --duplicate-in-x: -175%;
+
+        @media only screen and (min-width: 48em) {
+            --remove-in-x: 220%;
+            --hide-in-x: 175%;
+            --duplicate-in-x: 175%;
+        }
 
         &.s-active &__button {
             background: @color-main;
@@ -632,51 +641,6 @@
         &.s-active &__hide:hover &__text {
             opacity: 1;
             width: 9rem;
-        }
-
-        @keyframes settings__remove-in {
-            to {
-                opacity: 1;
-                transform: translate(-220%, 9%);
-            }
-        }
-
-        @keyframes settings__hide-in {
-            to {
-                opacity: 1;
-                transform: translate(-175%, -119%);
-            }
-        }
-
-        @keyframes settings__duplicate-in {
-            to {
-                opacity: 1;
-                transform: translate(-175%, 135%);
-            }
-        }
-
-        @media only screen and (min-width: 48em) {
-
-            @keyframes settings__remove-in {
-                to {
-                    opacity: 1;
-                    transform: translate(220%, 9%);
-                }
-            }
-
-            @keyframes settings__hide-in {
-                to {
-                    opacity: 1;
-                    transform: translate(175%, -119%);
-                }
-            }
-
-            @keyframes settings__duplicate-in {
-                to {
-                    opacity: 1;
-                    transform: translate(175%, 135%);
-                }
-            }
         }
     }
 
@@ -813,5 +777,26 @@
 
     &.custom-buttons-@{n} {
         right: calc(@origPx + @n * @block-margin);
+    }
+}
+
+@keyframes settings__remove-in {
+    to {
+        opacity: 1;
+        transform: translate(var(--remove-in-x), 9%);
+    }
+}
+
+@keyframes settings__hide-in {
+    to {
+        opacity: 1;
+        transform: translate(var(--hide-in-x), -119%);
+    }
+}
+
+@keyframes settings__duplicate-in {
+    to {
+        opacity: 1;
+        transform: translate(var(--duplicate-in-x), 135%);
     }
 }
