@@ -8,7 +8,7 @@
   <PropertyGroup>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <PackageId>Perplex.ContentBlocks</PackageId>
-    <Version>2.1.0-rc.2</Version>
+    <Version>2.1.0-rc.3</Version>
     <Authors>Perplex Digital</Authors>
     <Description>Block based content editor for Umbraco</Description>
     <PackageTags>Umbraco;Property Editor;Content Block</PackageTags>
