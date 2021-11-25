@@ -1147,9 +1147,11 @@ function perplexContentBlocksController(
                 return;
             }
 
-            var tabGroup = $rootElement.closest(".umb-group-panel");
-            if (tabGroup != null) {
-                tabGroup.addClass("perplex-content-blocks__panel");
+            // Starting from Umbraco 8.17 (and 9.0) it is possible to put properties in tabs again
+            // and not in a group at all. So we check for either.
+            var container = $rootElement.closest(".umb-group-panel,.umb-box");
+            if (container != null) {
+                container.addClass("perplex-content-blocks__panel");
             }
         },
 
