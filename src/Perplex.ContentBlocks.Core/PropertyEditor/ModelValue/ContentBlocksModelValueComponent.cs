@@ -76,6 +76,15 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
             {
                 UpdateNestedContentKey(nestedContentItem as JObject);
             }
+
+            var variants = block.Value<JArray>("variants");
+            if (variants != null)
+            {
+                foreach (JObject variant in variants)
+                {
+                    UpdateContentBlockKeys(variant);
+                }
+            }
         }
 
         private void UpdateNestedContentKey(JObject nestedContent)

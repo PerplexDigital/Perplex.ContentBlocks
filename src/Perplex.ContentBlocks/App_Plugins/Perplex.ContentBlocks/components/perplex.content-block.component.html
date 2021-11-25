@@ -1,5 +1,5 @@
 ﻿<div class="p-block__item"
-     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.isInvalid || $ctrl.validationMessages.length > 0 }"
+     ng-class="{ 'is-disabled': $ctrl.block.isDisabled, 'is-mandatory': $ctrl.isMandatory, 'is-invalid': $ctrl.state.isInvalid }"
      data-id="{{$ctrl.block.id}}">
     <div class="p-block-topbar"
          ng-if="!$ctrl.state.initialized">
@@ -47,6 +47,7 @@
             <strong ng-bind="$ctrl.name"></strong>
             <div ng-bind="$ctrl.definition.Name"></div>
         </div>
+
         <div class="p-block-topbar__layout"
              ng-mouseenter="$ctrl.showLayoutPreview = true"
              ng-mouseleave="$ctrl.showLayoutPreview = false"
@@ -74,6 +75,12 @@
                 </slick>
             </div>
         </div>
+
+        <div class="p-block-topbar__custom" ng-repeat="component in $ctrl.state.customComponents.block.buttons track by $index">
+            <perplex-content-blocks-custom-component component="component"
+                                                     data="{block:$ctrl.block,definition:$ctrl.definition}"></perplex-content-blocks-custom-component>
+        </div>
+
         <div class="p-block-topbar__settings"
              ng-class="{ 's-active': $ctrl.state.showSettings }"
              ng-if="!$ctrl.isMandatory">
@@ -125,7 +132,7 @@
             <content-blocks-icon icon="reorder"></content-blocks-icon>
         </span>
         <div class="p-block-topbar__layout__preview"
-             ng-class="{'is-active': $ctrl.showLayoutPreview}">
+             ng-class="{'is-active': $ctrl.showLayoutPreview, 'custom-buttons-{{$ctrl.state.customComponents.block.buttons.length}}': $ctrl.state.customComponents.block.buttons.length > 0}">
             <slick initial-slide="$ctrl.state.initialLayoutIndex"
                    infinite="true"
                    class="p-block-topbar__layout__view"
@@ -145,42 +152,20 @@
 
     <div class="p-block__main"
          ng-if="$ctrl.state.initialized && $ctrl.state.loadEditor">
-        <div ng-show="$ctrl.validationMessages"
-             ng-repeat="validationMessage in $ctrl.validationMessages track by validationMessage.property+validationMessage.errorMessage"
-             style="display: flex;">
-            <code ng-bind="validationMessage.property" ng-show="validationMessage.property" class="alert alert-info property-error"></code>
-            <div ng-bind="validationMessage.errorMessage" ng-show="validationMessage.errorMessage" class="alert alert-error property-error"></div>
+        <perplex-content-blocks-custom-component ng-if="$ctrl.state.customComponents.block.main"
+                                                 component="$ctrl.state.customComponents.block.main"
+                                                 data="{block:$ctrl.block,definition:$ctrl.definition}"></perplex-content-blocks-custom-component>
+
+        <div ng-if="$ctrl.state.customComponents.block.main == null">
+            <content-blocks-property content-block-id="$ctrl.block.id"
+                                     datatype-id="$ctrl.definition.DataTypeId"
+                                     datatype-key="$ctrl.definition.DataTypeKey"
+                                     get-value="$ctrl.getValue()"
+                                     set-value="$ctrl.setValue({ value: value })"
+                                     on-change="$ctrl.updateName()">
+            </content-blocks-property>
         </div>
-
-        <content-blocks-property content-block-id="$ctrl.block.id"
-                                 datatype-id="$ctrl.definition.DataTypeId"
-                                 datatype-key="$ctrl.definition.DataTypeKey"
-                                 get-value="$ctrl.getValue()"
-                                 set-value="$ctrl.setValue({ value: value })"
-                                 on-change="$ctrl.updateName()">
-        </content-blocks-property>
     </div>
 </div>
 
-<div class="p-editor__empty__hover"
-     ng-if="!$ctrl.disableAddContent"
-     ng-class="{ 'p-editor__empty__hover--visible': $ctrl.showAddContentButton }">
-    <div class="p-editor__empty__click">
-        <button class="btn btn-sub btn-radius" type="button"
-                ng-click="$ctrl.addBlock({ id: $ctrl.block.id })"
-                ng-show="$ctrl.addBlock">
-            <content-blocks-icon icon="plus" size="xxs"></content-blocks-icon>
-            <span>
-                <localize key="perplexContentBlocks_addContent">Add content</localize>
-            </span>
-        </button>
-        <button class="btn btn-sub btn-radius" type="button"
-                ng-click="$ctrl.paste()"
-                ng-show="$ctrl.canPaste && $ctrl.paste">
-            <content-blocks-icon icon="duplicate" size="xs"></content-blocks-icon>
-            <span>
-                <localize key="perplexContentBlocks_pasteContent">Paste content</localize>
-            </span>
-        </button>
-    </div>
-</div>
+<ng-transclude />

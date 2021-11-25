@@ -11,7 +11,7 @@ using Umbraco.Core.Composing;
 namespace Perplex.ContentBlocks.Utils.Cookies
 {
 #if NET5_0
-public class CookiesComposer : IUserComposer
+    public class CookiesComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
         {

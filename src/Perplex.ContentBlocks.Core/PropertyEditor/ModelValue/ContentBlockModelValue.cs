@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 {
@@ -30,5 +31,8 @@ namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
         /// </summary>
         [JsonProperty("content")]
         public JArray Content { get; set; }
+
+        [JsonProperty("variants")]
+        public List<ContentBlockVariantModelValue> Variants { get; set; }
     }
 }

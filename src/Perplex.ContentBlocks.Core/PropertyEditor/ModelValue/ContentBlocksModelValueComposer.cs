@@ -12,7 +12,7 @@ using Umbraco.Core.Composing;
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
 {
 #if NET5_0
-    public class ContentBlocksModelValueComposer : IUserComposer
+    public class ContentBlocksModelValueComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
         {

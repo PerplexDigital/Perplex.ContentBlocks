@@ -1,12 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Perplex.ContentBlocks.Definitions;
+﻿using Perplex.ContentBlocks.Definitions;
 using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Rendering;
+using Perplex.ContentBlocks.Variants;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 #if NET5_0
+using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
@@ -24,13 +26,15 @@ namespace Perplex.ContentBlocks.PropertyEditor
     {
         private readonly NestedContentSingleValueConverter _nestedContentSingleValueConverter;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
+        private readonly IContentBlockVariantSelector _variantSelector;
 #if NET5_0
         private readonly IServiceProvider _serviceProvider;
 #endif
 
         public ContentBlocksValueConverter(
             NestedContentSingleValueConverter nestedContentSingleValueConverter,
-            ContentBlocksModelValueDeserializer deserializer
+            ContentBlocksModelValueDeserializer deserializer,
+            IContentBlockVariantSelector variantSelector
 #if NET5_0
             , IServiceProvider serviceProvider
 #endif
@@ -38,6 +42,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         {
             _nestedContentSingleValueConverter = nestedContentSingleValueConverter;
             _deserializer = deserializer;
+            _variantSelector = variantSelector;
 #if NET5_0
             _serviceProvider = serviceProvider;
 #endif
@@ -64,14 +69,20 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return Rendering.ContentBlocks.Empty;
             }
 
+            var interValue = new ContentBlocksInterValue
+            {
+                Header = selectBlock(modelValue.Header),
+                Blocks = modelValue.Blocks?.Select(selectBlock).ToList() ?? new List<ContentBlockInterValue>(),
+            };
+
             var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>();
 
             var header = config.Structure.HasFlag(Structure.Header)
-                ? createViewModel(modelValue.Header)
+                ? createViewModel(interValue.Header)
                 : null;
 
             var blocks = config.Structure.HasFlag(Structure.Blocks)
-                ? modelValue.Blocks.Select(createViewModel).Where(rm => rm != null).ToList()
+                ? interValue.Blocks.Select(createViewModel).Where(vm => vm != null).ToList()
                 : Enumerable.Empty<IContentBlockViewModel>();
 
             return new Rendering.ContentBlocks
@@ -80,9 +91,35 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 Blocks = blocks
             };
 
-            IContentBlockViewModel createViewModel(ContentBlockModelValue block)
+            ContentBlockInterValue selectBlock(ContentBlockModelValue original)
             {
-                if (block == null || block.IsDisabled)
+                if (original == null || original.IsDisabled)
+                {
+                    return null;
+                }
+
+                // Start with default content
+                var block = new ContentBlockInterValue
+                {
+                    Id = original.Id,
+                    DefinitionId = original.DefinitionId,
+                    LayoutId = original.LayoutId,
+                    Content = original.Content,
+                };
+
+                if (_variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantModelValue variant)
+                {
+                    // Use variant instead, note we always use the definition + layout specified by the block
+                    block.Id = variant.Id;
+                    block.Content = variant.Content;
+                };
+
+                return block;
+            }
+
+            IContentBlockViewModel createViewModel(ContentBlockInterValue block)
+            {
+                if (block == null)
                 {
                     return null;
                 }

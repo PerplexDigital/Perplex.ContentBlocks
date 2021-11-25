@@ -129,6 +129,10 @@
     .umb-group-panel__content {
         padding: 0;
     }
+
+    .umb-box-content {
+        padding: 0;
+    }
 }
 
 // When splitview is active
@@ -145,6 +149,7 @@
         max-width: 100% !important;
         padding: 0 !important;
     }
+
     & .p-grid > .p-col--md-1-4 {
         order: -1 !important;
         margin-bottom: 20px !important;
@@ -153,26 +158,37 @@
         .p-sidebar__holder--smart-preview {
             display: none;
         }
+
         .p-sidebar__holder {
             margin: -20px -20px 0 -20px;
             border: 0;
         }
+
         .p-sidebar__heading {
             display: none;
         }
+
         .p-sidebar__main {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 10px;
             padding-top: 10px;
             padding-bottom: 10px;
+
             & > *,
             & .p-sidebar__blockoption__button {
                 margin: 0;
             }
         }
     }
+
     & .p-block-topbar__settings {
+        --translate-y: -3%;
+
+        @media only screen and (min-width: 108em) {
+            --translate-y: 10%;
+        }
+
         &.s-active .p-block-topbar__settings__duplicate {
             animation: settings__duplicate-in--left 0.2s forwards 0s ease-out;
         }
@@ -184,48 +200,26 @@
         &.s-active .p-block-topbar__settings__hide {
             animation: settings__hide-in--left 0.2s forwards 0.1s ease-out;
         }
+    }
+}
 
-        @keyframes settings__remove-in--left {
-            to {
-                opacity: 1;
-                transform: translate(-220%, -3%);
-            }
-        }
+@keyframes settings__remove-in--left {
+    to {
+        opacity: 1;
+        transform: translate(-220%, var(--translate-y));
+    }
+}
 
-        @keyframes settings__hide-in--left {
-            to {
-                opacity: 1;
-                transform: translate(-330%, -3%);
-            }
-        }
+@keyframes settings__hide-in--left {
+    to {
+        opacity: 1;
+        transform: translate(-330%, var(--translate-y));
+    }
+}
 
-        @keyframes settings__duplicate-in--left {
-            to {
-                opacity: 1;
-                transform: translate(-110%, -3%);
-            }
-        }
-        @media only screen and (min-width: 108em) {
-            @keyframes settings__remove-in--left {
-                to {
-                    opacity: 1;
-                    transform: translate(-220%, 10%);
-                }
-            }
-
-            @keyframes settings__hide-in--left {
-                to {
-                    opacity: 1;
-                    transform: translate(-330%, 10%);
-                }
-            }
-
-            @keyframes settings__duplicate-in--left {
-                to {
-                    opacity: 1;
-                    transform: translate(-110%, 10%);
-                }
-            }
-        }
+@keyframes settings__duplicate-in--left {
+    to {
+        opacity: 1;
+        transform: translate(-110%, var(--translate-y));
     }
 }

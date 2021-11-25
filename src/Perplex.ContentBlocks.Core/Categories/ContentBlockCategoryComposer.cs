@@ -10,7 +10,7 @@ using Umbraco.Core.Composing;
 namespace Perplex.ContentBlocks.Categories
 {
 #if NET5_0
-    public class ContentBlockCategoriesComposer : IUserComposer
+    public class ContentBlockCategoriesComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
         {

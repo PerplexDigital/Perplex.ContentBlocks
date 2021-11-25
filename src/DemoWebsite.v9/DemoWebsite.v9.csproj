@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms" Version="9.0.0" />
-    <PackageReference Include="Umbraco.Cms.SqlCe" Version="9.0.0" />
+    <PackageReference Include="Umbraco.Cms" Version="9.1.0" />
+    <PackageReference Include="Umbraco.Cms.SqlCe" Version="9.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +36,22 @@
         <Content Remove="umbraco\Data\**" />
         <Content Remove="umbraco\logs\**" />
         <Content Remove="umbraco\MediaCache\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="App_Plugins\MyContentBlocksAddon\mcba-button.html" />
+      <None Remove="App_Plugins\MyContentBlocksAddon\mcba-button.js" />
+      <None Remove="App_Plugins\MyContentBlocksAddon\mcba-init.js" />
+      <None Remove="App_Plugins\MyContentBlocksAddon\mcba-main.html" />
+      <None Remove="App_Plugins\MyContentBlocksAddon\mcba-main.js" />
+      <None Remove="App_Plugins\MyContentBlocksAddon\package.manifest" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="App_Plugins\MyContentBlocksAddon\mcba-button.html" />
+      <Content Include="App_Plugins\MyContentBlocksAddon\mcba-button.js" />
+      <Content Include="App_Plugins\MyContentBlocksAddon\mcba-init.js" />
+      <Content Include="App_Plugins\MyContentBlocksAddon\mcba-main.html" />
+      <Content Include="App_Plugins\MyContentBlocksAddon\mcba-main.js" />
+      <Content Include="App_Plugins\MyContentBlocksAddon\package.manifest" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj" />

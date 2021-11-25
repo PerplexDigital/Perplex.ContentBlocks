@@ -395,6 +395,7 @@
             overflow: hidden;
             transform: translateY(0px);
             transition: transform 0.15s ease;
+            .custom-buttons-spacing-mobile(30px, 8);
         }
 
         &__preview.is-active {
@@ -464,11 +465,12 @@
 
             &__preview {
                 right: 95px;
+                .custom-buttons-spacing(95px, 8);
             }
         }
     }
     /* settings */
-    &__settings, &__mandatory {
+    &__settings, &__mandatory, &__custom {
         width: @block-margin - 1rem;
         border: 0;
         position: relative;
@@ -589,6 +591,15 @@
     }
     /* settings ACTIVE */
     &__settings {
+        --remove-in-x: -220%;
+        --hide-in-x: -175%;
+        --duplicate-in-x: -175%;
+
+        @media only screen and (min-width: 48em) {
+            --remove-in-x: 220%;
+            --hide-in-x: 175%;
+            --duplicate-in-x: 175%;
+        }
 
         &.s-active &__button {
             background: @color-main;
@@ -631,57 +642,16 @@
             opacity: 1;
             width: 9rem;
         }
-
-        @keyframes settings__remove-in {
-            to {
-                opacity: 1;
-                transform: translate(-220%, 9%);
-            }
-        }
-
-        @keyframes settings__hide-in {
-            to {
-                opacity: 1;
-                transform: translate(-175%, -119%);
-            }
-        }
-
-        @keyframes settings__duplicate-in {
-            to {
-                opacity: 1;
-                transform: translate(-175%, 135%);
-            }
-        }
-
-        @media only screen and (min-width: 48em) {
-
-            @keyframes settings__remove-in {
-                to {
-                    opacity: 1;
-                    transform: translate(220%, 9%);
-                }
-            }
-
-            @keyframes settings__hide-in {
-                to {
-                    opacity: 1;
-                    transform: translate(175%, -119%);
-                }
-            }
-
-            @keyframes settings__duplicate-in {
-                to {
-                    opacity: 1;
-                    transform: translate(175%, 135%);
-                }
-            }
-        }
     }
 
     &__mandatory {
         &:hover .p-block__mandatory__info {
             display: block;
         }
+    }
+
+    &__custom {
+        border-right: 1px solid @umbraco-border;
     }
 }
 
@@ -791,5 +761,42 @@
 
     &__item .umb-nested-content__item--single {
         border: none;
+    }
+}
+
+.custom-buttons-spacing-mobile(@origPx, @n) when (@n > 0) {
+    .custom-buttons-spacing-mobile(@origPx, (@n - 1));
+
+    &.custom-buttons-@{n} {
+        right: calc(@origPx + @n * (@block-margin - 1rem));
+    }
+}
+
+.custom-buttons-spacing(@origPx, @n) when (@n > 0) {
+    .custom-buttons-spacing(@origPx, (@n - 1));
+
+    &.custom-buttons-@{n} {
+        right: calc(@origPx + @n * @block-margin);
+    }
+}
+
+@keyframes settings__remove-in {
+    to {
+        opacity: 1;
+        transform: translate(var(--remove-in-x), 9%);
+    }
+}
+
+@keyframes settings__hide-in {
+    to {
+        opacity: 1;
+        transform: translate(var(--hide-in-x), -119%);
+    }
+}
+
+@keyframes settings__duplicate-in {
+    to {
+        opacity: 1;
+        transform: translate(var(--duplicate-in-x), 135%);
     }
 }
