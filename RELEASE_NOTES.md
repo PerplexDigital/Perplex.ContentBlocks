@@ -2,7 +2,7 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
-## v2.1.0 - <sub><sup>TBD</sup></sub>
+## v2.1.0 - <sub><sup>2021-11-25</sup></sub>
 
 -   Improved complex validation support
 
