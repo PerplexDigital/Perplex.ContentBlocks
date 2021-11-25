@@ -7,7 +7,7 @@
   <!-- NuGet Package -->
   <PropertyGroup>
     <PackageId>Perplex.ContentBlocks.Core</PackageId>
-    <Version>2.1.0-rc.3</Version>
+    <Version>2.1.0</Version>
     <Authors>Perplex Digital</Authors>
     <Description>Perplex.ContentBlocks assembly only</Description>
     <PackageTags>umbraco property editor content block</PackageTags>
