@@ -4,18 +4,20 @@
         <PropertyGroup>
             <_PackageRelativeDir>App_Plugins\Perplex.ContentBlocks\</_PackageRelativeDir>
             <_PackageProjectDir>$(MSBuildProjectDirectory)\$(_PackageRelativeDir)</_PackageProjectDir>
-            <_ContentFiles>$(MSBuildThisFileDirectory)..\..\content\$(_PackageRelativeDir)**</_ContentFiles>
+            <_ContentFilesSource>$(MSBuildThisFileDirectory)..\..\content\$(_PackageRelativeDir)**</_ContentFilesSource>
+            <_ContentFilesDestination>$(_PackageProjectDir)**</_ContentFilesDestination>
         </PropertyGroup>
 
         <ItemGroup>
-            <_ContentFiles Include="$(_ContentFiles)" />
+            <_ContentFilesSource Include="$(_ContentFilesSource)" />
+            <_ContentFilesDestination Include="$(_ContentFilesDestination)" />
         </ItemGroup>
     </Target>
 
     <Target Name="ContentBlocks/CopyContentFiles" BeforeTargets="BeforeBuild" DependsOnTargets="ContentBlocks/Init">
         <Copy
-            SourceFiles="@(_ContentFiles)"
-            DestinationFiles="@(_ContentFiles->'$(_PackageProjectDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SourceFiles="@(_ContentFilesSource)"
+            DestinationFiles="@(_ContentFilesSource->'$(_PackageProjectDir)%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true" />
     </Target>
 
@@ -25,7 +27,7 @@
 
     <Target Name="ContentBlocks/PublishFiles" AfterTargets="ComputeFilesToPublish" DependsOnTargets="ContentBlocks/Init">
         <ItemGroup>
-            <ResolvedFileToPublish Include="@(_ContentFiles)">
+            <ResolvedFileToPublish Include="@(_ContentFilesDestination)">
                 <RelativePath>$(_PackageRelativeDir)%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
             </ResolvedFileToPublish>
         </ItemGroup>
