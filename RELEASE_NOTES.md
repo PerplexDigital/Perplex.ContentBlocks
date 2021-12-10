@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.1 - <sub><sup>2021-12-10</sup></sub>
+
+-   Fixed error on `dotnet publish` in .NET 6.0
+    -   Related to duplicate include of App_Plugins\Perplex.ContentBlocks files.
+        The files are included from $(ProjectDir) as well as from the NuGet package and .NET 6 does not allow these duplicates.
+
 ## v2.1.0 - <sub><sup>2021-11-25</sup></sub>
 
 -   Improved complex validation support
