@@ -3,7 +3,7 @@
     "dataTypeResource",
     function contentBlocksPropertyScaffoldCache(contentTypeResource, dataTypeResource) {
         /**
-         * Cache of promises in progress and/or completed by data type id         
+         * Cache of promises in progress and/or completed by data type id
          */
         var scaffoldsById = {};
 
@@ -19,18 +19,21 @@
                         return dataType.key === key;
                     });
                     if (dataType == null) {
-                        throw new Error("No data type found with key \"" + key + "\"");
+                        throw new Error('No data type found with key "' + key + '"');
                     }
 
                     return dataType.id;
                 });
             }
 
-            return dataTypeKeyToId[key].then(function (id) {
-                return getById(id);
-            }, function () {
-                throw new Error("No data type found with key \"" + key + "\"");
-            });
+            return dataTypeKeyToId[key].then(
+                function (id) {
+                    return getById(id);
+                },
+                function () {
+                    throw new Error('No data type found with key "' + key + '"');
+                }
+            );
         }
 
         function getById(id) {
@@ -38,11 +41,14 @@
                 scaffoldsById[id] = contentTypeResource.getPropertyTypeScaffold(id);
             }
 
-            return scaffoldsById[id].then(function (value) {
-                return angular.copy(value);
-            }, function () {
-                throw new Error("No data type found with id " + id);
-            });
+            return scaffoldsById[id].then(
+                function (value) {
+                    return angular.copy(value);
+                },
+                function () {
+                    throw new Error("No data type found with id " + id);
+                }
+            );
         }
 
         function getScaffold(idOrKey) {
@@ -67,28 +73,32 @@
         this.getScaffoldById = getById;
         this.getScaffoldByKey = getByKey;
         this.clearCache = clearCache;
-    }
+    },
 ]);
 
 // Ensure scaffold cache is cleared whenever a data type is saved.
-angular.module("perplexContentBlocks").decorator("dataTypeResource", ["$delegate", "$injector", function ($delegate, $injector) {
-    var saveFn = $delegate.save;
+angular.module("perplexContentBlocks").decorator("dataTypeResource", [
+    "$delegate",
+    "$injector",
+    function ($delegate, $injector) {
+        var saveFn = $delegate.save;
 
-    $delegate.save = function () {
-        return saveFn.apply(this, arguments).then(function (dataType) {
-            updateScaffoldCache(dataType);
-            return dataType;
-        });
-    }
+        $delegate.save = function () {
+            return saveFn.apply(this, arguments).then(function (dataType) {
+                updateScaffoldCache(dataType);
+                return dataType;
+            });
+        };
 
-    function updateScaffoldCache(dataType) {
-        if (dataType == null) return;
+        function updateScaffoldCache(dataType) {
+            if (dataType == null) return;
 
-        var scaffoldCache = $injector.get("contentBlocksPropertyScaffoldCache");
-        if (scaffoldCache == null) return;
+            var scaffoldCache = $injector.get("contentBlocksPropertyScaffoldCache");
+            if (scaffoldCache == null) return;
 
-        scaffoldCache.clearCache(dataType.id);
-    }
+            scaffoldCache.clearCache(dataType.id);
+        }
 
-    return $delegate;
-}]);
+        return $delegate;
+    },
+]);
