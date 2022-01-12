@@ -64,7 +64,20 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command=":: Create link to App_Plugins\Perplex.ContentBlocks of Perplex.ContentBlocks project&#xD;&#xA;if not exist $(ProjectDir)App_Plugins (&#xD;&#xA;    mkdir $(ProjectDir)App_Plugins&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;if not exist $(ProjectDir)App_Plugins\Perplex.ContentBlocks (&#xD;&#xA;    mklink /J $(ProjectDir)App_Plugins\Perplex.ContentBlocks $(SolutionDir)Perplex.ContentBlocks\App_Plugins\Perplex.ContentBlocks&#xD;&#xA;)" />
+    <PropertyGroup>
+      <_MakeLinks>
+        :: Create link to App_Plugins\Perplex.ContentBlocks of Perplex.ContentBlocks project
+        if not exist $(MSBuildProjectDirectory)\App_Plugins (
+        mkdir $(MSBuildProjectDirectory)\App_Plugins
+        )
+
+        if not exist $(MSBuildProjectDirectory)\App_Plugins\Perplex.ContentBlocks (
+        mklink /J $(MSBuildProjectDirectory)\App_Plugins\Perplex.ContentBlocks $(MSBuildProjectDirectory)\..\Perplex.ContentBlocks\App_Plugins\Perplex.ContentBlocks
+        )
+      </_MakeLinks>
+    </PropertyGroup>
+
+    <Exec Command="$(_MakeLinks)" />
   </Target>
 
 </Project>
