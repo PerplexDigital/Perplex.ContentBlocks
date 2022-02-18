@@ -1,0 +1,239 @@
+<div class="umb-forms-dashboard" ng-controller="UmbracoForms.Dashboards.FormsController as vm">
+
+    <!-- Licensing -->
+    <div>
+        <div class="umb-forms-install-overlay" ng-show="vm.overlay.show">
+            <a href class="close" ng-click="vm.overlay.show = false"><localize key="general_close"></localize></a>
+            <div>
+                <div class="succes"> </div>
+
+                <h2><strong>{{vm.overlay.title}}</strong></h2>
+
+                <p>{{vm.overlay.description}}</p>
+
+                <div class="divider"></div>
+
+                <umb-button button-style="success"
+                            type="button"
+                            action="vm.create()"
+                            label-key="formsDashboard_createAForm">
+                </umb-button>
+
+            </div>
+        </div>
+
+        <!-- TODO: Can we retire this functionality? -->
+        <div ng-show="vm.version.upgradeAvailable && vm.isAdminUser">
+            <div class="row-fluid">
+                <div class="span8">
+                    <h3><localize key="formsDashboard_newVersionTitle"></localize></h3>
+                    <p>
+                      <localize key="formsDashboard_newVersionDescription"></localize> {{vm.version.remoteVersion}}
+                    </p>
+                </div>
+                <div class="span4 umb-db-form-action">
+                    <umb-button ng-show="!vm.installing"
+                                button-style="success"
+                                type="button"
+                                action="vm.upgrade()"
+                                label-key="formsDashboard_upgradeNow">
+                    </umb-button>
+                </div>
+            </div>
+
+
+            <div style="width: 99%; overflow: hidden" ng-show="vm.installing">
+                <p><localize key="formsDashboard_downloading"></localize></p>
+                <div class="umb-loader"></div>
+            </div>
+
+            <hr />
+        </div>
+
+        <!-- Trial or invalid license -->
+        <div ng-show="vm.status.isTrial || vm.status.isInValid === true">
+
+            <div class="alert alert-error" ng-show="vm.status.isInValid">
+                <h4><localize key="formsDashboard_invalidLicense"></localize></h4>
+                <localize key="formsDashboard_invalidLicenseValidFor"></localize>
+                <pre>{{vm.status.licenseLimitations}}</pre>
+                <localize key="formsDashboard_reconfigure"></localize>
+            </div>
+
+
+            <div class="row-fluid" ng-show="!vm.status.state">
+                <div class="span8">
+                    <h3><localize key="formsDashboard_trialTitle"></localize></h3>
+                    <p><localize key="formsDashboard_trialDescription"></localize></p>
+                </div>
+
+                <div class="span4 umb-db-form-action">
+                    <umb-button style="display: block;"
+                                button-style="success"
+                                type="button"
+                                action="vm.status.state = 'buy'"
+                                label-key="formsDashboard_buyLicense">
+                    </umb-button>
+                    <a class="btn btn-link btn-tiny" ng-click="vm.status.state = 'use'">
+                      <localize key="formsDashboard_configureLicense"></localize>                      
+                    </a>
+                </div>
+            </div>
+
+
+            <div ng-if="vm.status.state === 'buy'">
+
+                <h3><localize key="formsDashboard_buyLicenseTitle"></localize></h3>
+                <localize key="formsDashboard_buyLicenseCopy"></localize>
+                <a href="https://shop.umbraco.com/shop/cart/?p=6201&direct=true&utm_source=core&utm_medium=dashboard&utm_content=topic-link&utm_campaign=formslicensing" target="_blank" class="btn btn-primary"><localize key="formsDashboard_buyLink"></localize></a>
+                <a class="btn btn-link" ng-click="vm.status.state = undefined"><localize key="general_back"></localize></a>
+                <hr />
+                <localize key="formsDashboard_buyLicenseFAQs"></localize>
+            </div>
+
+
+            <div ng-if="vm.status.state === 'use'">
+                <h3></h3>
+                <h3><localize key="formsDashboard_configureLicenseTitle"></localize></h3>
+                <p>
+                    <localize key="formsDashboard_configureLicenseCopy"></localize>                  
+                </p>
+
+                <div ng-show="vm.isLoading">
+                    <umb-load-indicator></umb-load-indicator>
+                </div>
+
+                <div ng-hide="vm.hasLicenses || vm.isLoading">
+                    <p>
+                        <strong><localize key="general_email"></localize>:</strong><br />
+                        <input type="text" ng-model="vm.configuration.email" /><br />
+                        <strong><localize key="general_password"></localize>:</strong><br/>
+                        <input type="password" ng-model="vm.configuration.password" /><br/>
+                        <button class="btn btn-primary" ng-click="vm.getLicenses(vm.configuration)"><localize key="formsDashboard_findLicenses"></localize></button>
+                        <a class="btn btn-link" ng-click="vm.status.state = undefined"><localize key="general_back"></localize></a>
+                        <span ng-show="vm.loginError" class="red"><i class="icon icon-alert red" localize="title" title="@formsDashboard_invalidEmail"></i> <localize key="formsDashboard_invalidEmail"></localize></span>
+                        <span ng-show="vm.hasLicenses === false" class="red"><i class="icon icon-alert red" localize="title" title="@formsDashboard_noLicensesAvailable"></i> <localize key="formsDashboard_noLicensesAvailable"></localize></span>
+                    </p>
+                    <hr />
+                    <localize key="formsDashboard_configureLicenseFAQs"></localize>
+                </div>
+                <div ng-show="vm.hasLicenses">
+                    <h5><localize key="formsDashboard_availableLicensesTitle"></localize></h5>
+                    <p>
+                      <localize key="formsDashboard_foundLicenses"></localize> <strong>{{vm.openLicenses.length + vm.configuredLicenses.length}}</strong> <localize key="formsDashboard_foundLicensesAccount"></localize> <strong>{{vm.configuration.email}}</strong>
+                    </p>
+
+                    <div ng-show="vm.openLicenses.length > 0">
+                        <ul class="unstyled list-icons">
+                            <li ng-repeat="license in vm.openLicenses" style="max-width: 600px">
+                                <i class="icon icon-certificate blue"></i>
+
+                                <a href ng-click="vm.status.selectedLicense = license; vm.configuration.license = license.id">{{license.label}}</a><br/>
+                                <small><localize key="formsDashboard_noDomainsAssigned"></localize></small>
+
+                                <div ng-show="license === vm.status.selectedLicense">
+                                    <p><localize key="formsDashboard_setDomain"></localize>:</p>
+                                    <input type="text" ng-model="vm.configuration.domain"/>
+                                    <button class="btn btn-primary" ng-click="vm.configure(vm.configuration)"><localize key="formsDashboard_configureAndInstall"></localize></button>
+                                </div>
+                            </li>
+                        </ul>
+                        <hr/>
+                    </div>
+
+                    <ul class="unstyled list-icons">
+                        <li ng-repeat="license in vm.configuredLicenses">
+                            <i class="icon icon-certificate"></i>
+
+                            <a href ng-click="vm.status.selectedLicense = license; vm.configuration.license = license.id">{{license.label}}</a><br/>
+                            <small>
+                                <i class="icon icon-check color-green" ng-show="license.currentDomainMatch" localize="title" title="@formsDashboard_licenseValidOnDomain"></i>
+                                <i class="icon icon-alert red" ng-hide="license.currentDomainMatch" localize="title" title="@formsDashboard_licenseNotValidOnDomain"></i>
+                                <localize key="formsDashboard_validDomains"></localize>: {{license.bindings.join()}}
+                            </small>
+
+                            <div ng-if="license === vm.status.selectedLicense">
+                                <button class="btn btn-primary" ng-click="vm.configure(vm.configuration)"><localize key="formsDashboard_installLicense"></localize></button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr />
+        </div>
+
+        <div ng-show="vm.currentVersion">
+            <small><localize key="formsDashboard_currentVersion"></localize> {{ vm.currentVersion }}</small>
+        </div>
+
+        <!-- TODO: Retire/Remove this as V8 Forms should not have legacy setting -->
+        <div ng-show="vm.savePlainTextPasswords && vm.isAdminUser">
+            <div class="row-fluid">
+                <style>
+                    .warnblock {
+                        background-color: #f1f1f1;
+                        padding: 4px;
+                    }
+
+                    .warning {
+                        color: red;
+                        font-weight: bold;
+                    }
+
+                    .code {
+                        color: crimson;
+                        background-color: #f1f1f1;
+                        padding-left: 4px;
+                        padding-right: 4px;
+                    }
+                </style>
+                <div class="span8 warnblock">
+                    <localize key="formsDashboard_plainTextPasswordWarning"></localize>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Your Forms -->
+    <div ng-show="vm.forms.length > 0">
+        <h4 class="umb-forms-title">
+            <strong><localize key="formsDashboard_yourForms"></localize></strong>
+            <div class="umb-forms__show-all">
+                <a class="btn btn-link" href="" ng-show="vm.forms.length > vm.formsLimit" ng-click="vm.showMore()"><localize key="formsDashboard_showMore"></localize></a>
+            </div>
+        </h4>
+
+        <ul class="umb-forms-list">
+            <li class="umb-forms-form" ng-repeat="form in vm.forms | limitTo:vm.formsLimit">
+
+                <a class="umb-forms-card" ng-href="#/forms/Form/entries/{{form.id}}">
+                <umb-box>
+                    <div class="card-name">
+                        <h4>{{form.name}}</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <small><localize key="formsDashboard_entries"></localize></small>
+                        {{form.entries | number:0}}
+                    </div>
+                </umb-box>
+                </a>
+
+            </li>
+        </ul>
+
+        <div class="umb-forms-title" ng-show="vm.formsLimit > vm.initialFormsLimit">
+            <div class="umb-forms__show-all">
+                <a class="btn btn-link" href="" ng-show="vm.forms.length > vm.formsLimit" ng-click="vm.showMore()"><localize key="formsDashboard_showMore"></localize></a>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="!vm.isLoading && !vm.status.isTrial && !vm.status.isInValid && !vm.hasUnrestrictedLicense(vm.status)">
+        <small><localize key="formsDashboard_licensedDomains"></localize>:</small>
+        <small ng-bind-html="vm.displayLicensedDomains(vm.status)"></small>
+    </div>
+
+</div>

@@ -1,0 +1,52 @@
+{
+  "propertyEditors": [
+    {
+      "alias": "UmbracoForms.FormPicker",
+      "name": "Form Picker",
+      "isParameterEditor": true,
+      "group": "Pickers",
+      "icon": "icon-umb-contour",
+      "editor": {
+        "view": "~/App_Plugins/UmbracoForms/backoffice/PropertyEditors/formpicker.html"
+      },
+      "prevalues": {
+        "fields": [
+          {
+            "label": "Allowed forms",
+            "description": "The forms allowed, if none are selected all forms will be allowed",
+            "key": "allowedForms",
+            "view": "~/App_Plugins/UmbracoForms/backoffice/PropertyEditors/formpicker.prevalues.html"
+          }
+        ]
+      }
+    },
+    {
+      "alias": "UmbracoForms.ThemePicker",
+      "name": "Forms Theme Picker",
+      "group": "Pickers",
+      "icon": "icon-brush",
+      "isParameterEditor": true,
+      "editor": {
+        "view": "~/App_Plugins/UmbracoForms/backoffice/PropertyEditors/themepicker.html"
+      }
+    }
+  ],
+
+  "gridEditors": [
+    {
+      "name": "Form",
+      "alias": "umbraco_form_picker",
+      "view": "/App_Plugins/UmbracoForms/backoffice/GridEditors/FormPicker.html",
+      "render": "macro",
+      "icon": "icon-umb-contour"
+    }
+  ],
+
+  "css": [
+    "~/App_Plugins/UmbracoForms/css/umbraco.forms.css"
+  ],
+
+  "javascript": [
+    "~/App_Plugins/UmbracoForms/js/umbraco.forms.js"
+  ]
+}

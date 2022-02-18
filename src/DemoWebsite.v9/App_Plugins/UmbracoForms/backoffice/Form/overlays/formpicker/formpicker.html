@@ -1,0 +1,38 @@
+<div ng-controller="UmbracoForms.FormPickerOverlayController as vm" class="umb-form-picker-select">
+
+    <umb-load-indicator
+        ng-if="vm.loading">
+    </umb-load-indicator>
+
+    <!-- FILTER -->
+	<div class="umb-control-group -no-border">
+		<div class="form-search">
+			<i class="icon-search"></i>
+			<input type="text"
+				class="umb-search-field search-query search-input input-block-level -full-width-input"
+				ng-model="vm.filterTerm"
+				localize="placeholder"
+	      placeholder="@placeholders_filter"
+				umb-auto-focus>
+		</div>
+	</div>
+
+    <ul class="umb-actions umb-actions-child">
+        <li ng-repeat="form in vm.forms | orderBy:'name' | filter:vm.filterTerm"
+            ng-click="vm.pickForm(form, $index)">
+            <a href="" title="{{ form.name }}">
+                <i ng-if="!form.selected" class="icon-umb-contour"></i>
+                <i ng-if="form.selected" class="icon-check color-green"></i>
+                <span class="menu-label">
+                    {{form.name}}
+                    <small>{{form.fields}} </small>
+                </span>
+            </a>
+        </li>
+    </ul>
+
+    <div ng-if="vm.error" class="alert alert-warning">
+        {{ error }}
+    </div>
+
+</div>

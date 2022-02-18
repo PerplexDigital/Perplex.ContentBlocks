@@ -1,0 +1,27 @@
+<div class="umb-pane" ng-controller="UmbracoForms.Editors.Form.DeleteController as vm">
+  <div ng-if="vm.canDelete">
+    <p>
+      {{vm.title}}
+    </p>
+    <p ng-if="!vm.deletingFolder">
+      <localize key="formDelete_note"></localize>      
+    </p>
+    <div class="umb-pane btn-toolbar umb-btn-toolbar">
+      <div class="control-group umb-control-group">
+        <a href="" class="btn btn-link" ng-click="vm.cancelDelete()"><localize key="general_cancel">Cancel</localize></a>
+
+        <umb-button action="vm.performDelete(currentNode.id)"
+                    type="button"
+                    button-style="danger"
+                    state="vm.buttonState"
+                    label="OK"
+                    disabled="vm.buttonState === 'busy'">
+        </umb-button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="!vm.canDelete">
+    <p ng-if="vm.deletingFolder"><localize key="formDelete_cannotDeleteFolder"></localize></p>
+    <a href="" class="btn btn-info" ng-click="vm.cancelDelete()"><localize key="general_close">Close</localize></a>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<div class="umb-forms-file-upload">
+  <div class="umb-forms-file-upload__allow-all">
+    <div class="umb-forms-toggle-with-separate-label">
+      <umb-toggle checked="allowedFileTypes[0].Checked"
+                  on-click="switchAllowedPredefined(allowedFileTypes[0], true)"
+                  show-labels="false">
+      </umb-toggle>
+      <span class="umb-forms-toggle-with-separate-label__label">{{allowedFileTypes[0].Checked ? allowedFileTypesToggleTextOn : allowedFileTypesToggleTextOff}}</span>
+    </div>
+  </div>
+  <span><localize key="formFileUpload_predefinedAllowedFileTypes"></localize>:</span>
+  <div class="grid-container">
+    <div ng-repeat="allowedFileType in allowedFileTypes.slice(1)" ng-if="allowedFileType.Checked !== undefined">
+      <umb-checkbox on-change="switchAllowedPredefined(allowedFileType)"
+                    disabled="allowedFileTypes[0].Checked"
+                    input-id="{{allowedFileType.Type}}"
+                    model="allowedFileType.Checked"
+                    text="{{allowedFileType.Name}}">
+      </umb-checkbox>
+    </div>
+  </div>
+  <br />
+  <span><localize key="formFileUpload_userDefinedAllowedFileTypes"></localize>:</span>
+  <div class="grid-container">
+    <div ng-repeat="allowedFileType in allowedFileTypes" ng-if="allowedFileType.Checked === undefined">
+      <button type="button" class="btn-reset" ng-click="deleteAllowedFileType($index)">
+        <i class="icon-trash" aria-hidden="true"></i>
+      </button>
+      {{allowedFileType.Name}}
+      <br />
+    </div>
+  </div>
+  <br />
+  <form ng-submit="addAllowedFileType()" class="umb-forms-file-upload__add">
+    <input type="text" ng-model="newAllowedFileType" size="30" placeholder="Add new allowed file type">
+    <input type="submit" value="Add" class="btn" ng-disabled="allowedFileTypes[0].Checked">
+  </form>
+</div> 

@@ -1,0 +1,8 @@
+@model Umbraco.Forms.Web.Models.FormViewModel
+
+<div>
+    <span class="umbraco-forms-submitmessage">
+        @Model.MessageOnSubmit
+    </span>
+</div>
+@await Html.PartialAsync("Forms/Themes/default/ScrollToFormScript")

@@ -1,0 +1,71 @@
+<div class="umb-forms-entry">
+
+  <div class="umb-forms-entry-main">
+
+    <umb-box>
+
+      <!-- TODO: make render types directive so the RenderTypes don't rely a "field" model -->
+      <div class="umb-control-group" ng-repeat="detail in entry.details">
+        <label class="control-label" data-umb="label_{{detail.name.replace(' ','') }}">{{ detail.name }}</label>
+
+        <small class="" ng-if="detail.containsSensitiveData">
+          <i class="icon-lock umb-group-builder__property-tag-icon"></i>
+          <localize key="contentTypeEditor_isSensitiveData">Is sensitive data</localize>
+        </small>
+
+        <umb-forms-render-type field="detail.value" name="detail.name"
+                               view="detail.view" sensitive="detail.containsSensitiveData" has-access="sensitiveDataAccess">
+        </umb-forms-render-type>
+      </div>
+
+    </umb-box>
+
+  </div>
+
+
+  <div class="umb-forms-entry-sidebar">
+
+    <umb-box>
+
+      <div class="umb-control-group -no-border">
+        <label class="control-label"><localize key="formEntries_submittedOn"></localize></label>
+        <div title="{{entry.created  | momentDateTimeZone : 'LLL' }}">{{entry.created | relativeDate }}</div>
+      </div>
+
+      <div class="umb-control-group -no-border" ng-if="entry.updated !== entry.created">
+        <label class="control-label"><localize key="formEntries_updatedOn"></localize></label>
+        <div title="{{entry.updated  | momentDateTimeZone : 'LLL' }}">{{entry.updated | relativeDate }}</div>
+      </div>
+
+      <div class="umb-control-group -no-border" ng-if="entry.umbracoPage.name">
+        <label class="control-label"><localize key="formEntries_fromPage"></localize></label>
+        <div ng-if="canLinkToContent"><a ng-click="openContent(entry.umbracoPage.id)">{{entry.umbracoPage.name}}</a></div>
+        <div ng-if="!canLinkToContent">{{entry.umbracoPage.name}}</div>
+      </div>
+
+      <div class="umb-control-group -no-border" ng-if="hasMember(entry)">
+        <label class="control-label"><localize key="formEntries_member"></localize></label>
+        <div ng-if="canLinkToMembers"><a ng-click="openMember(entry)" ng-bind="getMemberDetails(entry)"></a></div>
+        <div ng-if="!canLinkToMembers"><span ng-bind="getMemberDetails(entry)"></span></div>
+      </div>
+
+      <div class="umb-control-group -no-border">
+        <label class="control-label"><localize key="formEntries_state"></localize></label>
+        <div>{{entry.state}}</div>
+      </div>
+
+      <div class="umb-control-group -no-border">
+        <label class="control-label"><localize key="general_id"></localize></label>
+        <div>{{entry.id}}</div>
+      </div>
+
+      <div class="umb-control-group -no-border">
+        <label class="control-label"><localize key="formEntries_uniqueId"></localize></label>
+        <div><small>{{entry.uniqueId}}</small></div>
+      </div>
+
+    </umb-box>
+
+  </div>
+
+</div>

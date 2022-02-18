@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+  <area alias="sections">
+    <key alias="forms">Formulario</key>
+  </area>
+  <area alias="formsDashboard">
+    <key alias="yourForms">Tu formularios</key>
+    <key alias="showMore">Muestra más</key>
+    <key alias="entries">Entradas</key>
+    <key alias="newVersion">Hay una nueva versión disponible</key>
+    <key alias="installOverlayTitle">Felicidades</key>
+    <key alias="installOverlayDescription">Acabas de instalar Umbraco Forms - Vamos a crear tu primera forma</key>
+    <key alias="emptyOverlayTitle">Crear un formulario</key>
+    <key alias="emptyOverlayDescription">Aún no tienes ningún formulario configurado, que dices si creas uno ahora?</key>
+    <key alias="createAForm">Crear un formulario</key>
+    <key alias="newVersionTitle">Hay una nueva versión disponible</key>
+    <key alias="newVersionDescription">Ahora puedes instalar Umbraco Forms</key>
+    <key alias="upgradeNow">Actualizar ahora</key>
+    <key alias="downloading">Descargar y actualizar formularios...</key>
+    <key alias="invalidLicense">Licencia invalida</key>
+    <key alias="invalidLicenseValidFor">Tu licencia de Formularios actual solo es válida para:</key>
+    <key alias="reconfigure">Por favor, regresa a configurar tu licencia a continuación.</key>
+    <key alias="trialTitle">Gracias por probar Umbraco Forms</key>
+    <key alias="trialDescription">Para seguir usando Umbraco Forms, debes comprar una licencia o usar una licencia existente</key>
+    <key alias="configureLicense">Configurar la licencia existente</key>
+    <key alias="buyLicense">Compra licencia</key>
+    <key alias="buyLicenseTitle">Comprar una licencia</key>
+    <key alias="buyLicenseCopy">
+      <![CDATA[
+        <p>
+          Solo toma <strong>unos minutos comprar una licencia para</strong> for Umbraco Forms and your <strong>y tu licencia se entrega instantáneamente</strong>.
+        </p>
+        <p>
+          Los pasos son:
+          <ol>
+            <li>Haga clic en el botón de compras a continuación</li>
+            <li>Pago con tarjeta de crédito (o factura)</li>
+            <li>Configure la licencia dentro de Umbraco Forms y vas a estar en funcionamiento</li>
+          </ol>
+        </p>
+      ]]>
+    </key>
+    <key alias="buyLink">Compra Umbraco Forms</key>
+    <key alias="buyLicenseFAQs">
+      <![CDATA[
+        <h4>Preguntas frecuentes:</h4>
+        <h5>¿Cuanto cuesta?</h5>
+        <p>Los precios comienzan en &euro;209 y es un pago único (sin suscripción).</p>
+        <h5>¿Qué cubre una licencia?</h5>
+        <p>Una licencia cubre un solo dominio y también funcionará en todos los subdominios. It also includes two additional development domains.</p>
+        <h5>¿Puedo agregar dominios adicionales a la licencia?</h5>
+        <p>Sí, se pueden agregar dominios adicionales. Puedes comprar dominios adicionales a tu licencia desde tu cuenta en Umbraco.com.</p>
+        <h5>¿Más preguntas</h5>
+        <p>
+          No te preocupes, hay <a class="green-link" href="https://our.umbraco.com/Documentation/Add-ons/The-Licensing-model/index-v7?utm_source=core&utm_medium=dashboard&utm_content=buy-faq-link&utm_campaign=formslicensing">más detalles en la documentación</a> Y también eres más que bienvenido/a <a class="green-link" href="https://umbraco.com/contact-us?utm_source=core&utm_medium=dashboard&utm_content=contact-us-link&utm_campaign=formslicensing">a ponerte en contacto con nosotros</a>. Generalmente respondemos en un par de horas.
+        </p>      
+      ]]>
+    </key>
+    <key alias="configureLicenseTitle">Configurar una licencia de Umbraco Forms</key>
+    <key alias="configureLicenseCopy">
+      Si ya has comprado Umbraco Forms, puedes recuperar y configurar tu licencia automáticamente aquí. Simplemente ingrese sus credenciales de umbraco.com debajo
+      y encontraremos tu licencia.
+    </key>
+    <key alias="configureLicenseFAQs">
+      <![CDATA[
+        <h4>Preguntas frecuentes:</h4>
+        <h5>¿No sé cuáles son mis credenciales?</h5>
+        <p>
+          Es una combinación de tu correo electrónico y contraseña desde el momento en que el pedido fue realizado. Siempre puedes <a class="green-link" href="https://shop.umbraco.com/profile/retrieve-your-password/">restablecer tu contraseña aquí</a>.
+        </p>
+        <h5>¿Cómo compro una licencia?</h5>
+        <p>
+         Si no tienes una licencia, puedes <a class="btn-link green-link" ng-click="vm.status.state = 'buy'">obtener una desde aquí y solo te llevará unos minutos</a>.
+        </p>
+      ]]>
+    </key>
+    <key alias="findLicenses">Encontrar licencias</key>
+    <key alias="invalidEmail">Email o contraseña inválidos</key>
+    <key alias="noLicensesAvailable">No hay licencias de Umbraco Forms disponibles en esta cuenta</key>
+    <key alias="availableLicensesTitle">Licencias Disponibles</key>
+    <key alias="foundLicenses">Encontrada</key>
+    <key alias="foundLicensesAccount">en la cuenta</key>
+    <key alias="noDomainsAssigned">No tiene dominios asignados</key>
+    <key alias="setDomain">Por favor configure un dominio en esta licencia</key>
+    <key alias="configureAndInstall">Configurar e instalar</key>
+    <key alias="installLicense">Instalar esta licencia</key>
+    <key alias="validDomains">Dominios válidos</key>
+    <key alias="licenseValidOnDomain">Esta licencia es válida en el dominio actual</key>
+    <key alias="licenseNotValidOnDomain">Esta licencia es válida en el dominio actual</key>
+    <key alias="plainTextPasswordWarning">
+      <![CDATA[
+        <h3 class="warning">Advertencia: tus ajustes de configuración están configurados para guardar contraseñas de texto sin formato.</h3>
+        <p>Cuando utilizas un campo de contraseña en cualquiera de tus formularios, los datos que tus visitantes ingresarán en ese campo se almacenarán en texto sin formato. Este es un problema de seguridad y debe evitarse.</p>
+        <p>Para solucionar este problema, puede ir a tu <span class="code">~/App_Plugins/UmbracoForms/UmbracoForms.config</span> archivo y establecer la clave <span class="code">SavePlainTextPasswords</span> en <span class="code">Falso</span>.</p>
+        <p>Después de actualizar esta configuración, asegúrese de reciclar el grupo de aplicaciones del sitio para que la nueva configuración se active.</p>
+        <p>Nota: los valores de contraseña se seguirán transmitiendo a los flujos de trabajo, independientemente de la configuración en <span class="code">UmbracoForms.config</span></p>
+      ]]>
+    </key>
+    <key alias="currentVersion">La versión actual instalada de Umbraco Forms:</key>
+    <key alias="licenseConfiguredNotificationTitle">Licencia configurada</key>
+    <key alias="licenseConfiguredNotificationMessage">Umbraco Forms se ha configurado para tu uso en este sitio web.</key>
+    <key alias="insufficientPermissionsError">Permisos insuficientes</key>
+    <key alias="insufficientPermissionsMessage">No tienes permisos para crear y administrar formularios.</key>
+    <key alias="insufficientPermissionsUpgradeMessage">Solo los usuarios administradores pueden actualizar los formularios Umbraco.</key>
+    <key alias="licensedDomains">Dominios con licencia</key>
+  </area>
+  <area alias="formCopy">
+    <key alias="title">Copiando formulario '%0%'</key>
+    <key alias="enterName">Ingresa un nombre para el formulario copiado</key>
+    <key alias="alsoCopyWorkflows">¿Quieres copiar también los flujos de trabajo?</key>
+    <key alias="copyToNewFolder">¿Copiar a una carpeta nueva?</key>
+    <key alias="selectLocation">Selecciona la ubicación del formulario copiado</key>
+  </area>
+  <area alias="formCreate">
+    <key alias="title">Ccrear un nuevo formulario o carpeta</key>
+    <key alias="emptyForm">Formulario vacío</key>
+    <key alias="emptyFormDescription">Empezando de nuevo</key>
+    <key alias="folder">Carpeta</key>
+    <key alias="folderDescription">Utilizado para organizar formularios</key>
+    <key alias="enterFolderName">Ingrese un nombre de carpeta</key>
+  </area>
+  <area alias="formPermissions">
+    <key alias="accessDeniedTitle">Acceso denegado</key>
+  </area>
+  <area alias="formMessages">
+    <key alias="saveErrorMessage">Por favor, compruebe si tu configuración es válida.</key>
+  </area>
+  <area alias="formEdit">
+    <key alias="addQuestion">Añadir pregunta</key>
+    <key alias="groupIsEmpty">El grupo está vacío</key>
+    <key alias="dropQuestionHere">Deja una pregunta aquí...</key>
+    <key alias="letGo">Yaay.. vamonos</key>
+    <key alias="pageIsEmpty">La página esta vacía</key>
+    <key alias="dropGroupHere">Pon un grupo aquí...</key>
+    <key alias="addGroup">Agregar un grupo nuevo</key>
+    <key alias="addPage">Agregar página nuevae</key>
+    <key alias="pageTitlePlaceholder">Página sin título (opcional)</key>
+    <key alias="groupTitlePlaceholder">Grupo sin título (opcional)</key>
+    <key alias="saveFieldFailedTitle">El campo no se pudo guardar</key>
+    <key alias="accessDeniedMessage">No tienes acceso para editar este formulario.</key>
+    <key alias="formSaved">Formulario guardado</key>
+    <key alias="unableToLoadForm">No se puede cargar el formulario</key>
+    <key alias="helpText">Texto de ayuda</key>
+    <key alias="editPage">Editar página</key>
+    <key alias="editGroup">Editar grupo</key>
+    <key alias="addQuestion">Añadir pregunta</key>
+    <key alias="editQuestion">Editar pregunta</key>
+    <key alias="workflows">Flujos de trabajo</key>
+  </area>
+  <area alias="formFileUpload">
+    <key alias="allowAllFiles">Permitir todos los archivos</key>
+    <key alias="allowOnlySpecifiedFiles">Permitir solo archivos específicos</key>
+    <key alias="predefinedAllowedFileTypes">Tipos de archivos permitidos predefinidos</key>
+    <key alias="userDefinedAllowedFileTypes">Tipos de archivos permitidos definidos por el usuario</key>
+    <key alias="deleteAllowedFileTypeConfirmationTitle">Confirmación</key>
+    <key alias="deleteAllowedFileTypeConfirmationDescription">¿Estás seguro/a de que quieres eliminar esto?</key>
+    <key alias="duplicateFileTypeErrorTitle">Error del tipo de archivo</key>
+    <key alias="duplicateFileTypeErrorMessage">No se puede agregar el tipo de archivo porque es un duplicado.</key>
+    <key alias="pickFile">Seleccionar archivo</key>
+    <key alias="uploading">Cargando</key>
+    <key alias="currentFile">Archivo actual</key>
+  </area>
+  <area alias="formPrevalues">
+    <key alias="addNewItem">Agregue un nuevo elemento aquí</key>
+    <key alias="duplicateErrorTitle">Error de prevalor</key>
+    <key alias="duplicateAddErrorMessage">No se puede agregar valor ya que crearía un duplicado.</key>
+    <key alias="duplicateEditErrorMessage">No se puede agregar valor ya que crearía un duplicado.</key>
+  </area>
+  <area alias="formDelete">
+    <key alias="title">¿Estás seguro/a de que quieres eliminar el %0% '%1%'?</key>
+    <key alias="note">Tenga en cuenta que esto puede llevar mucho tiempo dependiendo de la cantidad de registros.</key>
+    <key alias="cannotDeleteFolder">La carpeta seleccionada no se puede eliminar porque no está vacía.</key>
+    <key alias="successMessageForForm">El formulario se eliminó correctamente.</key>
+    <key alias="failedMessageForForm">El formulario no se pudo eliminar.</key>
+    <key alias="successMessageForFolder">Se eliminó la carpeta con éxito.</key>
+    <key alias="failedMessageForFolder">La carpeta no se pudo borrar.</key>
+  </area>
+  <area alias="formEntries">
+    <key alias="title">%0% Entradas</key>
+    <key alias="filterEntries">Filtrar entradas...</key>
+    <key alias="selectedRowsDescription">%0% de %1% seleccionados</key>
+    <key alias="export">Exportar</key>
+    <key alias="chooseExportFormat">Elija un formato para exportar registros de formulario</key>
+    <key alias="entriesNotStored">Actualmente, los envíos no se almacenan en la base de datos.</key>
+    <key alias="enableStoreEntries">Para habilitar esto, vaya a la configuración del formulario y active la función "Almacenar registros".</key>
+    <key alias="noEntriesInRange">Aún no se agregaron presentaciones en este rango de fechas.</key>
+    <key alias="noEntriesInRangeDetail">No pudimos encontrar ningún envío, ¿está seguro de que publicaste el formulario? O intenta ampliar el intervalo de fechas.</key>
+    <key alias="noEntriesMatchingSearch">No pudimos encontrar ningún envío que coincida con tu búsqueda.</key>
+    <key alias="noEntriesMatchingSearchDetail">Intente buscar otra cosa, tal vez tengas suerte la próxima vez.</key>
+    <key alias="selectedEntryPaging">Entrada %0% de %1%</key>
+    <key alias="previousEntry">Entrada anterior</key>
+    <key alias="nextEntry">Entrada siguiente</key>
+    <key alias="accessDeniedMessage">No tienes acceso para ver las entradas de este formulario.</key>
+    <key alias="executeCompleteTitle">Acción ejecutada</key>
+    <key alias="executeSuccessMessage">Acción ejecutada con éxito %0%</key>
+    <key alias="executeErrorMessage">FError al ejecutar la acción %0% debido a error: %1%.</key>
+    <key alias="entryDetails">Detalles de la entrada</key>
+    <key alias="closeDetails">Cerrar detalles</key>
+    <key alias="submittedOn">Enviado el</key>
+    <key alias="updatedOn">Actualizado en</key>
+    <key alias="fromPage">De la página</key>
+    <key alias="member">Miembro</key>
+    <key alias="state">Estado</key>
+    <key alias="uniqueId">Identificación única</key>
+  </area>
+  <area alias="formMove">
+    <key alias="title"><![CDATA[Seleccione la carpeta a la que se moverá <strong>%0%</strong> en la estructura de árbol a continuación.]]></key>
+    <key alias="successMessage"><![CDATA[<strong>%0%</strong> se movió debajo <strong>%1%</strong>.]]></key>
+    <key alias="successNotificationHeader">Movido</key>
+    <key alias="successNotificationDescriptionForForm">El formulario se movió al lugar seleccionado.</key>
+    <key alias="successNotificationDescriptionForFolder">El formulario se movió al lugar seleccionado.</key>
+  </area>
+  <area alias="formRename">
+    <key alias="enterNewName">Ingresa el nombre nuevo</key>
+    <key alias="successNotificationHeader">Renombrado</key>
+    <key alias="successNotificationDescriptionForFolder">La carpeta se renombró.</key>
+  </area>
+  <area alias="formConditions">
+    <key alias="title">Condiciones</key>
+    <key alias="enableConditions">Activar condiciones</key>
+    <key alias="actionTypeShow">Mostrar</key>
+    <key alias="actionTypeHide">Ocultar</key>
+    <key alias="logicTypeAll">todo</key>
+    <key alias="logicTypeAny">alguno</key>
+    <key alias="operatorIs">es</key>
+    <key alias="operatorIsNot">no es</key>
+    <key alias="operatorGreaterThen">es mayor que</key>
+    <key alias="operatorLessThen">es menos que</key>
+    <key alias="operatorContains">contiene</key>
+    <key alias="operatorStartsWith">comienza con</key>
+    <key alias="operatorEndsWith">termina con</key>
+    <key alias="thisFieldSetIf">este conjunto de campos si</key>
+    <key alias="ofTheFollowingMatch">del siguiente partido</key>
+    <key alias="selectField">Selecciona campo</key>
+    <key alias="addCondition">Añadir condición</key>
+    <key alias="pageConditionsDescription">Opcionalmente, defina las condiciones para la visualización del botón "Enviar" o "Siguiente" para la página.</key>
+    <key alias="pageButtonConditionStatus">
+      <![CDATA[%0% buttons for this page if <strong>%1%</strong> of the following match:]]>
+    </key>
+    <key alias="fieldsetConditionStatus">
+      <![CDATA[%0% this group if if <strong>%1%</strong> of the following match:]]>
+    </key>
+    <key alias="fieldConditionStatus">
+      <![CDATA[%0% this question if if <strong>%1%</strong> of the following match:]]>
+    </key>
+  </area>
+  <area alias="formThemes">
+    <key alias="noThemesAvailable">No hay temas disponibles. Agregar temas a / Vistas / Parciales / Formularios / Temas</key>
+  </area>
+  <area alias="formWorkflows">
+    <key alias="workflowNameLabel">El nombre del flujo de trabajo</key>
+    <key alias="workflowNameDescription">Pon un nombre descriptivo a tu flujo de trabajo</key>
+    <key alias="activeLabel">Activo</key>
+    <key alias="activeDescription">Habilita o deshabilita el flujo de trabajo</key>
+    <key alias="includeSensitiveDataLabel">Incluye datos sensibles</key>
+    <key alias="includeSensitiveDataDescription">¿Incluyes datos sensibles al ejecutar este flujo de trabajo?</key>
+    <key alias="submitMessage">Enviar mensaje / Ir a la página</key>
+    <key alias="approve">Aprobar</key>
+    <key alias="automatic">automatico</key>
+    <key alias="noWorkflowsAdded">No se agregan flujos de trabajo</key>
+    <key alias="configureWorkflow">configurar el flujo de trabajo</key>
+    <key alias="saveFailedTitle">El flujo de trabajo no se pudo guardar</key>
+    <key alias="closeConfirmationTitle">Confirmación</key>
+    <key alias="closeConfirmationMessage">Se han realizado cambios que no se han guardado. ¿Estás seguro de que deseas cerrar?</key>
+    <key alias="chooseWorkflow">Elija el flujo de trabajo</key>
+    <key alias="on">Al</key>
+    <key alias="onSubmit">Al enviar</key>
+    <key alias="onSubmitDescription">Ejecutaremos estos flujos de trabajo cuando envíe el formulario.</key>
+    <key alias="onApprove">Al aprobar</key>
+    <key alias="onApproveDescription">Estos flujos de trabajo se ejecutarán cuando se apruebe la entrada.</key>
+    <key alias="onApproveAutomaticDescription">esto sucede automáticamente después del evento de envío con la configuración actual del formulario</key>
+    <key alias="defaultWorkflowName">Enviar mensaje / Ir a la página</key>
+    <key alias="defaultWorkflowDescription">Muestre un mensaje cuando se envíe el formulario o vaya a una página de Umbraco</key>
+    <key alias="addWorkflow">Agregar flujo de trabajo</key>
+    <key alias="messageOnSubmit">Mensaje al enviar</key>
+    <key alias="messageOnSubmitDescription">Muestre un mensaje cuando se envía el formulario</key>
+    <key alias="goToPage">Ir a la pagina</key>
+    <key alias="goToPageDescription">Accede a una página de Umbraco cuando se envía el formulario</key>
+  </area>
+  <area alias="fieldSetColumns">
+    <key alias="title">Columnas</key>
+    <key alias="setNumber">Establece cuántas columnas deseas tener en tu grupo.</key>
+    <key alias="columnNumberDescription">Este grupo tiene actualmente %0%.</key>
+    <key alias="addColumn">Añadir columna</key>
+  </area>
+  <area alias="fieldSettings">
+    <key alias="namePlaceholder">Ingrese una pregunta...</key>
+    <key alias="descriptionPlaceholder">Ingrese el texto de ayuda...</key>
+    <key alias="requiredLabel">Etiqueta obligatoria</key>
+    <key alias="chooseAnswerType">Elige el tipo de respuesta</key>
+    <key alias="sensitiveData">Datos sensibles</key>
+    <key alias="sensitiveDataDescription">Evita que los datos sean visualizados y exportados si un usuario no tiene permisos suficientes.</key>
+    <key alias="sensitiveDataLabel">Sí, este campo almacena datos confidenciales</key>
+    <key alias="allowedFileUploadTypes">Tipos permitidos de carga de archivos</key>
+    <key alias="prevalues">Prevalores</key>
+    <key alias="prevaluesProvideWithSources">Proporciona aquí una lista de opciones (prevalores) específicos para este campo o selecciona una fuente de prevalor predefinida.</key>
+    <key alias="prevaluesProvide">Proporciona una lista de opciones (prevalores) para el campo.</key>
+    <key alias="prevaluesItems">Elementos</key>
+    <key alias="prevaluesSource">Fuente de prevalor</key>
+    <key alias="pressEnterToAdd">Presiona el botón enter para agregar un valor</key>
+    <key alias="settings">Configuraciones</key>
+    <key alias="mandatory">Obligatorio</key>
+    <key alias="enterRegex">Ingresa una expresión regular</key>
+    <key alias="invalidPlaceholder">Ingresa un mensaje de campo inválido...</key>
+    <key alias="allowMultipleFileUploads">Permitir múltiples cargas de archivos</key>
+    <key alias="multipleFilesToggleTextOn">Se permiten varios archivos</key>
+    <key alias="multipleFilesToggleTextOff">Solo archivo individual</key>
+  </area>
+  <area alias="formSettings">
+    <key alias="storeRecords">Registros de la tienda</key>
+    <key alias="storeRecordsDescription">
+      Marque esta casilla para guardar los registros enviados en una base de datos.
+      Esto te permitirá verlos y exportarlos desde la descripción general de las consultas.
+     Si no quieres almacenar datos (debido a las políticas de tu organización), deja la casilla sin marcar.
+    </key>
+    <key alias="storeRecordsConfirm">Sí, mantenga los registros enviados en una base de datos, para que se puedan ver y exportar más tarde.</key>
+    <key alias="captions">Subtítulos</key>
+    <key alias="captionsDescription">Cambia los títulos de los botones Enviar, Siguiente y Anterior.</key>
+    <key alias="captionSubmitButton">Etiqueta del botón "Enviar"</key>
+    <key alias="captionNextButton">Etiqueta del botón 'Siguiente'</key>
+    <key alias="captionPreviousButton">Etiqueta del botón "Anterior"</key>
+    <key alias="styling">Estilizar</key>
+    <key alias="stylingDescription">Agrega una o más clases para ajustar tu formulario para habilitar el estilo personalizado, deshabilitar el estilo predeterminado y cargar activos con Dependencia del cliente.</key>
+    <key alias="formCssClass">Formulario de clase CSS</key>
+    <key alias="disableDefaultStylesheet">Desactivar hoja de estilo predeterminada</key>
+    <key alias="loadWithClientDependency">Cargar activos con dependencia del cliente</key>
+    <key alias="validation">Validación</key>
+    <key alias="validationDescription">Proporcions mejores mensajes de validación, oculta las etiquetas de validación y cambie o deshabilite el marcador obligatorio.</key>
+    <key alias="mandatoryErrorMessage">Mensaje de error obligatorio</key>
+    <key alias="mandatoryErrorMessageDescription">Mensaje para mostrar cuando un campo obligatorio se deja vacío</key>
+    <key alias="invalidErrorMessage">Mensaje de error no válido</key>
+    <key alias="invalidErrorMessageDescription">Mensaje para mostrar cuando un campo no es válido</key>
+    <key alias="showValidationSummary">Mostrar resumen de validación</key>
+    <key alias="hideFieldValidationLabels">Ocultar etiquetas de validación de campo</key>
+    <key alias="markFields">Marcar campos</key>
+    <key alias="markFieldsNoIndicator">Sin indicador</key>
+    <key alias="markMandatoryFields">Marcar campos obligatorios</key>
+    <key alias="markOptionalFields">Marcar campos opcionales</key>
+    <key alias="indicator">Indicator</key>
+    <key alias="changeIndicatorSymbol">Cambiar el símbolo indicador obligatorio</key>
+    <key alias="autocomplete">Autocompletar</key>
+    <key alias="autocompleteDescription">Agregue un atributo para controlar el comportamiento general de autocompletar formularios.</key>
+    <key alias="autocompleteNone">Ninguno</key>
+    <key alias="autocompleteOn">Abierto</key>
+    <key alias="autocompleteOff">Apagado</key>
+    <key alias="moderation">Moderation</key>
+    <key alias="moderationDescription">Permite que los envíos de formularios sean moderados antes de la publicacion. La mayoría de los casos de uso son para entradas que se muestran públicamente, como comentarios de publicaciones de blogs o presentaciones para una campaña social.</key>
+    <key alias="enablePostModeration">Habilitar la moderación de publicaciones</key>
+  </area>
+  <area alias="formSecurity">
+    <key alias="saveSuccessTitle">Se guardó la seguridad del formulario de usuario</key>
+    <key alias="saveErrorTitle">No se pudo guardar la seguridad del formulario de usuario</key>
+    <key alias="manageFormsLabel">Gestionar formularios</key>
+    <key alias="manageFormsDescription">Otorgar o denegar el acceso a los formularios de gestión.</key>
+    <key alias="manageWorkflowsLabel">Gestionar los flujos de trabajo</key>
+    <key alias="manageWorkflowsDescription">Otorgar o denegar acceso para administrar todos los elementos del flujo de trabajo de formularios</key>
+    <key alias="manageDatasourcesLabel">Gestionar fuentes de datos.</key>
+    <key alias="manageDatasourcesDescription">Otorgar o denegar el acceso a la administración de cualquier fuente de datos para todos los formularios.</key>
+    <key alias="managePrevalueSourcesLabel">Gestionar fuentes de prevalorización</key>
+    <key alias="managePrevalueSourcesDescription">Otorgar o denegar el acceso a la gestión de fuentes de prevalor para todos los formularios.</key>
+    <key alias="manageIndividualFormsLabel">Seguridad del formulario</key>
+    <key alias="manageIndividualFormsDescription">Otorgar o denegar el acceso a formularios individuales</key>
+    <key alias="formName">Nombre del formulario</key>
+    <key alias="hasAccess">Tiene acceso</key>
+  </area>
+  <area alias="formDataSources">
+    <key alias="typeDescription">Seleccione el tipo de fuente de datos</key>
+    <key alias="createForm">Crear formulario</key>
+    <key alias="formName">Nombre del formulario</key>
+    <key alias="selectFields">Seleccione campos</key>
+    <key alias="selectFieldsDescription">Campos de la fuente de datos que desea incluir en el formulario.</key>
+    <key alias="setupForeignKeys">Configurar claves foráneas</key>
+    <key alias="setupForeignKeysDescription">Seleccione la columna de valor para los campos de clave externa.</key>
+    <key alias="selectType">Seleccione tipo</key>
+    <key alias="selectTypeDescription">Tipo de campo que deseas utilizar para los campos incluidos (o valor predeterminado).</key>
+    <key alias="defaultValue">Valor predeterminado</key>
+    <key alias="deleteConfirm">¿Estás seguro de que deseas eliminar la fuente de datos %0%?</key>
+    <key alias="saveSuccessTitle">Se guardó la fuente de datos</key>
+    <key alias="saveErrorTitle">No se pudo guardar la fuente de datos</key>
+    <key alias="accessDeniedMessage">No tienes acceso para editar fuentes de datos</key>
+  </area>
+  <area alias="formPrevalueSources">
+    <key alias="typeDescription">Seleccione el tipo de fuente de prevalor</key>
+    <key alias="deleteConfirm">¿Estás seguro/a de que quieres eliminar la fuente de prevalencia %0%?</key>
+    <key alias="saveSuccessTitle">Se guardó la fuente de la prevaluación</key>
+    <key alias="saveErrorTitle">No se pudo guardar la fuente de la prevaluación</key>
+    <key alias="accessDeniedMessage">No tienes acceso para editar fuentes de prevalor</key>
+  </area>
+
+  <area alias="formProviderFieldTypes">
+    <key alias="checkboxName">Casilla de verificación</key>
+    <key alias="checkboxDescription">Muestra una casilla de verificación.</key>
+    <key alias="checkboxDefaultValueLabel">Valor predeterminado</key>
+    <key alias="checkboxDefaultValueDescription">Ingrese un valor predeterminado.</key>
+
+    <key alias="multipleChoiceName">Opción multiple</key>
+    <key alias="multipleChoiceDescription">Muestra una colección de casillas de verificación para seleccionar varias respuestas.</key>
+    <key alias="multipleChoiceDefaultValueLabel">Valor predeterminado</key>
+    <key alias="multipleChoiceDefaultValueDescription">Ingrese un valor predeterminado.</key>
+    <key alias="multipleChoiceShowLabelLabel">Mostrar etiqueta</key>
+    <key alias="multipleChoiceShowLabelDescription">Indique si la etiqueta del campo debe mostrarse al renderizar el formulario.</key>
+
+    <key alias="dataConsentName">Consentimiento para los datos</key>
+    <key alias="dataConsentDescription">Genera un campo para solicitar el consentimiento de los datos.</key>
+    <key alias="dataConsentAcceptCopyLabel">Aceptar copia</key>
+    <key alias="dataConsentAcceptCopyDescription">El texto utilizado para confirmar el consentimiento.</key>
+
+    <key alias="dateName">Fecha</key>
+    <key alias="dateDescription">Genera un selector de fechas.</key>
+    <key alias="datePlaceholderLabel">Placeholder</key>
+    <key alias="datePlaceholderDescription">Ingrese un valor para el placeholder.</key>
+
+    <key alias="dropdownName">Menú desplegable</key>
+    <key alias="dropdownDescription">Muestra una lista de valores en un menú desplegable</key>
+    <key alias="dropdownDefaultValueLabel">Valor predeterminado</key>
+    <key alias="dropdownDefaultValueDescription">Ingrese un valor predeterminado.</key>
+    <key alias="dropdownAllowMultipleSelectionsLabel">Permitir selecciones múltiples</key>
+    <key alias="dropdownAllowMultipleSelectionsDescription">Indique si se permiten múltiples selecciones de la lista.</key>
+    <key alias="dropdownShowLabelLabel">Mostrar etiqueta</key>
+    <key alias="dropdownShowLabelDescription">Indique si la etiqueta del campo debe mostrarse al renderizar el formulario.</key>
+    <key alias="dropdownAutocompleteAttributeLabel">Atributo de autocompletar</key>
+    <key alias="dropdownAutocompleteAttributeDescription">Opcionalmente, ingrese un valor para el atributo de autocompletar.</key>
+
+    <key alias="fileUploadName">Subir archivo</key>
+    <key alias="fileUploadDescription">Representa un campo de carga, lo que permite cargar archivos.</key>
+
+    <key alias="hiddenName">Oculto</key>
+    <key alias="hiddenDescription">Genera un campo oculto.</key>
+    <key alias="hiddenDefaultValueLabel">Valor predeterminado</key>
+    <key alias="hiddenDefaultValueDescription">Ingrese un valor predeterminado.</key>
+
+    <key alias="passwordName">Contraseña</key>
+    <key alias="passwordDescription">Muestra un campo de contraseña.</key>
+    <key alias="passwordPlaceholderLabel">Placeholder</key>
+    <key alias="passwordPlaceholderDescription">Ingrese un valor para el campo (placeholder).</key>
+
+    <key alias="singleChoiceName">Elección única</key>
+    <key alias="singleChoiceDescription">Muestra una lista de botones de opción para habilitar una respuesta de opción única.</key>
+    <key alias="singleChoiceDefaultValueLabel">Valor predeterminado</key>
+    <key alias="singleChoiceDefaultValueDescription">Ingrese un valor predeterminado.</key>
+    <key alias="singleChoiceShowLabelLabel">Mostrar etiqueta</key>
+    <key alias="singleChoiceShowLabelDescription">Indique si se debe mostrar la etiqueta del campo al procesar el formulario.</key>
+
+    <key alias="recaptcha2Name">reCAPTCHA v2</key>
+    <key alias="recaptcha2Description">Google reCAPTCHA v2.</key>
+    <key alias="recaptcha2ThemeLabel">Tema</key>
+    <key alias="recaptcha2ThemeDescription">reCAPTCHA v2 theme.</key>
+    <key alias="recaptcha2SizeLabel">Talla</key>
+    <key alias="recaptcha2SizeDescription">reCAPTCHA v2 talla.</key>
+    <key alias="recaptcha2ErrorMessageLabel">Mensaje de error</key>
+    <key alias="recaptcha2ErrorMessageDescription">El mensaje de error que se muestra cuando el usuario no pasa la verificación reCAPTCHA.</key>
+
+    <key alias="reCAPTCHAV3WithScoreName">reCAPTCHA v3 con puntaje</key>
+    <key alias="reCAPTCHAV3WithScoreDescription">Google reCAPTCHA v3 con umbral de puntuación</key>
+    <key alias="reCAPTCHAV3WithScoreScoreThresholdLabel">Umbral de puntuación</key>
+    <key alias="reCAPTCHAV3WithScoreScoreThresholdDescription">Una puntuación determinada de reCAPTCHA v3 entre 0 y 1, por encima del cual se aceptan envíos de formularios. Un valor más alto detectará más envíos de spam, pero también aumentará el riesgo de rechazo de entradas válidas. Para la mayoría de los sitios, 0.5 es una opción sensata..</key>
+    <key alias="reCAPTCHAV3WithScoreScoreErrorMessageLabel">Mensaje de error</key>
+    <key alias="reCAPTCHAV3WithScoreScoreErrorMessageDescription">El mensaje de error que se muestra cuando el usuario no pasa la verificación reCAPTCHA.</key>
+
+    <key alias="titleAndDescriptionName">Título y descripción</key>
+    <key alias="titleAndDescriptionDescription">Esto se usa para ingresar texto descriptivo.</key>
+    <key alias="titleAndDescriptionCaptionLabel">Título</key>
+    <key alias="titleAndDescriptionCaptionDescription">Ingrese un título.</key>
+    <key alias="titleAndDescriptionBodyTextLabel">Texto</key>
+    <key alias="titleAndDescriptionBodyTextDescription">Ingrese el texto copiado.</key>
+
+    <key alias="longAnswerName">Respuesta larga</key>
+    <key alias="longAnswerDescription">Genera un área de texto, diseñada para respuestas más largas.</key>
+    <key alias="longAnswerDefaultValueLabel">Valor predeterminado</key>
+    <key alias="longAnswerDefaultValueDescription">Ingrese un valor predeterminado.</key>
+    <key alias="longAnswerPlaceholderLabel">Placeholder</key>
+    <key alias="longAnswerPlaceholderDescription">Ingrese un valor para el placeholder.</key>
+    <key alias="longAnswerShowLabelLabel">Mostrar etiqueta</key>
+    <key alias="longAnswerShowLabelDescription">Indique si debe mostrarse la etiqueta del campo al renderizar el formulario.</key>
+    <key alias="longAnswerAutocompleteAttributeLabel">Atributo de autocompletar</key>
+    <key alias="longAnswerAutocompleteAttributeDescription">Opcionalmente, ingrese un valor para el atributo de autocompletar.</key>
+    <key alias="longAnswerNumberOfRowsLabel">Número de filas</key>
+    <key alias="longAnswerNumberOfRowsDescription">Ingrese el número de filas que se muestran para la entrada.</key>
+    <key alias="longAnswerMaximumLengthLabel">Longitud máxima</key>
+    <key alias="longAnswerMaximumLengthDescription">Ingrese el número máximo de caracteres aceptados.</key>
+
+    <key alias="shortAnswerName">Respuesta corta</key>
+    <key alias="shortAnswerDescription">Reproduce un campo de entrada de texto para respuestas breves.</key>
+    <key alias="shortAnswerDefaultValueLabel">Valor predeterminado</key>
+    <key alias="shortAnswerDefaultValueDescription">Ingrese un valor predeterminado.</key>
+    <key alias="shortAnswerPlaceholderLabel">Placeholder</key>
+    <key alias="shortAnswerPlaceholderDescription">Ingrese un valor para el placeholder.</key>
+    <key alias="shortAnswerShowLabelLabel">Mostrar etiqueta</key>
+    <key alias="shortAnswerShowLabelDescription">Indique si debe mostrarse la etiqueta del campo al renderizar el formulario.</key>
+    <key alias="shortAnswerMaximumLengthLabel">Longitud máxima</key>
+    <key alias="shortAnswerMaximumLengthDescription">Ingrese el número máximo de caracteres aceptados.</key>
+    <key alias="shortAnswerFieldTypeLabel">Tipo de campo</key>
+    <key alias="shortAnswerFieldTypeDescription">Seleccione el tipo de información esperada.</key>    
+    <key alias="shortAnswerAutocompleteAttributeLabel">Atributo de autocompletar</key>
+    <key alias="shortAnswerAutocompleteAttributeDescription">Opcionalmente, ingrese un valor para el atributo de autocompletar.</key>
+  </area>
+
+  <area alias="formProviderWorkflows">
+    <key alias="changeRecordStateName">Cambiar estado de registro</key>
+    <key alias="changeRecordStateDescription">Cambia el estado del registro que se está procesando cuando coincide con una palabra.</key>
+    <key alias="changeRecordStateWordsLabel">Palabras</key>
+    <key alias="changeRecordStateWordsDescription">Lista de palabras separadas por comas que deben coincidir.</key>
+    <key alias="changeRecordStateActionLabel">Acción</key>
+    <key alias="changeRecordStateActionDescription">Qué hacer si coincide.</key>
+
+    <key alias="postAsXMLName">Publicar como XML</key>
+    <key alias="postAsXMLDescription">Publica el formulario como XML en una URL.</key>
+    <key alias="postAsXMLUrlLabel">URL</key>
+    <key alias="postAsXMLUrlDescription">Ingrese la URL para publicar.</key>
+    <key alias="postAsXMLMethodLabel">Método</key>
+    <key alias="postAsXMLMethodDescription">POST o GET.</key>
+    <key alias="postAsXMLXsltFileLabel">Archivo XSLT</key>
+    <key alias="postAsXMLXsltFileDescription">Transforma el XML antes de publicarlo.</key>
+    <key alias="postAsXMLFieldsLabel">Los campos</key>
+    <key alias="postAsXMLFieldsDescription">Mapee los campos necesarios.</key>
+    <key alias="postAsXMLUsernameLabel">Usuario</key>
+    <key alias="postAsXMLUsernameDescription">(opcional)</key>
+    <key alias="postAsXMLPasswordLabel">Contraseña</key>
+    <key alias="postAsXMLPasswordDescription">(opcional)</key>
+
+    <key alias="sendFormToURLName">Enviar formulario a URL</key>
+    <key alias="sendFormToURLDescription">Envía el formulario a una URL, ya sea como HTTP POST o GET.</key>
+    <key alias="sendFormToURLUrlLabel">URL</key>
+    <key alias="sendFormToURLUrlDescription">Ingrese la URL para publicar.</key>
+    <key alias="sendFormToURLMethodLabel">Método</key>
+    <key alias="sendFormToURLMethodDescription">POST o GET.</key>
+    <key alias="sendFormToURLStandardFieldsLabel">Campos estándar</key>
+    <key alias="sendFormToURLStandardFieldsDescription">Selecciona cualquier información de formulario estándar para enviar.</key>
+    <key alias="sendFormToURLFieldsLabel">Campos</key>
+    <key alias="sendFormToURLFieldsDescription">Seleccione los campos que necesitas</key>
+    <key alias="sendFormToURLUsernameLabel">Usuario</key>
+    <key alias="sendFormToURLUsernameDescription">(opcional)</key>
+    <key alias="sendFormToURLPasswordLabel">Contraseña</key>
+    <key alias="sendFormToURLPasswordDescription">(opcional)</key>
+
+    <key alias="saveAsAnXMLFileName">Guardar como archivo XML</key>
+    <key alias="saveAsAnXMLFileDescription">Guarda el resultado del formulario como un archivo XML a través de XSLT.</key>
+    <key alias="saveAsAnXMLFilePathLabel">Ruta</key>
+    <key alias="saveAsAnXMLFilePathDescription">Ruta para colocar el archivo.</key>
+    <key alias="saveAsAnXMLFileExtensionLabel">Extensión</key>
+    <key alias="saveAsAnXMLFileExtensionDescription">Extensión de archivo.</key>
+    <key alias="saveAsAnXMLFileXsltFileLabel">Archivo XSLT</key>
+    <key alias="saveAsAnXMLFileXsltFileDescription">Transforma el XML antes de guardarlo.</key>
+
+    <key alias="saveAsUmbracoContentNodeName">Guardar como Umbraco content node</key>
+    <key alias="saveAsUmbracoContentNodeDescription">Guarda los valores del formulario como un nodo de contenido utilizando un tipo de documento especificado.</key>
+    <key alias="saveAsUmbracoContentNodeFieldsLabel">Tipo de Documento</key>
+    <key alias="saveAsUmbracoContentNodeFieldsDescription">Seleccione el tipo de documento.</key>
+    <key alias="saveAsUmbracoContentNodePublishLabel">Publicar</key>
+    <key alias="saveAsUmbracoContentNodePublishDescription">Publique el nodo al instante.</key>
+    <key alias="saveAsUmbracoContentNodeRootNodeLabel">Guardar ubicación</key>
+    <key alias="saveAsUmbracoContentNodeRootNodeDescription">Elija la ubicación donde guardar el nodo de contenido creado.</key>
+
+    <key alias="sendEmailName">Enviar correo electrónico</key>
+    <key alias="sendEmailDescription">Envíe el resultado del formulario a una dirección de correo electrónico.</key>
+    <key alias="sendEmailEmailLabel">Receptor de E-mail</key>
+    <key alias="sendEmailEmailDescription">Ingrese el correo electrónico del destinatario.</key>
+    <key alias="sendEmailCcEmailLabel">CC Email</key>
+    <key alias="sendEmailCcEmailDescription">Ingrese las direcciones de correo electrónico CC (si es necesario).</key>
+    <key alias="sendEmailBccEmailLabel">BCC Email</key>
+    <key alias="sendEmailBccEmailDescription">Ingrese las direcciones de correo electrónico BCC (si es necesario).</key>
+    <key alias="sendEmailSenderEmailLabel">Correo electrónico del remitente</key>
+    <key alias="sendEmailSenderEmailDescription">Ingresa el correo electrónico del remitente (si está en blanco, usará la configuración de configuración).</key>
+    <key alias="sendEmailReplyToEmailLabel">Responder a un correo electrónico</key>
+    <key alias="sendEmailReplyToEmailDescription">Ingresa la dirección de correo electrónico que se utilizará como dirección de respuesta (si es necesario).</key>
+    <key alias="sendEmailSubjectLabel">Asunto</key>
+    <key alias="sendEmailSubjectDescription">Ingrese el asunto.</key>
+    <key alias="sendEmailMessageLabel">Mensaje</key>
+    <key alias="sendEmailMessageDescription">Ingrese el mensaje introductorio.</key>
+    <key alias="sendEmailAttachmentLabel">Archivos adjuntos</key>
+    <key alias="sendEmailAttachmentDescription">Adjunte los archivos cargados al correo electrónico</key>
+
+    <key alias="sendEmailWithTemplateRazorName">Enviar correo electrónico con plantilla (Razor)</key>
+    <key alias="sendEmailWithTemplateRazorDescription">Envíe el resultado del formulario a una dirección / direcciones de correo electrónico utilizando una plantilla .cshtml de Razor.</key>
+    <key alias="sendEmailWithTemplateRazorEmailLabel">Correo electrónico del destinatario</key>
+    <key alias="sendEmailWithTemplateRazorEmailDescription">Ingrese la dirección/direcciones de correo electrónico del destinatario.</key>
+    <key alias="sendEmailWithTemplateRazorCcEmailLabel">CC Email</key>
+    <key alias="sendEmailWithTemplateRazorCcEmailDescription">Ingrese las direcciones de correo electrónico CC (si es necesario).</key>
+    <key alias="sendEmailWithTemplateRazorBccEmailLabel">BCC Email</key>
+    <key alias="sendEmailWithTemplateRazorBccEmailDescription">Ingrese las direcciones de correo electrónico BCC (si es necesario).</key>
+    <key alias="sendEmailWithTemplateRazorSenderEmailLabel">Correo electrónico del remitente</key>
+    <key alias="sendEmailWithTemplateRazorSenderEmailDescription">Ingrese el correo electrónico del remitente (si está en blanco, usará la configuración de configuración).</key>
+    <key alias="sendEmailWithTemplateRazorReplyToEmailLabel">Responder a un correo electrónico</key>
+    <key alias="sendEmailWithTemplateRazorReplyToEmailDescription">Ingrese la dirección de correo electrónico que se utilizará como dirección de respuesta (si es necesario).</key>
+    <key alias="sendEmailWithTemplateRazorSubjectLabel">Asunto</key>
+    <key alias="sendEmailWithTemplateRazorSubjectDescription">Ingrese el asunto.</key>
+    <key alias="sendEmailWithTemplateRazorRazorViewFilePathLabel">Plantilla de correo electrónico</key>
+    <key alias="sendEmailWithTemplateRazorRazorViewFilePathDescription">La ruta a la vista de Razor que desea usar para generar el correo electrónico. Las plantillas de correo electrónico se almacenan en /Views/Partials/Forms/Emails.</key>
+    <key alias="sendEmailWithTemplateRazorAttachmentLabel">Adjuntos</key>
+    <key alias="sendEmailWithTemplateRazorAttachmentDescription">Adjunte los archivos cargados al correo electrónico.</key>
+
+    <key alias="sendXSLTTransformedEmailName">Enviar correo electrónico transformado XSLT</key>
+    <key alias="sendXSLTTransformedEmailDescription">Envíe el resultado del formulario a una dirección de correo electrónico.</key>
+    <key alias="sendXSLTTransformedEmailEmailLabel">Correo electrónico del destinatario</key>
+    <key alias="sendXSLTTransformedEmailEmailDescription">Ingrese la dirección/direcciones de correo electrónico del destinatario.</key>
+    <key alias="sendXSLTTransformedEmailCcEmailLabel">CC Email</key>
+    <key alias="sendXSLTTransformedEmailCcEmailDescription">Ingrese las direcciones de correo electrónico CC (si es necesario).</key>
+    <key alias="sendXSLTTransformedEmailBccEmailLabel">BCC Email</key>
+    <key alias="sendXSLTTransformedEmailBccEmailDescription">Ingrese las direcciones de correo electrónico BCC (si es necesario).</key>
+    <key alias="sendXSLTTransformedEmailSenderEmailLabel">Correo electrónico del remitente</key>
+    <key alias="sendXSLTTransformedEmailSenderEmailDescription">Ingrese el correo electrónico del remitente (si está en blanco, usará la configuración de configuración).</key>
+    <key alias="sendXSLTTransformedEmailReplyToEmailLabel">Responder a un correo electrónico</key>
+    <key alias="sendXSLTTransformedEmailReplyToEmailDescription">Ingrese la dirección de correo electrónico que se usará como dirección de respuesta (si es necesario).</key>
+    <key alias="sendXSLTTransformedEmailSubjectLabel">Asunto</key>
+    <key alias="sendXSLTTransformedEmailSubjectDescription">Ingrese el asunto.</key>
+    <key alias="sendXSLTTransformedEmailXsltFileLabel">Archivo XSLT</key>
+    <key alias="sendXSLTTransformedEmailXsltFileDescription">Transforma el XML antes de enviar el correo electrónico.</key>
+
+    <key alias="slackLegacyName">Slack (Legacy)</key>
+    <key alias="slackLegacyDescription">Publica los datos del formulario en un canal específico en Slack utilizando tokens heredados.</key>
+    <key alias="slackLegacyTokenLabel">API Token</key>
+    <key alias="slackLegacyTokenDescription">Slack API token.</key>
+    <key alias="slackLegacyChannelLabel">Channel</key>
+    <key alias="slackLegacyChannelDescription">Slack channel para publicar.</key>
+    <key alias="slackLegacyUsernameLabel">Nombre de usuario</key>
+    <key alias="slackLegacyUsernameDescription">El nombre de usuario o bot con el que publicar.</key>
+    <key alias="slackLegacyAvatarUrlLabel">Avatar URL</key>
+    <key alias="slackLegacyAvatarUrlDescription">La URL completa (incluido http / https) de la imagen del avatar.</key>
+
+    <key alias="slackName">Slack</key>
+    <key alias="slackDescription">Publica los datos del formulario en un canal específico de Slack mediante un webhook.</key>
+    <key alias="slackWebhookUrlLabel">URL del webhook</key>
+    <key alias="slackWebhookUrlDescription">Slack Webhook URL.</key>
+  </area>
+
+  <area alias="formProviderDataSources">
+    <key alias="sQLDatabaseName">Base de datos SQL</key>
+    <key alias="sQLDatabaseDescription">Se conecta a cualquier tabla de base de datos compatible con OLEDB y crea una fuente de datos a partir de ella.</key>
+    <key alias="sQLDatabaseConnectionLabel">Connection String</key>
+    <key alias="sQLDatabaseConnectionDescription">OleDB Compatible Connection string.</key>
+    <key alias="sQLDatabaseTableLabel">Nombre de la tabla</key>
+    <key alias="sQLDatabaseTableDescription">Nombre de la tabla de la base de datos.</key>
+  </area>
+
+  <area alias="formProviderPrevalueSources">
+    <key alias="dataSourceName">Fuente de datos</key>
+    <key alias="dataSourceDescription">Almacena los prevalores en la tabla de prevalencia.</key>
+
+    <key alias="getValuesFromTextfileName">Obtener valores del archivo de texto</key>
+    <key alias="getValuesFromTextfileDescription">Cargue el archivo de texto que contiene los prevalores.</key>
+    <key alias="getValuesFromTextfileTextFileLabel">Archivo de texto</key>
+    <key alias="getValuesFromTextfileTextFileDescription">El archivo que contiene los valores previos (separados por saltos de línea).</key>
+
+    <key alias="umbracoDocumentsName">Umbraco Documents</key>
+    <key alias="umbracoDocumentsDescription">Utiliza nodos de una fuente específica como prevalores.</key>
+    <key alias="umbracoDocumentsRootNodeLabel">Root node</key>
+    <key alias="umbracoDocumentsRootNodeDescription">Fuente de la que se obtienen los nodos.</key>
+    <key alias="umbracoDocumentsUseCurrentPageLabel">Usar la página actual como raíz</key>
+    <key alias="umbracoDocumentsUseCurrentPageDescription">No funciona en modo de vista previa.</key>
+    <key alias="umbracoDocumentsDocTypeLabel">Tipo de Documento</key>
+    <key alias="umbracoDocumentsDocTypeDescription">El tipo de nodos que te gustaría usar.</key>
+    <key alias="umbracoDocumentsListGrandChildrenLabel">La lista de todos los descendientes</key>
+    <key alias="umbracoDocumentsListGrandChildrenDescription">No se limite a los niños, sino que también incluya otros niveles.</key>
+    <key alias="umbracoDocumentsOrderByLabel">Ordenar por</key>
+    <key alias="umbracoDocumentsOrderByDescription">Seleccione cómo se debe ordenar la lista de prevalores.</key>
+
+    <key alias="sQLDatabaseName">Base de datos SQL</key>
+    <key alias="sQLDatabaseDescription">Se conecta a una tabla de base de datos compatible con OLEDB y construye una fuente de prevalor a partir de ella.</key>
+    <key alias="sQLDatabaseConnectionLabel">Connection String</key>
+    <key alias="sQLDatabaseConnectionDescription">Connection String con OleDB.</key>
+    <key alias="sQLDatabaseConnectionStringLabel">Connection String de web.config</key>
+    <key alias="sQLDatabaseConnectionStringDescription">Elija la cadena de conexión (debe ser compatible con OleDB).</key>
+    <key alias="sQLDatabaseTableLabel">Nombre de la tabla</key>
+    <key alias="sQLDatabaseTableDescription"></key>
+    <key alias="sQLDatabaseKeyColumnLabel">Columna clave</key>
+    <key alias="sQLDatabaseKeyColumnDescription">Columna que contiene las claves.</key>
+    <key alias="sQLDatabaseValueColumnLabel">Columna de valor</key>
+    <key alias="sQLDatabaseValueColumnDescription">La columna que contiene los valores.</key>
+
+    <key alias="umbracoDataTypePreValueName">Umbraco data type PreValues</key>
+    <key alias="umbracoDataTypePreValueDescription">Se conecta a un tipo de datos de Umbraco y usa su colección de prevalor.</key>
+    <key alias="umbracoDataTypePreValuesDataTypeIdLabel">Tipo de datos</key>
+    <key alias="umbracoDataTypePreValuesDataTypeIdDescription">Tipo de datos que se utilizarán.</key>
+  </area>
+
+  <area alias="formProviderExportTypes">
+    <key alias="excelFileName">Archivo Excel</key>
+    <key alias="excelFileDescription">Exporta todos los datos a Excel.</key>
+
+    <key alias="saveAllUploadedFilesInDiskStructureName">Guardar todos los archivos cargados (en la estructura del disco)</key>
+    <key alias="saveAllUploadedFilesInDiskStructureDescription">Exporta todos los archivos que se cargan en forma de envíos a un archivo zip, organizado a medida que los archivos se almacenan en el disco.</key>
+
+    <key alias="saveAllUploadedFilesByEntryName">Guardar todos los archivos cargados (por entrada)</key>
+    <key alias="saveAllUploadedFilesByEntryDescription">Exporta todos los archivos que se cargan en formularios enviados a un archivo zip, organizado en una subcarpeta por entrada.</key>
+  </area>
+
+  <area alias="formRecordSetActions">
+    <key alias="deleteConfirm">¿Está seguro/a de que desea eliminar estas entradas?</key>
+  </area>
+</language>

@@ -1,0 +1,47 @@
+<div class="umb-panel umb-export-type-select" ng-controller="UmbracoForms.Editors.Form.EntriesSettingsController">
+
+	<umb-editor-view>
+
+		<div data-element="editor-header" class="umb-editor-header">
+			<div class="flex items-center" style="height: 100%;">
+				<h5><localize key="formEntries_export"></localize></h5>
+			</div>
+		</div>
+
+		<umb-editor-container class="form-horizontal">
+			<umb-box>
+				<umb-box-content>
+					<h5><localize key="formEntries_chooseExportFormat"></localize></h5>
+
+					<umb-load-indicator ng-show="exporting"></umb-load-indicator>
+
+					<ul class="umb-actions umb-actions-child">
+						<li ng-repeat="exportType in exportTypes"
+								ng-click="export(exportType, model.filter)">
+							<a href="" title="{{ exportType.name }}">
+								<i class="icon {{exportType.icon}}"></i>
+								<span class="menu-label">
+									{{exportType.name}}
+									<small>{{exportType.description}} </small>
+								</span>
+							</a>
+						</li>
+					</ul>
+
+				</umb-box-content>
+			</umb-box>
+		</umb-editor-container>
+
+	</umb-editor-view>
+
+	<umb-editor-footer>
+		<umb-editor-footer-content-right>
+			<div class="btn-toolbar umb-btn-toolbar pull-right">
+				<a href="" ng-click="close()" class="btn btn-primary">
+					<localize key="general_close"></localize>
+				</a>
+			</div>
+		</umb-editor-footer-content-right>
+	</umb-editor-footer>
+
+</div>

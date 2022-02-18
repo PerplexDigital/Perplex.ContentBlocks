@@ -1,0 +1,12 @@
+﻿<div ng-controller="UmbracoForms.Editors.Form.FormDesignController as vm">
+
+    <umb-forms-designer-new
+        ng-if="vm.ready && vm.security && model"
+        form="model"
+        currentPage="vm.currentPage"
+        fieldtypes="vm.fieldtypes"
+        prevaluesources="vm.prevaluesources"
+        security="vm.security">
+    </umb-forms-designer-new>
+
+</div>

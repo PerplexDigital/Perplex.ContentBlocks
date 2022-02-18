@@ -1,0 +1,37 @@
+<div ng-controller="UmbracoForms.SettingTypes.StandardFieldMapperController">
+
+  <div class="umb-forms-mappings">
+
+        <div class="umb-forms-mapping-header">
+            <div class="umb-forms-mapping-field -no-margin-left">Field</div>
+            <div class="umb-forms-mapping-field">Include?</div>
+            <div class="umb-forms-mapping-field -no-margin-right">Key</div>
+        </div>
+
+        <div class="umb-forms-mapping" ng-repeat="mapping in mappings">
+
+            <div class="umb-forms-mapping-field -no-margin-left">
+                <span>{{friendlyName(mapping.field)}}</span>
+            </div>
+
+            <div class="umb-forms-mapping-field">
+                <umb-toggle checked="mapping.include"
+                            on-click="toggleInclude(mapping)">
+                </umb-toggle>
+            </div>
+
+            <div class="umb-forms-mapping-field -no-margin-right">
+                <input
+                    class="-full-width-input"
+                    type="text"
+                    placeholder="Key name"
+                    ng-model="mapping.keyName"
+                    ng-blur="stringifyValue()"
+                    no-password-manager />
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

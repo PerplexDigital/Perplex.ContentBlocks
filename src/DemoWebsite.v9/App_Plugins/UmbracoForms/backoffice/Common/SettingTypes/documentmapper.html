@@ -1,0 +1,59 @@
+﻿<div ng-controller="UmbracoForms.SettingTypes.DocumentMapperController">
+
+    <select ng-model="doctype" ng-options="type.id as type.value for type in doctypes" ng-change="setDocType()" data-umb="documentmapper">
+        <option value="">-- choose type --</option>
+    </select>
+
+
+    <div class="umb-forms__save-as-node" ng-show="doctype">
+
+
+        <div class="umb-forms__save-as-node__head">
+            <div class="umb-forms__save-as-node-field">
+                <strong><small>Property</small></strong>
+            </div>
+            <div class="umb-forms__save-as-node-field">
+                <strong><small>Field value</small></strong>
+            </div>
+            <div class="umb-forms__save-as-node-field">
+                <strong><small>Static value</small></strong>
+            </div>
+        </div>
+
+        <!-- Map the Node Name -->
+        <div class="umb-forms__save-as-node-group">
+            <div class="umb-forms__save-as-node-field">
+                <small>Node Name</small>
+            </div>
+
+            <div class="umb-forms__save-as-node-field">
+                <select class="-full-width" ng-model="nameField" ng-options="field.id as field.value for field in fields" ng-change="setValue()">
+                    <option value="">Select Form Field</option>
+                </select>
+            </div>
+
+            <div class="umb-forms__save-as-node-field">
+                <input class="-full-width" ng-model="nameStaticValue" type="text" placeholder="Static value" ng-change="setValue()" />
+            </div>
+        </div>
+
+
+        <!-- Map the fields of the form -->
+        <div class="umb-forms__save-as-node-group" ng-repeat="property in properties">
+            <div class="umb-forms__save-as-node-field">
+                <small>{{property.value}}</small>
+            </div>
+
+            <div class="umb-forms__save-as-node-field">
+                <select class="-full-width" ng-model="property.field" ng-options="field.id as field.value for field in fields" ng-change="setValue()" data-umb="select_form_field">
+                    <option value="">Select Form Field</option>
+                </select>
+            </div>
+
+            <div class="umb-forms__save-as-node-field">
+                <input class="-full-width" type="text" ng-model="property.staticValue" placeholder="Static value" ng-change="setValue()" />
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,124 @@
+<div class="umb-panel" ng-controller="UmbracoForms.Editors.DataSource.WizardController">
+
+    <umb-load-indicator ng-if="page.loading"></umb-load-indicator>
+
+    <umb-editor-view ng-if="!page.loading">
+
+        <div data-element="editor-header" class="umb-editor-header">
+            <div class="flex items-center" style="height: 100%;">
+                <h4><localize key="formDataSources_createForm"></localize></h4>
+            </div>
+        </div>
+        
+        <div ng-if="currentStep == 1">
+            <umb-editor-container class="form-horizontal">
+                <umb-box>
+                    <umb-box-content>
+                        <umb-control-group localize="label" label="@formDataSources_formName" description="">
+                            <input type="text" ng-model="wizard.formName" />
+                        </umb-control-group>
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <a class="btn" ng-click="cancel()"><localize key="general_cancel">Cancel</localize></a>
+                    <a class="btn btn-primary" ng-click="gotoStep(2)"><localize key="general_next">Next</localize></a>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </div>
+
+        <div ng-if="currentStep == 2">
+
+            <umb-editor-container class="form-horizontal">
+                <umb-box>
+                    <umb-box-content>
+                        <h5><localize key="formDataSources_selectFields"></localize></h5>
+                        <small><localize key="formDataSources_selectFieldsDescription"></localize></small>
+                        <div>
+                            <ul>
+                                <li ng-repeat="mapping in wizard.mappings" ng-hide="mapping.isPrimaryKey">
+                                    <input type="checkbox" ng-model="mapping.include" ng-disabled="mapping.isMandatory" />
+                                    {{mapping.name}}
+                                </li>
+                            </ul>
+                        </div>
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <a class="btn" ng-click="cancel()"><localize key="general_cancel">Cancel</localize></a>
+                    <a class="btn btn-primary" ng-click="gotoStep(1)"><localize key="general_previous">Previous</localize></a>
+                    <a class="btn btn-primary" ng-click="gotoThirdStep()"><localize key="general_next">Next</localize></a>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </div>
+
+        <div ng-if="currentStep == 3">
+
+            <umb-editor-container class="form-horizontal">
+                <umb-box>
+                    <umb-box-content>
+                        <h5><localize key="formDataSources_setupForeignKeys"></localize></h5>
+                        <small><localize key="formDataSources_setupForeignKeysDescription"></localize></small>
+                        <div>
+                            <ul>
+                                <li ng-repeat="mapping in wizard.mappings | filter:{prevalueKeyField: '!!'}" ng-show="mapping.include">
+                                    {{mapping.name}}
+                                    <select ng-model="mapping.prevalueValueField" ng-options="field for field in mapping.availablePrevalueValueFields"></select>
+                                </li>
+                            </ul>
+                        </div>
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <a class="btn" ng-click="cancel()"><localize key="general_cancel">Cancel</localize></a>
+                    <a class="btn btn-primary" ng-click="gotoStep(2)"><localize key="general_previous">Previous</localize></a>
+                    <a class="btn btn-primary" ng-click="gotoStep(4)"><localize key="general_next">Next</localize></a>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </div>
+
+        <div ng-if="currentStep == 4">
+
+            <umb-editor-container class="form-horizontal">
+                <umb-box>
+                    <umb-box-content>
+                        <h5><localize key="formDataSources_selectType"></localize></h5>
+                        <small><localize key="formDataSources_selectTypeDescription"></localize></small>
+                        <div>
+                            <ul>
+                                <li style="line-height: 32px" ng-repeat="mapping in wizard.mappings" ng-show="mapping.include">
+                                    {{mapping.name}}
+                                    <select ng-model="mapping.fieldTypeId" style="width: 42%" ng-options="fieldtype.id as fieldtype.name for fieldtype in fieldtypes"></select>
+                                    and optional
+                                    <input type="text" ng-model="mapping.defaultValue" style="width: 25%" localize="placeholder" placeholder="@formDataSources_defaultValue" />
+                                </li>
+                            </ul>
+                        </div>
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <a class="btn" ng-click="cancel()"><localize key="general_cancel">Cancel</localize></a>
+                    <a class="btn btn-primary" ng-click="goBackToThirdStep()"><localize key="general_previous">Previous</localize></a>
+                    <a ng-click="createForm()" class="btn btn-primary"><localize key="general_create">Create</localize></a>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </div>
+        
+    </umb-editor-view>
+
+  
+    
+    
+   
+</div>

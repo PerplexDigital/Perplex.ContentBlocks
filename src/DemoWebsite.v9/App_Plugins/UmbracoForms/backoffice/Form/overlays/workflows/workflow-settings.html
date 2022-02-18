@@ -1,0 +1,53 @@
+<div ng-controller="UmbracoForms.Overlays.WorkflowSettingsOverlayController as vm">
+    <form name="workflowSettingsForm"
+          novalidate
+          val-form-manager>
+        <umb-editor-view>
+            <umb-editor-header name="model.title"
+                               name-locked="true"
+                               hide-alias="true"
+                               hide-icon="true"
+                               hide-description="true">
+            </umb-editor-header>
+            <umb-editor-container>
+                <umb-box>
+                    <umb-box-content class="form-horizontal">
+                        <umb-control-group localize="label,description" label="@formWorkflows_workflowNameLabel" description="@formWorkflows_workflowNameDescription">
+                            <input type="text" ng-model="model.workflow.name" focus-when="{{vm.focusWorkflowName}}" required />
+                        </umb-control-group>
+                        <umb-control-group localize="label,description" label="@formWorkflows_activeLabel" description="@formWorkflows_activeDescription">
+                          <umb-toggle checked="model.workflow.active"
+                                      on-click="vm.toggleActive()">
+                          </umb-toggle>
+                        </umb-control-group>
+                        <umb-control-group localize="label,description" label="@formWorkflows_includeSensitiveDataLabel" description="@formWorkflows_includeSensitiveDataDescription">
+                          <umb-toggle checked="model.workflow.includeSensitiveData"
+                                      on-click="vm.toggleIncludeSensitiveData()">
+                          </umb-toggle>
+                        </umb-control-group>
+                        <umb-control-group ng-repeat="setting in model.workflow.settings"
+                                           label="{{setting.name}}"
+                                           description="{{setting.description}}">
+                            <div ng-include="setting.view"></div>
+                        </umb-control-group>
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <umb-button type="button"
+                                button-style="link"
+                                label-key="general_close"
+                                shortcut="esc"
+                                action="vm.close()">
+                    </umb-button>
+                    <umb-button type="button"
+                                button-style="success"
+                                label-key="general_submit"
+                                action="vm.submit()">
+                    </umb-button>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </umb-editor-view>
+    </form>
+</div>

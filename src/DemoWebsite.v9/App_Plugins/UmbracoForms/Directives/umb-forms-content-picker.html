@@ -1,0 +1,21 @@
+﻿<div>
+    <ul class="unstyled list-icons" ng-if="node">
+        <li>
+
+            <a href="" ng-click="clear()">
+                <i class="icon icon-trash hover-show pull-right"></i>
+            </a>
+
+            <i class="icon {{node.icon}} hover-hide"></i>
+
+            <a href prevent-default ng-click="openContentPicker()">{{node.name}}</a>
+        </li>
+
+    </ul>
+
+    <a ng-if="!node" href ng-click="openContentPicker()" prevent-default>
+        <localize key="general_choose">Choose a node</localize>...
+    </a>
+
+
+</div>

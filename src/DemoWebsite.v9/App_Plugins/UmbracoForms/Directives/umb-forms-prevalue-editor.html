@@ -1,0 +1,31 @@
+<div class="umb-forms-prevalues">
+    <table class="umb-forms-prevalues__list">
+      <tbody ui-sortable ng-model="prevalues">
+        <tr ng-repeat="prevalue in prevalues">
+          <td>
+            <i class="icon icon-navigation handle"></i>
+          </td>
+          <td>
+            {{prevalue}}
+          </td>
+          <td class="umb-forms-prevalues__actions">
+            <i ng-click="editPrevalue($index)" localize="title" title="@visuallyHiddenTexts_edit" class="icon-edit"></i>
+            <span>
+              <i ng-click="showDeletePrompt($index)" localize="title" title="@general_delete" class="icon-trash"></i>
+              <umb-confirm-action ng-if="isDeleting($index)"
+                                  direction="right"
+                                  on-confirm="deletePrevalue($index)"
+                                  on-cancel="hideDeletePrompt()" data-umb="confirm_{{$index}}">
+              </umb-confirm-action>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <form class="umb-forms-prevalues__add" ng-submit="addPrevalue()">
+        <input type="text" ng-model="newPrevalue" size="30" localize="placeholder" placeholder="@formPrevalues_addNewItem">
+        <input class="btn" type="submit" value="{{ isEditing() ? saveLabel : addLabel}}">
+        <input ng-show="isEditing()" ng-click="cancelEditing()" class="btn" type="button" localize="value" value="@general_cancel">
+    </form>
+</div>

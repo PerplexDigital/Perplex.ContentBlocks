@@ -1,0 +1,79 @@
+<div data-element="editor-data-types"  ng-controller="UmbracoForms.Editors.DataSource.EditController">
+
+    <umb-load-indicator ng-if="page.loading"></umb-load-indicator>
+
+    <form name="dataSourceForm"
+          ng-show="loaded && security.userSecurity.manageDataSources"
+          novalidate
+          val-form-manager>
+
+        <umb-editor-view ng-if="!page.loading">
+
+            <umb-editor-header
+                    name="dataSource.name"
+                    hide-icon="true"
+                    hide-description="true"
+                    hide-alias="true">
+            </umb-editor-header>
+
+
+            <umb-editor-container class="form-horizontal">
+
+                <umb-box>
+
+                    <umb-box-content>
+
+                        <umb-control-group localize="label,description"
+                                           label="@general_type" description="@formDataSources_typeDescription">
+                            <select ng-model="dataSource.formDataSourceTypeId" ng-options="type.id as type.name for type in types" ng-change="setType()" data-umb="settingstype-pickers-dataSourceType">
+                            </select>
+                        </umb-control-group>
+
+
+                        <umb-control-group ng-repeat="setting in dataSource.$type.settings" label="{{setting.name}}" description="{{setting.description}}">
+                            <div ng-include="setting.view" data-umb="setting-dataSource_{{$index}}"></div>
+                        </umb-control-group>
+
+                        <table ng-show="prevalues" class="table table-striped">
+                            <tr>
+                                <th><localize key="general_id"></localize></th>
+                                <th><localize key="general_value"></localize></th>
+                            </tr>
+                            <tr ng-repeat="prevalue in prevalues">
+                                <td>{{prevalue.id}}</td>
+                                <td>{{prevalue.value}}</td>
+                            </tr>
+                        </table>
+
+                    </umb-box-content>
+
+                </umb-box>
+
+            </umb-editor-container>
+
+            <umb-editor-footer>
+
+                <umb-editor-footer-content-right>
+
+                    <a ng-click="showWizard()" class="btn" ng-show="dataSource.valid"><localize key="formDataSources_createForm"></localize></a>
+                    
+                    <umb-button type="button"
+                                action="save()"
+                                state="page.saveButtonState"
+                                button-style="success"
+                                shortcut="ctrl+s"
+                                label="Save"
+                                label-key="buttons_save"
+                                data-element='button-save'>
+                    </umb-button>
+
+                </umb-editor-footer-content-right>
+
+            </umb-editor-footer>
+
+
+        </umb-editor-view>
+
+    </form>
+</div>
+

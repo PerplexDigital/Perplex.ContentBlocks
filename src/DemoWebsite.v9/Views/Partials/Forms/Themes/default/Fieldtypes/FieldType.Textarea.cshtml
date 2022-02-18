@@ -1,0 +1,21 @@
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@using Umbraco.Forms.Web
+
+@{
+    var autocompleteAttribute = Model.GetSettingValue<string>("AutocompleteAttribute", string.Empty);
+    var numberOfRows = Model.GetSettingValue<int>("NumberOfRows", global::Umbraco.Forms.Core.Providers.FieldTypes.Textarea.DefaultNumberOfRows);
+    var maxLength = Model.GetSettingValue<int>("MaximumLength", 0);
+}
+<textarea class="@Html.GetFormFieldClass(Model.FieldTypeName)"
+          name="@Model.Name"
+          id="@Model.Id"
+          data-umb="@Model.Id"
+          rows="@numberOfRows"
+          cols="20"
+          @{if (string.IsNullOrEmpty(Model.PlaceholderText) == false) { <text> placeholder="@Model.PlaceholderText" </text> } }
+          @{if (string.IsNullOrEmpty(autocompleteAttribute) == false) { <text> autocomplete="@autocompleteAttribute" </text> } }
+          @{if (maxLength > 0) { <text> maxlength="@maxLength" </text> } }
+          @{if (Model.Mandatory || Model.Validate) { <text> data-val="true" </text> } }
+          @{if (Model.Mandatory) { <text> data-val-required="@Model.RequiredErrorMessage" </text> }}
+          @{if (Model.Validate) { <text> data-val-regex="@Model.InvalidErrorMessage" data-val-regex-pattern="@Html.Raw(Model.Regex)" </text> }}>@Model.ValueAsHtmlString</textarea>
+

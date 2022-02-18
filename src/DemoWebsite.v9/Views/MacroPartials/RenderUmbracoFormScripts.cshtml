@@ -1,0 +1,19 @@
+@using Umbraco.Forms.Web.Extensions
+
+@inherits Umbraco.Cms.Web.Common.Macros.PartialViewMacroPage
+
+@{
+    var formsToRender = TempData["UmbracoForms"] != null
+        ? TempData.Get<List<Guid>>("UmbracoForms")
+        : new List<Guid>();
+
+    // Reading TempData["UmbracoForms"] should have set it to null but this doesn't
+    // happen if this request didn't return a 200 OK status. https://stackoverflow.com/a/7630709/5018
+    // Explictly clear it so that on the next request the scripts don't get rendered.
+    TempData.Remove("UmbracoForms");
+}
+
+@foreach (Guid form in formsToRender)
+{
+    @(await Component.InvokeAsync("RenderFormScripts", new { formId = form }))
+}

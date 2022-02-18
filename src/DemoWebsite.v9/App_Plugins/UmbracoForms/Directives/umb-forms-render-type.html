@@ -1,0 +1,5 @@
+<div>
+    <div ng-if="sensitive && !hasAccess" class="sensitive-data" data-umb="{{name}}">{{field}}</div>
+    <div ng-if="!sensitive || hasAccess" ng-include="view" data-umb="{{name}}"></div>
+</div>
+

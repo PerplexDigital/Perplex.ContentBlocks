@@ -1,0 +1,36 @@
+<div ng-controller="UmbracoForms.FormPickerController as vm" class="umb-form-picker">
+
+    <umb-node-preview
+        ng-if="vm.selectedForm.name"
+        name="vm.selectedForm.name"
+        icon="vm.selectedForm.icon"
+        description="vm.selectedForm.fields"
+        allow-edit="vm.selectedForm.canEditForm"
+        on-edit="vm.openFormDesigner()"
+        allow-open="vm.selectedForm.canViewEntries"
+        on-open="vm.openFormEntries()"
+        allow-remove="true"
+        on-remove="vm.remove()">
+    </umb-node-preview>
+
+    <a
+        ng-if="!vm.selectedForm.name"
+        class="umb-node-preview-add"
+        href=""
+        ng-click="vm.openFormPicker()"
+        prevent-default>
+        <localize key="general_add">Add</localize>
+    </a>
+
+    <div ng-if="vm.error" class="alert alert-warning">
+        {{ vm.error }}
+    </div>
+
+    <umb-overlay
+        ng-if="vm.formPickerOverlay.show"
+        model="vm.formPickerOverlay"
+        view="vm.formPickerOverlay.view"
+        position="right">
+    </umb-overlay>
+
+</div>

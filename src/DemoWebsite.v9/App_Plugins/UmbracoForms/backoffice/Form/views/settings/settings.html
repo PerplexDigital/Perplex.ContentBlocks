@@ -1,0 +1,134 @@
+<umb-box>
+    <umb-box-content class="form-horizontal">
+
+        <umb-control-group localize="label,description"
+                           label="@formSettings_storeRecords"
+                           description="@formSettings_storeRecordsDescription">
+            <umb-checkbox
+                model="model.storeRecordsLocally"
+                label-key="formSettings_storeRecordsConfirm">
+            </umb-checkbox>
+        </umb-control-group>
+
+        <!--Captions-->
+        <umb-control-group localize="label,description"
+                           label="@formSettings_captions"
+                           description="@formSettings_captionsDescription">
+            <div class="control-row -margin-bottom">
+                <label class="control-label -block"><localize key="formSettings_captionSubmitButton"></localize></label>
+                <input class="-full-width-input" type="text" ng-model="model.submitLabel" />
+            </div>
+            <div class="control-row -margin-bottom">
+                <label class="control-label -block"><localize key="formSettings_captionNextButton"></localize></label>
+                <input class="-full-width-input" type="text" ng-model="model.nextLabel" />
+            </div>
+            <div class="control-row -margin-bottom">
+                <label class="control-label -block"><localize key="formSettings_captionPreviousButton"></localize></label>
+                <input class="-full-width-input" type="text" ng-model="model.prevLabel" />
+            </div>
+        </umb-control-group>
+
+        <!--Styling-->
+        <umb-control-group localize="label,description"
+                           label="@formSettings_styling"
+                           description="@formSettings_stylingDescription">
+            <div class="control-row -margin-bottom">
+                <label class="control-label -block"><localize key="formSettings_formCssClass"></localize></label>
+                <input class="-full-width-input" type="text" ng-model="model.cssClass" />
+            </div>
+            <div class="control-row">
+                <umb-checkbox
+                    model="model.disableDefaultStylesheet"
+                    label-key="@formSettings_disableDefaultStylesheet">
+                </umb-checkbox>
+            </div>
+        </umb-control-group>
+        
+        <!--Validation-->
+        <umb-control-group localize="label,description"
+                           label="@formSettings_validation"
+                           description="@formSettings_validationDescription">
+            <div class="block-form">
+                <div>
+                    <label class="control-label"><localize key="formSettings_mandatoryErrorMessage"></localize></label>
+                    <small><localize key="formSettings_mandatoryErrorMessageDescription"></localize></small>
+                    <input class="-full-width-input" type="text" ng-model="model.requiredErrorMessage" />
+                </div>
+                <br />
+                <div>
+                    <label class="control-label -block"><localize key="formSettings_invalidErrorMessage"></localize></label>
+                    <small><localize key="formSettings_invalidErrorMessageDescription"></localize></small>
+                    <input class="-full-width-input" type="text" ng-model="model.invalidErrorMessage" />
+                </div>
+                <div class="control-row">
+                    <umb-checkbox
+                        model="model.showValidationSummary"
+                        label-key="@formSettings_showValidationSummary">
+                    </umb-checkbox>
+                </div>
+                <div class="control-row">
+                    <umb-checkbox
+                        model="model.hideFieldValidation"
+                        label-key="@formSettings_hideFieldValidationLabels">
+                    </umb-checkbox>
+                </div>
+                <hr />
+                <div class="control-row">
+                    <label class="control-label -block"><localize key="formSettings_markFields"></localize></label>
+                    <umb-radiobutton value="NoIndicator"
+                                     model="model.fieldIndicationType"
+                                     label-key="@formSettings_markFieldsNoIndicator">
+                    </umb-radiobutton>
+                    <umb-radiobutton value="MarkMandatoryFields"
+                                     model="model.fieldIndicationType"
+                                     label-key="@formSettings_markMandatoryFields">
+                    </umb-radiobutton>
+                    <umb-radiobutton value="MarkOptionalFields"
+                                     model="model.fieldIndicationType"
+                                     label-key="@formSettings_markOptionalFields">
+                    </umb-radiobutton>
+                </div>
+                <br />
+                <div>
+                    <label class="control-label -block"><localize key="formSettings_indicator"></localize></label>
+                    <small><localize key="formSettings_changeIndicatorSymbol"></localize></small>
+                    <input class="-full-width-input" type="text" ng-model="model.indicator" />
+                </div>
+            </div>
+        </umb-control-group>
+
+        <!--Autocomplete-->
+        <umb-control-group localize="label,description"
+                           label="@formSettings_autocomplete"
+                           description="@formSettings_autocompleteDescription">
+          <div class="block-form">
+            <div class="control-row">
+              <label class="control-label -block">Attribute value</label>
+              <umb-radiobutton value=""
+                               model="model.autocompleteAttribute"
+                               label-key="@formSettings_autocompleteNone">
+              </umb-radiobutton>
+              <umb-radiobutton value="on"
+                               model="model.autocompleteAttribute"
+                               label-key="@formSettings_autocompleteOn">
+              </umb-radiobutton>
+              <umb-radiobutton value="off"
+                               model="model.autocompleteAttribute"
+                               label-key="@formSettings_autocompleteOff">
+              </umb-radiobutton>
+            </div>
+          </div>
+        </umb-control-group>
+        
+        <!--Moderation-->
+        <umb-control-group localize="label,description"
+                           label="@formSettings_moderation"
+                           description="@formSettings_moderationDescription">
+            <label><localize key="formSettings_enablePostModeration"></localize></label>
+            <umb-toggle
+                checked="model.manualApproval"
+                on-click="model.manualApproval = !model.manualApproval">
+            </umb-toggle>
+        </umb-control-group>
+    </umb-box-content>
+</umb-box>

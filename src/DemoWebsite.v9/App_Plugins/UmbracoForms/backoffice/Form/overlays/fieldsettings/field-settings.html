@@ -1,0 +1,280 @@
+<div class="content-type-editor-dialog edit-property-settings" ng-controller="UmbracoForms.Overlays.FieldSettingsOverlay as vm" data-umb="field-setting-editor">
+
+  <umb-load-indicator ng-if="vm.loading"></umb-load-indicator>
+
+  <form name="fieldsSettingsForm"
+        novalidate
+        val-form-manager>
+
+    <umb-editor-view ng-if="!vm.loading">
+
+      <umb-editor-header name="model.title"
+                         name-locked="true"
+                         hide-alias="true"
+                         hide-icon="true"
+                         hide-description="true">
+      </umb-editor-header>
+
+      <umb-editor-container>
+        <umb-box>
+          <umb-box-content>
+            <!-- Name -->
+
+            <div class="umb-control-group control-group" style="position:relative">
+              <textarea class="editor-label"
+                        name="propertyLabel"
+                        ng-model="model.field.caption"
+                        localize="placeholder"
+                        placeholder="@fieldSettings_namePlaceholder"
+                        umb-auto-focus
+                        focus-on-filled="true"
+                        umb-auto-resize
+                        required
+                        ng-keypress="vm.submitOnEnter($event)" data-umb="field-settings-enter-question">
+                            </textarea>
+              <div ng-messages="fieldsSettingsForm.propertyLabel.$error" show-validation-on-submit>
+                <span class="umb-validation-label" ng-message="required"><localize key="fieldSettings_requiredLabel"></localize></span>
+              </div>
+            </div>
+            <!-- Alias -->
+            <div class="umb-control-group control-group">
+              <umb-generate-alias enable-lock="true"
+                                  alias-from="model.field.caption"
+                                  alias="model.field.alias" data-umb="field-settings-enter-alias">
+              </umb-generate-alias>
+            </div>
+
+            <!-- Description -->
+            <div class="umb-control-group control-group">
+              <textarea class="editor-description"
+                        ng-model="model.field.tooltip"
+                        localize="placeholder"
+                        placeholder="@fieldSettings_descriptionPlaceholder"
+                        overlay-submit-on-enter
+                        umb-auto-resize>
+                </textarea>
+            </div>
+
+            <!-- Field type -->
+            <div class="editor-wrapper umb-control-group control-group" ng-model="model.field.fieldTypeId" val-require-component>
+              <a href="" ng-if="!model.field.fieldTypeId" class="editor-placeholder forms-question-type" ng-click="vm.openFieldTypePicker(model.field)" data-umb="field-settings-choose-answer-type"><localize key="fieldSettings_chooseAnswerType"></localize></a>
+
+              <div class="editor clearfix" ng-if="model.field.fieldTypeId">
+                <a href="" class="editor-icon-wrapper" ng-click="vm.openFieldTypePicker(model.field)">
+                  <i class="icon {{ model.field.$fieldType.icon }}" ng-class="{'icon-autofill': model.field.$fieldType.icon == null}"></i>
+                </a>
+
+                <div class="editor-details">
+                  <a href="" class="editor-name" ng-click="vm.openFieldTypePicker(model.field)">{{ model.field.$fieldType.name }}</a>
+                  <a href="" class="editor-editor" ng-click="vm.openFieldTypePicker(model.field)">{{ model.field.$fieldType.description }}</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sensitive Data (Hide UI element if can't edit)-->
+            <div class="control-group umb-control-group" ng-if="vm.canEditSensitiveData">
+              <h5><localize key="fieldSettings_sensitiveData"></localize></h5>
+              <p>
+                <small><localize key="fieldSettings_sensitiveDataDescription"></localize></small>
+              </p>
+              <umb-toggle checked="model.field.containsSensitiveData"
+                          on-click="vm.toggleSensitiveData()"
+                          show-labels="true"
+                          label-on="{{vm.sensitiveDataToggleText}}"
+                          label-off="{{vm.sensitiveDataToggleText}}"
+                          label-position="right">
+              </umb-toggle>
+            </div>
+            <!-- Field File upload types -->
+            <div class="umb-control-group" ng-if="model.field.$fieldType.supportsUploadTypes">
+              <h5><localize key="fieldSettings_allowedFileUploadTypes"></localize></h5>
+              <div class="umb-property">
+                <umb-forms-file-upload-editor ng-model="model.field.allowedUploadTypes" />
+              </div>
+              <h5><localize key="fieldSettings_allowMultipleFileUploads"></localize></h5>
+              <div class="umb-property">
+                <umb-toggle checked="model.field.allowMultipleFileUploads"
+                            on-click="vm.toggleAllowMultipleFileUploads()"
+                            show-labels="true"
+                            label-on="{{vm.multipleFilesToggleTextOn}}"
+                            label-off="{{vm.multipleFilesToggleTextOff}}"
+                            label-position="right">
+                </umb-toggle>
+              </div>
+            </div>
+            <!-- Field type settings -->
+            <div class="umb-control-group" ng-if="model.field.$fieldType.supportsPrevalues">
+              <h5><localize key="fieldSettings_prevalues"></localize></h5>
+              <p>
+                <small ng-if="model.prevalueSources && model.prevalueSources.length > 0"><localize key="fieldSettings_prevaluesProvideWithSources"></localize></small>
+                <small ng-if="!model.prevalueSources || model.prevalueSources.length == 0"><localize key="fieldSettings_prevaluesProvide"></localize></small>
+              </p>
+              <div class="umb-property">
+
+                <div class="control-group umb-control-group" ng-if="model.field.prevalueSourceId == null || model.field.prevalueSourceId == '00000000-0000-0000-0000-000000000000'">
+                  <label class="control-label"><localize key="fieldSettings_prevaluesItems"></localize></label>
+                  <umb-forms-prevalue-editor ng-model="model.field.preValues" />
+                </div>
+
+                <div class="control-group umb-control-group" ng-if="model.prevalueSources && model.prevalueSources.length > 0">
+                  <label class="control-label"><localize key="fieldSettings_prevaluesSource"></localize></label>
+                  <div>
+                    <select ng-model="model.field.prevalueSourceId" ng-change="vm.getPrevalues(model.field)">
+                      <option value="00000000-0000-0000-0000-000000000000" ng-selected="model.field.prevalueSourceId == '00000000-0000-0000-0000-000000000000'"><localize key="general_choose"></localize>...</option>
+                      <option ng-repeat="source in model.prevalueSources" value="{{source.id}}" ng-selected="model.field.prevalueSourceId == source.id">{{source.name}}</option>
+                    </select>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="umb-control-group" ng-if="model.field.$fieldType.settings.length > 0">
+              <h5><localize key="fieldSettings_settings"></localize></h5>
+              <div class="umb-property">
+                <div class="control-row" ng-repeat="setting in model.field.$fieldType.settings">
+                  <div class="control-group umb-control-group -no-border">
+                    <label class="control-label">{{setting.name}}</label>
+                    <small style="display: block;" ng-if="setting.description">{{setting.description}}</small>
+                    <div ng-include="setting.view"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation -->
+            <div class="umb-control-group" ng-if="model.field.$fieldType.supportsMandatory">
+
+              <h5><localize key="fieldSettings_mandatory"></localize></h5>
+              <div class="control-group umb-control-group">
+                <umb-toggle checked="model.field.mandatory"
+                            on-click="vm.toggleMandatory()"
+                            show-labels="true"
+                            label-on="{{vm.mandatoryToggleText}}"
+                            label-off="{{vm.mandatoryToggleText}}"
+                            label-position="right">
+                </umb-toggle>
+              </div>
+              <input class="-full-width-input" type="text" ng-if="model.field.mandatory" ng-model="model.field.requiredErrorMessage" placeholder="Enter a field mandatory message...">
+
+            </div>
+
+            <div class="umb-control-group" ng-if="model.field.$fieldType.supportsRegex">
+
+              <h5><localize key="formSettings_validation"></localize></h5>
+              <select class="umb-dropdown" ng-options="validationType.name for validationType in vm.validationTypes" ng-model="vm.selectedValidationType" ng-change="vm.changeValidationType(vm.selectedValidationType)">
+                <option value=""></option>
+              </select>
+
+              <textarea class="editor-validation-pattern umb-forms__validation-pattern"
+                        localize="placeholder"
+                        placeholder="@fieldSettings_enterRegex"
+                        ng-model="model.field.regex"
+                        ng-change="vm.changeValidationPattern()"
+                        ng-if="vm.showValidationPattern"
+                        umb-auto-resize
+                        focus-when="{{vm.focusOnPatternField}}"
+                        overlay-submit-on-enter>
+              </textarea>
+              <div ng-if="model.field.regex">
+                <input class="-full-width-input" type="text" ng-model="model.field.invalidErrorMessage" localize="placeholder" placeholder="@fieldSettings_invalidPlaceholder">
+              </div>
+
+            </div>
+
+            <div class="umb-control-group">
+              <h5><localize key="formConditions_title"></localize></h5>
+
+              <div class="umb-forms__conditions">
+
+                <div class="control-group umb-control-group">
+                  <umb-toggle checked="model.field.condition.enabled"
+                              on-click="vm.toggleConditions()"
+                              show-labels="true"
+                              label-on="{{vm.enableConditionsToggleText}}"
+                              label-off="{{vm.enableConditionsToggleText}}"
+                              label-position="right">
+                  </umb-toggle>
+                </div>
+
+                <div class="control-group umb-control-group"
+                     ng-show="model.field.condition.enabled">
+
+                  <div class="umb-forms__condition-select">
+                    <div class="umb-forms__select">
+                      <select ng-model="model.field.condition.actionType"
+                              ng-options="actionType.value as actionType.name for actionType in vm.actionTypes"></select>
+                    </div>
+                    <span><localize key="formConditions_thisFieldSetIf"></localize></span>
+                    <div class="umb-forms__select">
+                      <select ng-model="model.field.condition.logicType"
+                              ng-options="logicType.value as logicType.name for logicType in vm.logicTypes"></select>
+                    </div>
+                    <span><localize key="formConditions_ofTheFollowingMatch"></localize>:</span>
+                  </div>
+
+                  <div ng-repeat="rule in model.field.condition.rules" class="umb-forms-rule">
+                    <div class="umb-forms-rule__cond">
+                      <div class="umb-forms__select">
+                        <select ng-model="rule.field"
+                                ng-options="field.id as field.caption for field in vm.fieldConditions"
+                                ng-change="vm.conditionFieldSelected(rule.field, rule)"
+                                ng-init="vm.conditionFieldSelected(rule.field, rule)"
+                                required>
+                          <option value="" hidden><localize key="formConditions_selectField"></localize></option>
+                        </select>
+                      </div>
+
+                      <div class="umb-forms__select">
+                        <select ng-model="rule.operator"
+                                ng-options="operator.value as operator.name for operator in vm.operators"></select>
+                      </div>
+
+                      <div class="umb-forms__select" ng-if="rule.$preValues">
+                        <select ng-model="rule.value"
+                                ng-options="preValue.value as preValue.value for preValue in rule.$preValues"
+                                ng-change="vm.rulePrevalueSelected(rule.value)"></select>
+                      </div>
+
+                      <div class="umb-forms__conditions-rule" ng-if="!rule.$preValues">
+                        <input type="text" ng-model="rule.value" />
+                      </div>
+
+                      <a href="" ng-click="vm.deleteConditionRule(model.field.condition.rules,rule)">
+                        <i class="icon-trash"></i>
+                      </a>
+                    </div>
+
+                  </div>
+
+                  <br />
+                  <button class="umb-forms-button" ng-click="vm.addConditionRule(model.field.condition)">
+                    <localize key="formConditions_addCondition"></localize>
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          </umb-box-content>
+        </umb-box>
+      </umb-editor-container>
+
+      <umb-editor-footer>
+        <umb-editor-footer-content-right>
+          <umb-button type="button"
+                      button-style="link"
+                      label-key="general_close"
+                      shortcut="esc"
+                      action="vm.close()" data-umb="field-settings-close">
+          </umb-button>
+          <umb-button type="button"
+                      button-style="success"
+                      label-key="general_submit"
+                      action="vm.submit()" data-umb="field-settings-submit">
+          </umb-button>
+        </umb-editor-footer-content-right>
+      </umb-editor-footer>
+
+    </umb-editor-view>
+  </form>
+</div>

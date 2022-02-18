@@ -1,0 +1,14 @@
+<div ng-if="!field">
+    <p>No member submitted this record</p>
+</div>
+
+<div ng-if="field" class="umb-forms__member">
+    <p>
+        Name: {{field.Name}}<br/>
+        Email: {{ field.Email}}<br/>
+    </p>
+
+    <a class="umb-forms__member-edit" ng-href="#/member/member/edit/{{field.Key}}" ng-click="close()">
+        <strong>View member</strong>
+    </a>
+</div>

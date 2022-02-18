@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms" Version="9.1.0" />
     <PackageReference Include="Umbraco.Cms.SqlCe" Version="9.1.0" />
+    <PackageReference Include="Umbraco.Forms" Version="9.2.2" />
   </ItemGroup>
 
   <ItemGroup>

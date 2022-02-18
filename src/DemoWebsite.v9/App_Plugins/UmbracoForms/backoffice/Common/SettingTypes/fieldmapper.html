@@ -1,0 +1,57 @@
+<div ng-controller="UmbracoForms.SettingTypes.FieldMapperController">
+
+  <div class="umb-forms-mappings" ng-if="mappings.length > 0">
+
+        <div class="umb-forms-mapping-header">
+            <div class="umb-forms-mapping-field -no-margin-left">Alias</div>
+            <div class="umb-forms-mapping-field">Form value</div>
+            <div class="umb-forms-mapping-field">Static value</div>
+            <div class="umb-forms-mapping-remove -no-margin-right"></div>
+        </div>
+
+        <div class="umb-forms-mapping" ng-repeat="mapping in mappings">
+
+            <div class="umb-forms-mapping-field -no-margin-left">
+                <input
+                    class="-full-width-input"
+                    type="text"
+                    placeholder="Alias"
+                    ng-model="mapping.alias"
+                    ng-blur="stringifyValue()" />
+            </div>
+
+            <div class="umb-forms-mapping-field">
+                <select class="-full-width"
+                    ng-options="field.id as field.value for field in fields"
+                    ng-model="mapping.value"
+                    ng-change="stringifyValue()">
+                    <option value="">Map a field</option>
+                </select>
+            </div>
+
+            <div class="umb-forms-mapping-field">
+                <input
+                    class="-full-width-input"
+                    type="text"
+                    placeholder="Static value"
+                    ng-model="mapping.staticValue"
+                    ng-blur="stringifyValue()" />
+            </div>
+
+            <div class="umb-forms-mapping-remove -no-margin-right">
+                <a href="" ng-click="deleteMapping($index)">
+                    <i class="icon-trash"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <umb-button
+        type="button"
+        action="addMapping()"
+        label="Add mapping">
+    </umb-button>
+
+</div>
