@@ -2,6 +2,15 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.2 - <sub><sup>2022-02-18</sup></sub>
+
+-   Variants: fixed front-end rendering of macros in an RTE of a block variant.
+-   Fixed layout slider rendering when placing ContentBlocks directly on a secondary tab and not in a group.
+    -   Layout sliders were not rendered correctly in that case and the layout name was not visible.
+    -   This could only occur in Umbraco 8.17+ and 9.
+-   Property type scaffold cache is now refreshed when a datatype is saved in the backoffice
+    -   In earlier versions a page refresh was required since we lazily cache property type scaffolds after first retrieval in Angular.
+
 ## v2.1.1 - <sub><sup>2021-12-10</sup></sub>
 
 -   Fixed error on `dotnet publish` in .NET 6.0
