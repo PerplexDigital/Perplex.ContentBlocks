@@ -1,0 +1,70 @@
+<div class="umb-panel" ng-controller="UmbracoForms.Editors.Form.Dialogs.FieldsetSettingController">
+    <div class="umb-panel-body no-header with-footer">
+        <div class="umb-forms-settings">
+
+            <h5>Conditions</h5>
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+                    <label class="checkbox"><input type="checkbox" ng-model="dialogOptions.fieldset.condition.enabled"> Enable conditions</label>
+                </div>
+                <div class="control-group umb-control-group" ng-show="dialogOptions.fieldset.condition.enabled">
+                    <select ng-model="dialogOptions.fieldset.condition.actionType">
+                        <option value="Show">Show</option>
+                        <option value="Hide">Hide</option>
+                    </select>
+                    this fieldset if
+                    <select ng-model="dialogOptions.fieldset.condition.logicType">
+                        <option value="All">All</option>
+                        <option value="Any">Any</option>
+                    </select>
+                    of the following match:
+
+                    <div ng-repeat="rule in dialogOptions.fieldset.condition.rules" class="umb-forms-rule">
+                        <select ng-model="rule.field" ng-options="field.id as field.caption for field in dialogOptions.fields"></select>
+                        <select ng-model="rule.operator">
+                            <option value="Is">Is</option>
+                            <option value="IsNot">IsNot</option>
+                            <option value="GreaterThen">GreaterThen</option>
+                            <option value="LessThen">LessThen</option>
+                            <option value="Contains">Contains</option>
+                            <option value="StartsWith">StartsWith</option>
+                            <option value="EndsWith">EndsWith</option>
+                        </select>
+                        <input type="text" ng-model="rule.value" />
+                        <a ng-click="deleteConditionRule(dialogOptions.fieldset.condition.rules,rule)">
+                            <i class="icon-trash"></i>
+                        </a>
+                    </div>
+                    <div class="umb-forms-newrule">
+                        <select ng-model="dialogOptions.fieldset.condition.$newrule.field"
+                                ng-options="field.id as field.caption for field in dialogOptions.fields">
+                            <option value="">Choose field...</option>
+                        </select>
+                        <select ng-model="dialogOptions.fieldset.condition.$newrule.operator">
+                            <option value="">Choose operator...</option>
+                            <option value="Is">Is</option>
+                            <option value="IsNot">IsNot</option>
+                            <option value="GreaterThen">GreaterThen</option>
+                            <option value="LessThen">LessThen</option>
+                            <option value="Contains">Contains</option>
+                            <option value="StartsWith">StartsWith</option>
+                            <option value="EndsWith">EndsWith</option>
+                        </select>
+                        <input type="text" ng-model="dialogOptions.fieldset.condition.$newrule.value" placeholder="Enter a value" />
+                        <br /><a ng-click="addConditionRule(dialogOptions.fieldset.condition)"><i class=" icon icon-add blue"></i> New Condition</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+                <a href="" ng-click="close()" class="btn btn-primary">
+                    <localize key="general_ok" class="ng-isolate-scope ng-scope">Done</localize>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

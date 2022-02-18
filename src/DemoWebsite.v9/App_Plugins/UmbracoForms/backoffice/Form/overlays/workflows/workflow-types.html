@@ -1,0 +1,58 @@
+<div ng-controller="UmbracoForms.Overlays.WorkflowTypesOverlayController as vm" class="umb-forms-grid-picker">
+    <form name="workflowTypeForm"
+          novalidate
+          val-form-manager>
+        <umb-editor-view>
+            <umb-editor-header name="model.title"
+                               name-locked="true"
+                               hide-alias="true"
+                               hide-icon="true"
+                               hide-description="true">
+            </umb-editor-header>
+            <umb-editor-container>
+                <umb-box>
+                    <umb-box-content>
+
+                        <!-- FILTER -->
+                        <div class="umb-control-group -no-border">
+                            <div class="form-search">
+                                <i class="icon-search"></i>
+                                <input type="text"
+                                       style="width: 100%"
+                                       ng-change="vm.filterItems()"
+                                       ng-model="vm.searchTerm"
+                                       class="umb-search-field search-query search-input input-block-level"
+                                       localize="placeholder"
+                                       placeholder="@placeholders_filter"
+                                       umb-auto-focus>
+                            </div>
+                        </div>
+
+                        <ul class="umb-card-grid" ng-mouseleave="vm.hideDetailsOverlay()">
+                            <li ng-repeat="workflowType in vm.workflowTypes | filter: vm.searchTerm | orderBy:'name'"
+                                ng-mouseover="vm.showDetailsOverlay(workflowType)"
+                                ng-click="vm.pickWorkflowType(workflowType)"
+                                class="-three-in-row">
+                                <a class="umb-card-grid-item" href="" title="{{ workflowType.name }}">
+                                    <i class="{{ workflowType.icon }}"></i>
+                                    {{ workflowType.name }}
+                                </a>
+                            </li>
+                        </ul>
+
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <umb-button type="button"
+                                button-style="link"
+                                label-key="general_close"
+                                shortcut="esc"
+                                action="vm.close()">
+                    </umb-button>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </umb-editor-view>
+    </form>
+</div>

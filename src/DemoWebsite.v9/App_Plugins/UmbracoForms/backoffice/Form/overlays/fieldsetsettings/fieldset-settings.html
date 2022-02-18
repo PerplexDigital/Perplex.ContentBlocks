@@ -1,0 +1,114 @@
+<div ng-controller="UmbracoForms.Overlays.FieldsetSettingsOverlay as vm">
+  <form name="fieldSettingsForm"
+        novalidate
+        val-form-manager>
+    <umb-editor-view>
+      <umb-editor-header name="model.title"
+                         name-locked="true"
+                         hide-alias="true"
+                         hide-icon="true"
+                         hide-description="true">
+      </umb-editor-header>
+      <umb-editor-container>
+        <umb-box>
+          <umb-box-content>
+            <h5><localize key="formConditions_title"></localize></h5>
+            <div class="umb-forms__conditions">
+              <div class="control-group umb-control-group">
+                <umb-toggle checked="model.fieldset.condition.enabled"
+                            on-click="vm.toggleConditions()"
+                            show-labels="true"
+                            label-on="{{vm.enableConditionsToggleText}}"
+                            label-off="{{vm.enableConditionsToggleText}}"
+                            label-position="right">
+                </umb-toggle>
+              </div>
+              <div class="control-group umb-control-group" ng-show="model.fieldset.condition.enabled">
+                <div class="umb-forms__condition-select">
+                  <div class="umb-forms__select">
+                    <select ng-model="model.fieldset.condition.actionType"
+                            ng-options="actionType.value as actionType.name for actionType in vm.actionTypes"></select>
+                  </div>
+                  <span><localize key="formConditions_thisFieldSetIf"></localize></span>
+                  <div class="umb-forms__select">
+                    <select ng-model="model.fieldset.condition.logicType"
+                            ng-options="logicType.value as logicType.name for logicType in vm.logicTypes"></select>
+                  </div>
+                  <span><localize key="formConditions_ofTheFollowingMatch"></localize>:</span>
+                </div>
+                <div ng-repeat="rule in model.fieldset.condition.rules" class="umb-forms-rule">
+                  <div class="umb-forms-rule__cond">
+                    <div class="umb-forms__select">
+                      <select ng-model="rule.field"
+                              ng-options="field.id as field.caption for field in model.fields"
+                              ng-change="vm.conditionFieldSelected(rule.field, rule)"
+                              ng-init="vm.conditionFieldSelected(rule.field, rule)">
+                      </select>
+                    </div>
+                    <div class="umb-forms__select">
+                      <select ng-model="rule.operator"
+                              ng-options="operator.value as operator.name for operator in vm.operators"></select>
+                    </div>
+                    <div class="umb-forms__select" ng-if="rule.$preValues">
+                      <select ng-model="rule.value"
+                              ng-options="preValue.value as preValue.value for preValue in rule.$preValues"
+                              ng-change="vm.rulePrevalueSelected(rule.value)"></select>
+                    </div>
+                    <div class="umb-forms__conditions-rule" ng-if="!rule.$preValues">
+                      <input type="text" ng-model="rule.value" />
+                    </div>
+                    <a ng-click="vm.deleteConditionRule(model.fieldset.condition.rules,rule)">
+                      <i class="icon-trash"></i>
+                    </a>
+                  </div>
+                </div>
+                <br />
+                <button class="umb-forms-button" ng-click="vm.addConditionRule(model.fieldset.condition)">
+                  <localize key="formConditions_addCondition"></localize>
+                </button>
+              </div>
+            </div>
+            <h5>
+              <localize key="fieldSetColumns_title"></localize>
+            </h5>
+            <p>
+              <localize key="fieldSetColumns_setNumber"></localize><br>
+              <strong>{{vm.fieldSetContainersDescription}}</strong>
+            </p>
+            <div class="umb-forms__columns-template">
+              <div class="umb-forms__columns-template__form">
+                <div class="umb-forms__columns-template__column"
+                     ng-repeat="container in model.fieldset.containers">
+                  <a class="umb-forms__columns-template__remove" href="" ng-click="vm.removeColumn(container)" ng-if="model.fieldset.containers.length > 1">
+                    <i class="icon-wrong"></i>
+                  </a>
+                </div>
+              </div>
+              <button class="umb-forms-button"
+                      ng-class="{'-disabled': !vm.canAddColumn()}"
+                      ng-click="vm.addColumn()"
+                      ng-disabled="!vm.canAddColumn()">
+                <localize key="fieldSetColumns_addColumn"></localize>
+              </button>
+            </div>
+          </umb-box-content>
+        </umb-box>
+      </umb-editor-container>
+      <umb-editor-footer>
+        <umb-editor-footer-content-right>
+          <umb-button type="button"
+                      button-style="link"
+                      label-key="general_close"
+                      shortcut="esc"
+                      action="vm.close(model)">
+          </umb-button>
+          <umb-button type="button"
+                      button-style="success"
+                      label-key="general_submit"
+                      action="vm.submit()">
+          </umb-button>
+        </umb-editor-footer-content-right>
+      </umb-editor-footer>
+    </umb-editor-view>
+  </form>
+</div>

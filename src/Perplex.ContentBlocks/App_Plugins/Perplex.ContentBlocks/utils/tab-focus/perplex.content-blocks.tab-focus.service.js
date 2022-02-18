@@ -1,4 +1,4 @@
-angular.module("perplexContentBlocks").service("contentBlocksTabFocusService", [
+﻿angular.module("perplexContentBlocks").service("contentBlocksTabFocusService", [
     "$rootScope",
     "$timeout",
     tabFocusService
@@ -195,9 +195,9 @@ function tabFocusService($rootScope, $timeout) {
      * @returns {HTMLElement}
      */
     function getTab($element) {
-        // Content Tab: .umb-group-panel
+        // Content Tab: .umb-group-panel / .umb-box (latter if not in a group but directly on the tab)
         // Content App: .umb-editor-sub-view__content
-        return $element.closest(".umb-group-panel,.umb-editor-sub-view__content")[0];
+        return $element.closest(".umb-box,.umb-group-panel,.umb-editor-sub-view__content")[0];
     }
 
     /**

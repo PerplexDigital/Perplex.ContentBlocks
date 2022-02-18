@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<language>
+  <area alias="formCreate">
+    <key alias="folderDescription">Used to organise forms</key>
+  </area>
+  <area alias="formSettings">
+    <key alias="storeRecordsDescription">
+      Check this box to save submitted records in a database.
+      This will allow you to view and export them from the queries overview.
+      If you don't want to store data (due to policies in your organisation), leave the box un-checked.
+    </key>
+  </area>
+
+  <area alias="formProviderExportTypes">
+    <key alias="saveAllUploadedFilesInDiskStructureDescription">Exports all files uploading in form submissions to a zip archive, organised as the files are stored on disk.</key>
+    <key alias="saveAllUploadedFilesByEntryDescription">Exports all files uploading in form submissions to a zip archive, organised in a sub-folder per entry.</key>
+  </area>
+</language>

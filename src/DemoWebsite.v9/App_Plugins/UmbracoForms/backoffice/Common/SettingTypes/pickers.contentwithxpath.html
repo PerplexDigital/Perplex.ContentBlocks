@@ -1,0 +1,83 @@
+﻿<div ng-controller="UmbracoForms.SettingTypes.Pickers.ContentWithXpathController">
+
+    <div ng-show="!node">
+
+        <div ng-if="!queryIsVisible && !setting.value">
+            <ul class="unstyled list-icons">
+                <li>
+                    <i class="icon icon-add blue"></i>
+                    <a href ng-click="openContentPicker()" prevent-default data-umb="choose_a_root_node">
+                        <localize key="general_choose">Choose a root node</localize>...
+                    </a>
+                </li>
+                <li>
+                    <i class="icon icon-search"></i>
+                    <a href ng-click="showQuery()">Query for root node with xpath</a>
+                </li>
+            </ul>
+        </div>
+
+        <div ng-show="queryIsVisible">
+
+            <input type="text" ng-model="query" ng-change="setXpath()" placeholder="Enter xpath query" data-umb="settingstype-pickers-contentwithxpath-input">
+
+            <ul class="unstyled list-icons" style="margin-top: 15px">
+                <li style="max-width: 600px">
+                    <i class="icon icon-help-alt"></i>
+                    <a href="" ng-click="toggleHelp()" prevent-default>
+                        <span ng-hide="helpIsVisible">Show xpath query help</span>
+                        <span ng-show="helpIsVisible">Hide xpath query help</span>
+                    </a>
+
+                    <small ng-if="helpIsVisible">
+                        <p>
+                            Use Xpath query to set a root node on the tree, either based on a search from the root of the content tree, or by using a context-aware placeholder.
+                        </p>
+
+                        <p>
+                            Placeholders finds the nearest published ID and runs its query from there. so for instance:
+
+                            <pre>$parent/newsArticle</pre>
+
+                            Will try to get the parent if available, but will then fall back to the nearest ancestor and query for all news articles there.
+                        </p>
+
+                        <p>
+                            Available placeholders:
+                            <br/>
+                            <code>$current</code>: current page or closest found ancestor<br/>
+                            <code>$parent</code>: parent page or closest found ancestor<br/>
+                            <code>$root</code>: root of the content tree<br/>
+                            <code>$site</code>: Ancestor node at level 1
+                            <br/>
+                        </p>
+                    </small>
+                </li>
+                <li>
+                    <i class="icon icon-delete red"></i>
+                    <a href ng-click="clear()">Cancel and clear query</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <ul class="unstyled list-icons" ng-if="node">
+		<li>
+			<a href="" class="hover-show pull-right" ng-click="clear()">
+				<i class="icon icon-delete red"></i>
+			</a>
+			<i class="icon {{node.icon}} hover-hide"></i>
+
+			<a href prevent-default ng-click="openContentPicker()" >{{node.name}}</a>
+		</li>
+	</ul>
+
+    <umb-overlay
+		ng-if="treePickerOverlay.show"
+		model="treePickerOverlay"
+		position="right"
+		view="treePickerOverlay.view">
+	</umb-overlay>
+
+</div>

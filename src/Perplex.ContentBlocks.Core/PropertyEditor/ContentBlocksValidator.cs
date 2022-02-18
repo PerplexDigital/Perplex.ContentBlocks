@@ -1,18 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using Perplex.ContentBlocks.PropertyEditor.Configuration;
-using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 #if NET5_0
-using Microsoft.AspNetCore.Http;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
-using Umbraco.Cms.Core.PropertyEditors.Validation;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Strings;
 #elif NET472
@@ -26,7 +19,6 @@ using Umbraco.Web;
 using Umbraco.Web.PropertyEditors;
 using Umbraco.Web.PropertyEditors.Validation;
 #endif
-
 
 namespace Perplex.ContentBlocks.PropertyEditor
 {

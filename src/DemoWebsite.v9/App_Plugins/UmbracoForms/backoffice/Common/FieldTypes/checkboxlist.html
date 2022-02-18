@@ -1,0 +1,12 @@
+﻿
+<label ng-click="editField(field)" ng-repeat="preValue in field.preValues" class="checkbox">
+    <input tabindex="-1" type="checkbox"/> {{preValue}} <br/>
+</label>
+
+<label ng-repeat="preValue in field.$preValues" class="checkbox">
+    <input tabindex="-1" type="checkbox"/> {{preValue.value}} <br/>
+</label>
+
+<div ng-if="field.prevalueSourceId == null && field.removePrevalueEditor !== true || field.prevalueSourceId == '00000000-0000-0000-0000-000000000000' && field.removePrevalueEditor !== true">
+    <umb-forms-inline-prevalue-editor ng-model="field.preValues" />
+</div>

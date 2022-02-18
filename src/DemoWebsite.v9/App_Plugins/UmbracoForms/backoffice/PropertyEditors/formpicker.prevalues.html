@@ -1,0 +1,29 @@
+<div ng-controller="UmbracoForms.FormPickerPrevaluesController as vm">
+
+    <div>
+        <umb-node-preview
+            ng-repeat="form in vm.forms"
+            name="form.name"
+            icon="form.icon"
+            description="form.fields"
+            allow-remove="true"
+            on-remove="vm.remove(form)">
+        </umb-node-preview>
+    </div>
+
+    <a
+        class="umb-node-preview-add"
+        href=""
+        ng-click="vm.openFormPicker()"
+        prevent-default>
+        <localize key="general_add">Add</localize>
+    </a>
+
+    <umb-overlay
+        ng-if="vm.formPickerOverlay.show"
+        model="vm.formPickerOverlay"
+        view="vm.formPickerOverlay.view"
+        position="right">
+    </umb-overlay>
+
+</div>

@@ -1,0 +1,18 @@
+<div ng-controller="UmbracoForms.SettingTypes.FileUpload as vm">
+    
+    <!-- Uses Core's ng-upload directive we ship with -->
+    <button class="btn"
+        ngf-pattern="'.txt'"
+        ngf-select="vm.uploadFile($file)"><localize key="formFileUpload_pickFile"></localize></button>
+
+    <!-- Progress Bar - Reuse component -->
+    <div ng-if="vm.isUploading" style="margin-top:10px;">
+        <p><localize key="formFileUpload_uploading"></localize>: {{vm.filePercentage}}%</p>
+        <umb-progress-bar percentage="{{vm.filePercentage}}"></umb-progress-bar>
+    </div>
+
+    <div ng-if="vm.savedPath" data-umb="settingtypes-fileupload">
+      <localize key="formFileUpload_currentFile"></localize>: {{vm.savedPath}}
+    </div>
+
+</div>

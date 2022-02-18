@@ -1,0 +1,16 @@
+﻿<div ng-controller="UmbracoForms.SettingTypes.Pickers.ContentController">
+    <div ng-show="node">
+        <i class="icon icon-delete red hover-show pull-right" ng-click="clear()"></i>
+        <ul class="unstyled list-icons" >
+            <li>
+                <i class="icon {{node.icon}} hover-hide"></i>
+                <a href prevent-default ng-click="openContentPicker()">{{node.name}}</a>
+            </li>
+        </ul>
+    </div>
+    <a ng-show="!node" href ng-click="openContentPicker()" prevent-default>
+        <localize key="general_choose">Choose a node</localize>...
+    </a>
+
+
+</div>

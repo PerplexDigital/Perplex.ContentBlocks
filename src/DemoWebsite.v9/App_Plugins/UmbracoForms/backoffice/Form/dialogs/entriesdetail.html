@@ -1,0 +1,47 @@
+<div class="umb-panel">
+    <div class="umb-panel-body no-header with-footer">
+
+
+        <div class="umb-forms-settings">
+            <h5>
+                Record with id: {{dialogOptions.row.id}}<br/>
+                <small>Unique id: {{dialogOptions.row.uniqueId}}</small>
+            </h5>
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+
+                    <div class="control-row"
+                         ng-repeat="field in dialogOptions.row.fields track by $index"
+                         ng-init="fieldSchema = dialogOptions.schema[$index]"
+                         ng-show="dialogOptions.hiddenFields.indexOf($index) === -1">
+
+                        <label class="control-label">{{fieldSchema.name}}</label>
+
+                        <div class="umb-forms-fieldview fieldview-{{fieldSchema.view}}">
+                            <div ng-if="fieldSchema.view === 'text'">{{field}}</div>
+                            <div
+                                ng-if="fieldSchema.view !== 'text'"
+                                ng-include="'/App_Plugins/UmbracoForms/backoffice/Common/RenderTypes/' + fieldSchema.view + '.html'">
+                            </div>
+                        </div>
+
+                        <hr/>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+
+                <a href="" ng-click="close()" class="btn btn-primary">
+                    <localize key="general_ok" class="ng-isolate-scope ng-scope">Done</localize>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

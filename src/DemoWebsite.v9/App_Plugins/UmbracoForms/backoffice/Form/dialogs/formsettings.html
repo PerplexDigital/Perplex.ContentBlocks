@@ -1,0 +1,128 @@
+<div class="umb-panel">
+	<div class="umb-panel-body no-header with-footer">
+
+		<div class="umb-forms-settings">
+
+			<div ng-if="dialogOptions.section === 'styling'">
+				<h5>Captions</h5><div class="umb-property">
+					<div class="control-group umb-control-group">
+						<div class="control-row">
+							<label class="control-label">Title</label>
+							<input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.form.$currentPage.caption" />
+						</div>
+
+						<div class="control-row">
+							<label class="control-label">'Submit' button label</label>
+							<input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.form.submitLabel" />
+						</div>
+
+						<div class="control-row">
+							<label class="control-label">'Next' button label</label>
+							<input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.form.nextLabel" />
+						</div>
+
+						<div class="control-row">
+							<label class="control-label">'Previous' button label</label>
+							<input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.form.prevLabel" />
+						</div>
+					</div>
+				</div>
+
+				<h5>Styling</h5><div class="umb-property">
+					<div class="control-group umb-control-group">
+
+						<div class="control-row">
+							<label class="control-label">Form css class</label>
+							<input type="text" class="umb-editor umb-textstring"
+							ng-model="dialogOptions.form.cssClass" />
+						</div>
+
+						<label class="checkbox">Disable default stylesheet <input type="checkbox" ng-model="dialogOptions.form.disableDefaultStylesheet" /></label>
+					</div>
+				</div>
+			</div>
+
+
+			<div ng-if="dialogOptions.section === 'submission'">
+				<h5>When form is submitted</h5><div class="umb-property">
+					<div class="control-group umb-control-group">
+
+
+						<div class="control-row">
+							<label class="control-label">Message on submit</label>
+							<textarea type="text" class="umb-editor umb-textarea"
+							ng-model="dialogOptions.form.messageOnSubmit"></textarea>
+						</div>
+
+						<div class="control-row">
+							<label class="control-label">Go to page on submit</label>
+
+	                        <umb-forms-legacy-content-picker ng-model="dialogOptions.form.goToPageOnSubmit" />
+						    
+						</div>
+
+						<label class="checkbox">Manually Approve submitted records
+							<input type="checkbox"
+							ng-model="dialogOptions.form.manualApproval" />
+						</label>
+					</div>
+				</div>
+			</div>
+
+
+			<div ng-if="dialogOptions.section === 'validation'">
+				<h5>Form validation</h5><div class="umb-property">
+				    <div class="control-group umb-control-group">
+				        <div class="control-row">
+				            <label class="control-label">Mandatory Error Message</label>
+				            <small>Message to display when a mandatory field was left empty</small>
+
+				            <input type="text" class="umb-editor umb-textstring"
+				                   ng-model="dialogOptions.form.requiredErrorMessage" />
+				        </div>
+
+				        <div class="control-row">
+				            <label class="control-label">Invalid Error Message</label>
+				            <small>Message to display when a field is invalid</small>
+
+				            <input type="text" class="umb-editor umb-textstring"
+				                   ng-model="dialogOptions.form.invalidErrorMessage" />
+				        </div>
+
+				        <label class="checkbox">Show validation summary
+				            <input type="checkbox"
+				                   ng-model="dialogOptions.form.showValidationSummary" />
+				        </label>
+
+				        <label class="checkbox">Hide field validation labels
+				            <input type="checkbox"
+				                   ng-model="dialogOptions.form.hideFieldValidation" />
+				        </label>
+				    </div>
+
+				    <div class="control-row">
+	                    <label class="control-label">Mark fields</label>
+	                    <input type="radio" ng-model="dialogOptions.form.fieldIndicationType" value="NoIndicator">  No Indicator <br />
+	                    <input type="radio" ng-model="dialogOptions.form.fieldIndicationType" value="MarkMandatoryFields"> Mark Mandatory Fields <br />
+	                    <input type="radio" ng-model="dialogOptions.form.fieldIndicationType" value="MarkOptionalFields"> Mark Optional Fields <br />
+				    </div>
+
+				    <div class="control-row">
+	                    <label class="control-label">Indicator</label>
+	                    <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.form.indicator" />
+				    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+
+	<div class="umb-panel-footer">
+		<div class="umb-el-wrap umb-panel-buttons">
+			<div class="btn-toolbar umb-btn-toolbar pull-right">
+				<a href="" ng-click="close()" class="btn btn-primary">
+					<localize key="general_ok" class="ng-isolate-scope ng-scope">Done</localize>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>

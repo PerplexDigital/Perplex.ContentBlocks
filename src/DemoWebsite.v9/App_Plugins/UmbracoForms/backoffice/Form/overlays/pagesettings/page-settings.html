@@ -1,0 +1,94 @@
+<div ng-controller="UmbracoForms.Overlays.PageSettingsOverlay as vm">
+  <form name="fieldSettingsForm"
+        novalidate
+        val-form-manager>
+    <umb-editor-view>
+      <umb-editor-header name="model.title"
+                         name-locked="true"
+                         hide-alias="true"
+                         hide-icon="true"
+                         hide-description="true">
+      </umb-editor-header>
+      <umb-editor-container>
+        <umb-box>
+          <umb-box-content>
+            <h5><localize key="formConditions_title"></localize></h5>
+            <p>
+              <localize key="formConditions_pageConditionsDescription"></localize>              
+            </p>
+            <div class="umb-forms__conditions">
+              <div class="control-group umb-control-group">
+                <umb-toggle checked="model.page.buttonCondition.enabled"
+                            on-click="vm.toggleConditions()"
+                            show-labels="true"
+                            label-on="{{vm.enableConditionsToggleText}}"
+                            label-off="{{vm.enableConditionsToggleText}}"
+                            label-position="right">
+                </umb-toggle>
+              </div>
+              <div class="control-group umb-control-group" ng-show="model.page.buttonCondition.enabled">
+                <div class="umb-forms__condition-select">
+                  <div class="umb-forms__select">
+                    <select ng-model="model.page.buttonCondition.actionType"
+                            ng-options="actionType.value as actionType.name for actionType in vm.actionTypes"></select>
+                  </div>
+                  <span><localize key="formConditions_thisFieldSetIf"></localize></span>
+                  <div class="umb-forms__select">
+                    <select ng-model="model.page.buttonCondition.logicType"
+                            ng-options="logicType.value as logicType.name for logicType in vm.logicTypes"></select>
+                  </div>
+                  <span><localize key="formConditions_ofTheFollowingMatch"></localize>:</span>
+                </div>
+                <div ng-repeat="rule in model.page.buttonCondition.rules" class="umb-forms-rule">
+                  <div class="umb-forms-rule__cond">
+                    <div class="umb-forms__select">
+                      <select ng-model="rule.field"
+                              ng-options="field.id as field.caption for field in model.fields"
+                              ng-change="vm.conditionFieldSelected(rule.field, rule)"
+                              ng-init="vm.conditionFieldSelected(rule.field, rule)">
+                      </select>
+                    </div>
+                    <div class="umb-forms__select">
+                      <select ng-model="rule.operator"
+                              ng-options="operator.value as operator.name for operator in vm.operators"></select>
+                    </div>
+                    <div class="umb-forms__select" ng-if="rule.$preValues">
+                      <select ng-model="rule.value"
+                              ng-options="preValue.value as preValue.value for preValue in rule.$preValues"
+                              ng-change="vm.rulePrevalueSelected(rule.value)"></select>
+                    </div>
+                    <div class="umb-forms__conditions-rule" ng-if="!rule.$preValues">
+                      <input type="text" ng-model="rule.value" />
+                    </div>
+                    <a ng-click="vm.deleteConditionRule(model.page.buttonCondition.rules,rule)">
+                      <i class="icon-trash"></i>
+                    </a>
+                  </div>
+                </div>
+                <br />
+                <button class="umb-forms-button" ng-click="vm.addConditionRule(model.page.buttonCondition)">
+                  <localize key="formConditions_addCondition"></localize>
+                </button>
+              </div>
+            </div>
+          </umb-box-content>
+        </umb-box>
+      </umb-editor-container>
+      <umb-editor-footer>
+        <umb-editor-footer-content-right>
+          <umb-button type="button"
+                      button-style="link"
+                      label-key="general_close"
+                      shortcut="esc"
+                      action="vm.close(model)">
+          </umb-button>
+          <umb-button type="button"
+                      button-style="success"
+                      label-key="general_submit"
+                      action="vm.submit()">
+          </umb-button>
+        </umb-editor-footer-content-right>
+      </umb-editor-footer>
+    </umb-editor-view>
+  </form>
+</div>

@@ -59,3 +59,4 @@ src/DemoWebsite*/[Uu]mbraco/*
 # NuGet / Our Umbraco packages
 pkg/**/*.nupkg
 pkg/**/*.zip
+/src/.vscode/

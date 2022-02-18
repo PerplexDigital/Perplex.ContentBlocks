@@ -1,0 +1,43 @@
+@model Umbraco.Forms.Web.Models.FormViewModel
+
+@using Newtonsoft.Json
+@using Umbraco.Forms.Core
+@using Umbraco.Forms.Web
+
+@{
+    var formJsObj = new
+    {
+        formId = Model.FormClientId,
+        pageButtonConditions = Model.PageButtonConditions,
+        fieldSetConditions = Model.FieldsetConditions,
+        fieldConditions = Model.FieldConditions,
+        recordValues = Model.GetFieldsNotDisplayed()
+    };
+
+    Html.AddFormThemeScriptFile("~/App_Plugins/UmbracoForms/Assets/themes/default/umbracoforms.js");
+}
+
+<script type="application/javascript">
+    if (typeof umbracoFormsCollection === 'undefined') var umbracoFormsCollection = [];
+    umbracoFormsCollection.push("@(Html.Raw(Uri.EscapeUriString(JsonConvert.SerializeObject(formJsObj, FormsJsonSerializerSettings.Default))))");
+</script>
+
+@* Only render out scripts on the page if the form has not been submitted yet *@
+@if (Model.SubmitHandled == false)
+{
+    @*
+        If the current page of the form has any Partial view files attached to render
+        Likely used by events and third parties adding tracking or other 3rd party functionality to a form
+    *@
+    if (Model.CurrentPage.PartialViewFiles.Any())
+    {
+        foreach (var partial in Model.CurrentPage.PartialViewFiles)
+        {
+            @await Html.PartialAsync(partial.Value)
+        }
+    }
+
+    @* Render references to javascript files needed by fields on the current page*@
+    @Html.RenderFormsScripts(Url, Model, Model.JavaScriptTagAttributes)
+    @Html.RenderFormsStylesheets(Url, Model)
+}

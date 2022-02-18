@@ -1,0 +1,54 @@
+<form novalidate name="contentForm"
+      ng-controller="UmbracoForms.Editors.Form.WorkflowsController"
+      ng-show="loaded && (hasAccessToCurrentForm && security.userSecurity.manageWorkflows && security.userSecurity.manageForms)"
+      ng-submit="save()"
+      val-form-manager>
+    <umb-panel>
+        <umb-header>
+            <div class="span7">
+                <h1>Form workflows</h1>
+            </div>
+        </umb-header>
+
+        <div class="umb-panel-body umb-scrollable row-fluid">
+            <div class="tab-content form-horizontal">
+                <div class="umb-pane">
+                    <p>Form workflows allow you to add additional functionality to a form, like sending an email, posting to a third party service...</p>
+                    <h4>When the form is submitted, it should... </h4>
+                    <small>These actions will execute when the user has filled in the fields and submits the final step of the form.</small>
+                    
+                    <table class="table table-hover">
+                        <tbody ui-sortable="sortableOptions" ng-model="workflows" class="workflows" rel="Submitted">
+                            <tr ng-repeat="workflow in workflows | filter: { executesOn: 'Submitted' } track by workflow.id" rel="{{workflow.id}}">
+                                <td>
+                                    <a title="Move" class="handle" preventdefault><i class="icon-navigation"></i></a>
+                                    <a href ng-click="updateWorkflow('Submitted',workflow)" title="Settings" ng-class="{inactive: workflow.active == false}">{{workflow.name}}</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a ng-click ="addWorkflow('Submitted')" class="btn"><i class="icon-add"></i>Add an action</a>
+
+                    <h4>When form records are approved I want to ...</h4>
+                    <small>These actions wil execute when the submitted form record is approved. In case your form is set to manual approve these actions will be triggered from the records viewer.</small>
+                    <table class="table table-hover">
+                        <tbody ui-sortable="sortableOptions" ng-model="workflows" class="workflows" rel="Approved">
+                            <tr ng-repeat="workflow in workflows | filter: { executesOn: 'Approved' } track by workflow.id" rel="{{workflow.id}}">
+                                <td>
+                                    <a title="Move" class="handle" preventdefault><i class="icon-navigation"></i></a>
+                                    <a href ng-click="updateWorkflow('Approved',workflow)" title="Settings" ng-class="{inactive: workflow.active == false}">{{workflow.name}}</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a ng-click="addWorkflow('Approved')" class="btn"><i class="icon-add"></i>Add an action</a>
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+    </umb-panel>
+</form>

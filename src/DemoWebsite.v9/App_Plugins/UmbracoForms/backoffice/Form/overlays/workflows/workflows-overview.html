@@ -1,0 +1,129 @@
+<div ng-controller="UmbracoForms.Overlays.WorkflowsOverviewOverlayController as vm">
+    <form name="workflowsForm"
+          novalidate
+          val-form-manager>
+        <umb-editor-view>
+            <umb-editor-header name="model.title"
+                               name-locked="true"
+                               hide-alias="true"
+                               hide-icon="true"
+                               hide-description="true">
+            </umb-editor-header>
+            <umb-editor-container>
+                <umb-box>
+                    <umb-box-content>
+
+                        <div class="umb-forms-workflows">
+                            <div class="umb-forms-workflow -not-clickable">
+                                <div class="umb-forms-workflow__icon-wrapper -round">
+                                    <i class="umb-forms-workflow__icon icon-check"></i>
+                                </div>
+                                <div class="umb-forms-workflow__name-wrapper">
+                                    <div class="umb-forms-workflow__name"><localize key="formWorkflows_onSubmit"></localize></div>
+                                    <div class="umb-forms-workflow__description"><localize key="formWorkflows_onSubmitDescription"></localize></div>
+                                </div>
+                            </div>
+                            <div class="umb-forms-workflow" ng-click="vm.editSubmitMessageWorkflow()">
+                                <div class="umb-forms-workflow__icon-wrapper">
+                                    <i class="umb-forms-workflow__icon icon-document"></i>
+                                </div>
+                                <div class="umb-forms-workflow__name-wrapper">
+                                    <div class="umb-forms-workflow__name"><localize key="formWorkflows_defaultWorkflowName"></localize></div>
+                                    <div class="umb-forms-workflow__description"><localize key="formWorkflows_defaultWorkflowDescription"></localize></div>
+                                </div>
+                            </div>
+                            <div class="umb-forms-workflows__sortable-wrapper" ui-sortable="vm.workflowsSortableOptions" ng-model="model.formWorkflows.onSubmit">
+                                <div class="umb-forms-workflow sortable"
+                                     ng-repeat="workflow in model.formWorkflows.onSubmit | filter:{isDeleted:'false'}"
+                                     ng-click="vm.editWorkflow(workflow, 'onSubmit', $index)">
+                                    <div class="umb-forms-workflow__icon-wrapper sortable-handle">
+                                        <i class="umb-forms-workflow__icon" ng-class="workflow.workflowTypeIcon"></i>
+                                    </div>
+                                    <div class="umb-forms-workflow__name-wrapper">
+                                        <div class="umb-forms-workflow__name">{{ workflow.name }}</div>
+                                        <div class="umb-forms-workflow__description">{{ workflow.workflowTypeDescription }}</div>
+                                    </div>
+                                    <div class="umb-forms-workflow__actions">
+                                        <div class="umb-forms-workflow__action">
+                                            <i class="icon-trash" ng-click="vm.removeWorkflow(workflow, $event, model.formWorkflows.onSubmit)"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="umb-forms-workflow -add-new" href="" ng-click="vm.openWorkflowsTypesOverlay(model.formWorkflows.onSubmit)">
+                                <div class="umb-forms-workflow__icon-wrapper -empty"></div>
+                                <div class="umb-forms-workflow__name-wrapper">
+                                    <a class="umb-forms-add-workflow"><localize key="formWorkflows_addWorkflow"></localize></a>
+                                </div>
+                            </div>
+                            <div class="umb-forms-workflows__line"></div>
+                        </div>
+                        <div class="umb-forms-workflows-divider"></div>
+                        <div class="umb-forms-workflows" ng-if="model.manualApproval || model.formWorkflows.onApprove.length > 0">
+                            <div class="umb-forms-workflow -not-clickable">
+                                <div class="umb-forms-workflow__icon-wrapper -round">
+                                    <i class="umb-forms-workflow__icon icon-thumb-up"></i>
+                                </div>
+                                <div class="umb-forms-workflow__name-wrapper">
+                                    <div class="umb-forms-workflow__name"><localize key="formWorkflows_onApprove"></localize></div>
+                                    <div class="umb-forms-workflow__description"><localize key="formWorkflows_onApproveDescription"></localize><span ng-show="!model.manualApproval"> (<localize key="formWorkflows_onApproveAutomaticDescription"></localize>)</span>.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="umb-forms-workflows__sortable-wrapper" ui-sortable="vm.workflowsSortableOptions" ng-model="model.formWorkflows.onApprove">
+                                <div class="umb-forms-workflow sortable"
+                                     ng-repeat="workflow in model.formWorkflows.onApprove | filter:{isDeleted:'false'}"
+                                     ng-click="vm.editWorkflow(workflow, 'onApprove', $index)">
+                                    <div class="umb-forms-workflow__icon-wrapper sortable-handle">
+                                        <i class="umb-forms-workflow__icon" ng-class="workflow.workflowTypeIcon"></i> 
+                                    </div>
+                                    <div class="umb-forms-workflow__name-wrapper">
+                                        <div class="umb-forms-workflow__name">{{ workflow.name }}</div>
+                                        <div class="umb-forms-workflow__description">{{ workflow.workflowTypeDescription }}</div>
+                                    </div>
+                                    <div class="umb-forms-workflow__actions">
+                                        <div class="umb-forms-workflow__action">
+                                            <i class="icon-trash" ng-click="vm.removeWorkflow(workflow, $event, model.formWorkflows.onApprove)"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="umb-forms-workflow -add-new">
+                                <div class="umb-forms-workflow__icon-wrapper -empty"></div>
+                                <div class="umb-forms-workflow__name-wrapper">
+                                    <a class="umb-forms-add-workflow" href="" ng-click="vm.openWorkflowsTypesOverlay(model.formWorkflows.onApprove)"><localize key="formWorkflows_addWorkflow"></localize></a>
+                                </div>
+                            </div>
+                            <div class="umb-forms-workflows__line"></div>
+                        </div>
+                        <input class="umb-forms__hacky-hidden-field" type="text" focus-when="{{vm.focusOverlay}}" />
+                      
+                        <!--<umb-overlay ng-if="vm.workflowSettingsOverlay.show"
+                                     model="vm.workflowSettingsOverlay"
+                                     view="vm.workflowSettingsOverlay.view"
+                                     position="right">
+                        </umb-overlay>-->
+                        
+                    </umb-box-content>
+                </umb-box>
+            </umb-editor-container>
+
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <umb-button type="button"
+                                button-style="link"
+                                label-key="general_close"
+                                shortcut="esc"
+                                action="vm.close()">
+                    </umb-button>
+                    <umb-button type="button"
+                                button-style="success"
+                                label-key="general_submit"
+                                action="vm.submit()">
+                    </umb-button>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+        </umb-editor-view>
+
+    </form>
+</div>

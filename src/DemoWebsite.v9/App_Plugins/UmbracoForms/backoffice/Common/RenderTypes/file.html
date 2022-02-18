@@ -1,0 +1,15 @@
+<div class="umb-forms-rendertype-file"
+     ng-controller="UmbracoForms.RenderTypes.FileController">
+        <div ng-repeat="path in files">
+            <div ng-if="path && path.indexOf('.') > 0">
+                <a target="_blank" href="{{path}}" class="thumbnail" ng-if="isImage(path)">
+                    <img ng-src="{{getPreview(path)}}" />
+                </a>
+
+                <a target="_blank" href="{{path}}" class="thumbnail file" ng-if="!isImage(path)">
+                    <i class="icon icon-document"></i>
+                    {{getFileName(path)}}
+                </a>
+            </div>
+        </div>
+</div>

@@ -1,0 +1,39 @@
+<div ng-controller="UmbracoForms.ThemePickerOverlayController as vm">
+
+    <umb-load-indicator
+        ng-if="vm.loading">
+    </umb-load-indicator>
+    
+    <umb-empty-state
+        ng-if="vm.themes.length === 0"
+        position="center">
+        <div><localize key="formThemes_noThemesAvailable"></localize></div>
+    </umb-empty-state>
+
+    <!-- FILTER -->
+	<div class="umb-control-group -no-border" ng-if="vm.themes.length > 0">
+		<div class="form-search">
+			<i class="icon-search"></i>
+			<input type="text"
+				class="umb-search-field search-query search-input input-block-level -full-width-input"
+				ng-model="vm.filterTerm"
+				localize="placeholder"
+	      placeholder="@placeholders_filter"
+				umb-auto-focus>
+		</div>
+	</div>
+
+    <ul class="umb-actions umb-actions-child" ng-if="vm.themes.length > 0">
+        <li ng-repeat="theme in vm.themes | orderBy:'name' | filter:vm.filterTerm"
+            ng-click="vm.pickTheme(theme, $index)">
+            <a href="" title="{{ theme.name }}">
+                <i ng-if="!theme.selected" class="icon-brush" style="display: inline-block;"></i>
+                <i ng-if="theme.selected" class="icon-check color-green" style="font-size: 22px; display: inline-block;"></i>
+                <span class="menu-label">
+                    {{theme.name}}
+                </span>
+            </a>
+        </li>
+    </ul>
+
+</div>

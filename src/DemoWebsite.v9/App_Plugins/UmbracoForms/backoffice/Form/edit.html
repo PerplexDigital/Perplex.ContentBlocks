@@ -1,0 +1,41 @@
+﻿<div ng-controller="UmbracoForms.Editors.Form.EditController"
+     ng-show="(hasAccessToCurrentForm && security.userSecurity.manageForms)"
+     class="umb-forms">
+
+    <umb-load-indicator ng-if="page.loading"></umb-load-indicator>
+
+    <form name="formsForm"
+          novalidate
+          val-form-manager>
+        <umb-editor-view ng-if="!page.loading && displayEditor">
+            <umb-editor-header name="form.name"
+                               hide-alias="true"
+                               hide-description="true"
+                               hide-icon="true"
+                               navigation="page.contentApps">
+            </umb-editor-header>
+
+            <umb-editor-container>
+                <umb-editor-sub-views ng-if="!page.loading"
+                                      sub-views="page.contentApps"
+                                      model="form">
+                </umb-editor-sub-views>
+            </umb-editor-container>
+            
+            <umb-editor-footer>
+                <umb-editor-footer-content-right>
+                    <umb-button type="button"
+                                action="save()"
+                                state="page.saveButtonState"
+                                button-style="success"
+                                shortcut="ctrl+s"
+                                label="Save"
+                                label-key="buttons_save"
+                                data-element='button-save'>
+                    </umb-button>
+                </umb-editor-footer-content-right>
+            </umb-editor-footer>
+
+        </umb-editor-view>
+    </form>
+</div>

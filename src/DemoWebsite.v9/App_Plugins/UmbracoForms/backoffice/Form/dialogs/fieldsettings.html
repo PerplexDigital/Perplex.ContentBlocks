@@ -1,0 +1,144 @@
+<div class="umb-panel" ng-controller="UmbracoForms.Editors.Form.Dialogs.FieldSettingController">
+    <div class="umb-panel-body no-header with-footer">
+        <div class="umb-forms-settings">
+
+            <h5>Editor</h5>
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+                    <div class="control-row">
+                        <label class="control-label">Label</label>
+                        <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.field.caption" placeholder="Enter a field caption...">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Alias</label>
+                        <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.field.alias" placeholder="Enter a field alias...">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Help text</label>
+                        <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.field.tooltip" placeholder="Enter a field tooltip...">
+                    </div>
+                    <div class="control-row">
+                        <label class="control-label">Type</label>
+                        <select class="umb-editor umb-textstring"
+                                ng-model="dialogOptions.field.fieldTypeId"
+                                ng-options="fieldtype.id as fieldtype.name for fieldtype in dialogOptions.fieldtypes"
+                                ng-change="dialogOptions.setFieldType(dialogOptions.field, dialogOptions.field.fieldTypeId)">
+                            <option value="">Choose type...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <h5>Validation</h5>
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+                    <label class="checkbox">Mandatory <input type="checkbox" ng-model="dialogOptions.field.mandatory"></label>
+                    <div class="control-row" ng-show="dialogOptions.field.mandatory">
+                        <label class="control-label">Mandatory error message</label>
+                        <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.field.requiredErrorMessage" placeholder="Enter a field mandatory message...">
+                    </div>
+                    <div class="control-row" ng-show="dialogOptions.field.$fieldType.supportsRegex">
+                        <label class="control-label">Regex</label>
+                        <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.field.regex" placeholder="Enter a field regex...">
+                    </div>
+                    <div class="control-row" ng-show="dialogOptions.field.$fieldType.supportsRegex && dialogOptions.field.regex">
+                        <label class="control-label">Invalid error message</label>
+                        <input type="text" class="umb-editor umb-textstring" ng-model="dialogOptions.field.invalidErrorMessage" placeholder="Enter a field invalid message...">
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="dialogOptions.field.$fieldType.supportsPrevalues">
+                <h5>Prevalues</h5>
+                <div class="umb-property">
+                    <div class="control-group umb-control-group" ng-if="dialogOptions.field.prevalueSourceId == null || dialogOptions.field.prevalueSourceId == '00000000-0000-0000-0000-000000000000'">
+                        <label class="control-label">Items</label>
+                        <umb-forms-prevalue-editor ng-model="dialogOptions.field.preValues" />
+                    </div>
+                    <div class="control-group umb-control-group" ng-if="dialogOptions.prevaluesources">
+                        <label class="control-label">Prevalue source</label>
+                        <div>
+                            <select ng-model="dialogOptions.field.prevalueSourceId" ng-change="getPrevalues(dialogOptions.field)">
+                                <option value="00000000-0000-0000-0000-000000000000" ng-selected="dialogOptions.field.prevalueSourceId == '00000000-0000-0000-0000-000000000000'">Choose...</option>
+                                <option ng-repeat="source in dialogOptions.prevaluesources" value="{{source.id}}" ng-selected="dialogOptions.field.prevalueSourceId == source.id">{{source.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h5>Conditions</h5>
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+                    <label class="checkbox"><input type="checkbox" ng-model="dialogOptions.field.condition.enabled"> Enable conditions</label>
+                </div>
+                <div class="control-group umb-control-group" ng-show="dialogOptions.field.condition.enabled">
+                    <select ng-model="dialogOptions.field.condition.actionType">
+                        <option value="Show">Show</option>
+                        <option value="Hide">Hide</option>
+                    </select>
+                    this field if
+                    <select ng-model="dialogOptions.field.condition.logicType">
+                        <option value="All">All</option>
+                        <option value="Any">Any</option>
+                    </select>
+                    of the following match:
+
+                    <div ng-repeat="rule in dialogOptions.field.condition.rules" class="umb-forms-rule">
+
+
+                        <select ng-model="rule.field" ng-options="field.id as field.caption for field in dialogOptions.fields"></select>
+                        <select ng-model="rule.operator">
+                            <option value="Is">Is</option>
+                            <option value="IsNot">IsNot</option>
+                            <option value="GreaterThen">GreaterThen</option>
+                            <option value="LessThen">LessThen</option>
+                            <option value="Contains">Contains</option>
+                            <option value="StartsWith">StartsWith</option>
+                            <option value="EndsWith">EndsWith</option>
+                        </select>
+                        <input type="text" ng-model="rule.value" />
+                        <a ng-click="deleteConditionRule(dialogOptions.field.condition.rules,rule)">
+                            <i class="icon-trash"></i>
+                        </a>
+                    </div>
+                    <div class="umb-forms-newrule">
+                        <select ng-model="dialogOptions.field.condition.$newrule.field"
+                                ng-options="field.id as field.caption for field in dialogOptions.fields">
+                            <option value="">Choose field...</option>
+                        </select>
+                        <select ng-model="dialogOptions.field.condition.$newrule.operator">
+                            <option value="">Choose operator...</option>
+                            <option value="Is">Is</option>
+                            <option value="IsNot">IsNot</option>
+                            <option value="GreaterThen">GreaterThen</option>
+                            <option value="LessThen">LessThen</option>
+                            <option value="Contains">Contains</option>
+                            <option value="StartsWith">StartsWith</option>
+                            <option value="EndsWith">EndsWith</option>
+                        </select>
+                        <input type="text" ng-model="dialogOptions.field.condition.$newrule.value" placeholder="Enter a value" />
+                        <br/><a ng-click="addConditionRule(dialogOptions.field.condition)"><i class=" icon icon-add blue"></i> New Condition</a>
+                    </div>
+                </div>
+            </div>
+
+            <h5>Extra</h5>
+            <div class="umb-property">
+                <div class="control-group umb-control-group">
+                    <div class="control-row" ng-repeat="setting in dialogOptions.field.$fieldType.settings">
+                        <label class="control-label">{{setting.name}}</label>
+                        <div ng-include="setting.view"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="umb-panel-footer">
+        <div class="umb-el-wrap umb-panel-buttons">
+            <div class="btn-toolbar umb-btn-toolbar pull-right">
+                <a href="" ng-click="close()" class="btn btn-primary">
+                    <localize key="general_ok" class="ng-isolate-scope ng-scope">Done</localize>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -58,13 +59,36 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return base.FromEditor(editorValue, currentValue);
             }
 
-            JArray fromEditor(ContentBlockModelValue block)
+            if (modelValue.Header is ContentBlockModelValue header)
             {
-                if (block?.Content != null &&
-                    _utils.GetDataType(block.DefinitionId) is IDataType dataType &&
+                header.Content = FromEditor(header.Content, header.DefinitionId);
+
+                foreach (var variant in header.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
+                {
+                    variant.Content = FromEditor(variant.Content, header.DefinitionId);
+                }
+            }
+
+            foreach (var block in modelValue.Blocks ?? Enumerable.Empty<ContentBlockModelValue>())
+            {
+                block.Content = FromEditor(block.Content, block.DefinitionId);
+
+                foreach (var variant in block.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
+                {
+                    variant.Content = FromEditor(variant.Content, block.DefinitionId);
+                }
+            }
+
+            return JsonConvert.SerializeObject(modelValue, Formatting.None);
+
+            JArray FromEditor(JArray blockContent, Guid blockDefinitionId)
+            {
+                if (blockContent?.ToString() is string content &&
+                    !string.IsNullOrWhiteSpace(content) &&
+                    _utils.GetDataType(blockDefinitionId) is IDataType dataType &&
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
-                    var propertyData = new ContentPropertyData(block.Content.ToString(), dataType.Configuration);
+                    var propertyData = new ContentPropertyData(content, dataType.Configuration);
 
                     try
                     {
@@ -77,28 +101,13 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     }
                     catch
                     {
-                        return block.Content;
+                        return blockContent;
                     }
                 }
 
                 // Fallback: return the original value
-                return block.Content;
+                return blockContent;
             }
-
-            if (modelValue.Header != null)
-            {
-                modelValue.Header.Content = fromEditor(modelValue.Header);
-            }
-
-            if (modelValue.Blocks?.Any() == true)
-            {
-                foreach (var block in modelValue.Blocks)
-                {
-                    block.Content = fromEditor(block);
-                }
-            }
-
-            return JsonConvert.SerializeObject(modelValue, Formatting.None);
         }
 
 #if NET5_0
@@ -119,10 +128,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
 #endif
             }
 
-            JArray toEditor(ContentBlockModelValue block)
+            JArray ToEditor(JArray blockContent, Guid blockDefinitionId)
             {
-                if (block?.Content != null &&
-                    _utils.GetDataType(block.DefinitionId) is IDataType dataType &&
+                if (blockContent?.ToString() is string content &&
+                    !string.IsNullOrWhiteSpace(content) &&
+                    _utils.GetDataType(blockDefinitionId) is IDataType dataType &&
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
 #if NET5_0
@@ -134,7 +144,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     if (segment != null) ncPropType.Variations |= ContentVariation.Segment;
 
                     var ncProperty = new Property(ncPropType);
-                    ncProperty.SetValue(block.Content.ToString(), culture, segment);
+                    ncProperty.SetValue(content, culture, segment);
 
                     try
                     {
@@ -149,24 +159,31 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     }
                     catch
                     {
-                        return block.Content;
+                        return blockContent;
                     }
                 }
 
                 // Fallback: return the original value
-                return block.Content;
+                return blockContent;
             }
 
-            if (modelValue.Header != null)
+            if (modelValue.Header is ContentBlockModelValue header)
             {
-                modelValue.Header.Content = toEditor(modelValue.Header);
-            }
+                header.Content = ToEditor(header.Content, header.DefinitionId);
 
-            if (modelValue.Blocks?.Any() == true)
-            {
-                foreach (var block in modelValue.Blocks)
+                foreach (var variant in header.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
                 {
-                    block.Content = toEditor(block);
+                    variant.Content = ToEditor(variant.Content, header.DefinitionId);
+                }
+            }
+
+            foreach (var block in modelValue.Blocks ?? Enumerable.Empty<ContentBlockModelValue>())
+            {
+                block.Content = ToEditor(block.Content, block.DefinitionId);
+
+                foreach (var variant in block.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
+                {
+                    variant.Content = ToEditor(variant.Content, block.DefinitionId);
                 }
             }
 
