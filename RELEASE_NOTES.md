@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.3 - <sub><sup>2022-05-17</sup></sub>
+
+-   Fixed layout issue with [Umbraco PR 11901](https://github.com/umbraco/Umbraco-CMS/pull/11901) when using multiple RTEs in a 1 Content Block
+    -   That PR adds a `top: 50px` which for some reason pushes the RTE toolbar of the 1st RTE 50px down when multiple RTEs are used within a Content Block inside an Umbraco tab. The toolbar then also blocks the user from focusing the RTE body.
+    -   Our `p-block__main` has `overflow: hidden` which caused this minor UI bug but this does not seem to do anything useful so we removed it to fix this bugged interaction with that PR's change.
+
 ## v2.1.2 - <sub><sup>2022-02-18</sup></sub>
 
 -   Variants: fixed front-end rendering of macros in an RTE of a block variant.
