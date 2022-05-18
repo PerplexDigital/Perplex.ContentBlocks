@@ -14,7 +14,10 @@
 
         function getByKey(key) {
             if (dataTypeKeyToId[key] == null) {
-                dataTypeKeyToId[key] = dataTypeResource.getById(key).then(function (dataType) {
+                dataTypeKeyToId[key] = dataTypeResource.getAll().then(function (dataTypes) {
+                    var dataType = _.find(dataTypes, function (dataType) {
+                        return dataType.key === key;
+                    });
                     if (dataType == null) {
                         throw new Error('No data type found with key "' + key + '"');
                     }
