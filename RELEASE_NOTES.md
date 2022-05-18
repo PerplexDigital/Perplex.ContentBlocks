@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.4 - <sub><sup>2022-05-18</sup></sub>
+
+-   Fixed an issue that required editors to have access to the Settings section to be able to use ContentBlocks ([#59](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/59))
+    -   This issue occured only in 2.1.2 and 2.1.3
+    -   Thanks to [@torerikk](https://github.com/torerikk) for raising the issue.
+
 ## v2.1.3 - <sub><sup>2022-05-17</sup></sub>
 
 -   Fixed layout issue with [Umbraco PR 11901](https://github.com/umbraco/Umbraco-CMS/pull/11901) when using multiple RTEs in a 1 Content Block
@@ -37,7 +43,6 @@ Summary of changes in each release. For a full changelog see [the commit history
     -   An example of an addon that replaces the body and adds a button is [available here](src/DemoWebsite.v9/App_Plugins/MyContentBlocksAddon)
 
 -   Added support for block variants
-
     -   It is now possible to create block variants
         -   The core package does not provide any UI to visualize or manage these variants
         -   If you want to use it you will have to write some custom code and provide custom components to render the UI
