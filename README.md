@@ -17,15 +17,15 @@ This package works on top of NestedContent but provides a more advanced user int
     -   This helps editors to distinguish better between available blocks
     -   Pickers show blocks in categories to help organization when available block count is high
 
-## Umbraco 9 / .NET 5
+## Umbraco 9+ / .NET 5+
 
-ContentBlocks 2.0 which supports Umbraco 9 / .NET 5 is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks/2.0.0). This package can be installed in both v8 and v9 websites.
+ContentBlocks 2.0 which supports Umbraco 9+ / .NET 5+ is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks). This package can be installed in v8, v9 and v10 websites.
 
 It can be installed as usual via NuGet:
 
 `Install-Package Perplex.ContentBlocks`
 
-This is direct port of `v1.9.0` and the API is almost identical. There is a small change in the way you render the Content Blocks in your Razor view for v9 only. See [Rendering Content Blocks](#rendering-content-blocks) for details.
+This is direct port of `v1.9.0` and the API is almost identical. There is a small change in the way you render the Content Blocks in your Razor view for v9+ only. See [Rendering Content Blocks](#rendering-content-blocks) for details.
 
 ## Demo
 
@@ -274,18 +274,19 @@ This code will:
 3. Configure a Header and a Block to use the data type
 
 What you now can do in your solution is:
+
 1. Create a **new data type** based on the `Perplex.ContentBlocks` property editor. Call it "Perplex Contentblocks"
-    
+
 ![perplex contentblocks](https://user-images.githubusercontent.com/12457148/137145854-f09786d4-c00f-4d44-9453-e96d0fb94764.png)
-    
+
 2. Add this property to a document type of your choice
 
     ![Add to document type](https://user-images.githubusercontent.com/12457148/137146090-13c0962a-4480-492b-b07f-c2610e74297f.png)
-    
+
 3. You should now be able to pick blocks on a content page of the document type.
 
 ![Contentpage](https://user-images.githubusercontent.com/12457148/137146271-76dcf700-5bbc-44a5-9054-ad8aed211fdf.png)
-    
+
 Also note this does not cover the front-end rendering yet, so nothing will happen there yet.
 Head over to the [Rendering Content Blocks](#rendering-content-blocks) section for an explanation about that.
 
