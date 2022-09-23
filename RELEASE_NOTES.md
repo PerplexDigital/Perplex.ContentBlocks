@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.5 - <sub><sup>2022-09-23</sup></sub>
+
+-   Fixed visual bug in the Block and Layout picker overlays ([#71](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/71))
+    -   This issue occured only in Umbraco 10.2.0 and later.
+    -   Thanks to [@royberris](https://github.com/royberris) for raising the issue.
+
 ## v2.1.4 - <sub><sup>2022-05-18</sup></sub>
 
 -   Fixed an issue that required editors to have access to the Settings section to be able to use ContentBlocks ([#59](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/59))
