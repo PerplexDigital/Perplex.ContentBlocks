@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.6 - <sub><sup>2022-11-28</sup></sub>
+
+- Fixed AngularJS console error in Umbraco 11.
+  - Umbraco changed the load order of package.manifest files which caused this `[$injector:nomod]` error for the `perplexContentBlocks` AngularJS module.
+  - This error only occurs in Umbraco v11 but the fix has been applied to v9 and v10 as well in case Umbraco decides to backport [their change](https://github.com/umbraco/Umbraco-CMS/commit/897cf4ca195927e7bf9932f740fd25461b68a226) to those versions.
+
 ## v2.1.5 - <sub><sup>2022-09-23</sup></sub>
 
 - Fixed visual bug in the Block and Layout picker overlays ([#71](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/71))
