@@ -1,0 +1,31 @@
+[*]
+trim_trailing_whitespace = true
+
+[*.cs]
+# Private fields are prefixed width underscore
+# From: https://github.com/dotnet/roslyn/issues/22884#issuecomment-358776444
+dotnet_naming_rule.private_members_with_underscore.symbols  = private_fields
+dotnet_naming_rule.private_members_with_underscore.style    = prefix_underscore
+dotnet_naming_rule.private_members_with_underscore.severity = suggestion
+
+dotnet_naming_symbols.private_fields.applicable_kinds           = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.prefix_underscore.capitalization = camel_case
+dotnet_naming_style.prefix_underscore.required_prefix = _
+
+# Constants are UPPERCASE
+# From: https://stackoverflow.com/a/57403780
+dotnet_naming_rule.constants_should_be_upper_case.severity = suggestion
+dotnet_naming_rule.constants_should_be_upper_case.symbols = constants
+dotnet_naming_rule.constants_should_be_upper_case.style = constant_style
+
+dotnet_naming_symbols.constants.applicable_kinds = field, local
+dotnet_naming_symbols.constants.required_modifiers = const
+
+dotnet_naming_style.constant_style.capitalization = all_upper
+dotnet_naming_style.constant_style.word_separator = _
+
+[appSettings*.json]
+indent_style = space
+indent_size = 2
