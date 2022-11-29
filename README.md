@@ -19,13 +19,24 @@ This package works on top of NestedContent but provides a more advanced user int
 
 ## Umbraco 9+ / .NET 5+
 
-ContentBlocks 2.0 which supports Umbraco 9+ / .NET 5+ is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks). This package can be installed in v8, v9 and v10 websites.
+ContentBlocks 2.0 adds support for Umbraco 9+ / .NET 5+ and is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks).
+
+The package is compatible with the following Umbraco versions:
+
+- 8
+- 9
+- 10
+- 11
 
 It can be installed as usual via NuGet:
 
+`dotnet add package Perplex.ContentBlocks`
+
+-or-
+
 `Install-Package Perplex.ContentBlocks`
 
-This is direct port of `v1.9.0` and the API is almost identical. There is a small change in the way you render the Content Blocks in your Razor view for v9+ only. See [Rendering Content Blocks](#rendering-content-blocks) for details.
+Version 2.0 is direct port of `v1.9.0` and the API is almost identical. There is a small change in the way you render the Content Blocks in your Razor view for v9+ only. See [Rendering Content Blocks](#rendering-content-blocks) for details.
 
 ## Demo
 
@@ -36,6 +47,10 @@ A short demo video can be viewed below.
 ## Installation
 
 The package can be installed using NuGet:
+
+`dotnet add package Perplex.ContentBlocks`
+
+-or-
 
 `Install-Package Perplex.ContentBlocks`
 
@@ -403,7 +418,7 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
 @using Perplex.ContentBlocks.Rendering;
 @Html.RenderContentBlocks(Model.ContentBlocks)
 
-// Umbraco v9
+// Umbraco v9+
 @using Perplex.ContentBlocks.Rendering;
 @inject IContentBlockRenderer Renderer
 @await Html.RenderContentBlocks(Model.ContentBlocks, Renderer)
@@ -419,7 +434,7 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
 }
 @renderer.Render(Model.ContentBlocks)
 
-// Umbraco v9
+// Umbraco v9+
 @inject IContentBlockRenderer Renderer
 @await Renderer.Render(Model.ContentBlocks, Html.PartialAsync)
 ```
