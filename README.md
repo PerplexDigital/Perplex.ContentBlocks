@@ -432,7 +432,7 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
     // Inject
     IContentBlockRenderer renderer;
 }
-@renderer.Render(Model.ContentBlocks)
+@renderer.Render(Model.ContentBlocks, Html)
 
 // Umbraco v9+
 @inject IContentBlockRenderer Renderer
