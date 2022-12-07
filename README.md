@@ -17,6 +17,10 @@ This package works on top of NestedContent but provides a more advanced user int
   - This helps editors to distinguish better between available blocks
   - Pickers show blocks in categories to help organization when available block count is high
 
+## Release Notes
+
+Release notes are [available here](RELEASE_NOTES.md).
+
 ## Umbraco 9+ / .NET 5+
 
 ContentBlocks 2.0 adds support for Umbraco 9+ / .NET 5+ and is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks).
