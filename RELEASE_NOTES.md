@@ -2,6 +2,13 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.7 - <sub><sup>2022-12-16</sup></sub>
+
+- Added workaround for an Umbraco 11 issue detailed [on GitHub](https://github.com/umbraco/Umbraco-CMS/issues/13565).
+  - In some cases the package.manifest files of Perplex.ContentBlocks are not loaded in an Umbraco 11 installation.
+  - This workaround should ensure they are always loaded.
+  - This issue only occurs in Umbraco v11 but the workaround has been applied to v9 and v10 as well in case Umbraco decides to backport this bug to those versions.
+
 ## v2.1.6 - <sub><sup>2022-11-28</sup></sub>
 
 - Fixed AngularJS console error in Umbraco 11.
