@@ -34,7 +34,7 @@
                 return;
             }
 
-            layoutEntry.layout = "layout-1"; // GUID of first available layout
+            layoutEntry.layoutId = "layout-1"; // GUID of first available layout
             layoutEntry.disabled = false;
             $ctrl.layout.push(layoutEntry);
             var block = blockEditor.getBlockObject(layoutEntry);

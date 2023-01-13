@@ -31,6 +31,7 @@
 
     <div ng-repeat="block in $ctrl.blocks track by block.layout.contentUdi">
         <button type="button" ng-click="$ctrl.removeBlock(block.layout.contentUdi)">Remove</button>
+        <pre>Layout: {{block.layout.layoutId}} | Disabled: {{block.layout.disabled}}</pre>        
         <umb-element-editor-content model="block.content"></umb-element-editor-content>
     </div>
 
