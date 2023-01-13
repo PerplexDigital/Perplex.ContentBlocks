@@ -1,6 +1,6 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.BlockEditor.Controller", [
     "$scope", "blockEditorService",
-    function perplexContentBlocksBlockEditorController($scope, blockEditorService) {        
+    function perplexContentBlocksBlockEditorController($scope, blockEditorService) {
         var $ctrl = this;
 
         if (Object.prototype.toString.call($scope.model.value) !== "[object Object]") {
@@ -16,7 +16,7 @@
             label: "{{title}}",
         }];
 
-        $ctrl.layout = null;        
+        $ctrl.layout = null;
         $ctrl.blocks = [];
 
         var blockEditor = blockEditorService.createModelObject($scope.model.value.blocks, $scope.model.editor, blockConfig, $scope, $scope);
@@ -39,7 +39,7 @@
             }
 
             layoutEntry.layoutId = "layout-1"; // GUID of first available layout
-            layoutEntry.disabled = false;
+            layoutEntry.isDisabled = false;
             $ctrl.layout.push(layoutEntry);
             var block = blockEditor.getBlockObject(layoutEntry);
             $ctrl.blocks.push(block);
