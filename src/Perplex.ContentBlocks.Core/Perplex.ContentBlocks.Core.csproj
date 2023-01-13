@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;net472</TargetFrameworks>
+    <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <!-- NuGet Package -->
