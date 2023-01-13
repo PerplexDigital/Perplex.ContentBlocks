@@ -71,9 +71,10 @@ namespace Perplex.ContentBlocks.PropertyEditor
         {
         }
 
-        protected override IEnumerable<ContentAndSettingsReference> GetBlockReferences(JToken jsonLayout)
+        protected override IEnumerable<ContentAndSettingsReference>? GetBlockReferences(JToken jsonLayout)
         {
-            throw new System.NotImplementedException();
+            IEnumerable<ContentBlocksBlockLayoutItem>? blockListLayout = jsonLayout.ToObject<IEnumerable<ContentBlocksBlockLayoutItem>>();
+            return blockListLayout?.Select(x => new ContentAndSettingsReference(x.ContentUdi, x.SettingsUdi)).ToList();
         }
     }
 
