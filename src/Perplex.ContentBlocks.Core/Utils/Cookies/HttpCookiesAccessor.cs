@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #elif NET472
 using System.Web;
@@ -17,7 +17,7 @@ namespace Perplex.ContentBlocks.Utils.Cookies
         {
             Cookies = new Dictionary<string, string>();
 
-#if NET5_0
+#if NET5_0_OR_GREATER
             if (httpContextAccessor.HttpContext is HttpContext httpCtx &&
                 httpCtx.Request.Cookies is IRequestCookieCollection cookies)
             {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 #elif NET472
@@ -30,7 +30,7 @@ namespace Perplex.ContentBlocks.Rendering
             _isPreview = previewModeProvider.IsPreviewMode;
         }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         public async Task<IHtmlContent> Render(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
         {

@@ -7,8 +7,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using static Perplex.ContentBlocks.Constants.Preview;
-
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Web.BackOffice.Controllers;
 #elif NET472
@@ -44,11 +43,11 @@ namespace Perplex.ContentBlocks.Preview
         }
 
         [HttpGet]
-#if NET5_0
+#if NET5_0_OR_GREATER
         public async Task<IActionResult> GetPreviewForIframe(int? pageId, string culture)
 #elif NET472
         public async Task<HttpResponseMessage> GetPreviewForIframe(int? pageId, string culture)
-#endif        
+#endif
         {
             string html = string.Empty;
 
@@ -57,7 +56,7 @@ namespace Perplex.ContentBlocks.Preview
                 html = await GetPreviewHtml(pageId.Value, culture);
             }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
             return Content(html, MediaTypeNames.Text.Html, Encoding.UTF8);
 #elif NET472
             var response = new HttpResponseMessage
@@ -66,12 +65,12 @@ namespace Perplex.ContentBlocks.Preview
             };
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
             return response;
-#endif      
+#endif
         }
 
         private async Task<string> GetPreviewHtml(int pageId, string culture)
         {
-#if NET5_0
+#if NET5_0_OR_GREATER
             string host = Request.Scheme + "://" + Request.Host;
 #elif NET472
             string host = Request.RequestUri.GetLeftPart(UriPartial.Authority);

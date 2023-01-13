@@ -1,4 +1,4 @@
-﻿#if NET5_0
+﻿#if NET5_0_OR_GREATER
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
@@ -10,7 +10,7 @@ using Umbraco.Core.Composing;
 
 namespace Perplex.ContentBlocks.Utils.Cookies
 {
-#if NET5_0
+#if NET5_0_OR_GREATER
     public class CookiesComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)

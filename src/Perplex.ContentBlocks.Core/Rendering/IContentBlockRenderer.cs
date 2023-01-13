@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
@@ -11,13 +11,13 @@ using System.Web.Mvc;
 
 namespace Perplex.ContentBlocks.Rendering
 {
-#if NET5_0
+#if NET5_0_OR_GREATER
     public delegate Task<IHtmlContent> RenderPartialViewAsync(string partialViewName, object model);
 #endif
 
     public interface IContentBlockRenderer
     {
-#if NET5_0
+#if NET5_0_OR_GREATER
 
         Task<IHtmlContent> Render(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync);
 

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Editors;
 using Umbraco.Cms.Core.PropertyEditors;
@@ -28,7 +28,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         private readonly IShortStringHelper _shortStringHelper;
 
         public ContentBlocksValueEditor(
@@ -110,7 +110,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             }
         }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         public override object ToEditor(IProperty property, string culture = null, string segment = null)
 #elif NET472
         public override object ToEditor(Property property, IDataTypeService dataTypeService, string culture = null, string segment = null)
@@ -121,7 +121,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             var modelValue = _deserializer.Deserialize(json);
             if (modelValue == null)
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 return base.ToEditor(property, culture, segment);
 #elif NET472
                 return base.ToEditor(property, dataTypeService, culture, segment);
@@ -135,7 +135,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     _utils.GetDataType(blockDefinitionId) is IDataType dataType &&
                     dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
                 {
-#if NET5_0
+#if NET5_0_OR_GREATER
                     var ncPropType = new PropertyType(_shortStringHelper, dataType);
 #elif NET472
                     var ncPropType = new PropertyType(dataType);
@@ -148,7 +148,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
                     try
                     {
-#if NET5_0
+#if NET5_0_OR_GREATER
                         if (valueEditor.ToEditor(ncProperty, culture, segment) is object ncValue)
 #elif NET472
                         if (valueEditor.ToEditor(ncProperty, dataTypeService, culture, segment) is object ncValue)

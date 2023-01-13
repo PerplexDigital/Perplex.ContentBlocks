@@ -1,6 +1,6 @@
 ﻿using Perplex.ContentBlocks.Presets;
 using System.Collections.Generic;
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Web.BackOffice.Controllers;
 #elif NET472

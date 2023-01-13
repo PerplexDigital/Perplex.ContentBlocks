@@ -4,7 +4,7 @@ using Perplex.ContentBlocks.Utils;
 using System;
 using System.Collections.Generic;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
@@ -27,7 +27,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         private readonly IIOHelper _iOHelper;
         private readonly ILocalizedTextService _localizedTextService;
         private readonly IShortStringHelper _shortStringHelper;
@@ -88,7 +88,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             => new DefaultPropertyIndexValueFactory();
 
         public IConfigurationEditor GetConfigurationEditor()
-#if NET5_0
+#if NET5_0_OR_GREATER
             => new ContentBlocksConfigurationEditor(_iOHelper);
 #elif NET472
             => new ContentBlocksConfigurationEditor();
@@ -99,7 +99,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
         public IDataValueEditor GetValueEditor(object configuration)
         {
-#if NET5_0
+#if NET5_0_OR_GREATER
             var validator = new ContentBlocksValidator(_deserializer, _utils, _validationService, _shortStringHelper);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel

@@ -1,7 +1,7 @@
 ﻿using Perplex.ContentBlocks.Definitions;
 using System;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 using static Umbraco.Cms.Core.Constants.PropertyEditors;

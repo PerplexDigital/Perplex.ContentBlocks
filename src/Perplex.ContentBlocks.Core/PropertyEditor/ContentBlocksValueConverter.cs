@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
@@ -27,7 +27,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
         private readonly NestedContentSingleValueConverter _nestedContentSingleValueConverter;
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly IContentBlockVariantSelector _variantSelector;
-#if NET5_0
+#if NET5_0_OR_GREATER
         private readonly IServiceProvider _serviceProvider;
 #endif
 
@@ -35,7 +35,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             NestedContentSingleValueConverter nestedContentSingleValueConverter,
             ContentBlocksModelValueDeserializer deserializer,
             IContentBlockVariantSelector variantSelector
-#if NET5_0
+#if NET5_0_OR_GREATER
             , IServiceProvider serviceProvider
 #endif
         )
@@ -43,7 +43,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
             _nestedContentSingleValueConverter = nestedContentSingleValueConverter;
             _deserializer = deserializer;
             _variantSelector = variantSelector;
-#if NET5_0
+#if NET5_0_OR_GREATER
             _serviceProvider = serviceProvider;
 #endif
         }
@@ -124,7 +124,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                     return null;
                 }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
                 IContentBlockDefinitionRepository definitionRepository = _serviceProvider.GetService<IContentBlockDefinitionRepository>();
 #elif NET472
                 IContentBlockDefinitionRepository definitionRepository = Current.Factory.GetInstance<IContentBlockDefinitionRepository>();
@@ -155,7 +155,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 var contentType = content.GetType();
                 var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType(new[] { contentType });
 
-#if NET5_0
+#if NET5_0_OR_GREATER
                 var viewModelFactory = _serviceProvider.GetService(genericViewModelFactoryType) as IContentBlockViewModelFactory;
 #elif NET472
                 var viewModelFactory = Current.Factory.GetInstance(genericViewModelFactoryType) as IContentBlockViewModelFactory;

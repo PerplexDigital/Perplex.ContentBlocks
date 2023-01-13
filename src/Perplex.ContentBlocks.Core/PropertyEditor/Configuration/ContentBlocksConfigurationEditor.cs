@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using static Perplex.ContentBlocks.Constants.PropertyEditor.Configuration;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Serialization;
@@ -14,11 +14,12 @@ namespace Perplex.ContentBlocks.PropertyEditor.Configuration
 {
     public class ContentBlocksConfigurationEditor : ConfigurationEditor<ContentBlocksConfiguration>
     {
-#if NET5_0
-public ContentBlocksConfigurationEditor(IIOHelper ioHelper) : base(ioHelper)
+#if NET5_0_OR_GREATER
+
+        public ContentBlocksConfigurationEditor(IIOHelper ioHelper) : base(ioHelper)
 #elif NET472
         public ContentBlocksConfigurationEditor()
-#endif  
+#endif
         {
             Fields.AddRange(new[]
             {
@@ -137,11 +138,12 @@ public ContentBlocksConfigurationEditor(IIOHelper ioHelper) : base(ioHelper)
             };
         }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
+
         public override object FromDatabase(string configuration, IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
 #elif NET472
         public override object FromDatabase(string configuration)
-#endif  
+#endif
         {
             if (configuration == null || configuration.Trim() == "{}")
             {
@@ -152,11 +154,11 @@ public ContentBlocksConfigurationEditor(IIOHelper ioHelper) : base(ioHelper)
 
             try
             {
-#if NET5_0
+#if NET5_0_OR_GREATER
                 if (base.FromDatabase(configuration, configurationEditorJsonSerializer) is ContentBlocksConfiguration contentBlocksConfiguration)
 #elif NET472
                 if (base.FromDatabase(configuration) is ContentBlocksConfiguration contentBlocksConfiguration)
-#endif          
+#endif
                 {
                     return ApplyMigrations(contentBlocksConfiguration);
                 }

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using static Perplex.ContentBlocks.Constants.PropertyEditor;
-using categories = Perplex.ContentBlocks.Constants.Categories;
 
 namespace Perplex.ContentBlocks.Categories
 {
     public class InMemoryContentBlockCategoryRepository : IContentBlockCategoryRepository
     {
-        private readonly IDictionary<Guid, IContentBlockCategory> _categories = new IContentBlockCategory[]
+        private readonly IDictionary<Guid, IContentBlockCategory> _categories = (new IContentBlockCategory[]
         {
             new ContentBlockCategory
             {
-                Id = categories.Headers,
+                Id = Constants.Categories.Headers,
                 Name = "Headers",
                 Icon = $"{AssetsFolder}/icons.svg#icon-cat-header",
                 IsEnabledForHeaders = true,
@@ -21,11 +20,11 @@ namespace Perplex.ContentBlocks.Categories
 
             new ContentBlockCategory
             {
-                Id = categories.Content,
+                Id = Constants.Categories.Content,
                 Name = "Content",
                 Icon = $"{AssetsFolder}/icons.svg#icon-cat-content",
             },
-        }.ToDictionary(d => d.Id);
+        }).ToDictionary(d => d.Id);
 
         public IContentBlockCategory GetById(Guid id)
         {
