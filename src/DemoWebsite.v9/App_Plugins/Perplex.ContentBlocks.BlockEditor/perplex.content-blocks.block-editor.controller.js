@@ -1,10 +1,14 @@
 ﻿angular.module("perplexContentBlocks").controller("Perplex.ContentBlocks.BlockEditor.Controller", [
     "$scope", "blockEditorService",
-    function perplexContentBlocksBlockEditorController($scope, blockEditorService) {
+    function perplexContentBlocksBlockEditorController($scope, blockEditorService) {        
         var $ctrl = this;
 
         if (Object.prototype.toString.call($scope.model.value) !== "[object Object]") {
-            $scope.model.value = {};
+            $scope.model.value = {
+                version: 4,
+                header: {},
+                blocks: {},
+            };
         }
 
         var blockConfig = [{
@@ -12,10 +16,10 @@
             label: "{{title}}",
         }];
 
-        $ctrl.layout = null;
+        $ctrl.layout = null;        
         $ctrl.blocks = [];
 
-        var blockEditor = blockEditorService.createModelObject($scope.model.value, $scope.model.editor, blockConfig, $scope, $scope);
+        var blockEditor = blockEditorService.createModelObject($scope.model.value.blocks, $scope.model.editor, blockConfig, $scope, $scope);
         blockEditor.load().then(function() {
             $ctrl.layout = blockEditor.getLayout([]);
             updateBlocksFromLayout();
