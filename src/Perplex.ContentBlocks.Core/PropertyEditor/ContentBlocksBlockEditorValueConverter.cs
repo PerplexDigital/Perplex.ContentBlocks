@@ -3,6 +3,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPoco.fastJSON;
+using Perplex.ContentBlocks.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,15 @@ using Umbraco.Cms.Infrastructure.Serialization;
 
 namespace Perplex.ContentBlocks.PropertyEditor
 {
-    public class ContentBlocksBlockEditorValueConverter : BlockPropertyValueConverterBase<BlockListModel, BlockListItem, ContentBlocksBlockLayoutItem, ContentBlocksBlockConfiguration>
+    public class ContentBlocksBlockEditorValueConverter : BlockPropertyValueConverterBase<IContentBlocks, BlockListItem, ContentBlocksBlockLayoutItem, ContentBlocksBlockConfiguration>
     {
-        public ContentBlocksBlockEditorValueConverter(BlockEditorConverter blockBlockEditorConverter) : base(blockBlockEditorConverter)
+        private readonly IServiceProvider _serviceProvider;
+
+        public ContentBlocksBlockEditorValueConverter(
+            BlockEditorConverter blockBlockEditorConverter,
+            IServiceProvider serviceProvider) : base(blockBlockEditorConverter)
         {
+            _serviceProvider = serviceProvider;
         }
 
         public override bool IsConverter(IPublishedPropertyType propertyType)
@@ -43,10 +49,6 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return null;
             }
 
-            BlockListModel CreateEmptyModel() => BlockListModel.Empty;
-
-            BlockListModel CreateModel(IList<BlockListItem> items) => new BlockListModel(items);
-
             var blockConfigurations = new[]
             {
                 new ContentBlocksBlockConfiguration
@@ -61,9 +63,52 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 return CreateEmptyModel();
             }
 
-            BlockListModel blockModel = UnwrapBlockModel(referenceCacheLevel, blockEditorValue, preview, blockConfigurations, CreateEmptyModel, CreateModel);
+            IContentBlocks contentBlocks = UnwrapBlockModel(referenceCacheLevel, blockEditorValue, preview, blockConfigurations, CreateEmptyModel, CreateModel);
 
-            return blockModel;
+            return contentBlocks;
+
+            IContentBlocks CreateEmptyModel() => Rendering.ContentBlocks.Empty;
+
+            IContentBlocks CreateModel(IList<BlockListItem> items)
+            {
+                // TODO: Header
+
+                // TODO: Probably required to implement EnrichBlockItemModelFromConfiguration and pass to UnwrapBlockModel()
+                // to read id/definitionId/layoutId from ContentBlocksBlockLayoutItem and create a new class ContentBlocksBlockItem
+                // similar to BlockListItem but containing those additional properties.
+                // For now we set definitionId/layoutId to ExampleBlock/Red.
+
+                return new Rendering.ContentBlocks
+                {
+                    Header = null, // TODO
+                    Blocks = items.Select(CreateViewModel).Where(vm => vm is not null).ToArray(),
+                };
+
+                IContentBlockViewModel? CreateViewModel(BlockListItem item)
+                {
+                    if (item.Content is not IPublishedElement content)
+                    {
+                        return null;
+                    }
+
+                    var contentType = content.GetType();
+                    var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType(new[] { contentType });
+                    var viewModelFactory = _serviceProvider.GetService(genericViewModelFactoryType) as IContentBlockViewModelFactory;
+                    if (viewModelFactory == null)
+                    {
+                        return null;
+                    }
+
+                    // TODO: As commented above we need to fetch id/definitionId/layoutId from ContentBlocksBlockLayoutItem
+                    // using the EnrichBlockItemModelFromConfiguration delegate on UnwrapBlockModel.
+                    // For now we use static values.
+                    var id = Guid.Empty;
+                    var definitionId = new Guid("11111111-1111-1111-1111-111111111111"); // ExampleBlock
+                    var layoutId = new Guid("22222222-2222-2222-2222-222222222222"); // Red
+
+                    return viewModelFactory.Create(content, id, definitionId, layoutId);
+                }
+            }
         }
 
         protected override BlockEditorDataConverter CreateBlockEditorDataConverter() => new ContentBlocksBlockEditorDataConverter();

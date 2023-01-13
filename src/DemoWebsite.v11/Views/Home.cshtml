@@ -1,7 +1,12 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Home>
 @inject IContentBlockRenderer Renderer
 
+<h2>Perplex.ContentBlocks - Original</h2>
 @await Html.RenderContentBlocks(Model.ContentBlocks, Renderer)
+
+
+<h2>Perplex.ContentBlocks - BlockEditor</h2>
+@await Html.RenderContentBlocks(Model.ContentBlocksBlockEditor, Renderer)
 
 @*
     Alternatively, use renderer directly:

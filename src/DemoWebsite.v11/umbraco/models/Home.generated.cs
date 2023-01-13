@@ -63,6 +63,6 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "11.1.0+bad9148")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("contentBlocksBlockEditor")]
-		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockListModel ContentBlocksBlockEditor => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockListModel>(_publishedValueFallback, "contentBlocksBlockEditor");
+		public virtual global::Perplex.ContentBlocks.Rendering.IContentBlocks ContentBlocksBlockEditor => this.Value<global::Perplex.ContentBlocks.Rendering.IContentBlocks>(_publishedValueFallback, "contentBlocksBlockEditor");
 	}
 }
