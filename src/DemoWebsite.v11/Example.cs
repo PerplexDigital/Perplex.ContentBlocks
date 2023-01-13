@@ -1,8 +1,6 @@
 ﻿using Perplex.ContentBlocks.Categories;
 using Perplex.ContentBlocks.Definitions;
 using Perplex.ContentBlocks.Presets;
-using System;
-using System.Linq;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
@@ -11,7 +9,7 @@ using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Strings;
 using static Umbraco.Cms.Core.Constants;
 
-namespace DemoWebsite.v9
+namespace DemoWebsite.v11
 {
     public class ExampleComposer : ComponentComposer<ExampleComponent> { }
 
