@@ -12,7 +12,7 @@
         }
 
         var blockConfig = [{
-            contentElementTypeKey: "7a84d7fc-dcf7-466c-b52e-bc59b237949e",
+            contentElementTypeKey: "462eb822-9fb0-45f1-826c-0f1693887e6c",
             label: "{{title}}",
         }];
 
