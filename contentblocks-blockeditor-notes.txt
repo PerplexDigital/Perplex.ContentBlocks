@@ -50,5 +50,9 @@ Indien er dus bestaande doctypes zijn die gebruikt worden in ContentBlocks met d
 Voor het renderen in de front-end is het doel dat dit exact hetzelfde blijft als nu voor de eindgebruiker.
 In ContentBlocks gebruikten we altijd al de ModelsBuilder classes, en ook de BlockEditor zou dit moeten ondersteunen.
 We moeten wel een aanpassing maken in onze PropertyValueConverter die de property value omzet naar ModelsBuilder objecten maar dit zou op een soortgelijke manier moeten kunnen als dat we nu doen,
-behalve dat we dus gebruik zullen moeten maken van een BlockEditor C# service in plaats van de huidige NestedContentSingleValueConverter.
+behalve dat we dus gebruik zullen moeten maken van BlockEditor C# code in plaats van de huidige NestedContentSingleValueConverter om de JSON om te zetten naar ModelsBuilder instanties.
+
+Ik heb hier de PoC voor uitgebreid en ik zie dat vanaf Umbraco 11 code beschikbaar is om dit te kunnen doen, ik kan dus nu de in de backoffice aangemaakte blokken omzetten naar de juiste ModelsBuilder instanties in de PropertyValueConverter.
+Dat is exact wat we nodig hebben in ContentBlocks zodat ik onze eigen "IContentBlockViewModel" instanties ervan kan maken die waarin het ModelsBuilder object zit en nog wat extra properties (block id / layout id / definition id).
+
 
