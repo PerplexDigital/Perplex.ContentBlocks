@@ -1,0 +1,41 @@
+﻿<div class="perplex-content-blocks"
+     ng-controller="Perplex.ContentBlocks.BlockEditor.Controller as $ctrl">
+
+    <div>
+        <button type="button"
+                ng-repeat="(editor, layouts) in model.value.layout"
+                ng-if="editor !== model.editor"
+                ng-click="$ctrl.transferBlocks(layouts, $ctrl.layout)">
+            Transfer blocks from "{{editor}}"
+        </button>
+    </div>
+    <div>
+        <button type="button"
+                ng-repeat="(editor, layouts) in model.value.layout"
+                ng-if="editor !== model.editor"
+                ng-click="$ctrl.transferBlocks($ctrl.layout, layouts)">
+            Transfer blocks to "{{editor}}"
+        </button>
+    </div>
+    <div>
+        <button type="button"
+                ng-repeat="(editor, layouts) in model.value.layout"
+                ng-click="$ctrl.removeAll(editor, layouts)">
+            Remove all from "{{editor}}"
+        </button>
+    </div>
+
+    <div>
+        <button type="button" ng-click="$ctrl.addBlock()">Add block</button>
+    </div>
+
+    <div ng-repeat="block in $ctrl.blocks track by block.layout.contentUdi">
+        <button type="button" ng-click="$ctrl.removeBlock(block.layout.contentUdi)">Remove</button>
+        <umb-element-editor-content model="block.content"></umb-element-editor-content>
+    </div>
+
+    <div>
+        <button type="button" ng-click="$ctrl.showModelValue = !$ctrl.showModelValue">JSON</button>
+        <pre ng-bind="model.value | json" ng-if="$ctrl.showModelValue"></pre>
+    </div>
+</div>

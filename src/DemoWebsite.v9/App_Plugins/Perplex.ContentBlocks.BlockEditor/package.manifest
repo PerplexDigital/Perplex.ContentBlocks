@@ -1,0 +1,5 @@
+{
+  "javascript": [
+    "~/App_Plugins/Perplex.ContentBlocks.BlockEditor/perplex.content-blocks.block-editor.controller.js"
+  ]
+}
