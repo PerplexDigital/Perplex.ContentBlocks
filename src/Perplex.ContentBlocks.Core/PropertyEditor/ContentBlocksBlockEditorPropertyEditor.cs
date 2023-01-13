@@ -8,9 +8,9 @@ using Umbraco.Core.PropertyEditors;
 namespace Perplex.ContentBlocks.PropertyEditor
 {
     [DataEditor(
-        "Perplex.ContentBlocks.BlockEditor",
-        "Perplex.ContentBlocks.BlockEditor",
-        "/App_Plugins/Perplex.ContentBlocks.BlockEditor/perplex.content-blocks.block-editor.html",
+        Constants.PropertyEditor.BlockEditor.Alias,
+        Constants.PropertyEditor.BlockEditor.Name,
+        Constants.PropertyEditor.BlockEditor.ViewPath,
         ValueType = ValueTypes.Json,
         HideLabel = true)]
     public class ContentBlocksBlockEditorPropertyEditor : DataEditor
