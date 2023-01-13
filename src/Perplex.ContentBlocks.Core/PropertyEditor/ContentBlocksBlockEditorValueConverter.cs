@@ -2,15 +2,16 @@
 #nullable enable
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NPoco.fastJSON;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Cms.Infrastructure.Serialization;
-using static Umbraco.Cms.Core.PropertyEditors.BlockListConfiguration;
 
 namespace Perplex.ContentBlocks.PropertyEditor
 {
@@ -22,6 +23,39 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
         public override bool IsConverter(IPublishedPropertyType propertyType)
             => propertyType.EditorAlias == Constants.PropertyEditor.BlockEditor.Alias;
+
+        /// <inheritdoc />
+        public override object? ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object? source, bool preview)
+            => source?.ToString();
+
+        /// <inheritdoc />
+        public override object? ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
+        {
+            //// Get configuration
+            //BlockListConfiguration? configuration = propertyType.DataType.ConfigurationAs<BlockListConfiguration>();
+            //if (configuration is null)
+            //{
+            //    return null;
+            //}
+
+            BlockListModel CreateEmptyModel() => BlockListModel.Empty;
+
+            BlockListModel CreateModel(IList<BlockListItem> items) => new BlockListModel(items);
+
+            var blockConfigurations = new[]
+            {
+                new ContentBlocksBlockConfiguration
+                {
+                    ContentElementTypeKey = new Guid("462eb822-9fb0-45f1-826c-0f1693887e6c"),
+                }
+            };
+
+            // TODO: Parse inter as ContentBlocksModelValue -> pass in only "header" or "blocks" JSON to UnwrapBlockModel
+
+            BlockListModel blockModel = UnwrapBlockModel(referenceCacheLevel, inter, preview, blockConfigurations, CreateEmptyModel, CreateModel);
+
+            return blockModel;
+        }
 
         protected override BlockEditorDataConverter CreateBlockEditorDataConverter() => new ContentBlocksBlockEditorDataConverter();
 
