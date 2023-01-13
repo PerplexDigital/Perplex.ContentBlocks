@@ -38,6 +38,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
             //    return null;
             //}
 
+            if (inter?.ToString() is not string json)
+            {
+                return null;
+            }
+
             BlockListModel CreateEmptyModel() => BlockListModel.Empty;
 
             BlockListModel CreateModel(IList<BlockListItem> items) => new BlockListModel(items);
@@ -50,18 +55,28 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 }
             };
 
-            // TODO: Parse inter as ContentBlocksModelValue -> pass in only "header" or "blocks" JSON to UnwrapBlockModel
+            var blockEditorValue = JToken.Parse(json)["blocks"]?.ToString();
+            if (blockEditorValue is null)
+            {
+                return CreateEmptyModel();
+            }
 
-            BlockListModel blockModel = UnwrapBlockModel(referenceCacheLevel, inter, preview, blockConfigurations, CreateEmptyModel, CreateModel);
+            BlockListModel blockModel = UnwrapBlockModel(referenceCacheLevel, blockEditorValue, preview, blockConfigurations, CreateEmptyModel, CreateModel);
 
             return blockModel;
         }
 
         protected override BlockEditorDataConverter CreateBlockEditorDataConverter() => new ContentBlocksBlockEditorDataConverter();
 
-        protected override BlockItemActivator<BlockListItem> CreateBlockItemActivator()
+        protected override BlockItemActivator<BlockListItem> CreateBlockItemActivator() => new BlockListItemActivator(BlockEditorConverter);
+
+        private class BlockListItemActivator : BlockItemActivator<BlockListItem>
         {
-            throw new System.NotImplementedException();
+            public BlockListItemActivator(BlockEditorConverter blockConverter) : base(blockConverter)
+            {
+            }
+
+            protected override Type GenericItemType => typeof(BlockListItem<,>);
         }
     }
 
