@@ -303,24 +303,24 @@ namespace ExampleSite
 {
     public class ExampleComponent : IComponent
     {
-		private readonly IShortStringHelper _stringHelper;
-		private readonly IConfigurationEditorJsonSerializer _serializer;
-		private readonly IContentBlockDefinitionRepository _definitions;
+        private readonly IShortStringHelper _stringHelper;
+        private readonly IConfigurationEditorJsonSerializer _serializer;
+        private readonly IContentBlockDefinitionRepository _definitions;
         private readonly PropertyEditorCollection _propertyEditors;
         private readonly IDataTypeService _dataTypeService;
         private readonly IContentTypeService _contentTypeService;
 
         public ExampleComponent(
-			IShortStringHelper stringHelper,
-			IConfigurationEditorJsonSerializer serializer,
-			IContentBlockDefinitionRepository definitions,
+            IShortStringHelper stringHelper,
+            IConfigurationEditorJsonSerializer serializer,
+            IContentBlockDefinitionRepository definitions,
             PropertyEditorCollection propertyEditors,
             IDataTypeService dataTypeService,
             IContentTypeService contentTypeService)
         {
-			_stringHelper = stringHelper;
-			_serializer = serializer;
-			_definitions = definitions;
+            _stringHelper = stringHelper;
+            _serializer = serializer;
+            _definitions = definitions;
             _propertyEditors = propertyEditors;
             _dataTypeService = dataTypeService;
             _contentTypeService = contentTypeService;
