@@ -66,6 +66,11 @@ namespace Perplex.ContentBlocks.Utils
                 dataType = _dataTypeService.GetDataType(dataTypeKey);
             }
 
+            if (dataType == null)
+            {
+                return null;
+            }
+
             if (dataType.EditorAlias != Aliases.NestedContent)
             {
                 throw new InvalidOperationException($"DataType should be Nested Content, but was '{dataType.EditorAlias}'");
