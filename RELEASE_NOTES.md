@@ -2,6 +2,11 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.8 - <sub><sup>2023-03-06</sup></sub>
+
+- Added `umbraco-marketplace` tag to NuGet package.
+- Fixed null reference exception when the configured datatype of a Content Block definition does not exist.
+
 ## v2.1.7 - <sub><sup>2022-12-16</sup></sub>
 
 - Added workaround for an Umbraco 11 issue detailed [on GitHub](https://github.com/umbraco/Umbraco-CMS/issues/13565).
