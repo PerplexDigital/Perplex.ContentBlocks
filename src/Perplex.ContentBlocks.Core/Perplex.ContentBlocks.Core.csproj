@@ -10,7 +10,7 @@
     <Version>2.1.7</Version>
     <Authors>Perplex Digital</Authors>
     <Description>Perplex.ContentBlocks assembly only</Description>
-    <PackageTags>umbraco property editor content block</PackageTags>
+    <PackageTags>umbraco</PackageTags>
     <PackageProjectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</PackageProjectUrl>
     <AssemblyName>Perplex.ContentBlocks</AssemblyName>
     <RootNamespace>Perplex.ContentBlocks</RootNamespace>
