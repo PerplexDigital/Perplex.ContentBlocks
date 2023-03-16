@@ -2,6 +2,10 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v2.1.9 - <sub><sup>2023-03-16</sup></sub>
+
+- Fixed non-unique ContentBlock ids when a page is created based on a Blueprint that contains ContentBlocks ([#77](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/77)).
+
 ## v2.1.8 - <sub><sup>2023-03-06</sup></sub>
 
 - Added `umbraco-marketplace` tag to NuGet package.
