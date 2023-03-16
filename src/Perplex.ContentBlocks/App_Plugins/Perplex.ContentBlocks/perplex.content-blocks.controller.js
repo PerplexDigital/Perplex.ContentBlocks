@@ -2,14 +2,14 @@
     "$scope", "$element", "$q", "editorState", "eventsService", "$timeout",
     "contentBlocksApi", "contentBlocksUtils", "contentBlocksCopyPasteService", "notificationsService",
     "localizationService", "contentBlocksPropertyScaffoldCache",
-    "contentResource",
+    "contentResource", "$routeParams",
     perplexContentBlocksController,
 ]);
 
 function perplexContentBlocksController(
     $scope, $rootElement, $q, editorState, eventsService, $timeout,
     api, utils, copyPasteService, notificationsService,
-    localizationService, scaffoldCache, contentResource) {
+    localizationService, scaffoldCache, contentResource, $routeParams) {
     var vm = this;
 
     var config = $scope.model.config;
@@ -249,6 +249,7 @@ function perplexContentBlocksController(
             }
 
             this.upgradeVersion();
+            this.ensureUniqueIds();
         },
 
         initDom: function () {
@@ -1132,6 +1133,24 @@ function perplexContentBlocksController(
             // Any future data transformations after v2 are done server side.
 
             fn.setModelVersion(state.version);
+        },
+
+        ensureUniqueIds: function ensureUniqueIds() {
+            if ($routeParams.blueprintId != null && $routeParams.blueprintId.length > 0) {
+                // If the current page was created based on a blueprint that already contained ContentBlocks
+                // we need to update all ContentBlock ids and NestedContent keys within to ensure they are unique.
+                // If we do not do this all ids and keys will be equivalent to the ids/keys of the blueprint.
+
+                if ($scope.model.value.header != null) {
+                    $scope.model.value.header = utils.copyContentBlock($scope.model.value.header);
+                }
+
+                if (Array.isArray($scope.model.value.blocks)) {
+                    for (var i = 0; i < $scope.model.value.blocks.length; i++) {
+                        $scope.model.value.blocks[i] = utils.copyContentBlock($scope.model.value.blocks[i]);
+                    }
+                }
+            }
         },
 
         setContainingGroupCssClass: function () {
