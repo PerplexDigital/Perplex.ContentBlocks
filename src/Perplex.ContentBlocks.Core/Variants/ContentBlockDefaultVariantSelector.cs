@@ -1,9 +1,8 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
-using System.Linq;
 
-#if NET472
+#if NETFRAMEWORK
 using Umbraco.Core.Models.PublishedContent;
-#elif NET5_0
+#elif NET6_0_OR_GREATER
 using Umbraco.Cms.Core.Models.PublishedContent;
 #endif
 

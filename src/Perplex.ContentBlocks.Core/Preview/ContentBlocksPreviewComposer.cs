@@ -1,9 +1,9 @@
-﻿#if NET5_0
+﻿#if NET6_0_OR_GREATER
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
-#elif NET472
+#elif NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 #endif
@@ -11,7 +11,7 @@ using Umbraco.Core.Composing;
 
 namespace Perplex.ContentBlocks.Preview
 {
-#if NET5_0
+#if NET6_0_OR_GREATER
     public class ContentBlocksPreviewComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
@@ -22,7 +22,7 @@ namespace Perplex.ContentBlocks.Preview
             builder.Services.AddUnique<IPreviewScrollScriptProvider, DefaultPreviewScrollScriptProvider>();
         }
     }
-#elif NET472
+#elif NETFRAMEWORK
     [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
     public class ContentBlocksPreviewComposer : IUserComposer
     {

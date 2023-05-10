@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if NET5_0
+#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-#elif NET472
+#elif NETFRAMEWORK
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
@@ -30,7 +30,7 @@ namespace Perplex.ContentBlocks.Rendering
             _isPreview = previewModeProvider.IsPreviewMode;
         }
 
-#if NET5_0
+#if NET6_0_OR_GREATER
 
         public async Task<IHtmlContent> Render(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
         {
@@ -108,7 +108,7 @@ namespace Perplex.ContentBlocks.Rendering
         public async Task<IHtmlContent> RenderHeader(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
             => await RenderBlock(contentBlocks?.Header, renderPartialViewAsync);
 
-#elif NET472
+#elif NETFRAMEWORK
 
         public IHtmlString Render(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
         {

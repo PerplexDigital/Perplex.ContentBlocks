@@ -1,11 +1,11 @@
 ﻿using Perplex.ContentBlocks.Definitions;
 using System;
 
-#if NET5_0
+#if NET6_0_OR_GREATER
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 using static Umbraco.Cms.Core.Constants.PropertyEditors;
-#elif NET472
+#elif NETFRAMEWORK
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using static Umbraco.Core.Constants.PropertyEditors;

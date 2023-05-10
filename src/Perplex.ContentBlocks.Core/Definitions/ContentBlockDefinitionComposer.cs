@@ -1,16 +1,16 @@
-﻿#if NET5_0
+﻿#if NET6_0_OR_GREATER
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
-#elif NET472
+#elif NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Composing;
 #endif
 
 namespace Perplex.ContentBlocks.Definitions
 {
-#if NET5_0
+#if NET6_0_OR_GREATER
     public class ContentBlockDefinitionComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
@@ -19,7 +19,7 @@ namespace Perplex.ContentBlocks.Definitions
             builder.Services.AddSingleton<IContentBlockDefinitionFilterer, ContentBlockDefinitionFilterer>();
         }
     }
-#elif NET472
+#elif NETFRAMEWORK
     [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
     public class ContentBlockDefinitionComposer : IUserComposer
     {

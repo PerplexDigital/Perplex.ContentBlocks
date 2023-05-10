@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 
 
-#if NET5_0
+#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Mime;
 using Umbraco.Cms.Web.BackOffice.Controllers;
-#elif NET472
+#elif NETFRAMEWORK
 using System.Web.Http;
 using Umbraco.Web.WebApi;
 #endif
@@ -25,7 +25,7 @@ namespace Perplex.ContentBlocks.Definitions
             _categoryRepository = categoryRepository;
         }
 
-#if NET5_0
+#if NET6_0_OR_GREATER
         [HttpGet]
         public IActionResult GetAllDefinitions()
         {
@@ -62,7 +62,7 @@ namespace Perplex.ContentBlocks.Definitions
             var serialized = JsonConvert.SerializeObject(obj);
             return Content(serialized, MediaTypeNames.Application.Json);
         }
-#elif NET472
+#elif NETFRAMEWORK
         [HttpGet]
         public IEnumerable<IContentBlockDefinition> GetAllDefinitions()
             => _definitionRepository.GetAll();

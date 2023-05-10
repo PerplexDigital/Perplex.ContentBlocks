@@ -1,4 +1,4 @@
-﻿#if NET472
+﻿#if NETFRAMEWORK
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

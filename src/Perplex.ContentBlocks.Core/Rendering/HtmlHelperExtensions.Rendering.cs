@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-#if NET5_0
+#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
-#elif NET472
+#elif NETFRAMEWORK
 using System.Web;
 using System.Web.Mvc;
 using Umbraco.Core;
@@ -16,7 +16,7 @@ namespace Perplex.ContentBlocks.Rendering
 {
     public static partial class HtmlHelperExtensions
     {
-#if NET5_0
+#if NET6_0_OR_GREATER
 
         /// <summary>
         /// Renders all Content Blocks.
@@ -48,7 +48,7 @@ namespace Perplex.ContentBlocks.Rendering
         public static async Task<IHtmlContent> RenderContentBlocks(this IHtmlHelper html, IEnumerable<IContentBlockViewModel> contentBlocks, IContentBlockRenderer renderer)
             => await renderer.RenderBlocks(contentBlocks, html.PartialAsync);
 
-#elif NET472
+#elif NETFRAMEWORK
         /// <summary>
         /// Renders all Content Blocks.
         /// </summary>

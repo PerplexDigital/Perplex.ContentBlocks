@@ -1,7 +1,7 @@
-﻿#if NET5_0
+﻿#if NET6_0_OR_GREATER
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
-#elif NET472
+#elif NETFRAMEWORK
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 #endif

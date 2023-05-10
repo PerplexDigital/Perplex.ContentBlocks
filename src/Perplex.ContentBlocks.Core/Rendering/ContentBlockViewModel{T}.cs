@@ -1,8 +1,8 @@
 ﻿using System;
 
-#if NET5_0
+#if NET6_0_OR_GREATER
 using Umbraco.Cms.Core.Models.PublishedContent;
-#elif NET472
+#elif NETFRAMEWORK
 using Umbraco.Core.Models.PublishedContent;
 #endif
 

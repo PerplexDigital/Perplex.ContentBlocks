@@ -1,23 +1,20 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Utils;
-using System;
 using System.Collections.Generic;
 
-#if NET5_0
-using Microsoft.AspNetCore.Http;
+#if NET6_0_OR_GREATER
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Strings;
-#elif NET472
-using Umbraco.Core;
-using Umbraco.Core.IO;
+using Umbraco.Cms.Infrastructure.Services;
+#elif NETFRAMEWORK
+using System;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core.Services;
-using Umbraco.Web;
 #endif
 
 namespace Perplex.ContentBlocks.PropertyEditor
@@ -27,12 +24,14 @@ namespace Perplex.ContentBlocks.PropertyEditor
         private readonly ContentBlocksModelValueDeserializer _deserializer;
         private readonly ContentBlockUtils _utils;
 
-#if NET5_0
+#if NET6_0_OR_GREATER
         private readonly IIOHelper _iOHelper;
         private readonly ILocalizedTextService _localizedTextService;
         private readonly IShortStringHelper _shortStringHelper;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly IPropertyValidationService _validationService;
+        private readonly IContentBlocksPropertyIndexValueFactory _indexValueFactory;
+        private readonly IEditorConfigurationParser _editorConfigurationParser;
 
         public ContentBlocksPropertyEditor(
             ContentBlocksModelValueDeserializer deserializer,
@@ -41,7 +40,9 @@ namespace Perplex.ContentBlocks.PropertyEditor
             ILocalizedTextService localizedTextService,
             IShortStringHelper shortStringHelper,
             IJsonSerializer jsonSerializer,
-            IPropertyValidationService validationService)
+            IPropertyValidationService validationService,
+            IContentBlocksPropertyIndexValueFactory indexValueFactory,
+            IEditorConfigurationParser editorConfigurationParser)
         {
             _deserializer = deserializer;
             _utils = utils;
@@ -50,8 +51,11 @@ namespace Perplex.ContentBlocks.PropertyEditor
             _shortStringHelper = shortStringHelper;
             _jsonSerializer = jsonSerializer;
             _validationService = validationService;
+            _indexValueFactory = indexValueFactory;
+            _editorConfigurationParser = editorConfigurationParser;
         }
-#elif NET472
+
+#elif NETFRAMEWORK
         private readonly Lazy<PropertyEditorCollection> _propertyEditorCollection;
         private readonly IDataTypeService _dataTypeService;
         private readonly ILocalizedTextService _textService;
@@ -85,12 +89,18 @@ namespace Perplex.ContentBlocks.PropertyEditor
         public IDictionary<string, object> DefaultConfiguration { get; }
 
         public IPropertyIndexValueFactory PropertyIndexValueFactory
+#if NETFRAMEWORK
             => new DefaultPropertyIndexValueFactory();
+#elif NET6_0_OR_GREATER
+            => _indexValueFactory;
+
+#endif
 
         public IConfigurationEditor GetConfigurationEditor()
-#if NET5_0
-            => new ContentBlocksConfigurationEditor(_iOHelper);
-#elif NET472
+#if NET6_0_OR_GREATER
+            => new ContentBlocksConfigurationEditor(_iOHelper, _editorConfigurationParser);
+
+#elif NETFRAMEWORK
             => new ContentBlocksConfigurationEditor();
 #endif
 
@@ -99,7 +109,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
 
         public IDataValueEditor GetValueEditor(object configuration)
         {
-#if NET5_0
+#if NET6_0_OR_GREATER
             var validator = new ContentBlocksValidator(_deserializer, _utils, _validationService, _shortStringHelper);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel
@@ -113,7 +123,7 @@ namespace Perplex.ContentBlocks.PropertyEditor
                 ValueType = ValueTypes.Json,
                 Validators = { validator }
             };
-#elif NET472
+#elif NETFRAMEWORK
             var validator = new ContentBlocksValidator(_deserializer, _utils, _propertyEditorCollection.Value, _dataTypeService, _textService);
 
             bool hideLabel = (configuration as ContentBlocksConfiguration)?.HideLabel

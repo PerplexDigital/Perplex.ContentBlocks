@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
 using System;
-#if NET5_0
+#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
-#elif NET472
+#elif NETFRAMEWORK
 using System.Web;
 using System.Web.Mvc;
 #endif
 
 namespace Perplex.ContentBlocks.Rendering
 {
-#if NET5_0
+#if NET6_0_OR_GREATER
     public delegate Task<IHtmlContent> RenderPartialViewAsync(string partialViewName, object model);
 #endif
 
     public interface IContentBlockRenderer
     {
-#if NET5_0
+#if NET6_0_OR_GREATER
 
         Task<IHtmlContent> Render(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync);
 
@@ -29,7 +29,7 @@ namespace Perplex.ContentBlocks.Rendering
 
         Task<IHtmlContent> RenderBlocks(IEnumerable<IContentBlockViewModel> contentBlocks, RenderPartialViewAsync renderPartialViewAsync);
 
-#elif NET472
+#elif NETFRAMEWORK
 
         IHtmlString Render(IContentBlocks contentBlocks, HtmlHelper htmlHelper);
 
