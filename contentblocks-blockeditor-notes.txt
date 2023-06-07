@@ -2,21 +2,23 @@
 | BackOffice editor |
 +-------------------+
 
-Voor het renderen en editen van blokken en de properties van de blokken in de BackOffice maken we nu onderwater gebruik van NestedContent.
-Er is nu een PoC gemaakt om dit aan te passen naar de BlockEditor van Umbraco.
-Dit werkt goed, blokken kunnen worden aangemaakt en de properties kunnen worden aangepast.
-Na een Save/Publish worden de blokken weer goed ingeladen.
-We hebben volledige controle over de UI die we om een blok heen willen zetten, net zoals bij NestedContent.
-In de PoC is de ContentBlocks UI er nog niet omheen gezet, maar omdat we elke individueel blok kunnen renderen op de plek waar we willen zal dit geen problemen opleveren.
+To render and edit blocks and their properties in the BackOffice, we currently use NestedContent
+behind the scenes. A proof of concept (PoC) has now been created to change this to the BlockEditor
+of Umbraco. This works well, blocks can be created and their properties can be adjusted. After a
+Save/Publish, the blocks are correctly reloaded. We have full control over the UI that we want to
+put around a block, just like with NestedContent. In the PoC, the ContentBlocks UI has not yet been
+implemented, but since this is a custom property editor we have full control over the UI so this is
+simply a matter of porting over the existing UI elements.
 
-+---------------------------+
-| Migrereren property value |
-+---------------------------+
++------------------------+
+| Migrate property value |
++------------------------+
 
-Voor het behouden van content in alle bestaande sites die ContentBlocks gebruiken zullen we de data moeten migrereren van het NestedContent formaat naar het BlockEditor formaat.
-Het formaat verschilt gelukkig niet heel veel. De structuur is enigszins aangepast maar de content data zelf is eigenlijk hetzelfde.
-Zie hieronder een vergelijking.
-Er zitten wat meer verschillen in de structuur eromheen die hieronder niet te zien is, maar in de kern gaat het om deze 2 objecten die we moeten omzetten:
+To retain content in all existing sites that use ContentBlocks, we will need to migrate the data
+from the NestedContent format to the BlockEditor format. The format fortunately does not differ
+much. The structure has been somewhat adjusted but the content data itself is actually the same.
+See below for a comparison. There are more differences in the surrounding structure not visible
+below, but at its core, it's about converting these 2 objects:
 
 NestedContent
 {
@@ -27,7 +29,6 @@ NestedContent
     "text": "<p><strong>Test</strong></p>\n<p><a href=\"/{localLink:umb://document/ce72d00f878a4e20b026b26ed9a136fb}\" title=\"Home\">Link</a></p>"
 }
 
-
 BlockEditor
 {
     "contentTypeKey": "7a84d7fc-dcf7-466c-b52e-bc59b237949e",
@@ -36,26 +37,33 @@ BlockEditor
     "text": "<p><strong>Test</strong></p>\n<p><a href=\"/{localLink:umb://document/ce72d00f878a4e20b026b26ed9a136fb}\" title=\"Home\">Link</a></p>"
 }
 
-Je ziet dus dat er vrij weinig verschillen zijn. NestedContent gebruikt doctype alias (ncContentTypeAlias), BlockEditor gebruikt doctype key (contentTypeKey), maar dat is makkelijk om te zetten.
-Verder heeft NestedContent een unieke GUID (key), terwijl BlockEditor een udi gebruikt maar dat is letterlijk ook een GUID met prefix "umb://element/" dus is ook 1 op 1 om te zetten.
-De inhoud van de content properties zelf ("title" en "text" in dit voorbeeld) is exact gelijk dus daar hoeven we niets aan te doen.
+As you can see, there are very few differences. NestedContent uses a doctype alias
+(ncContentTypeAlias), BlockEditor uses a doctype key (contentTypeKey), but that's easy to convert.
+Furthermore, NestedContent has a unique GUID (key), while BlockEditor uses a udi but that is
+literally also a GUID with prefix "umb://element/" so it's also convertible 1 to 1. The content of
+the content properties itself ("title" and "text" in this example) is exactly the same so we don't
+have to do anything there.
 
-Een limitatie waar we tegen aan liepen is dat de Block Editor geen doctypes support waarin NestedContent properties zitten.
-Indien er dus bestaande doctypes zijn die gebruikt worden in ContentBlocks met daarin NestedContent datatypes dan zullen we de NestedContent datatypes moeten omzetten naar Umbraco.BlockListEditor datatypes die we vervolgens wel in de BlockEditor kunnen gebruiken.
+A limitation we encountered is that the Block Editor does not support doctypes in which
+NestedContent properties are embedded. Therefore, if there are existing doctypes that are used in
+ContentBlocks with NestedContent datatypes, we will need to convert the NestedContent datatypes to
+Umbraco.BlockListEditor datatypes that we can then use in the BlockEditor.
 
 +---------------------+
 | Front end rendering |
 +---------------------+
 
-Voor het renderen in de front-end is het doel dat dit exact hetzelfde blijft als nu voor de eindgebruiker.
-In ContentBlocks gebruikten we altijd al de ModelsBuilder classes, en ook de BlockEditor zou dit moeten ondersteunen.
-We moeten wel een aanpassing maken in onze PropertyValueConverter die de property value omzet naar ModelsBuilder objecten maar dit zou op een soortgelijke manier moeten kunnen als dat we nu doen,
-behalve dat we dus gebruik zullen moeten maken van BlockEditor C# code in plaats van de huidige NestedContentSingleValueConverter om de JSON om te zetten naar ModelsBuilder instanties.
+For rendering in the front-end, the goal is that this remains exactly the same as now for the end
+user. In ContentBlocks, we always used the ModelsBuilder classes, and the BlockEditor should also
+support this. We will need to make an adjustment in our PropertyValueConverter that converts the
+property value to ModelsBuilder objects, but this should be able to happen in a similar way as we
+are doing now, except that we will need to use BlockEditor C# code instead of the current
+NestedContentSingleValueConverter to convert the JSON into ModelsBuilder instances.
 
-Ik heb hier de PoC voor uitgebreid en ik zie dat vanaf Umbraco 11 code beschikbaar is om dit te kunnen doen, ik kan dus nu de in de backoffice aangemaakte blokken omzetten naar de juiste ModelsBuilder instanties in de PropertyValueConverter.
-Dat is exact wat we nodig hebben in ContentBlocks zodat ik onze eigen "IContentBlockViewModel" instanties ervan kan maken die waarin het ModelsBuilder object zit en nog wat extra properties (block id / layout id / definition id).
-Het is in de PoC zelfs gelukt om dit nu te renderen via Html.RenderContentBlocks(), dus dit werkt voor de eindgebruiker exact hetzelfde en dit lijkt dus nu al te werken.
-Ik heb nog niet alle cases getest maar het lijkt heel positief.
-
-
-
+I have expanded the PoC for this, and I see that from Umbraco 11, code is available to do this.
+I can therefore now convert the blocks created in the back office into the correct ModelsBuilder
+instances in the PropertyValueConverter. This is exactly what we need in ContentBlocks, so I can
+create our own "IContentBlockViewModel" instances of it, which contains the ModelsBuilder object and
+some extra properties (block id / layout id / definition id). In the PoC, I even managed to render
+this now via Html.RenderContentBlocks(), so this works exactly the same for the end user and seems
+to work already. I haven't tested all cases yet, but it looks very positive.
