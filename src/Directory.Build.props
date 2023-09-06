@@ -1,0 +1,14 @@
+﻿<Project>
+
+  <PropertyGroup Label="NuGet Package">
+    <Version>3.0.0-alpha.1</Version>
+    <Authors>Perplex Digital</Authors>
+    <PackageProjectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+</Project>

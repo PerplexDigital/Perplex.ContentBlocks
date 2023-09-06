@@ -1,56 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;net472</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>  
   </PropertyGroup>
 
-  <!-- NuGet Package -->
-  <PropertyGroup>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+  <PropertyGroup Label="NuGet Package">
     <PackageId>Perplex.ContentBlocks</PackageId>
-    <Version>2.1.9</Version>
-    <Authors>Perplex Digital</Authors>
-    <Description>Block based content editor for Umbraco</Description>
     <PackageTags>umbraco umbraco-marketplace</PackageTags>
-    <PackageProjectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</PackageProjectUrl>
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageIconUrl />
-    <RepositoryUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <NoWarn>NU5128</NoWarn>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Block based content editor for Umbraco</Description>
+  <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="App_Plugins\Perplex.ContentBlocks\**" Exclude="App_Plugins\Perplex.ContentBlocks\**\*.less">
+    <None Include="icon.png">
       <Pack>True</Pack>
-      <PackagePath>content\App_Plugins\Perplex.ContentBlocks</PackagePath>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-      <None Include="..\..\pkg\nuget\icon.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
-      <None Include="build\**">
-          <Pack>True</Pack>
-          <PackagePath>buildTransitive\net472;buildTransitive\net5.0</PackagePath>
-      </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.add-block.html" />
-    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.add-block.js" />
-    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.custom-component.js" />
-    <None Remove="App_Plugins\Perplex.ContentBlocks\components\perplex.content-blocks.custom-components.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BuildWebCompiler" Version="1.12.394">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
