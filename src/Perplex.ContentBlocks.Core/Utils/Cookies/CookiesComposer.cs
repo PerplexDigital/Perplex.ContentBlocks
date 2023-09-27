@@ -1,31 +1,14 @@
-﻿#if NET5_0
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
-#elif NET472
-using Umbraco.Core;
-using Umbraco.Core.Composing;
-#endif
 
 
-namespace Perplex.ContentBlocks.Utils.Cookies
+namespace Perplex.ContentBlocks.Utils.Cookies;
+
+public class CookiesComposer : IComposer
 {
-#if NET5_0
-    public class CookiesComposer : IComposer
+    public void Compose(IUmbracoBuilder builder)
     {
-        public void Compose(IUmbracoBuilder builder)
-        {
-            builder.Services.AddScoped<IHttpCookiesAccessor, HttpCookiesAccessor>();
-        }
+        builder.Services.AddScoped<IHttpCookiesAccessor, HttpCookiesAccessor>();
     }
-#elif NET472
-    [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
-    public class CookiesComposer : IUserComposer
-    {
-        public void Compose(Composition composition)
-        {
-            composition.Register<IHttpCookiesAccessor, HttpCookiesAccessor>(Lifetime.Scope);
-        }
-    }
-#endif   
 }

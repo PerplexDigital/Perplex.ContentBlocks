@@ -1,31 +1,14 @@
-﻿#if NET5_0
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
-#elif NET472
-using Umbraco.Core;
-using Umbraco.Core.Composing;
-#endif
 
-namespace Perplex.ContentBlocks.Variants
+namespace Perplex.ContentBlocks.Variants;
+
+public class ContentBlocksVariantsComposer : IComposer
 {
-#if NET5_0
-    public class ContentBlocksVariantsComposer : IComposer
+    public void Compose(IUmbracoBuilder builder)
     {
-        public void Compose(IUmbracoBuilder builder)
-        {
-            builder.Services.AddUnique<IContentBlockVariantSelector, ContentBlockDefaultVariantSelector>();
-        }
+        builder.Services.AddUnique<IContentBlockVariantSelector, ContentBlockDefaultVariantSelector>();
     }
-#elif NET472
-    [RuntimeLevel(MinLevel = RuntimeLevel.Boot)]
-    public class ContentBlocksVariantsComposer : IUserComposer
-    {
-        public void Compose(Composition composition)
-        {
-            composition.RegisterUnique<IContentBlockVariantSelector, ContentBlockDefaultVariantSelector>();
-        }
-    }
-#endif
 }

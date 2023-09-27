@@ -1,32 +1,25 @@
-﻿#if NET5_0
-using Umbraco.Cms.Core.Models;
+﻿using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
-#elif NET472
-using Umbraco.Core.Models;
-using Umbraco.Core.Services;
-#endif
 
+namespace Perplex.ContentBlocks.Providers;
 
-namespace Perplex.ContentBlocks.Providers
+public class DocumentTypeAliasProvider : IDocumentTypeAliasProvider
 {
-    public class DocumentTypeAliasProvider : IDocumentTypeAliasProvider
+    private readonly IContentService _contentService;
+
+    public DocumentTypeAliasProvider(IContentService contentService)
     {
-        private readonly IContentService _contentService;
+        _contentService = contentService;
+    }
 
-        public DocumentTypeAliasProvider(IContentService contentService)
+    public string? GetDocumentTypeAlias(int pageId)
+    {
+        IContent? content = _contentService.GetById(pageId);
+        if (content == null)
         {
-            _contentService = contentService;
+            return null;
         }
 
-        public string GetDocumentTypeAlias(int pageId)
-        {
-            IContent content = _contentService.GetById(pageId);
-            if (content == null)
-            {
-                return null;
-            }
-
-            return content.ContentType?.Alias;
-        }
+        return content.ContentType?.Alias;
     }
 }

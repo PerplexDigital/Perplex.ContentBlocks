@@ -1,196 +1,103 @@
-﻿using Perplex.ContentBlocks.Definitions;
+﻿using Microsoft.AspNetCore.Html;
+using Perplex.ContentBlocks.Definitions;
 using Perplex.ContentBlocks.Preview;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-#if NET5_0
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
-#elif NET472
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Mvc.Html;
-#endif
+namespace Perplex.ContentBlocks.Rendering;
 
-namespace Perplex.ContentBlocks.Rendering
+public class ContentBlockRenderer : IContentBlockRenderer
 {
-    public class ContentBlockRenderer : IContentBlockRenderer
+    private readonly IContentBlockDefinitionRepository _definitionRepository;
+    private readonly bool _isPreview;
+
+    public ContentBlockRenderer(
+        IContentBlockDefinitionRepository definitionRepository,
+        IPreviewModeProvider previewModeProvider)
     {
-        private readonly IContentBlockDefinitionRepository _definitionRepository;
-        private readonly bool _isPreview;
+        _definitionRepository = definitionRepository;
+        _isPreview = previewModeProvider.IsPreviewMode;
+    }
 
-        public ContentBlockRenderer(
-            IContentBlockDefinitionRepository definitionRepository,
-            IPreviewModeProvider previewModeProvider)
+    public async Task<IHtmlContent> Render(IContentBlocks? contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
+    {
+        if (contentBlocks == null)
         {
-            _definitionRepository = definitionRepository;
-            _isPreview = previewModeProvider.IsPreviewMode;
+            return HtmlString.Empty;
         }
 
-#if NET5_0
+        var builder = new HtmlContentBuilder();
 
-        public async Task<IHtmlContent> Render(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
+        var blocksHtml = await Task.WhenAll(
+            RenderHeader(contentBlocks, renderPartialViewAsync),
+            RenderBlocks(contentBlocks, renderPartialViewAsync)
+        );
+
+        foreach (var blockHtml in blocksHtml)
         {
-            if (contentBlocks == null)
-            {
-                return HtmlString.Empty;
-            }
-
-            var builder = new HtmlContentBuilder();
-
-            var blocksHtml = await Task.WhenAll(
-                RenderHeader(contentBlocks, renderPartialViewAsync),
-                RenderBlocks(contentBlocks, renderPartialViewAsync)
-            );
-
-            foreach (var blockHtml in blocksHtml)
-            {
-                builder.AppendHtml(blockHtml);
-            }
-
-            return builder;
+            builder.AppendHtml(blockHtml);
         }
 
-        public async Task<IHtmlContent> RenderBlocks(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
-            => await RenderBlocks(contentBlocks?.Blocks, renderPartialViewAsync);
+        return builder;
+    }
 
-        public async Task<IHtmlContent> RenderBlocks(IEnumerable<IContentBlockViewModel> contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
+    public async Task<IHtmlContent> RenderBlocks(IContentBlocks? contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
+        => await RenderBlocks(contentBlocks?.Blocks, renderPartialViewAsync);
+
+    public async Task<IHtmlContent> RenderBlocks(IEnumerable<IContentBlockViewModel>? contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
+    {
+        if (contentBlocks?.Any() != true)
         {
-            if (contentBlocks?.Any() != true)
-            {
-                return HtmlString.Empty;
-            }
-
-            var builder = new HtmlContentBuilder();
-
-            var blocksHtml = await Task.WhenAll(contentBlocks.Select(block => RenderBlock(block, renderPartialViewAsync)));
-
-            foreach (var blockHtml in blocksHtml)
-            {
-                builder.AppendHtml(blockHtml);
-            }
-
-            return builder;
+            return HtmlString.Empty;
         }
 
-        public async Task<IHtmlContent> RenderBlock(IContentBlockViewModel contentBlockViewModel, RenderPartialViewAsync renderPartialViewAsync)
+        var builder = new HtmlContentBuilder();
+
+        var blocksHtml = await Task.WhenAll(contentBlocks.Select(block => RenderBlock(block, renderPartialViewAsync)));
+
+        foreach (var blockHtml in blocksHtml)
         {
-            if (contentBlockViewModel == null)
-            {
-                return HtmlString.Empty;
-            }
-
-            string viewPath = GetViewPath(contentBlockViewModel.DefinitionId, contentBlockViewModel.LayoutId);
-            if (string.IsNullOrEmpty(viewPath))
-            {
-                return HtmlString.Empty;
-            }
-
-            IHtmlContent contentBlockHtml = await renderPartialViewAsync(viewPath, contentBlockViewModel);
-
-            var builder = new HtmlContentBuilder();
-
-            if (_isPreview)
-            {
-                // Preview mode: add block id for scroll synchronisation                
-                string blockIdAnchor = $"<a id=\"{contentBlockViewModel.Id}\" class=\"perplex-content-blocks-preview-anchor\"></a>";
-                builder.AppendHtml(blockIdAnchor);
-            }
-
-            builder.AppendHtml(contentBlockHtml);
-
-            return builder;
+            builder.AppendHtml(blockHtml);
         }
 
-        public async Task<IHtmlContent> RenderHeader(IContentBlocks contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
-            => await RenderBlock(contentBlocks?.Header, renderPartialViewAsync);
+        return builder;
+    }
 
-#elif NET472
-
-        public IHtmlString Render(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
+    public async Task<IHtmlContent> RenderBlock(IContentBlockViewModel? contentBlockViewModel, RenderPartialViewAsync renderPartialViewAsync)
+    {
+        if (contentBlockViewModel == null)
         {
-            if (contentBlocks == null)
-            {
-                return MvcHtmlString.Empty;
-            }
-
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(RenderHeader(contentBlocks, htmlHelper));
-            sb.Append(RenderBlocks(contentBlocks, htmlHelper));
-
-            return new HtmlString(sb.ToString());
+            return HtmlString.Empty;
         }
 
-        public IHtmlString RenderHeader(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
+        var viewPath = GetViewPath(contentBlockViewModel.DefinitionId, contentBlockViewModel.LayoutId);
+        if (string.IsNullOrEmpty(viewPath))
         {
-            if (contentBlocks?.Header == null)
-            {
-                return MvcHtmlString.Empty;
-            }
-
-            return RenderBlock(contentBlocks.Header, htmlHelper);
+            return HtmlString.Empty;
         }
 
-        public IHtmlString RenderBlocks(IContentBlocks contentBlocks, HtmlHelper htmlHelper)
-            => RenderBlocks(contentBlocks?.Blocks, htmlHelper);
+        IHtmlContent contentBlockHtml = await renderPartialViewAsync(viewPath, contentBlockViewModel);
 
-        public IHtmlString RenderBlock(IContentBlockViewModel contentBlockViewModel, HtmlHelper htmlHelper)
+        var builder = new HtmlContentBuilder();
+
+        if (_isPreview)
         {
-            if (contentBlockViewModel == null)
-            {
-                return MvcHtmlString.Empty;
-            }
-
-            string viewPath = GetViewPath(contentBlockViewModel.DefinitionId, contentBlockViewModel.LayoutId);
-            if (string.IsNullOrEmpty(viewPath))
-            {
-                return MvcHtmlString.Empty;
-            }
-
-            IHtmlString contentBlockHtml = htmlHelper.Partial(viewPath, contentBlockViewModel);
-
-            if (!_isPreview)
-            {
-                return contentBlockHtml;
-            }
-            else
-            {
-                // Preview mode: add block id for scroll synchronisation
-                string blockIdAnchor = $"<a id=\"{contentBlockViewModel.Id}\" class=\"perplex-content-blocks-preview-anchor\"></a>";
-                return new MvcHtmlString(blockIdAnchor + contentBlockHtml);
-            }
+            // Preview mode: add block id for scroll synchronisation
+            string blockIdAnchor = $"<a id=\"{contentBlockViewModel.Id}\" class=\"perplex-content-blocks-preview-anchor\"></a>";
+            builder.AppendHtml(blockIdAnchor);
         }
 
-        public IHtmlString RenderBlocks(IEnumerable<IContentBlockViewModel> contentBlocks, HtmlHelper htmlHelper)
-        {
-            if (contentBlocks?.Any() != true)
-            {
-                return MvcHtmlString.Empty;
-            }
+        builder.AppendHtml(contentBlockHtml);
 
-            StringBuilder sb = new StringBuilder();
+        return builder;
+    }
 
-            foreach (var block in contentBlocks)
-            {
-                IHtmlString blockHtml = RenderBlock(block, htmlHelper);
-                sb.Append(blockHtml.ToString());
-            }
+    public async Task<IHtmlContent> RenderHeader(IContentBlocks? contentBlocks, RenderPartialViewAsync renderPartialViewAsync)
+        => await RenderBlock(contentBlocks?.Header, renderPartialViewAsync);
 
-            return new HtmlString(sb.ToString());
-        }
-
-#endif
-
-        private string GetViewPath(Guid definitionId, Guid layoutId)
-        {
-            var definition = _definitionRepository.GetById(definitionId);
-            return definition
-                ?.Layouts?.FirstOrDefault(l => l.Id == layoutId)
-                ?.ViewPath;
-        }
+    private string? GetViewPath(Guid definitionId, Guid layoutId)
+    {
+        var definition = _definitionRepository.GetById(definitionId);
+        return definition
+            ?.Layouts?.FirstOrDefault(l => l.Id == layoutId)
+            ?.ViewPath;
     }
 }

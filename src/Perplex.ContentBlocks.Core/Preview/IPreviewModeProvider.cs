@@ -1,7 +1,6 @@
-﻿namespace Perplex.ContentBlocks.Preview
+﻿namespace Perplex.ContentBlocks.Preview;
+
+public interface IPreviewModeProvider
 {
-    public interface IPreviewModeProvider
-    {
-        bool IsPreviewMode { get; }
-    }
+    bool IsPreviewMode { get; }
 }

@@ -1,13 +1,8 @@
-﻿#if NET5_0
-using Umbraco.Cms.Core.Models.PublishedContent;
-#elif NET472
-using Umbraco.Core.Models.PublishedContent;
-#endif
+﻿using Umbraco.Cms.Core.Models.PublishedContent;
 
-namespace Perplex.ContentBlocks.Rendering
+namespace Perplex.ContentBlocks.Rendering;
+
+public interface IContentBlockViewModel<TContent> : IContentBlockViewModel where TContent : IPublishedElement
 {
-    public interface IContentBlockViewModel<TContent> : IContentBlockViewModel where TContent : IPublishedElement
-    {
-        new TContent Content { get; }
-    }
+    new TContent Content { get; }
 }

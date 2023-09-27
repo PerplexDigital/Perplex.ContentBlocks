@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>  
-  </PropertyGroup>
-
   <PropertyGroup Label="NuGet Package">
     <PackageId>Perplex.ContentBlocks</PackageId>
     <PackageTags>umbraco umbraco-marketplace</PackageTags>
     <Description>Block based content editor for Umbraco</Description>
-  <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
   <ItemGroup>

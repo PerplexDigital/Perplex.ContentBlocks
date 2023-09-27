@@ -1,14 +1,25 @@
 ﻿<Project>
 
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup Label="NuGet Package">
     <Version>3.0.0-alpha.1</Version>
-    <Authors>Perplex Digital</Authors>
+    <Company>Perplex Digital</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>© $(Company)</Copyright>
     <PackageProjectUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/PerplexDigital/Perplex.ContentBlocks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
 </Project>

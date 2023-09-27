@@ -1,245 +1,213 @@
 ﻿using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using static Perplex.ContentBlocks.Constants.PropertyEditor.Configuration;
-
-#if NET5_0
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Serialization;
-#elif NET472
-using Umbraco.Core.PropertyEditors;
-#endif
+using Umbraco.Cms.Core.Services;
+using static Perplex.ContentBlocks.Constants.PropertyEditor.Configuration;
 
-namespace Perplex.ContentBlocks.PropertyEditor.Configuration
+namespace Perplex.ContentBlocks.PropertyEditor.Configuration;
+
+public class ContentBlocksConfigurationEditor : ConfigurationEditor<ContentBlocksConfiguration>
 {
-    public class ContentBlocksConfigurationEditor : ConfigurationEditor<ContentBlocksConfiguration>
+    public ContentBlocksConfigurationEditor(IIOHelper ioHelper, IEditorConfigurationParser editorConfigurationParser)
+        : base(ioHelper, editorConfigurationParser)
     {
-#if NET5_0
-public ContentBlocksConfigurationEditor(IIOHelper ioHelper) : base(ioHelper)
-#elif NET472
-        public ContentBlocksConfigurationEditor()
-#endif  
+        Fields.AddRange(new[]
         {
-            Fields.AddRange(new[]
+            new ConfigurationField
             {
-                new ConfigurationField
-                {
-                    Name = "Structure",
-                    Description = "Sets the structure",
-                    Key = StructureKey,
-                    View = StructureViewName,
-                },
+                Name = "Structure",
+                Description = "Sets the structure",
+                Key = StructureKey,
+                View = StructureViewName,
+            },
 
-                new ConfigurationField
-                {
-                    Name = "Disable preview",
-                    Description = "Disables the preview feature",
-                    Key = DisablePreviewKey,
-                    View = DisablePreviewViewName,
-                },
+            new ConfigurationField
+            {
+                Name = "Disable preview",
+                Description = "Disables the preview feature",
+                Key = DisablePreviewKey,
+                View = DisablePreviewViewName,
+            },
 
-                new ConfigurationField
-                {
-                    Name = "Hide label",
-                    Description = "Hides the data type label",
-                    Key = HideLabelKey,
-                    View = HideLabelViewName,
-                },
+            new ConfigurationField
+            {
+                Name = "Hide label",
+                Description = "Hides the data type label",
+                Key = HideLabelKey,
+                View = HideLabelViewName,
+            },
 
-                new ConfigurationField
-                {
-                    Name = "Hide property group container",
-                    Description = "Hides the property group container that holds this editor",
-                    Key = HidePropertyGroupContainerKey,
-                    View = HidePropertyGroupContainerViewName,
-                },
+            new ConfigurationField
+            {
+                Name = "Hide property group container",
+                Description = "Hides the property group container that holds this editor",
+                Key = HidePropertyGroupContainerKey,
+                View = HidePropertyGroupContainerViewName,
+            },
 
-                new ConfigurationField
-                {
-                    Name = "Allow adding blocks without header",
-                    Description = "Blocks can be added without having to set a header first",
-                    Key = AllowBlocksWithoutHeaderKey,
-                    View = AllowBlocksWithoutHeaderViewName,
-                },
-            });
-        }
+            new ConfigurationField
+            {
+                Name = "Allow adding blocks without header",
+                Description = "Blocks can be added without having to set a header first",
+                Key = AllowBlocksWithoutHeaderKey,
+                View = AllowBlocksWithoutHeaderViewName,
+            },
+        });
+    }
 
-        /// <summary>
-        /// Current configuration version.
-        /// </summary>
-        public const int Version = 3;
+    public override object DefaultConfigurationObject { get; }
+        = ContentBlocksConfiguration.DefaultConfiguration;
 
-        internal static readonly ContentBlocksConfiguration _defaultConfiguration = new ContentBlocksConfiguration
+    public override IDictionary<string, object> DefaultConfiguration
+        => ToConfigurationEditor(DefaultConfigurationObject);
+
+    public override ContentBlocksConfiguration FromConfigurationEditor(IDictionary<string, object?>? editorValues, ContentBlocksConfiguration? configuration)
+    {
+        var hideLabel = GetBool(editorValues, HideLabelKey);
+        var structure = GetStructure(editorValues);
+        var disablePreview = GetBool(editorValues, DisablePreviewKey);
+        var hidePropertyGroupContainer = GetBool(editorValues, HidePropertyGroupContainerKey);
+        var requireHeaderForBlocks = GetBool(editorValues, AllowBlocksWithoutHeaderKey);
+
+        var defaultConfig = ContentBlocksConfiguration.DefaultConfiguration;
+
+        return new ContentBlocksConfiguration
         {
-            Version = Version,
+            // When saved we store the current version,
+            // Any transformations should have been applied before
+            // and the user has now actively saved the configuration again.
+            Version = ContentBlocksConfiguration.VERSION,
 
-            HideLabel = true,
-            Structure = Structure.Blocks | Structure.Header,
-            DisablePreview = false,
-
-            // It is quite likely this will default to "false" in the future
-            // considering hiding the property group container is messing with
-            // the default Umbraco UI and also causes some flickering upon page load
-            // when the group is being hidden after our editor is initialized.
-            HidePropertyGroupContainer = true,
-
-            AllowBlocksWithoutHeader = false,
+            Structure = structure ?? defaultConfig.Structure,
+            DisablePreview = disablePreview ?? defaultConfig.DisablePreview,
+            HideLabel = hideLabel ?? defaultConfig.HideLabel,
+            HidePropertyGroupContainer = hidePropertyGroupContainer ?? defaultConfig.HidePropertyGroupContainer,
+            AllowBlocksWithoutHeader = requireHeaderForBlocks ?? defaultConfig.AllowBlocksWithoutHeader,
         };
+    }
 
-        public override object DefaultConfigurationObject { get; }
-            = _defaultConfiguration;
-
-        public override IDictionary<string, object> DefaultConfiguration
-            => ToConfigurationEditor(_defaultConfiguration);
-
-        public override ContentBlocksConfiguration FromConfigurationEditor(IDictionary<string, object> editorValues, ContentBlocksConfiguration configuration)
+    public override Dictionary<string, object> ToConfigurationEditor(ContentBlocksConfiguration? configuration)
+    {
+        if (configuration is null)
         {
-            var hideLabel = GetBool(editorValues, HideLabelKey);
-            var structure = GetStructure(editorValues);
-            var disablePreview = GetBool(editorValues, DisablePreviewKey);
-            var hidePropertyGroupContainer = GetBool(editorValues, HidePropertyGroupContainerKey);
-            var requireHeaderForBlocks = GetBool(editorValues, AllowBlocksWithoutHeaderKey);
+            return new Dictionary<string, object>();
+        }
 
-            return new ContentBlocksConfiguration
+        return new Dictionary<string, object>
+        {
+            [VersionKey] = configuration.Version,
+
+            [StructureKey] = new
             {
-                // When saved we store the current version,
-                // Any transformations should have been applied before
-                // and the user has now actively saved the configuration again.
-                Version = Version,
+                blocks = configuration.Structure.HasFlag(Structure.Blocks),
+                header = configuration.Structure.HasFlag(Structure.Header),
+            },
 
-                Structure = structure ?? _defaultConfiguration.Structure,
-                DisablePreview = disablePreview ?? _defaultConfiguration.DisablePreview,
-                HideLabel = hideLabel ?? _defaultConfiguration.HideLabel,
-                HidePropertyGroupContainer = hidePropertyGroupContainer ?? _defaultConfiguration.HidePropertyGroupContainer,
-                AllowBlocksWithoutHeader = requireHeaderForBlocks ?? _defaultConfiguration.AllowBlocksWithoutHeader,
+            [DisablePreviewKey] = configuration.DisablePreview,
+
+            [HideLabelKey] = configuration.HideLabel,
+
+            [HidePropertyGroupContainerKey] = configuration.HidePropertyGroupContainer,
+
+            [AllowBlocksWithoutHeaderKey] = configuration.AllowBlocksWithoutHeader,
+        };
+    }
+
+    public override object FromDatabase(string? configuration, IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
+    {
+        if (configuration == null || configuration.Trim() == "{}")
+        {
+            // Special case: empty configuration object.
+            // That is not allowed, return the default.
+            return ContentBlocksConfiguration.DefaultConfiguration;
+        }
+
+        try
+        {
+            if (base.FromDatabase(configuration, configurationEditorJsonSerializer) is ContentBlocksConfiguration contentBlocksConfiguration)
+            {
+                return ApplyMigrations(contentBlocksConfiguration);
+            }
+            else
+            {
+                return ContentBlocksConfiguration.DefaultConfiguration;
             };
         }
-
-        public override Dictionary<string, object> ToConfigurationEditor(ContentBlocksConfiguration configuration)
+        catch
         {
-            return new Dictionary<string, object>
-            {
-                [VersionKey] = configuration.Version,
-
-                [StructureKey] = new
-                {
-                    blocks = configuration.Structure.HasFlag(Structure.Blocks),
-                    header = configuration.Structure.HasFlag(Structure.Header),
-                },
-
-                [DisablePreviewKey] = configuration.DisablePreview,
-
-                [HideLabelKey] = configuration.HideLabel,
-
-                [HidePropertyGroupContainerKey] = configuration.HidePropertyGroupContainer,
-
-                [AllowBlocksWithoutHeaderKey] = configuration.AllowBlocksWithoutHeader,
-            };
+            return ContentBlocksConfiguration.DefaultConfiguration;
         }
+    }
 
-#if NET5_0
-        public override object FromDatabase(string configuration, IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
-#elif NET472
-        public override object FromDatabase(string configuration)
-#endif  
+    private static ContentBlocksConfiguration ApplyMigrations(ContentBlocksConfiguration source)
+    {
+        if (source.Version == ContentBlocksConfiguration.VERSION)
         {
-            if (configuration == null || configuration.Trim() == "{}")
-            {
-                // Special case: empty configuration object.
-                // That is not allowed, return the default.
-                return _defaultConfiguration;
-            }
-
-            try
-            {
-#if NET5_0
-                if (base.FromDatabase(configuration, configurationEditorJsonSerializer) is ContentBlocksConfiguration contentBlocksConfiguration)
-#elif NET472
-                if (base.FromDatabase(configuration) is ContentBlocksConfiguration contentBlocksConfiguration)
-#endif          
-                {
-                    return ApplyMigrations(contentBlocksConfiguration);
-                }
-                else
-                {
-                    return _defaultConfiguration;
-                };
-            }
-            catch
-            {
-                return _defaultConfiguration;
-            }
-        }
-
-        private ContentBlocksConfiguration ApplyMigrations(ContentBlocksConfiguration source)
-        {
-            if (source.Version == Version)
-            {
-                // Already the latest version.
-                return source;
-            }
-
-            switch (source.Version)
-            {
-                case 1:
-                    // HidePropertyGroupContainer will be read as "false" when this option
-                    // did not exist before, whereas our default is "true" at the moment.
-                    // To not suddenly change existing editors upon update we should set
-                    // this setting to "true" for existing editors.
-                    source.HidePropertyGroupContainer = true;
-                    break;
-
-                default:
-                    break;
-            }
-
+            // Already the latest version.
             return source;
         }
 
-        private bool? GetBool(IDictionary<string, object> config, string key)
+        switch (source.Version)
         {
-            if (config != null && config.TryGetValue(key, out object value) &&
-                ParseBoolean(value?.ToString()) is bool boolValue)
-            {
-                return boolValue;
-            };
+            case 1:
+                // HidePropertyGroupContainer will be read as "false" when this option
+                // did not exist before, whereas our default is "true" at the moment.
+                // To not suddenly change existing editors upon update we should set
+                // this setting to "true" for existing editors.
+                source.HidePropertyGroupContainer = true;
+                break;
 
-            return null;
+            default:
+                break;
         }
 
-        private bool? ParseBoolean(string input)
+        return source;
+    }
+
+    private static bool? GetBool(IDictionary<string, object?>? config, string key)
+    {
+        if (config != null && config.TryGetValue(key, out object? value) &&
+            ParseBoolean(value?.ToString()) is bool boolValue)
         {
-            if (bool.TryParse(input, out bool value))
-                return value;
+            return boolValue;
+        };
 
-            // Parse manually
-            if (input == "0")
-                return false;
+        return null;
+    }
 
-            if (input == "1")
-                return true;
+    private static bool? ParseBoolean(string? input)
+    {
+        if (bool.TryParse(input, out bool value))
+            return value;
 
-            return null;
-        }
+        // Parse manually
+        if (input == "0")
+            return false;
 
-        private Structure? GetStructure(IDictionary<string, object> config)
+        if (input == "1")
+            return true;
+
+        return null;
+    }
+
+    private static Structure? GetStructure(IDictionary<string, object?>? config)
+    {
+        Structure structure = Structure.None;
+
+        if (config != null &&
+            config.TryGetValue(StructureKey, out object? obj) &&
+            obj is JObject structureObj)
         {
-            Structure structure = Structure.None;
+            if (structureObj.Value<bool>("blocks"))
+                structure |= Structure.Blocks;
 
-            if (config != null &&
-                config.TryGetValue(StructureKey, out object obj) &&
-                obj is JObject structureObj)
-            {
-                if (structureObj.Value<bool>("blocks"))
-                    structure |= Structure.Blocks;
+            if (structureObj.Value<bool>("header"))
+                structure |= Structure.Header;
 
-                if (structureObj.Value<bool>("header"))
-                    structure |= Structure.Header;
+            return structure;
+        };
 
-                return structure;
-            };
-
-            return null;
-        }
+        return null;
     }
 }
