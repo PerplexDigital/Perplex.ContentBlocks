@@ -2,6 +2,16 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v3.0.0 - <sub><sup>TBD</sup></sub>
+
+-   Dropped support for v8 and v9
+    -   Only Umbraco v10+ is supported
+-   All APIs now properly annotate types of parameters and return values for nullability
+-   App_Plugins\Perplex.ContentBlocks is now part of `Perplex.ContentBlocks.StaticAssets`, a Razor Class Library.
+    -   This means during local development there will be no physical folder in `App_Plugins` anymore, but they will appear in `wwwroot/App_Plugins` when you publish.
+    -   If you have an existing `App_Plugins/Perplex.ContentBlocks` in your solution from an earlier version you should remove that.
+    -   The main package depends on StaticAssets, so installation of the package is unchanged: `dotnet add package Perplex.ContentBlocks`.
+
 ## v2.1.9 - <sub><sup>2023-03-16</sup></sub>
 
 -   Fixed non-unique ContentBlock ids when a page is created based on a Blueprint that contains ContentBlocks ([#77](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/77)).
