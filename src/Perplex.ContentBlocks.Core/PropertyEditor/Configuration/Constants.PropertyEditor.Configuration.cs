@@ -9,7 +9,7 @@ public static partial class Constants
             public const string VersionKey = "_version";
 
             public const string StructureKey = "structure";
-            public const string StructureViewName = "/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.configuration.structure.html";
+            public const string StructureViewName = "/App_Plugins/Perplex.ContentBlocks/configuration/perplex.content-blocks.configuration.structure-view.html";
 
             public const string DisablePreviewKey = "disablePreview";
             public const string DisablePreviewViewName = "boolean";

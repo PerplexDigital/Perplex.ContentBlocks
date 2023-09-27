@@ -18,6 +18,8 @@ internal class ManifestFilter : IManifestFilter
             BundleOptions = BundleOptions.Default,
             Scripts = new[]
             {
+                #if !RELEASE
+
                 // Note: .requires.js should be loaded first
                 "/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.requires.js",
 
@@ -39,6 +41,11 @@ internal class ManifestFilter : IManifestFilter
                 "/App_Plugins/Perplex.ContentBlocks/utils/property/perplex.content-blocks.property.js",
                 "/App_Plugins/Perplex.ContentBlocks/utils/tab-focus/perplex.content-blocks.tab-focus-once.directive.js",
                 "/App_Plugins/Perplex.ContentBlocks/utils/tab-focus/perplex.content-blocks.tab-focus.service.js",
+
+                #elif RELEASE
+                // In Release mode all JS is bundled into 1 file
+                "/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.js",
+                #endif
             },
 
             Stylesheets = new[]
