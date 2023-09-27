@@ -5,6 +5,7 @@
     <PackageTags>umbraco umbraco-marketplace</PackageTags>
     <Description>Block based content editor for Umbraco</Description>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
