@@ -8,14 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="icon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj" />
+    <ProjectReference Include="..\Perplex.ContentBlocks.StaticAssets\Perplex.ContentBlocks.StaticAssets.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,9 @@ VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks", "Perplex.ContentBlocks\Perplex.ContentBlocks.csproj", "{CC00D01F-A987-4E6F-9983-FFAC97CE27A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perplex.ContentBlocks.Core", "Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj", "{1282FAD9-5B28-4DBA-BF0E-0F8982085F59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.Core", "Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj", "{1282FAD9-5B28-4DBA-BF0E-0F8982085F59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.StaticAssets", "Perplex.ContentBlocks.StaticAssets\Perplex.ContentBlocks.StaticAssets.csproj", "{B8986C6A-0F31-4963-A439-441844FD262A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1282FAD9-5B28-4DBA-BF0E-0F8982085F59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1282FAD9-5B28-4DBA-BF0E-0F8982085F59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1282FAD9-5B28-4DBA-BF0E-0F8982085F59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8986C6A-0F31-4963-A439-441844FD262A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8986C6A-0F31-4963-A439-441844FD262A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8986C6A-0F31-4963-A439-441844FD262A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8986C6A-0F31-4963-A439-441844FD262A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
