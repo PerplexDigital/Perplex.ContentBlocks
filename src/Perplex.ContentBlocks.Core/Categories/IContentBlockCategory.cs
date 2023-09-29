@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Perplex.ContentBlocks.Categories;
+﻿namespace Perplex.ContentBlocks.Categories;
 
 public interface IContentBlockCategory
 {

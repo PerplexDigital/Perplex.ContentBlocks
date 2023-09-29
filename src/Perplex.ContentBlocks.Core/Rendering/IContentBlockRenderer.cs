@@ -2,8 +2,6 @@
 
 namespace Perplex.ContentBlocks.Rendering;
 
-public delegate Task<IHtmlContent> RenderPartialViewAsync(string partialViewName, object model);
-
 public interface IContentBlockRenderer
 {
     Task<IHtmlContent> Render(IContentBlocks? contentBlocks, RenderPartialViewAsync renderPartialViewAsync);

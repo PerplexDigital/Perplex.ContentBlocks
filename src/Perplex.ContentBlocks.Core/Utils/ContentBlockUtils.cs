@@ -50,10 +50,12 @@ public class ContentBlockUtils
 
         IDataType? dataType = null;
 
+#pragma warning disable CS0618 // DataTypeId will still be used until removed in a next major
         if (definition.DataTypeId is int dataTypeId)
         {
             dataType = _dataTypeService.GetDataType(dataTypeId);
         }
+#pragma warning restore CS0618 // DataTypeId will still be used until removed in a next major
         else if (definition.DataTypeKey is Guid dataTypeKey)
         {
             dataType = _dataTypeService.GetDataType(dataTypeKey);

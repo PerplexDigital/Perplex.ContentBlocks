@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
 
 namespace Perplex.ContentBlocks.Rendering;
 
@@ -38,5 +34,4 @@ public static partial class HtmlHelperExtensions
     /// <returns></returns>
     public static async Task<IHtmlContent> RenderContentBlocks(this IHtmlHelper html, IEnumerable<IContentBlockViewModel> contentBlocks, IContentBlockRenderer renderer)
         => await renderer.RenderBlocks(contentBlocks, html.PartialAsync);
-
 }

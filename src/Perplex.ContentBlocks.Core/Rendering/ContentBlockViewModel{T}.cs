@@ -1,6 +1,4 @@
-﻿using System;
-
-using Umbraco.Cms.Core.Models.PublishedContent;
+﻿using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace Perplex.ContentBlocks.Rendering;
 

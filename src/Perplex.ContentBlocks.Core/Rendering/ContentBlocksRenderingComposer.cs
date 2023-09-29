@@ -12,6 +12,9 @@ public class ContentBlocksRenderingComposer : IComposer
         // Renderer
         builder.Services.AddScoped<IContentBlockRenderer, ContentBlockRenderer>();
 
+        // New renderer that supports view components
+        builder.Services.AddSingleton<IContentBlocksRenderer, ContentBlocksRenderer>();
+
         // General View Model factory
         builder.Services.AddSingleton(
             typeof(IContentBlockViewModelFactory<>),
