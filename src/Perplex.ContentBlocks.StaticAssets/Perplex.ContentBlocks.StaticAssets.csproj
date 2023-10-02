@@ -11,6 +11,10 @@
     <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="src\package.json" />
+  </ItemGroup>
+
   <Import Project="build\*"/>
 
 </Project>
