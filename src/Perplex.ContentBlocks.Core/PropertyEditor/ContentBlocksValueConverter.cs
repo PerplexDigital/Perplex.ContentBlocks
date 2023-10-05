@@ -121,7 +121,25 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
         }
 
         IPublishedElement? ParseElement(string? blockContent)
-            => _nestedContentSingleValueConverter.ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, blockContent, preview) as IPublishedElement;        
+            => _nestedContentSingleValueConverter.ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, blockContent, preview) as IPublishedElement;
+    }
+
+    public override bool? IsValue(object? value, PropertyValueLevel level)
+    {
+        if (level != PropertyValueLevel.Object)
+        {
+            // We only want to check at the Object level to prevent duplicate parsing logic
+            return null;
+        }
+
+        if (value is not IContentBlocks model)
+        {
+            // Value must be invalid
+            return false;
+        }
+
+        // Valid with at least 1 block
+        return model.Header is not null || model.Blocks.Any();
     }
 
     public override Type GetPropertyValueType(IPublishedPropertyType propertyType)
