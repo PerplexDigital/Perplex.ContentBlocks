@@ -3,7 +3,6 @@ using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
 
-
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
 public class ContentBlocksModelValueComposer : IComposer

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Perplex.ContentBlocks.Presets;
+﻿namespace Perplex.ContentBlocks.Presets;
 
 public interface IContentBlockPreset
 {

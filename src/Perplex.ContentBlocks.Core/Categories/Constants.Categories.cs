@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Perplex.ContentBlocks;
+﻿namespace Perplex.ContentBlocks;
 
 public static partial class Constants
 {

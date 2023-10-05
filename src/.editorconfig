@@ -26,6 +26,6 @@ dotnet_naming_symbols.constants.required_modifiers = const
 dotnet_naming_style.constant_style.capitalization = all_upper
 dotnet_naming_style.constant_style.word_separator = _
 
-[appSettings*.json]
+[{appSettings*.json,*.csproj}]
 indent_style = space
 indent_size = 2

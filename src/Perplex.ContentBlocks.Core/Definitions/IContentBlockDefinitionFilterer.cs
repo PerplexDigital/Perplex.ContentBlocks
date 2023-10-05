@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Perplex.ContentBlocks.Definitions;
+﻿namespace Perplex.ContentBlocks.Definitions;
 
 public interface IContentBlockDefinitionFilterer
 {

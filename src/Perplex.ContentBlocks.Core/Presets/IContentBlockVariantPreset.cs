@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Perplex.ContentBlocks.Presets;
+﻿namespace Perplex.ContentBlocks.Presets;
 
 public interface IContentBlockVariantPreset
 {
@@ -11,7 +8,7 @@ public interface IContentBlockVariantPreset
     Guid Id { get; }
 
     /// <summary>
-    /// The variant alias 
+    /// The variant alias
     /// </summary>
     string Alias { get; }
 

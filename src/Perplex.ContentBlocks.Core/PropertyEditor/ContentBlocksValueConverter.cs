@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Perplex.ContentBlocks.Definitions;
-using Perplex.ContentBlocks.PropertyEditor.Configuration;
+﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.ModelValue;
 using Perplex.ContentBlocks.Rendering;
 using Perplex.ContentBlocks.Variants;
@@ -20,8 +18,8 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
     public ContentBlocksValueConverter(
         NestedContentSingleValueConverter nestedContentSingleValueConverter,
         ContentBlocksModelValueDeserializer deserializer,
-        IContentBlockVariantSelector variantSelector
-        , IServiceProvider serviceProvider
+        IContentBlockVariantSelector variantSelector,
+        IServiceProvider serviceProvider
     )
     {
         _nestedContentSingleValueConverter = nestedContentSingleValueConverter;
@@ -53,19 +51,19 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
 
         var interValue = new ContentBlocksInterValue
         {
-            Header = selectBlock(modelValue.Header),
-            Blocks = modelValue.Blocks?.Select(selectBlock).OfType<ContentBlockInterValue>().ToArray() ?? Array.Empty<ContentBlockInterValue>(),
+            Header = SelectBlock(modelValue.Header),
+            Blocks = modelValue.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? Array.Empty<ContentBlockInterValue>(),
         };
 
         var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>() ?? ContentBlocksConfiguration.DefaultConfiguration;
 
         var header = config.Structure.HasFlag(Structure.Header)
-            ? createViewModel(interValue.Header)
+            ? CreateViewModel(interValue.Header)
             : null;
 
         var blocks = config.Structure.HasFlag(Structure.Blocks)
-            ? interValue.Blocks.Select(createViewModel).OfType<IContentBlockViewModel>().ToArray()
-            : Enumerable.Empty<IContentBlockViewModel>();
+            ? interValue.Blocks.Select(CreateViewModel).OfType<IContentBlockViewModel>().ToArray()
+            : Array.Empty<IContentBlockViewModel>();
 
         return new Rendering.ContentBlocks
         {
@@ -73,7 +71,7 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
             Blocks = blocks
         };
 
-        ContentBlockInterValue? selectBlock(ContentBlockModelValue? original)
+        ContentBlockInterValue? SelectBlock(ContentBlockModelValue? original)
         {
             if (original is null || original.IsDisabled)
             {
@@ -99,33 +97,14 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
             return block;
         }
 
-        IContentBlockViewModel? createViewModel(ContentBlockInterValue? block)
+        IContentBlockViewModel? CreateViewModel(ContentBlockInterValue? block)
         {
             if (block is null)
             {
                 return null;
             }
 
-            var definitionRepository = _serviceProvider.GetService<IContentBlockDefinitionRepository>();
-            if (definitionRepository is null)
-            {
-                return null;
-            }
-
-            IContentBlockDefinition? definition = definitionRepository.GetById(block.DefinitionId);
-            if (definition is null || definition.Layouts is null || definition.Layouts.Any() == false)
-            {
-                return null;
-            }
-
-            var layout = definition.Layouts.FirstOrDefault(l => l.Id == block.LayoutId);
-            if (layout is null)
-            {
-                return null;
-            }
-
-            var content = _nestedContentSingleValueConverter.ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, block.Content?.ToString(), preview) as IPublishedElement;
-            if (content is null)
+            if (ParseElement(block.Content?.ToString()) is not IPublishedElement content)
             {
                 return null;
             }
@@ -133,14 +112,16 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
             var contentType = content.GetType();
             var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType(new[] { contentType });
 
-            var viewModelFactory = _serviceProvider.GetService(genericViewModelFactoryType) as IContentBlockViewModelFactory;
-            if (viewModelFactory is null)
+            if (_serviceProvider.GetService(genericViewModelFactoryType) is not IContentBlockViewModelFactory viewModelFactory)
             {
                 return null;
             }
 
             return viewModelFactory.Create(content, block.Id, block.DefinitionId, block.LayoutId);
         }
+
+        IPublishedElement? ParseElement(string? blockContent)
+            => _nestedContentSingleValueConverter.ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, blockContent, preview) as IPublishedElement;        
     }
 
     public override Type GetPropertyValueType(IPublishedPropertyType propertyType)

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Perplex.ContentBlocks.Utils.Cookies;
+﻿namespace Perplex.ContentBlocks.Utils.Cookies;
 
 public interface IHttpCookiesAccessor
 {

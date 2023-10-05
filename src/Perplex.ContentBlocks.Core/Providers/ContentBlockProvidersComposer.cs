@@ -2,7 +2,6 @@
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 
-
 namespace Perplex.ContentBlocks.Providers;
 
 public class ContentBlockProvidersComposer : IComposer

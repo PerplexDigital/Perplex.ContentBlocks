@@ -3,7 +3,6 @@ using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
 
-
 namespace Perplex.ContentBlocks.Preview;
 
 public class ContentBlocksPreviewComposer : IComposer
