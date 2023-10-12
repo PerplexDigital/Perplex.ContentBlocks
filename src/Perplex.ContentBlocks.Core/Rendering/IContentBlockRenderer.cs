@@ -2,6 +2,7 @@
 
 namespace Perplex.ContentBlocks.Rendering;
 
+[Obsolete($"Use {nameof(IContentBlocksRenderer)} instead which supports both partial views and view components")]
 public interface IContentBlockRenderer
 {
     Task<IHtmlContent> Render(IContentBlocks? contentBlocks, RenderPartialViewAsync renderPartialViewAsync);
