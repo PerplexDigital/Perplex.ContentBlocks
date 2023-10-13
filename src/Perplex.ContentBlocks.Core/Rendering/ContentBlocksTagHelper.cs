@@ -8,7 +8,10 @@ using System.Reflection;
 
 namespace Perplex.ContentBlocks.Rendering;
 
-[HtmlTargetElement("perplex-content-blocks", Attributes = "content", TagStructure = TagStructure.WithoutEndTag)]
+/// <summary>
+/// Tag helper to render ContentBlocks
+/// </summary>
+[HtmlTargetElement("perplex-content-blocks", TagStructure = TagStructure.WithoutEndTag)]
 public class ContentBlocksTagHelper : TagHelper
 {
     private readonly IViewComponentHelper _viewComponentHelper;
@@ -28,7 +31,20 @@ public class ContentBlocksTagHelper : TagHelper
         _renderer = renderer;
     }
 
+    /// <summary>
+    /// The <see cref="IContentBlocks"/> content to render
+    /// </summary>
     public IContentBlocks? Content { get; set; }
+
+    /// <summary>
+    /// A single ContentBlock to render
+    /// </summary>
+    public IContentBlockViewModel? Block { get; set; }
+
+    /// <summary>
+    /// Multiple ContentBlocks to render
+    /// </summary>
+    public IEnumerable<IContentBlockViewModel>? Blocks { get; set; }
 
     [HtmlAttributeNotBound]
     [ViewContext]
@@ -38,7 +54,9 @@ public class ContentBlocksTagHelper : TagHelper
     {
         output.TagName = null;
 
-        if (Content is null || ViewContext is null)
+        var blocks = GetBlocks().ToArray();
+
+        if (blocks.Length == 0 || ViewContext is null)
         {
             return;
         }
@@ -46,19 +64,41 @@ public class ContentBlocksTagHelper : TagHelper
         EnsureViewContext(_viewComponentHelper, ViewContext);
         EnsureViewContext(_htmlHelper, ViewContext);
 
-        RenderViewComponentAsync renderViewComponentAsync = _viewComponentHelper.InvokeAsync;
-        RenderPartialViewAsync renderPartialViewAsync = _htmlHelper.PartialAsync;
+        var html = await _renderer.RenderBlocksAsync(
+            blocks,
+            _viewComponentHelper.InvokeAsync,
+            _htmlHelper.PartialAsync,
+            _previewModeProvider.IsPreviewMode);
 
-        var isBackOfficePreview = _previewModeProvider.IsPreviewMode;
+        output.Content.SetHtmlContent(html);
+    }
 
-        var htmlContent = await Task.WhenAll(
-            _renderer.RenderBlockAsync(Content.Header, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview),
-            _renderer.RenderBlocksAsync(Content.Blocks, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview)
-        );
-
-        foreach (var html in htmlContent)
+    private IEnumerable<IContentBlockViewModel> GetBlocks()
+    {
+        if (Content?.Header is not null)
         {
-            output.Content.AppendHtml(html);
+            yield return Content.Header;
+        }
+
+        if (Content?.Blocks is not null)
+        {
+            foreach (var block in Content.Blocks)
+            {
+                yield return block;
+            }
+        }
+
+        if (Block is not null)
+        {
+            yield return Block;
+        }
+
+        if (Blocks is not null)
+        {
+            foreach (var block in Blocks)
+            {
+                yield return block;
+            }
         }
     }
 
@@ -71,31 +111,27 @@ public class ContentBlocksTagHelper : TagHelper
             return;
         }
 
-        // Some other implementation of IViewComponentHelper,
-        // use reflection and look for a _viewContext field to set.
-
-        var flags = BindingFlags.NonPublic | BindingFlags.Instance;
-        var fieldInfo = viewComponentHelper.GetType().GetField("_viewContext", flags);
-
-        if (fieldInfo is not null &&
-            fieldInfo.GetValue(viewComponentHelper) is null)
-        {
-            fieldInfo.SetValue(viewComponentHelper, viewContext);
-        }
+        // Some other IViewComponentHelper: attempt to call a Contextualize method
+        TryCallContextualize(viewComponentHelper, viewContext);
     }
 
     private static void EnsureViewContext(IHtmlHelper htmlHelper, ViewContext viewContext)
     {
-        if (htmlHelper is HtmlHelper hh)
+        if (htmlHelper is HtmlHelper defaultHtmlHelper)
         {
             // Default case
-            hh.Contextualize(viewContext);
+            defaultHtmlHelper.Contextualize(viewContext);
             return;
         }
 
-        // Some other IHtmlHelper: use reflection
+        // Some other IHtmlHelper: attempt to call a Contextualize method
+        TryCallContextualize(htmlHelper, viewContext);
+    }
+
+    private static void TryCallContextualize(object instance, ViewContext viewContext)
+    {
         Type[] parameterTypes = new[] { typeof(ViewContext) };
-        MethodInfo? methodInfo = htmlHelper.GetType().GetMethod("Contextualize", parameterTypes);
-        methodInfo?.Invoke(htmlHelper, new[] { viewContext });
+        MethodInfo? methodInfo = instance.GetType().GetMethod("Contextualize", parameterTypes);
+        methodInfo?.Invoke(instance, new[] { viewContext });
     }
 }
