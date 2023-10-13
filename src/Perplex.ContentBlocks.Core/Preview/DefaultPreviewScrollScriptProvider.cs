@@ -7,8 +7,13 @@
 /// </summary>
 public class DefaultPreviewScrollScriptProvider : IPreviewScrollScriptProvider
 {
-    public string ScrollScript { get; } = @"
-        if (element != null && typeof window.jump === ""function"") {
-            window.jump(element, { duration: 500 });
+    private const string SCROLL_SCRIPT = @"
+        if (typeof window.scrollTo === ""function"") {
+            window.scrollTo({
+                top: element.offsetTop,
+                behavior: ""smooth""
+            });
         }";
+
+    public string ScrollScript { get; } = SCROLL_SCRIPT;
 }
