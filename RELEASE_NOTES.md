@@ -6,8 +6,20 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 -   Dropped support for v8 and v9
     -   Only Umbraco v10+ is supported
+-   Added view component support
+    -   You can now define `IContentBlockDefinition<T>` where `T` should implement `IContentBlockViewComponent`. The specified view component will then be called to render the content block, rather than the defined `ViewPath` -- which can be left empty when using `IContentBlockDefinition<T>`
+    -   This is useful if you want to use custom view models together with DI when rendering a content block.
+    -   You can still use the original `IContentBlockDefinition` with `ViewPath` like in `v1` and `v2` if your content block can be rendered using just the Umbraco content.
+-   Added tag helper `<perplex-content-blocks>` to render ContentBlocks.
+    -   To render all defined ContentBlocks of the current page, use:
+        -   `<perplex-content-blocks content="..." />`
+        -   The value of the `content` attribute should be an `IContentBlocks` instance, usually this is `Model.Content.ContentBlocks` when the property alias is `"contentBlocks"` and using ModelsBuilder.
+    -   To render an individual block such as the header only you use `block` instead of `content`, e.g.:
+        -   `<perplex-content-blocks block="Model.Content.ContentBlocks.Header" />`
+    -   To render multiple blocks, use the `blocks` attribute:
+        -   `<perplex-content-blocks blocks="Model.Content.ContentBlocks.Blocks" />`
 -   All APIs now properly annotate types of parameters and return values for nullability
--   App_Plugins\Perplex.ContentBlocks is now part of `Perplex.ContentBlocks.StaticAssets`, a Razor Class Library.
+-   `App_Plugins/Perplex.ContentBlocks` is now part of `Perplex.ContentBlocks.StaticAssets`, a Razor Class Library.
     -   This means during local development there will be no physical folder in `App_Plugins` anymore, but they will appear in `wwwroot/App_Plugins` when you publish.
     -   If you have an existing `App_Plugins/Perplex.ContentBlocks` in your solution from an earlier version you should remove that.
     -   The main package depends on StaticAssets, so installation of the package is unchanged: `dotnet add package Perplex.ContentBlocks`.
