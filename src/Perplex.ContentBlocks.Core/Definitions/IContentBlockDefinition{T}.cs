@@ -1,5 +1,7 @@
-﻿namespace Perplex.ContentBlocks.Definitions;
+﻿using Microsoft.AspNetCore.Mvc;
 
-public interface IContentBlockDefinition<out T> : IContentBlockDefinition where T : IContentBlockViewComponent
+namespace Perplex.ContentBlocks.Definitions;
+
+public interface IContentBlockDefinition<out T> : IContentBlockDefinition where T : ViewComponent
 {
 }

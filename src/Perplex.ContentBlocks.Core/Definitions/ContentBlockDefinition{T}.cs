@@ -1,6 +1,8 @@
-﻿namespace Perplex.ContentBlocks.Definitions;
+﻿using Microsoft.AspNetCore.Mvc;
 
-public class ContentBlockDefinition<T> : IContentBlockDefinition<T> where T : IContentBlockViewComponent
+namespace Perplex.ContentBlocks.Definitions;
+
+public class ContentBlockDefinition<T> : IContentBlockDefinition<T> where T : ViewComponent
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = "";

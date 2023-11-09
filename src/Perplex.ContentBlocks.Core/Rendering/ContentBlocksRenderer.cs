@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Perplex.ContentBlocks.Definitions;
 
 namespace Perplex.ContentBlocks.Rendering;
@@ -84,10 +85,10 @@ public class ContentBlocksRenderer : IContentBlocksRenderer
 
     private static async Task<IHtmlContent> GetBlockHtml(IContentBlockViewModel block, IContentBlockDefinition definition, RenderViewComponentAsync renderViewComponentAsync, RenderPartialViewAsync renderPartialViewAsync)
     {
-        if (definition is IContentBlockDefinition<IContentBlockViewComponent> componentDefinition)
+        if (definition is IContentBlockDefinition<ViewComponent> componentDefinition)
         {
             Type viewComponentType = componentDefinition.GetType().GenericTypeArguments[0];
-            return await renderViewComponentAsync(viewComponentType, new { model = block });
+            return await renderViewComponentAsync(viewComponentType, block);
         }
         else
         {
