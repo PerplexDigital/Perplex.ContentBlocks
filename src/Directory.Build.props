@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <DebugType>embedded</DebugType>
+    <NoWarn>NU1903</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package">
