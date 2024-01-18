@@ -11,6 +11,7 @@
 
   <PropertyGroup Label="NuGet Package">
     <Version>3.0.0-alpha.2</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Company>Perplex Digital</Company>
     <Authors>$(Company)</Authors>
     <Copyright>© $(Company)</Copyright>
