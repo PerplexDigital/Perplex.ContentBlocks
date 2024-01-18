@@ -21,26 +21,24 @@ This package works on top of NestedContent but provides a more advanced user int
 
 Release notes are [available here](RELEASE_NOTES.md).
 
-## Umbraco 9+ / .NET 5+
+## Umbraco 10+ / .NET 6+
 
-ContentBlocks 2.0 adds support for Umbraco 9+ / .NET 5+ and is [out now on NuGet](https://www.nuget.org/packages/Perplex.ContentBlocks).
+ContentBlocks v3 supports the following Umbraco versions:
 
-The package is compatible with the following Umbraco versions:
-
-- 8
-- 9
 - 10
 - 11
+- 12
+- 13
 
 It can be installed as usual via NuGet:
 
 `dotnet add package Perplex.ContentBlocks`
 
--or-
+For older versions of Umbraco, use v1 or v2.
 
-`Install-Package Perplex.ContentBlocks`
+v3 is backwards compatible with v2 and contains no breaking changes except it no longer supports .NET Framework / Umbraco 8. It adds support for using View Components to render blocks and static files (`App_Plugins\Perplex.ContentBlocks`) are now distributed as part of a Razor Class library (`Perplex.ContentBlocks.StaticAssets`).
 
-Version 2.0 is direct port of `v1.9.0` and the API is almost identical. There is a small change in the way you render the Content Blocks in your Razor view for v9+ only. See [Rendering Content Blocks](#rendering-content-blocks) for details.
+When upgrading from v2, make sure to remove the physical `App_Plugins\Perplex.ContentBlocks` folder from your project. The v3 static assets will be loaded from the RCL without being on disk in your project during development.
 
 ## Demo
 
@@ -53,10 +51,6 @@ A short demo video can be viewed below.
 The package can be installed using NuGet:
 
 `dotnet add package Perplex.ContentBlocks`
-
--or-
-
-`Install-Package Perplex.ContentBlocks`
 
 ## Quick Start
 
@@ -638,24 +632,41 @@ OR
 
 ## Rendering Content Blocks
 
-To render all Content Blocks from the page containing the blocks, you can either use the `IContentBlockRenderer` directly, or call an extension method with the Content Blocks model value (of type `IContentBlocks`).
+To render all Content Blocks from the page containing the blocks, you can either use the `IContentBlockRenderer` directly, or call an extension method with the Content Blocks model value (of type `IContentBlocks`). In v3 we added a tag helper for rendering.
 
 The examples assume the property alias of the Perplex.ContentBlocks property is `"contentBlocks"` which translates to a ModelsBuilder property of `ContentBlocks`. In both cases we run the example code in the Razor view file of the document type that contains the Content Blocks (e.g. `Homepage.cshtml`):
 
-1. Using the extension method:
+1. Using the tag helper (v3+):
+
+Ensure the Tag Helper is imported in your views by adding it to `_ViewImports.cshtml`:
+
+`@addTagHelper *, Perplex.ContentBlocks`
 
 ```csharp
-// Umbraco v8
+// All blocks (header + blocks):
+<perplex-content-blocks content="Model.ContentBlocks" />
+
+// A single block (e.g. header only)
+<perplex-content-blocks block="Model.ContentBlocks.Header" />
+
+// Multiple blocks (e.g. all blocks except header)
+<perplex-content-blocks blocks="Model.ContentBlocks.Blocks" />
+```
+
+2. Using the extension method (removed in v3):
+
+```csharp
+// ContentBlocks v2 - Umbraco v8
 @using Perplex.ContentBlocks.Rendering;
 @Html.RenderContentBlocks(Model.ContentBlocks)
 
-// Umbraco v9+
+// ContentBlocks v2 - Umbraco v9+
 @using Perplex.ContentBlocks.Rendering;
 @inject IContentBlockRenderer Renderer
 @await Html.RenderContentBlocks(Model.ContentBlocks, Renderer)
 ```
 
-2. Using the renderer:
+3. Using the renderer:
 
 ```csharp
 // Umbraco v8
@@ -668,6 +679,10 @@ The examples assume the property alias of the Perplex.ContentBlocks property is 
 // Umbraco v9+
 @inject IContentBlockRenderer Renderer
 @await Renderer.Render(Model.ContentBlocks, Html.PartialAsync)
+
+// ContentBlocks v3+
+@inject IContentBlocksRenderer Renderer
+@await Renderer.RenderAsync(Model.Content.ContentBlocks, Component.InvokeAsync, Html.PartialAsync)
 ```
 
 ### Rendering a Content Block
@@ -689,9 +704,62 @@ The `Model.Content` property is the `IPublishedElement` of the Content Block con
 
 ## Advanced
 
+### Render Blocks using View Components
+
+Starting with ContentBlocks v3 you can use `IContentBlockDefinition<T>` where `T` is a `ViewComponent`. When rendering your block, this `ViewComponent` will be called with a `IContentBlockViewModel<TModel>` parameter. This is useful if you want to use custom logic or a custom view model to render your blocks.
+
+For example, with a ContentBlock definition like this:
+
+```csharp
+new ContentBlockDefinition<SampleBlockViewComponent> // Note the <SampleBlockViewComponent>
+{
+    Name = "Sample Block",
+    Id = new Guid("..."),
+    DataTypeKey = new Guid("..."),
+    Layouts = new []
+    {
+        new ContentBlockLayout
+        {
+            Id = new Guid("..."),
+            Name = "Default",
+            PreviewImage = "...",
+            ViewPath = "..." // Optional when using ViewComponents
+        },
+    }
+};
+```
+
+You can use a ViewComponent to render this block like this:
+
+```csharp
+public class SampleBlockViewComponent : ViewComponent
+{
+    private readonly ISomeService _someService; // Some service required for your use case
+    public SampleBlockViewComponent(ISomeService someService) => _someService = someService;
+
+    public async Task<IViewComponentResult> InvokeAsync(IContentBlockViewModel<SampleBlock> model)
+    {
+        var someValue = await _someService.GetValueAsync();
+        var viewModel = new SampleBlockViewModel(model, someValue);
+        return View("/Path/To/SampleBlock_View.cshtml", viewModel);
+    }
+
+    // Or the sync version:
+    // public IViewComponentResult Invoke(IContentBlockViewModel<SampleBlock> model)
+    // {
+    //     var someValue = _someService.GetValue();
+    //     var viewModel = new SampleBlockViewModel(model, someValue);
+    //     return View("/Path/To/SampleBlock_View.cshtml", viewModel);
+    // }
+}
+
+```
+
 ### Custom View Model
 
 Sometimes you need a more complex view model than just the `IContentBlockViewModel<TContent>`. In this case, you can register a custom view model factory that will generate your custom view model for you.
+
+> Note that starting with v3 you can use View Components to render your blocks which is the recommended approach instead of the ViewModelFactory approach described in this section.
 
 For example, if you have the ContentBlock `ExampleBlock` and instead of the default `IContentBlockViewModel<TContent>` you want some custom view model `ExampleBlockViewModel`, this is what you do:
 
