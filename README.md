@@ -4,18 +4,18 @@ Block based content editor for Umbraco.
 
 This package works on top of NestedContent but provides a more advanced user interface and adds some new features:
 
--   Disable/hide a block
-    -   Disabled blocks do not show up in the front-end, but their content is still there in Umbraco
--   Multiple layouts per block
-    -   Define more than 1 layout and easily switch between them
-    -   No need to add properties like an "Image on right side" checkbox
--   Preview window showing the front-end of the page
-    -   This gives content editors a good sense of what they are editing and how the blocks will appear together
-    -   This uses default Umbraco preview functionality and obviously works with unpublished content as well (if saved)
-    -   The preview will automatically scroll to the content block that is currently in view in Umbraco
--   Larger block picker that shows a preview / title / description for each block
-    -   This helps editors to distinguish better between available blocks
-    -   Pickers show blocks in categories to help organization when available block count is high
+- Disable/hide a block
+  - Disabled blocks do not show up in the front-end, but their content is still there in Umbraco
+- Multiple layouts per block
+  - Define more than 1 layout and easily switch between them
+  - No need to add properties like an "Image on right side" checkbox
+- Preview window showing the front-end of the page
+  - This gives content editors a good sense of what they are editing and how the blocks will appear together
+  - This uses default Umbraco preview functionality and obviously works with unpublished content as well (if saved)
+  - The preview will automatically scroll to the content block that is currently in view in Umbraco
+- Larger block picker that shows a preview / title / description for each block
+  - This helps editors to distinguish better between available blocks
+  - Pickers show blocks in categories to help organization when available block count is high
 
 ## Release Notes
 
@@ -27,10 +27,10 @@ ContentBlocks 2.0 adds support for Umbraco 9+ / .NET 5+ and is [out now on NuGet
 
 The package is compatible with the following Umbraco versions:
 
--   8
--   9
--   10
--   11
+- 8
+- 9
+- 10
+- 11
 
 It can be installed as usual via NuGet:
 
@@ -527,7 +527,7 @@ What you now can do in your solution is:
 
 2. Add this property to a document type of your choice
 
-    ![Add to document type](https://user-images.githubusercontent.com/12457148/137146090-13c0962a-4480-492b-b07f-c2610e74297f.png)
+   ![Add to document type](https://user-images.githubusercontent.com/12457148/137146090-13c0962a-4480-492b-b07f-c2610e74297f.png)
 
 3. You should now be able to pick blocks on a content page of the document type.
 
@@ -548,93 +548,93 @@ In short, the steps to configure a Content Block are:
 
 1. Create a document type
 
-    - Add any properties you need for the Content Block
-    - Tick "Is an element type" in Permissions
+   - Add any properties you need for the Content Block
+   - Tick "Is an element type" in Permissions
 
 2. Create a data type based on Nested Content
 
-    - Select the document type created in step 1
-    - Set min. items and max. items to 1
-    - Hide the label
+   - Select the document type created in step 1
+   - Set min. items and max. items to 1
+   - Hide the label
 
 3. Describe the Content Block using an implementation of the `IContentBlockDefinition` interface.
 
-    - See [Content Block Definition](#content-block-definition) for the documentation of all properties of `IContentBlockDefinition`.
+   - See [Content Block Definition](#content-block-definition) for the documentation of all properties of `IContentBlockDefinition`.
 
 4. Add the definition created in step 3 to an `IContentBlockRepository`
 
-    - Either use the built-in repository:
+   - Either use the built-in repository:
 
-        ```csharp
-        // Inject
-        IContentBlockDefinitionRepository definitions;
+     ```csharp
+     // Inject
+     IContentBlockDefinitionRepository definitions;
 
-        // Your definition
-        var definition = new ContentBlockDefinition { /* ... */ };
+     // Your definition
+     var definition = new ContentBlockDefinition { /* ... */ };
 
-        // Add to the repository
-        definitions.Add(definition);
-        ```
+     // Add to the repository
+     definitions.Add(definition);
+     ```
 
-    - Or register your own implementation in a composer and register it there:
-        ```csharp
-        composition.RegisterUnique<IContentBlockDefinitionRepository, MyDefinitionRepository>();
-        ```
-        - Make sure your composer runs after the `ContentBlockDefinitionComposer`.
+   - Or register your own implementation in a composer and register it there:
+     ```csharp
+     composition.RegisterUnique<IContentBlockDefinitionRepository, MyDefinitionRepository>();
+     ```
+     - Make sure your composer runs after the `ContentBlockDefinitionComposer`.
 
 ### Content Block Definition
 
 The definition of a Content Block consists of the following properties:
 
--   Id
-    -   Unique identifier of this definition. You have to create a Guid yourself and set it.
--   Name
-    -   Name of the Content Block.
--   Description
-    -   Description of this Content Block.
--   PreviewImage
-    -   Image that shows in the UI as a preview of this block. Relative path from the root of your site to an image.
--   DataTypeId / DataTypeKey
-    -   The Id (int) or Key (Guid) of the data type that was created for this Content Block.
-        -   Either the DataTypeId OR the DataTypeKey has to be set
--   CategoryIds
-    -   List of ids of the categories this Content Block should appear in. This references the id of a `IContentBlockCategory`. See [Content Block Categories](#content-block-categories) for more details on categories.
--   Layouts
-    -   List of all layouts of this Content Block. See [Content Block Layout](#content-block-layout) below.
--   LimitToDocumentTypes
-    -   List of document type aliases. When configured, the Content Block will only be available on pages of these document types.
--   LimitToCultures
-    -   List of cultures (e.g. "en-US"). When configured, the Content Block will only be available on pages of these cultures.
+- Id
+  - Unique identifier of this definition. You have to create a Guid yourself and set it.
+- Name
+  - Name of the Content Block.
+- Description
+  - Description of this Content Block.
+- PreviewImage
+  - Image that shows in the UI as a preview of this block. Relative path from the root of your site to an image.
+- DataTypeId / DataTypeKey
+  - The Id (int) or Key (Guid) of the data type that was created for this Content Block.
+    - Either the DataTypeId OR the DataTypeKey has to be set
+- CategoryIds
+  - List of ids of the categories this Content Block should appear in. This references the id of a `IContentBlockCategory`. See [Content Block Categories](#content-block-categories) for more details on categories.
+- Layouts
+  - List of all layouts of this Content Block. See [Content Block Layout](#content-block-layout) below.
+- LimitToDocumentTypes
+  - List of document type aliases. When configured, the Content Block will only be available on pages of these document types.
+- LimitToCultures
+  - List of cultures (e.g. "en-US"). When configured, the Content Block will only be available on pages of these cultures.
 
 ### Content Block Layout
 
 Each Content Block has at least 1 layout. This refers to the view that will be rendered. It is possible to define multiple layouts per block. The user will be able to switch layouts from Umbraco.
 A layout is described using an implementation of `IContentBlockLayout`, which has the following properties:
 
--   Id
-    -   Unique identifier of this definition. You have to create a Guid yourself and set it.
--   Name
-    -   Name of this layout.
--   Description
-    -   Description of this layout. This is displayed in the layout picker (Add Content > Pick Layout).
--   PreviewImage
-    -   Preview image to use in the layout picker UI. Should be a full path from the root of your site to the image, e.g. `"/img/exampleBlock/red.png"`
--   ViewPath
-    -   Path to the View file of this layout, e.g. `"~/Views/Partials/ExampleBlock/Red.cshtml"`
+- Id
+  - Unique identifier of this definition. You have to create a Guid yourself and set it.
+- Name
+  - Name of this layout.
+- Description
+  - Description of this layout. This is displayed in the layout picker (Add Content > Pick Layout).
+- PreviewImage
+  - Preview image to use in the layout picker UI. Should be a full path from the root of your site to the image, e.g. `"/img/exampleBlock/red.png"`
+- ViewPath
+  - Path to the View file of this layout, e.g. `"~/Views/Partials/ExampleBlock/Red.cshtml"`
 
 ### Content Block Categories
 
 Content Blocks are organized in categories and presented that way to the user. The categories are retrieved from a registered `IContentBlockCategoryRepository`. By default, this package contains two categories: "Headers" and "Content". Their ids are available as constants in `Perplex.ContentBlocks.Constants.Categories`. You can manipulate these categories by either:
 
--   Inject the `IContentBlockCategoryRepository` and call `Add()` / or `Remove()` to add / remove entries.
+- Inject the `IContentBlockCategoryRepository` and call `Add()` / or `Remove()` to add / remove entries.
 
 OR
 
--   Register a custom implementation of the `IContentBlockCategoryRepository`:
-    ```
-    composition.RegisterUnique<IContentBlockCategoryRepository, MyCategoryRepository>();
-    ```
-    -   Make sure your composer runs after the `ContentBlockCategoriesComposer`.
+- Register a custom implementation of the `IContentBlockCategoryRepository`:
+  ```
+  composition.RegisterUnique<IContentBlockCategoryRepository, MyCategoryRepository>();
+  ```
+  - Make sure your composer runs after the `ContentBlockCategoriesComposer`.
 
 ## Rendering Content Blocks
 
@@ -696,9 +696,9 @@ Sometimes you need a more complex view model than just the `IContentBlockViewMod
 For example, if you have the ContentBlock `ExampleBlock` and instead of the default `IContentBlockViewModel<TContent>` you want some custom view model `ExampleBlockViewModel`, this is what you do:
 
 1.  Create your View Model with some additional properties.
-    -   This custom view model should implement `IContentBlockViewModel`
-    -   The example below inherits from the built-in class `ContentBlockViewModel<TContent>`, this is the easiest way
-    -   Note the `IEnvironment` we add to the view model is **only an example**. Likewise, we inject some `IEnvironmentProvider` to obtain that `IEnvironment` which is also an example to show how you would inject your own classes.
+    - This custom view model should implement `IContentBlockViewModel`
+    - The example below inherits from the built-in class `ContentBlockViewModel<TContent>`, this is the easiest way
+    - Note the `IEnvironment` we add to the view model is **only an example**. Likewise, we inject some `IEnvironmentProvider` to obtain that `IEnvironment` which is also an example to show how you would inject your own classes.
 
 ```csharp
 public class ExampleBlockViewModel : ContentBlockViewModel<ExampleBlock>
@@ -718,8 +718,8 @@ public class ExampleBlockViewModel : ContentBlockViewModel<ExampleBlock>
 ```
 
 2. Create a View Model factory that is used to create this view model:
-    - This factory should implement `IContentBlockViewModelFactory<TContent>`.
-    - The easiest way is to inherit from `ContentBlockViewModelFactory<TContent>` like we do below, and override its `Create` method.
+   - This factory should implement `IContentBlockViewModelFactory<TContent>`.
+   - The easiest way is to inherit from `ContentBlockViewModelFactory<TContent>` like we do below, and override its `Create` method.
 
 ```csharp
 public class ExampleBlockViewModelFactory : ContentBlockViewModelFactory<ExampleBlock>
@@ -775,19 +775,19 @@ Presets implement the interface `IContentBlocksPreset` and should be added to an
 
 An `IContentBlocksPreset` has the following properties:
 
--   Id
-    -   Unique identifier of this preset. You have to create a Guid yourself and set it.
--   Name
-    -   Name of this preset. This property is _not displayed_ in the UI.
--   Header
-    -   `IContentBlockPreset` referencing an existing `IContentBlockDefinition` to set as Header.
--   Blocks
-    -   `IEnumerable<IContentBlockPreset>`, each referencing an existing `IContentBlockDefinition`
-        to set as a Block.
--   ApplyToCultures
-    -   Cultures to apply this preset to (e.g. `"en-US"`)
--   ApplyToDocumentTypes
-    -   Document type alias to apply this preset to (e.g. `"homepage"`)
+- Id
+  - Unique identifier of this preset. You have to create a Guid yourself and set it.
+- Name
+  - Name of this preset. This property is _not displayed_ in the UI.
+- Header
+  - `IContentBlockPreset` referencing an existing `IContentBlockDefinition` to set as Header.
+- Blocks
+  - `IEnumerable<IContentBlockPreset>`, each referencing an existing `IContentBlockDefinition`
+    to set as a Block.
+- ApplyToCultures
+  - Cultures to apply this preset to (e.g. `"en-US"`)
+- ApplyToDocumentTypes
+  - Document type alias to apply this preset to (e.g. `"homepage"`)
 
 ### Preset initial property values
 
