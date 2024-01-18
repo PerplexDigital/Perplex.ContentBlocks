@@ -2,7 +2,7 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
-## v3.0.0 - <sub><sup>TBD</sup></sub>
+## v3.0.0 - <sub><sup>2024-01-18</sup></sub>
 
 - Dropped support for v8 and v9
   - Only Umbraco v10+ is supported
