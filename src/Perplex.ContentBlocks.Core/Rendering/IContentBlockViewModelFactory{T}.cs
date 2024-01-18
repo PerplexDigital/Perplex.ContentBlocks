@@ -1,15 +1,8 @@
-﻿using System;
-#if NET5_0
-using Umbraco.Cms.Core.Models.PublishedContent;
-#elif NET472
-using Umbraco.Core.Models.PublishedContent;
-#endif
+﻿using Umbraco.Cms.Core.Models.PublishedContent;
 
+namespace Perplex.ContentBlocks.Rendering;
 
-namespace Perplex.ContentBlocks.Rendering
+public interface IContentBlockViewModelFactory<TContent> : IContentBlockViewModelFactory where TContent : IPublishedElement
 {
-    public interface IContentBlockViewModelFactory<TContent> : IContentBlockViewModelFactory where TContent : IPublishedElement
-    {
-        IContentBlockViewModel<TContent> Create(TContent content, Guid id, Guid definitionId, Guid layoutId);
-    }
+    IContentBlockViewModel<TContent>? Create(TContent content, Guid id, Guid definitionId, Guid layoutId);
 }

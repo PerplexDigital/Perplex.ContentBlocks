@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace Perplex.ContentBlocks.Definitions;
 
-namespace Perplex.ContentBlocks.Definitions
+public class ContentBlockDefinition : IContentBlockDefinition
 {
-    public class ContentBlockDefinition : IContentBlockDefinition
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string PreviewImage { get; set; }
-        public int? DataTypeId { get; set; }
-        public Guid? DataTypeKey { get; set; }
-        public IEnumerable<Guid> CategoryIds { get; set; }
-        public IEnumerable<IContentBlockLayout> Layouts { get; set; }
+    public Guid Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string PreviewImage { get; set; } = "";
+    public int? DataTypeId { get; set; }
+    public Guid? DataTypeKey { get; set; }
 
-        public virtual IEnumerable<string> LimitToDocumentTypes { get; set; }
-            = Enumerable.Empty<string>();
+    public IEnumerable<Guid> CategoryIds { get; set; }
+         = Array.Empty<Guid>();
 
-        public virtual IEnumerable<string> LimitToCultures { get; set; }
-            = Enumerable.Empty<string>();
-    }
+    public IEnumerable<IContentBlockLayout> Layouts { get; set; }
+        = Array.Empty<IContentBlockLayout>();
+
+    public virtual IEnumerable<string> LimitToDocumentTypes { get; set; }
+        = Array.Empty<string>();
+
+    public virtual IEnumerable<string> LimitToCultures { get; set; }
+        = Array.Empty<string>();
 }

@@ -1,7 +1,9 @@
-﻿namespace Perplex.ContentBlocks.Preview
+﻿namespace Perplex.ContentBlocks.Preview;
+
+public interface IPreviewModeProvider
 {
-    public interface IPreviewModeProvider
-    {
-        bool IsPreviewMode { get; }
-    }
+    /// <summary>
+    /// Indicates if ContentBlocks are being rendered in the back office preview window.
+    /// </summary>
+    bool IsPreviewMode { get; }
 }

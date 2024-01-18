@@ -1,7 +1,6 @@
-﻿namespace Perplex.ContentBlocks.Providers
+﻿namespace Perplex.ContentBlocks.Providers;
+
+public interface IDocumentTypeAliasProvider
 {
-    public interface IDocumentTypeAliasProvider
-    {
-        string GetDocumentTypeAlias(int pageId);
-    }
+    string? GetDocumentTypeAlias(int pageId);
 }

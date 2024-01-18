@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
-namespace Perplex.ContentBlocks.PropertyEditor.ModelValue
+public class ContentBlocksInterValue
 {
-    public class ContentBlocksInterValue
-    {
-        public ContentBlockInterValue Header { get; set; }
-        public List<ContentBlockInterValue> Blocks { get; set; }
-    }
+    public ContentBlockInterValue? Header { get; set; }
+
+    public IEnumerable<ContentBlockInterValue> Blocks { get; set; }
+        = Array.Empty<ContentBlockInterValue>();
 }

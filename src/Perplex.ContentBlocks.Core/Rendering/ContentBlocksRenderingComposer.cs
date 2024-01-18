@@ -1,43 +1,25 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-#if NET5_0
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
-#elif NET472
-using Umbraco.Core;
-using Umbraco.Core.Composing;
-#endif
 
-namespace Perplex.ContentBlocks.Rendering
+namespace Perplex.ContentBlocks.Rendering;
+
+public class ContentBlocksRenderingComposer : IComposer
 {
-#if NET5_0
-    public class ContentBlocksRenderingComposer : IComposer
+    public void Compose(IUmbracoBuilder builder)
     {
-        public void Compose(IUmbracoBuilder builder)
-        {
-            // Renderer
-            builder.Services.AddScoped<IContentBlockRenderer, ContentBlockRenderer>();
+        // Renderer
+#pragma warning disable CS0618 // For backwards compatibility
+        builder.Services.AddScoped<IContentBlockRenderer, ContentBlockRenderer>();
+#pragma warning restore CS0618 // For backwards compatibility
 
-            // General View Model factory
-            builder.Services.AddSingleton(
-                typeof(IContentBlockViewModelFactory<>),
-                typeof(ContentBlockViewModelFactory<>));
-        }
-    }
-#elif NET472
-    [RuntimeLevel(MinLevel = RuntimeLevel.Run)]
-    public class ContentBlocksRenderingComposer : IUserComposer
-    {
-        public void Compose(Composition composition)
-        {
-            // Renderer
-            composition.Register<IContentBlockRenderer, ContentBlockRenderer>(Lifetime.Scope);
+        // New renderer that supports view components
+        builder.Services.AddSingleton<IContentBlocksRenderer, ContentBlocksRenderer>();
 
-            // General View Model factory
-            composition.Register(
-                typeof(IContentBlockViewModelFactory<>),
-                typeof(ContentBlockViewModelFactory<>), Lifetime.Singleton);
-        }
+        // General View Model factory
+        builder.Services.AddSingleton(
+            typeof(IContentBlockViewModelFactory<>),
+            typeof(ContentBlockViewModelFactory<>));
     }
-#endif
 }

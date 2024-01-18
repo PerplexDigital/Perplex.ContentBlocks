@@ -2,6 +2,36 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v3.0.0 - <sub><sup>2024-01-18</sup></sub>
+
+- Dropped support for v8 and v9
+  - Only Umbraco v10+ is supported
+- Added view component support
+  - You can now define `IContentBlockDefinition<T>` where `T` should be a `ViewComponent` type. The specified view component will then be called to render the content block rather than the defined `ViewPath` of the active `IContentBlockLayout`. The `ViewPath` is ignored when specifying a `ViewComponent` definition, since the `ViewComponent` is responsible to render the actual view. You can still configure the `ViewPath` on the layouts and render it inside your view component.
+  - This is useful if you want to use a custom view model together with DI when rendering a content block.
+  - The view component can use any of the standard view component `Invoke()` method variations, with as first parameter the `IContentBlockViewModel<T>` of your content block, i.e.:
+    - `IViewComponentResult Invoke(IContentBlockViewModel<...> model)` or
+    - `Task<IViewComponentResult> InvokeAsync(IContentBlockViewModel<...> model)` or
+    - `IHtmlContent Invoke(IContentBlockViewModel<...> model)` or
+    - `Task<IHtmlContent> InvokeAsync(IContentBlockViewModel<...> model)`
+  - You can still use the original `IContentBlockDefinition` without view component like in `v1` and `v2`, this is completely unchanged and backwards compatible.
+- Added tag helper `<perplex-content-blocks>` to render ContentBlocks.
+  - To render all blocks, use:
+    - `<perplex-content-blocks content="..." />`
+    - The value of the `content` attribute should be an `IContentBlocks` instance, usually this is `Model.Content.ContentBlocks` when the property alias is `"contentBlocks"` and using ModelsBuilder.
+  - To render an individual block such as the header only you use `block` instead of `content`, e.g.:
+    - `<perplex-content-blocks block="Model.Content.ContentBlocks.Header" />`
+  - To render multiple blocks, use the `blocks` attribute:
+    - `<perplex-content-blocks blocks="Model.Content.ContentBlocks.Blocks" />`
+  - This replaces `@Html.RenderContentBlocks()` / `@Html.RenderContentBlock()` which have been deprecated.
+    - Note that `@Html.RenderContentBlocks` does not support view component definitions either
+  - This tag helper uses the new `IContentBlocksRenderer` to render the blocks, which replaces the now deprecated `IContentBlockRenderer` (difference is `Block` vs `Blocks`). The new renderer supports view components whereas the old one does not.
+- All APIs now properly annotate types of parameters and return values for nullability
+- `App_Plugins/Perplex.ContentBlocks` is now part of `Perplex.ContentBlocks.StaticAssets`, a Razor Class Library.
+  - This means during local development there will be no physical folder in `App_Plugins` anymore, but they will appear in `wwwroot/App_Plugins` when you publish.
+  - If you have an existing `App_Plugins/Perplex.ContentBlocks` in your solution from an earlier version you should remove that.
+  - The main package depends on StaticAssets, so installation of the package is unchanged: `dotnet add package Perplex.ContentBlocks`.
+
 ## v2.1.9 - <sub><sup>2023-03-16</sup></sub>
 
 - Fixed non-unique ContentBlock ids when a page is created based on a Blueprint that contains ContentBlocks ([#77](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/77)).
