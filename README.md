@@ -653,7 +653,7 @@ Ensure the Tag Helper is imported in your views by adding it to `_ViewImports.cs
 <perplex-content-blocks blocks="Model.ContentBlocks.Blocks" />
 ```
 
-2. Using the extension method (removed in v3):
+2. Using the extension method (deprecated in v3 as it does not support rendering view components):
 
 ```csharp
 // ContentBlocks v2 - Umbraco v8
