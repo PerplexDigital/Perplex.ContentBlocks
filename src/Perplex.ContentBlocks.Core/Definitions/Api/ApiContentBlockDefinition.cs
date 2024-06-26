@@ -1,6 +1,5 @@
-﻿namespace Perplex.ContentBlocks.Definitions;
-
-public class ContentBlockDefinition : IContentBlockDefinition
+﻿namespace Perplex.ContentBlocks.Definitions.Api;
+public class ApiContentBlockDefinition
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = "";
@@ -8,10 +7,7 @@ public class ContentBlockDefinition : IContentBlockDefinition
     public string PreviewImage { get; set; } = "";
     public Guid ElementTypeKey { get; set; }
     public IEnumerable<Guid> CategoryIds { get; set; } = [];
-
-    public IEnumerable<IContentBlockLayout> Layouts { get; set; } = [];
-
+    public IEnumerable<ApiContentBlockLayout> Layouts { get; set; } = [];
     public virtual IEnumerable<string> LimitToDocumentTypes { get; set; } = [];
-
     public virtual IEnumerable<string> LimitToCultures { get; set; } = [];
 }

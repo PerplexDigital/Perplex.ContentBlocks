@@ -1,79 +1,135 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
-using Perplex.ContentBlocks.Utils;
-
+using System.Text.Json.Nodes;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
-using Umbraco.Cms.Core.Strings;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksValidator : ComplexEditorValidator
+public class ContentBlocksValidator(
+    IPropertyValidationService validationService, ContentBlocksBlockContentConverter converter,
+    IContentTypeService contentTypeService, ContentBlocksModelValueDeserializer deserializer)
+    : ComplexEditorValidator(validationService)
 {
-    private readonly ContentBlockUtils _utils;
-    private readonly ContentBlocksModelValueDeserializer _deserializer;
-
-    private readonly IShortStringHelper _shortStringHelper;
-
-    public ContentBlocksValidator(
-        ContentBlocksModelValueDeserializer deserializer,
-        ContentBlockUtils utils,
-        IPropertyValidationService validationService,
-        IShortStringHelper shortStringHelper) : base(validationService)
-    {
-        _deserializer = deserializer;
-        _utils = utils;
-        _shortStringHelper = shortStringHelper;
-    }
-
     protected override IEnumerable<ElementTypeValidationModel> GetElementTypeValidation(object? value)
     {
-        var modelValue = _deserializer.Deserialize(value?.ToString());
-        if (modelValue == null)
+        if (deserializer.Deserialize(value?.ToString()) is not ContentBlocksModelValue modelValue)
         {
             yield break;
         }
 
-        if (modelValue.Header != null && GetValidationModel(modelValue.Header) is ElementTypeValidationModel headerValidationModel)
+        var contentTypeKeys = GetContentTypeKeys(modelValue);
+
+        var allElementTypes = contentTypeService.GetAll(contentTypeKeys).ToDictionary(b => b.Key);
+
+        foreach (var headerValidation in GetValidationModels(modelValue.Header, allElementTypes, converter))
         {
-            yield return headerValidationModel;
+            yield return headerValidation;
         }
 
-        if (modelValue.Blocks?.Any() == true)
+        foreach (var blockValidation in modelValue.Blocks?.SelectMany(block => GetValidationModels(block, allElementTypes, converter)) ?? [])
         {
-            foreach (var block in modelValue.Blocks)
+            yield return blockValidation;
+        }
+
+        static IEnumerable<ElementTypeValidationModel> GetValidationModels(ContentBlockModelValue? block, Dictionary<Guid, IContentType> allElementTypes, ContentBlocksBlockContentConverter converter)
+        {
+            if (block is null)
             {
-                if (GetValidationModel(block) is ElementTypeValidationModel blockValidationModel)
+                yield break;
+            }
+
+            if (Validate(block.Content, block.Id.ToString()) is ElementTypeValidationModel validationModel)
+            {
+                yield return validationModel;
+            }
+
+            foreach (var variant in block.Variants ?? [])
+            {
+                if (Validate(block.Content, block.Id.ToString()) is ElementTypeValidationModel variantValidationModel)
                 {
-                    yield return blockValidationModel;
+                    yield return variantValidationModel;
                 }
+            }
+
+            ElementTypeValidationModel? Validate(JsonNode? content, string jsonPathPrefix)
+            {
+                if (content is null ||
+                    converter.ConvertToBlockItemData(content) is not BlockItemData data ||
+                    GetValidationModel(data, jsonPathPrefix, allElementTypes) is not ElementTypeValidationModel validationModel)
+                {
+                    return null;
+                }
+
+                return validationModel;
             }
         }
 
-        ElementTypeValidationModel? GetValidationModel(ContentBlockModelValue blockValue)
+        static ElementTypeValidationModel? GetValidationModel(BlockItemData block, string jsonPathPrefix, Dictionary<Guid, IContentType> allElementTypes)
         {
-            IDataType? dataType = _utils.GetDataType(blockValue.DefinitionId);
-
-            if (dataType is null)
+            if (!allElementTypes.TryGetValue(block.ContentTypeKey, out IContentType? elementType))
             {
                 return null;
             }
 
-            var validationModel = new ElementTypeValidationModel("", blockValue.Id);
+            EnsureProperties(block, elementType);
 
-            var propType = new PropertyType(_shortStringHelper, dataType) { Alias = "content" };
-            validationModel.AddPropertyTypeValidation(new PropertyTypeValidationModel(propType, blockValue.Content?.ToString()));
-
-            if (blockValue.Variants?.Any() == true)
+            var elementValidation = new ElementTypeValidationModel(block.ContentTypeAlias, block.Key);
+            foreach (KeyValuePair<string, BlockItemData.BlockPropertyValue> prop in block.PropertyValues)
             {
-                foreach (var variant in blockValue.Variants)
-                {
-                    var variantPropType = new PropertyType(_shortStringHelper, dataType) { Alias = "content_variant_" + variant.Id.ToString("N") };
-                    validationModel.AddPropertyTypeValidation(new PropertyTypeValidationModel(variantPropType, variant.Content?.ToString()));
-                }
+                var propTypeValidation = new PropertyTypeValidationModel(prop.Value.PropertyType, prop.Value.Value, $"{jsonPathPrefix}.{prop.Value.PropertyType.Alias}");
+                elementValidation.AddPropertyTypeValidation(propTypeValidation);
             }
 
-            return validationModel;
+            return elementValidation;
         }
+
+        static void EnsureProperties(BlockItemData block, IContentType elementType)
+        {
+            block.ContentTypeAlias = elementType.Alias;
+
+            foreach (IPropertyType propType in elementType.CompositionPropertyTypes)
+            {
+                if (block.PropertyValues.ContainsKey(propType.Alias))
+                {
+                    continue;
+                }
+
+                if (block.RawPropertyValues.TryGetValue(propType.Alias, out var rawValue))
+                {
+                    // Raw value exists, use it
+                    block.PropertyValues[propType.Alias] = new BlockItemData.BlockPropertyValue(rawValue, propType);
+                    continue;
+                }
+
+                // No value exists, ensure we add a NULL value for both.
+                block.PropertyValues[propType.Alias] = new BlockItemData.BlockPropertyValue(null, propType);
+                block.RawPropertyValues[propType.Alias] = null;
+            }
+        }
+    }
+
+    private static Guid[] GetContentTypeKeys(ContentBlocksModelValue model)
+    {
+        var keys = new List<Guid>();
+
+        if (ParseGuid(model.Header?.Content) is Guid headerKey)
+        {
+            keys.Add(headerKey);
+        }
+
+        foreach (var block in model.Blocks ?? [])
+        {
+            if (ParseGuid(block.Content) is Guid blockKey &&
+                !keys.Contains(blockKey))
+            {
+                keys.Add(blockKey);
+            }
+        }
+
+        return [.. keys];
+
+        static Guid? ParseGuid(JsonNode? content) => content?["contentTypeKey"]?.GetValue<Guid?>();
     }
 }

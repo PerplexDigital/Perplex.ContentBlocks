@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Perplex.ContentBlocks.Api;
 using Perplex.ContentBlocks.Presets;
-using Umbraco.Cms.Web.BackOffice.Controllers;
 
 namespace Perplex.ContentBlocks.Definitions;
 
-public class ContentBlocksPresetApiController : UmbracoAuthorizedApiController
+public class ContentBlocksPresetApiController : ContentBlocksApiControllerBase
 {
     private readonly IContentBlocksPresetRepository _presetRepository;
 

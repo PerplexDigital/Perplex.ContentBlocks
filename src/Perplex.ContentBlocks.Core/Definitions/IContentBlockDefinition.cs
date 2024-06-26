@@ -25,17 +25,9 @@ public interface IContentBlockDefinition
     string PreviewImage { get; }
 
     /// <summary>
-    /// Data type id of the Nested Content data type used for this Content Block definition.
-    /// Provide either DataTypeId OR DataTypeKey, not both. Leave one of them NULL.
+    /// Key of the Element Type to use for this Content Block definition.
     /// </summary>
-    [Obsolete("Use " + nameof(DataTypeKey) + " instead. This will be removed in a next major release.")]
-    int? DataTypeId { get; }
-
-    /// <summary>
-    /// Data type key of the Nested Content data type used for this Content Block definition.
-    /// Provide either DataTypeId OR DataTypeKey, not both. Leave one of them NULL.
-    /// </summary>
-    Guid? DataTypeKey { get; }
+    Guid ElementTypeKey { get; }
 
     /// <summary>
     /// Category ids this definition belongs to.

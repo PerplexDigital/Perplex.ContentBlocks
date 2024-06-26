@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
 public class ContentBlocksModelValue
 {
-    [JsonProperty("version")]
+    [JsonPropertyName("version")]
     public int Version { get; set; }
 
-    [JsonProperty("header")]
+    [JsonPropertyName("header")]
     public ContentBlockModelValue? Header { get; set; }
 
-    [JsonProperty("blocks")]
+    [JsonPropertyName("blocks")]
     public List<ContentBlockModelValue>? Blocks { get; set; }
 }

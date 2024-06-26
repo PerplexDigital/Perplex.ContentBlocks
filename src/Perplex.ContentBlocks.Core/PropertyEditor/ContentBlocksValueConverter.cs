@@ -4,47 +4,22 @@ using Perplex.ContentBlocks.Rendering;
 using Perplex.ContentBlocks.Variants;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
-using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksValueConverter : PropertyValueConverterBase
+public class ContentBlocksValueConverter(ContentBlocksBlockContentConverter converter, IServiceProvider serviceProvider,
+    ContentBlocksModelValueDeserializer deserializer, IContentBlockVariantSelector variantSelector)
+    : PropertyValueConverterBase
 {
-    private readonly NestedContentSingleValueConverter _nestedContentSingleValueConverter;
-    private readonly ContentBlocksModelValueDeserializer _deserializer;
-    private readonly IContentBlockVariantSelector _variantSelector;
-    private readonly IServiceProvider _serviceProvider;
-
-    public ContentBlocksValueConverter(
-        NestedContentSingleValueConverter nestedContentSingleValueConverter,
-        ContentBlocksModelValueDeserializer deserializer,
-        IContentBlockVariantSelector variantSelector,
-        IServiceProvider serviceProvider
-    )
-    {
-        _nestedContentSingleValueConverter = nestedContentSingleValueConverter;
-        _deserializer = deserializer;
-        _variantSelector = variantSelector;
-        _serviceProvider = serviceProvider;
-    }
-
     public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
-    {
-        // We might be able to set this to .Elements. This ensures the cache will be refreshed
-        // even after publishing any other content, which ensures no issues arise when the block
-        // contains editors that reference other content (e.g. a ContentPicker).
-        // However, this requires proper testing first with a wide range of editors.
-        // Until that time, .Snapshot is the safest option: per request caching.
-        return PropertyCacheLevel.Snapshot;
-    }
+        => PropertyCacheLevel.Snapshot;
 
     public override bool IsConverter(IPublishedPropertyType propertyType)
         => propertyType.EditorAlias == Constants.PropertyEditor.Alias;
 
     public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
     {
-        ContentBlocksModelValue? modelValue = _deserializer.Deserialize(inter?.ToString());
-        if (modelValue is null)
+        if (deserializer.Deserialize(inter?.ToString()) is not ContentBlocksModelValue modelValue)
         {
             return Rendering.ContentBlocks.Empty;
         }
@@ -52,7 +27,7 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
         var interValue = new ContentBlocksInterValue
         {
             Header = SelectBlock(modelValue.Header),
-            Blocks = modelValue.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? Array.Empty<ContentBlockInterValue>(),
+            Blocks = modelValue.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? [],
         };
 
         var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>() ?? ContentBlocksConfiguration.DefaultConfiguration;
@@ -87,7 +62,7 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
                 Content = original.Content,
             };
 
-            if (_variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantModelValue variant)
+            if (variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantModelValue variant)
             {
                 // Use variant instead, note we always use the definition + layout specified by the block
                 block.Id = variant.Id;
@@ -99,29 +74,21 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
 
         IContentBlockViewModel? CreateViewModel(ContentBlockInterValue? block)
         {
-            if (block is null)
-            {
-                return null;
-            }
-
-            if (ParseElement(block.Content?.ToString()) is not IPublishedElement content)
+            if (block is null || converter.ConvertToElement(block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
             {
                 return null;
             }
 
             var contentType = content.GetType();
-            var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType(new[] { contentType });
+            var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType([contentType]);
 
-            if (_serviceProvider.GetService(genericViewModelFactoryType) is not IContentBlockViewModelFactory viewModelFactory)
+            if (serviceProvider.GetService(genericViewModelFactoryType) is not IContentBlockViewModelFactory viewModelFactory)
             {
                 return null;
             }
 
             return viewModelFactory.Create(content, block.Id, block.DefinitionId, block.LayoutId);
         }
-
-        IPublishedElement? ParseElement(string? blockContent)
-            => _nestedContentSingleValueConverter.ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, blockContent, preview) as IPublishedElement;
     }
 
     public override bool? IsValue(object? value, PropertyValueLevel level)

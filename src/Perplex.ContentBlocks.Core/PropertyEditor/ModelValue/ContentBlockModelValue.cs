@@ -1,35 +1,28 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
 public class ContentBlockModelValue
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public Guid Id { get; set; }
 
-    [JsonProperty("definitionId")]
+    [JsonPropertyName("definitionId")]
     public Guid DefinitionId { get; set; }
 
-    [JsonProperty("layoutId")]
+    [JsonPropertyName("layoutId")]
     public Guid LayoutId { get; set; }
 
-    /// <summary>
-    /// Indien dit blok uit een preset komt zal dit een waarde hebben
-    /// en wijzen naar de betreffende IContentBlockPreset
-    /// </summary>
-    [JsonProperty("presetId")]
+    [JsonPropertyName("presetId")]
     public Guid? PresetId { get; set; }
 
-    [JsonProperty("isDisabled")]
+    [JsonPropertyName("isDisabled")]
     public bool IsDisabled { get; set; }
 
-    /// <summary>
-    /// JSON NestedContent
-    /// </summary>
-    [JsonProperty("content")]
-    public JArray? Content { get; set; }
+    [JsonPropertyName("content")]
+    public JsonNode? Content { get; set; }
 
-    [JsonProperty("variants")]
+    [JsonPropertyName("variants")]
     public List<ContentBlockVariantModelValue>? Variants { get; set; }
 }

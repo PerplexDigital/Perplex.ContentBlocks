@@ -1,19 +1,16 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
 public class ContentBlockVariantModelValue
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public Guid Id { get; set; }
 
-    [JsonProperty("alias")]
+    [JsonPropertyName("alias")]
     public string Alias { get; set; } = "";
 
-    /// <summary>
-    /// JSON NestedContent
-    /// </summary>
-    [JsonProperty("content")]
-    public JArray? Content { get; set; }
+    [JsonPropertyName("content")]
+    public JsonNode? Content { get; set; }
 }

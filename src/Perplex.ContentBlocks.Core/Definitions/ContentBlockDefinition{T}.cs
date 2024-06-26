@@ -8,18 +8,13 @@ public class ContentBlockDefinition<T> : IContentBlockDefinition<T> where T : Vi
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
     public string PreviewImage { get; set; } = "";
-    public int? DataTypeId { get; set; }
-    public Guid? DataTypeKey { get; set; }
+    public Guid ElementTypeKey { get; set; }
 
-    public IEnumerable<Guid> CategoryIds { get; set; }
-         = Array.Empty<Guid>();
+    public IEnumerable<Guid> CategoryIds { get; set; } = [];
 
-    public IEnumerable<IContentBlockLayout> Layouts { get; set; }
-        = Array.Empty<IContentBlockLayout>();
+    public IEnumerable<IContentBlockLayout> Layouts { get; set; } = [];
 
-    public virtual IEnumerable<string> LimitToDocumentTypes { get; set; }
-        = Array.Empty<string>();
+    public virtual IEnumerable<string> LimitToDocumentTypes { get; set; } = [];
 
-    public virtual IEnumerable<string> LimitToCultures { get; set; }
-        = Array.Empty<string>();
+    public virtual IEnumerable<string> LimitToCultures { get; set; } = [];
 }

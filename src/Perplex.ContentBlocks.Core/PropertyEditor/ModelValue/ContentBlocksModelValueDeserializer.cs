@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Umbraco.Cms.Core.Serialization;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
-public class ContentBlocksModelValueDeserializer
+public class ContentBlocksModelValueDeserializer(IJsonSerializer jsonSerializer)
 {
     /// <summary>
     /// Deserializes the given JSON to an instance of ContentBlocksModelValue
@@ -18,7 +18,7 @@ public class ContentBlocksModelValueDeserializer
 
         try
         {
-            var modelValue = JsonConvert.DeserializeObject<ContentBlocksModelValue>(json);
+            var modelValue = jsonSerializer.Deserialize<ContentBlocksModelValue>(json);
             if (modelValue is null) return null;
             return MaybeTransformData(modelValue);
         }
@@ -35,17 +35,14 @@ public class ContentBlocksModelValueDeserializer
             // We added a Variants property in v3, for any older version we will ensure this property becomes an empty Array.
             if (modelValue.Header != null && modelValue.Header.Variants == null)
             {
-                modelValue.Header.Variants = new List<ContentBlockVariantModelValue>();
+                modelValue.Header.Variants = [];
             }
 
             if (modelValue.Blocks != null)
             {
                 foreach (var block in modelValue.Blocks)
                 {
-                    if (block.Variants == null)
-                    {
-                        block.Variants = new List<ContentBlockVariantModelValue>();
-                    }
+                    block.Variants ??= [];
                 }
             }
         }

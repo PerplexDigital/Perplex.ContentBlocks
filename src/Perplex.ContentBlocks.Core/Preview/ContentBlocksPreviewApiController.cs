@@ -1,14 +1,14 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using Perplex.ContentBlocks.Api;
 using Perplex.ContentBlocks.Utils.Cookies;
 using System.Net.Mime;
 using System.Text;
-using Umbraco.Cms.Web.BackOffice.Controllers;
 using static Perplex.ContentBlocks.Constants.Preview;
 
 namespace Perplex.ContentBlocks.Preview;
 
-public class ContentBlocksPreviewApiController : UmbracoAuthorizedApiController
+public class ContentBlocksPreviewApiController : ContentBlocksApiControllerBase
 {
     private static readonly HttpClient _httpClient;
     private readonly IPreviewScrollScriptProvider _scrollScriptProvider;
@@ -95,7 +95,7 @@ public class ContentBlocksPreviewApiController : UmbracoAuthorizedApiController
             return originalHtml;
         }
 
-        HtmlDocument doc = new HtmlDocument();
+        HtmlDocument doc = new();
         doc.LoadHtml(originalHtml);
 
         if (doc.DocumentNode.SelectSingleNode("//*[@id='umbracoPreviewBadge']") is HtmlNode previewLabel)
