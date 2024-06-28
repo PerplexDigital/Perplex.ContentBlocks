@@ -11,7 +11,7 @@ public class ContentBlockDefinition : IContentBlockDefinition
 
     public IEnumerable<IContentBlockLayout> Layouts { get; set; } = [];
 
-    public virtual IEnumerable<string> LimitToDocumentTypes { get; set; } = [];
+    public IEnumerable<string> LimitToDocumentTypes { get; set; } = [];
 
-    public virtual IEnumerable<string> LimitToCultures { get; set; } = [];
+    public IEnumerable<string> LimitToCultures { get; set; } = [];
 }
