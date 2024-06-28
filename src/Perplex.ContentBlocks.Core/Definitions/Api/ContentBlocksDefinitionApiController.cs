@@ -1,29 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Perplex.ContentBlocks.Api;
-using Perplex.ContentBlocks.Categories;
 
 namespace Perplex.ContentBlocks.Definitions.Api;
 
-public class ContentBlocksDefinitionApiController(IContentBlockDefinitionRepository definitionRepository, IContentBlockCategoryRepository categoryRepository)
+public class ContentBlocksDefinitionApiController(IContentBlockDefinitionRepository definitionRepository)
     : ContentBlocksApiControllerBase
 {
     [HttpGet("definitions/all")]
     public ApiContentBlockDefinition[] GetAllDefinitions()
         => definitionRepository.GetAll().Select(Map).ToArray();
 
-    [HttpGet("categories/all")]
-    public IActionResult GetAllCategories()
-    {
-        var categories = categoryRepository.GetAll(true);
-        return Ok(categories);
-    }
-
     [HttpGet("definitions/forpage")]
-    public IActionResult GetDefinitionsForPage(string documentType, string culture)
-    {
-        var definitions = definitionRepository.GetAllForPage(documentType, culture);
-        return Ok(definitions);
-    }
+    public ApiContentBlockDefinition[] GetDefinitionsForPage(string documentType, string? culture)
+        => definitionRepository.GetAllForPage(documentType, culture).Select(Map).ToArray();
 
     private static ApiContentBlockDefinition Map(IContentBlockDefinition definition)
     {
