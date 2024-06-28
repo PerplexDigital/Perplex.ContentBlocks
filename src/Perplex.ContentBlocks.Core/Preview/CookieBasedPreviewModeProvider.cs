@@ -1,17 +1,9 @@
-﻿using Perplex.ContentBlocks.Utils.Cookies;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Perplex.ContentBlocks.Preview;
 
-public class CookieBasedPreviewModeProvider : IPreviewModeProvider
+public class CookieBasedPreviewModeProvider(IHttpContextAccessor httpCtxAcc) : IPreviewModeProvider
 {
-    private readonly IHttpCookiesAccessor _cookiesAccessor;
-
-    public CookieBasedPreviewModeProvider(IHttpCookiesAccessor cookiesAccessor)
-    {
-        _cookiesAccessor = cookiesAccessor;
-    }
-
-    public bool IsPreviewMode =>
-        _cookiesAccessor.Cookies.TryGetValue(Constants.Preview.UmbracoPreviewCookieName, out string? value) &&
-        value == Constants.Preview.UmbracoPreviewCookieValue;
+    public bool IsPreviewMode
+        => httpCtxAcc.HttpContext?.Request?.Cookies?.ContainsKey(Umbraco.Cms.Core.Constants.Web.PreviewCookieName) == true;
 }

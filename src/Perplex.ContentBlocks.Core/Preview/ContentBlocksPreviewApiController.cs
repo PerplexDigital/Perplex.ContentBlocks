@@ -1,18 +1,19 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using Perplex.ContentBlocks.Api;
-using Perplex.ContentBlocks.Utils.Cookies;
 using System.Net.Mime;
 using System.Text;
-using static Perplex.ContentBlocks.Constants.Preview;
+using Umbraco.Cms.Core.Models.Membership;
+using Umbraco.Cms.Core.Preview;
+using Umbraco.Cms.Core.Security;
 
 namespace Perplex.ContentBlocks.Preview;
 
-public class ContentBlocksPreviewApiController : ContentBlocksApiControllerBase
+public class ContentBlocksPreviewApiController(
+    IPreviewScrollScriptProvider scrollScriptProvider, IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+    IPreviewTokenGenerator previewTokenGenerator) : ContentBlocksApiControllerBase
 {
     private static readonly HttpClient _httpClient;
-    private readonly IPreviewScrollScriptProvider _scrollScriptProvider;
-    private readonly IHttpCookiesAccessor _httpCookiesAccessor;
 
     static ContentBlocksPreviewApiController()
     {
@@ -26,26 +27,23 @@ public class ContentBlocksPreviewApiController : ContentBlocksApiControllerBase
         _httpClient = new HttpClient(handler);
     }
 
-    public ContentBlocksPreviewApiController(IPreviewScrollScriptProvider scrollScriptProvider, IHttpCookiesAccessor httpCookiesAccessor)
-    {
-        _scrollScriptProvider = scrollScriptProvider;
-        _httpCookiesAccessor = httpCookiesAccessor;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetPreviewForIframe(int? pageId, string culture)
+    [HttpGet("preview")]
+    public async Task<IActionResult> GetPreviewForIframe(Guid? pageId, string? culture)
     {
         string html = string.Empty;
 
-        if (pageId != null)
+        if (pageId != null &&
+            backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser is IUser user &&
+            await previewTokenGenerator.GenerateTokenAsync(user.Key) is var attempt &&
+            attempt.Result is string previewToken)
         {
-            html = await GetPreviewHtml(pageId.Value, culture);
+            html = await GetPreviewHtml(pageId.Value, culture, previewToken);
         }
 
         return Content(html, MediaTypeNames.Text.Html, Encoding.UTF8);
     }
 
-    private async Task<string> GetPreviewHtml(int pageId, string culture)
+    private async Task<string> GetPreviewHtml(Guid pageId, string? culture, string previewToken)
     {
         string host = Request.Scheme + "://" + Request.Host;
         string path = GetPreviewPath(pageId, culture);
@@ -57,14 +55,10 @@ public class ContentBlocksPreviewApiController : ContentBlocksApiControllerBase
 
         var message = new HttpRequestMessage(HttpMethod.Get, previewUri);
 
-        IList<string> cookies = new List<string>();
-        if (_httpCookiesAccessor.Cookies.TryGetValue(UmbracoCookieName, out string? umbracoCookieValue))
-        {
-            cookies.Add($"{UmbracoCookieName}={umbracoCookieValue}");
-        }
-
-        // Preview cookie to enable preview mode
-        cookies.Add($"{UmbracoPreviewCookieName}={UmbracoPreviewCookieValue}");
+        string[] cookies = [
+            // Preview cookie to enable preview mode
+            $"{Umbraco.Cms.Core.Constants.Web.PreviewCookieName}={previewToken}"
+        ];
 
         string cookieHeader = string.Join("; ", cookies);
         message.Headers.Add("Cookie", cookieHeader);
@@ -98,19 +92,12 @@ public class ContentBlocksPreviewApiController : ContentBlocksApiControllerBase
         HtmlDocument doc = new();
         doc.LoadHtml(originalHtml);
 
-        if (doc.DocumentNode.SelectSingleNode("//*[@id='umbracoPreviewBadge']") is HtmlNode previewLabel)
-        {
-            // Remove Umbraco Preview Badge
-            previewLabel.Remove();
-        }
-
         if (doc.DocumentNode.SelectSingleNode("//body") is HtmlNode body)
         {
             AppendScrollScript(body);
         }
 
-        // .OuterHtml does not contain a DOCTYPE declaration so we add this manually
-        return "<!DOCTYPE html>" + doc.DocumentNode.OuterHtml;
+        return doc.DocumentNode.OuterHtml;
     }
 
     private void AppendScrollScript(HtmlNode parent)
@@ -123,7 +110,7 @@ function receiveMessage(event) {
     var element = document.getElementById(event.data.blockId);
 
     if (element != null) {
-        " + _scrollScriptProvider.ScrollScript + @"
+        " + scrollScriptProvider.ScrollScript + @"
     }
 }
 </script>";
@@ -132,14 +119,14 @@ function receiveMessage(event) {
         parent.AppendChild(scriptNode);
     }
 
-    private static string GetPreviewPath(int pageId, string culture)
+    private static string GetPreviewPath(Guid pageId, string? culture)
     {
-        string path = UmbracoPreviewPath + "?id=" + pageId;
+        string path = $"{pageId}";
         if (!string.IsNullOrEmpty(culture))
         {
             // If a content type is not set to "allow varying by culture"
             // the culture will be null.
-            path += "&culture=" + culture;
+            path += "?culture=" + culture;
         }
 
         return path;
