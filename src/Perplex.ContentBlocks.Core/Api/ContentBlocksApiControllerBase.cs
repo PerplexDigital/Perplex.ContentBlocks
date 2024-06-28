@@ -5,15 +5,14 @@ using Umbraco.Cms.Api.Common.Filters;
 using Umbraco.Cms.Web.Common.Authorization;
 using Umbraco.Cms.Web.Common.Routing;
 
-namespace Perplex.ContentBlocks.Api
+namespace Perplex.ContentBlocks.Api;
+
+[ApiController]
+[Authorize(Policy = AuthorizationPolicies.BackOfficeAccess)]
+[BackOfficeRoute(Constants.Api.BaseRoute)]
+[MapToApi(Constants.Api.ApiName)]
+[JsonOptionsName(Umbraco.Cms.Core.Constants.JsonOptionsNames.BackOffice)]
+[Produces("application/json")]
+public abstract class ContentBlocksApiControllerBase : ControllerBase
 {
-    [ApiController]
-    [Authorize(Policy = AuthorizationPolicies.BackOfficeAccess)]
-    [BackOfficeRoute("perplexcontentblocks/api")]
-    [MapToApi(Constants.Api.ApiName)]
-    [JsonOptionsName(Umbraco.Cms.Core.Constants.JsonOptionsNames.BackOffice)]
-    [Produces("application/json")]
-    public abstract class ContentBlocksApiControllerBase : ControllerBase
-    {
-    }
 }
