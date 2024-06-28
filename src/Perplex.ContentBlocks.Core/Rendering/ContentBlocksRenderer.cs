@@ -4,14 +4,8 @@ using Perplex.ContentBlocks.Definitions;
 
 namespace Perplex.ContentBlocks.Rendering;
 
-public class ContentBlocksRenderer : IContentBlocksRenderer
+public class ContentBlocksRenderer(IContentBlockDefinitionRepository definitionRepository) : IContentBlocksRenderer
 {
-    private readonly IContentBlockDefinitionRepository _definitionRepository;
-
-    public ContentBlocksRenderer(IContentBlockDefinitionRepository definitionRepository)
-    {
-        _definitionRepository = definitionRepository;
-    }
 
     /// <inheritdoc/>
     public async Task<IHtmlContent> RenderAsync(IContentBlocks? contentBlocks, RenderViewComponentAsync renderViewComponentAsync, RenderPartialViewAsync renderPartialViewAsync, bool isBackOfficePreview = false)
@@ -40,7 +34,7 @@ public class ContentBlocksRenderer : IContentBlocksRenderer
     public async Task<IHtmlContent> RenderBlockAsync(IContentBlockViewModel? block, RenderViewComponentAsync renderViewComponentAsync, RenderPartialViewAsync renderPartialViewAsync, bool isBackOfficePreview = false)
     {
         if (block is null ||
-            _definitionRepository.GetById(block.DefinitionId) is not IContentBlockDefinition definition)
+            definitionRepository.GetById(block.DefinitionId) is not IContentBlockDefinition definition)
         {
             return HtmlString.Empty;
         }

@@ -2,23 +2,15 @@
 
 namespace Perplex.ContentBlocks.Rendering;
 
-public class ContentBlockViewModel<TContent> : IContentBlockViewModel<TContent> where TContent : IPublishedElement
+public class ContentBlockViewModel<TContent>(TContent content, Guid id, Guid definitionId, Guid layoutId) : IContentBlockViewModel<TContent> where TContent : IPublishedElement
 {
-    public Guid Id { get; }
+    public Guid Id { get; } = id;
 
-    public Guid DefinitionId { get; set; }
+    public Guid DefinitionId { get; set; } = definitionId;
 
-    public Guid LayoutId { get; set; }
+    public Guid LayoutId { get; set; } = layoutId;
 
-    public TContent Content { get; set; }
+    public TContent Content { get; set; } = content;
 
     IPublishedElement IContentBlockViewModel.Content => Content;
-
-    public ContentBlockViewModel(TContent content, Guid id, Guid definitionId, Guid layoutId)
-    {
-        Id = id;
-        DefinitionId = definitionId;
-        LayoutId = layoutId;
-        Content = content;
-    }
 }

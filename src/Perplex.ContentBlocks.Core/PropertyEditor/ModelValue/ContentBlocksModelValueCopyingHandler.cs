@@ -7,15 +7,8 @@ using Umbraco.Cms.Core.Notifications;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
-public class ContentBlocksModelValueCopyingHandler : INotificationHandler<ContentCopyingNotification>
+public class ContentBlocksModelValueCopyingHandler(ILogger<ContentBlocksModelValueCopyingHandler> logger) : INotificationHandler<ContentCopyingNotification>
 {
-    private readonly ILogger<ContentBlocksModelValueCopyingHandler> _logger;
-
-    public ContentBlocksModelValueCopyingHandler(ILogger<ContentBlocksModelValueCopyingHandler> logger)
-    {
-        _logger = logger;
-    }
-
     public void Handle(ContentCopyingNotification notification)
         => UpdateContentBlocksKeys(notification.Copy);
 
@@ -62,7 +55,7 @@ public class ContentBlocksModelValueCopyingHandler : INotificationHandler<Conten
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to update ContentBlock keys and IDs while copying a node.");
+            logger.LogError(ex, "Failed to update ContentBlock keys and IDs while copying a node.");
         }
     }
 

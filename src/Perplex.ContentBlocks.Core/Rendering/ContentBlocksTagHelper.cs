@@ -12,24 +12,12 @@ namespace Perplex.ContentBlocks.Rendering;
 /// Tag helper to render ContentBlocks
 /// </summary>
 [HtmlTargetElement("perplex-content-blocks", TagStructure = TagStructure.WithoutEndTag)]
-public class ContentBlocksTagHelper : TagHelper
+public class ContentBlocksTagHelper(
+    IViewComponentHelper viewComponentHelper,
+    IHtmlHelper htmlHelper,
+    IPreviewModeProvider previewModeProvider,
+    IContentBlocksRenderer renderer) : TagHelper
 {
-    private readonly IViewComponentHelper _viewComponentHelper;
-    private readonly IHtmlHelper _htmlHelper;
-    private readonly IPreviewModeProvider _previewModeProvider;
-    private readonly IContentBlocksRenderer _renderer;
-
-    public ContentBlocksTagHelper(
-        IViewComponentHelper viewComponentHelper,
-        IHtmlHelper htmlHelper,
-        IPreviewModeProvider previewModeProvider,
-        IContentBlocksRenderer renderer)
-    {
-        _viewComponentHelper = viewComponentHelper;
-        _htmlHelper = htmlHelper;
-        _previewModeProvider = previewModeProvider;
-        _renderer = renderer;
-    }
 
     /// <summary>
     /// The <see cref="IContentBlocks"/> content to render
@@ -61,14 +49,14 @@ public class ContentBlocksTagHelper : TagHelper
             return;
         }
 
-        EnsureViewContext(_viewComponentHelper, ViewContext);
-        EnsureViewContext(_htmlHelper, ViewContext);
+        EnsureViewContext(viewComponentHelper, ViewContext);
+        EnsureViewContext(htmlHelper, ViewContext);
 
-        var html = await _renderer.RenderBlocksAsync(
+        var html = await renderer.RenderBlocksAsync(
             blocks,
-            _viewComponentHelper.InvokeAsync,
-            _htmlHelper.PartialAsync,
-            _previewModeProvider.IsPreviewMode);
+            viewComponentHelper.InvokeAsync,
+            htmlHelper.PartialAsync,
+            previewModeProvider.IsPreviewMode);
 
         output.Content.SetHtmlContent(html);
     }
