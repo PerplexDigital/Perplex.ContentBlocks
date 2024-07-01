@@ -10,5 +10,6 @@ public class ContentBlocksPropertyEditorComposer : IComposer
     {
         builder.Services.AddSingleton<ContentBlocksValidator>();
         builder.Services.AddSingleton<ContentBlocksBlockContentConverter>();
+        builder.Services.AddSingleton<ContentBlocksDataResolver>();
     }
 }
