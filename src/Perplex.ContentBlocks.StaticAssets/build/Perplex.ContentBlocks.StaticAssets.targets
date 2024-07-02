@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_AppPluginsPrefix Condition="'$(Configuration)' == 'Release'">dist\</_AppPluginsPrefix>
-    <_AppPluginsPrefix Condition="'$(Configuration)' != 'Release'">src\</_AppPluginsPrefix>
+    <_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix>src\</_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix>
+    <_Perplex_ContentBlocks_StaticAssets_AppPluginsDir>$(MSBuildProjectDirectory)\$(_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix)App_Plugins\Perplex.ContentBlocks</_Perplex_ContentBlocks_StaticAssets_AppPluginsDir>
   </PropertyGroup>
 
   <Target Name="PerplexContentBlocks_StaticAssets/BeforeBuild" BeforeTargets="BeforeBuild">
@@ -15,19 +15,19 @@
 
   <Target Name="PerplexContentBlocks_StaticAssets/Build">
     <Message Importance="High" Text="Perplex.ContentBlocks: Build Static Assets" />
-    <Exec Command="npm install -g pnpm" WorkingDirectory="$(MSBuildProjectDirectory)\src" />
-		<Exec Command="pnpm install --ignore-scripts --prefer-offline" WorkingDirectory="$(MSBuildProjectDirectory)\src" />
-    <Exec Command="pnpm build" WorkingDirectory="$(MSBuildProjectDirectory)\src" />
+    <Exec Command="npm install" WorkingDirectory="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)" />
+    <Exec Command="npm run build" WorkingDirectory="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)" />
   </Target>
 
   <Target Name="PerplexContentBlocks_StaticAssets/IncludeAppPlugins">
     <ItemGroup>
-      <_AppPluginsFiles Include="$(_AppPluginsPrefix)App_Plugins\Perplex.ContentBlocks\**"></_AppPluginsFiles>
+      <_AppPluginsFiles Include="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)\umbraco-package.json"></_AppPluginsFiles>
+      <_AppPluginsFiles Include="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)\dist\**"></_AppPluginsFiles>
     </ItemGroup>
 
     <DiscoverStaticWebAssets Candidates="@(_AppPluginsFiles)"
       SourceId="$(PackageId)"
-      Pattern="$(_AppPluginsPrefix)**"
+      Pattern="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix)**"
       ContentRoot="$(MSBuildProjectDirectory)"
       BasePath="$(StaticWebAssetBasePath)">
       <Output TaskParameter="DiscoveredStaticWebAssets" ItemName="_DiscoveredAssets" />

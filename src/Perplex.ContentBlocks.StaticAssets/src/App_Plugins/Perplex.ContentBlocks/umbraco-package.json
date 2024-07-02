@@ -1,0 +1,76 @@
+{
+  "$schema": "../../umbraco-package-schema.json",
+  "name": "Perplex.ContentBlocks",
+  "version": "0.1.0",
+  "extensions": [
+    {
+      "type": "propertyEditorUi",
+      "alias": "Perplex.ContentBlocks.UI",
+      "name": "Perplex.ContentBlocks.UI",
+      "element": "/App_Plugins/Perplex.ContentBlocks/dist/perplex.content-blocks.js",
+      "elementName": "perplex-content-blocks",
+      "meta": {
+        "label": "Perplex.ContentBlocks",
+        "icon": "icon-thumbnail-list",
+        "group": "lists",
+        "propertyEditorSchemaAlias": "Perplex.ContentBlocks",
+        "settings": {
+          "properties": [
+            {
+              "alias": "structure",
+              "label": "Structure",
+              "description": "TODO",
+              "propertyEditorUiAlias": "Umb.PropertyEditorUi.TextBox"
+            },
+            {
+              "alias": "disablePreview",
+              "label": "Disable preview",
+              "description": "TODO",
+              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
+            },
+            {
+              "alias": "hideLabel",
+              "label": "Hide label",
+              "description": "TODO",
+              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
+            },
+            {
+              "alias": "hidePropertyGroupContainer",
+              "label": "Hide property group container",
+              "description": "TODO",
+              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
+            },
+            {
+              "alias": "allowBlocksWithoutHeader",
+              "label": "Allow blocks without header",
+              "description": "TODO",
+              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
+            }
+          ],
+          "defaultData": [
+            {
+              "alias": "version",
+              "value": 4
+            },
+            {
+              "alias": "structure",
+              "value": "All"
+            },
+            {
+              "alias": "hideLabel",
+              "value": true
+            },
+            {
+              "alias": "hidePropertyGroupContainer",
+              "value": true
+            },
+            {
+              "alias": "allowBlocksWithoutHeader",
+              "value": true
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
