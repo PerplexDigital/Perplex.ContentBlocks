@@ -2,6 +2,40 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.0 - <sub><sup>TBD</sup></sub>
+
+- Added support for Umbraco v14/15
+  - Umbraco v10 - v13 are only support by v1 - v3
+  - Perplex.ContentBlocks v4 only supports Umbraco v14/15+
+- Replaced NestedContent with Block Editor as underlying data structure.
+
+- `TODO: Other release notes`
+
+- Breaking changes (`INCOMPLETE`):
+  - Removed properties:
+    - `IContentBlockDefinition.{DataTypeKey,DataTypeId}`
+      - These properties referenced the NestedContent data type that is used for the definition. NestedContent is removed thus so are these properties.
+  - Added properties:
+    - `IContentBlockDefinition.ElementTypeKey`
+      - Required to reference the Element Type that should be used for the definition. Replaces `DataTypeKey` / `DataTypeId` from v1 - v3.
+  - Removed classes:
+    - `IContentBlockRenderer` + `ContentBlockRenderer`
+      - Does not support `IContentBlockDefinition<TViewComponent>`
+      - Use `IContentBlocksRenderer` instead.
+    - `ContentBlockUtils`
+  - Removed extension methods:
+    - `HtmlHelper.RenderContentBlocks(...)`
+      - Removed because it does not support content block definitions that use ViewComponents
+      - Alternatives:
+        - `<perplex-content-blocks>` tag helper (see v3 release notes)
+        - `IContentBlocksRenderer`
+  - Class renames:
+    - `ContentBlocksModelValue...` -> `ContentBlocksValue...`
+    - This impacts the following public interface methods:
+      - `IContentBlockVariantSelector.SelectVariant`
+  - Namespace renames:
+    - `Perplex.ContentBlocks.PropertyEditor.ModelValue` -> `Perplex.ContentBlocks.PropertyEditor.Value`
+
 ## v3.0.0 - <sub><sup>2024-01-18</sup></sub>
 
 - Dropped support for v8 and v9
