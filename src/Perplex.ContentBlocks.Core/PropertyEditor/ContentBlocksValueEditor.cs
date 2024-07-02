@@ -17,11 +17,13 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     private readonly ContentBlocksValueRefiner _refiner;
     private readonly PropertyEditorCollection _propertyEditors;
     private readonly IDataTypeConfigurationCache _dataTypeConfigCache;
+    private readonly DataValueReferenceFactoryCollection _referenceFactories;
 
     public ContentBlocksValueEditor(
         IShortStringHelper shortStringHelper, IJsonSerializer jsonSerializer, IIOHelper ioHelper,
         DataEditorAttribute attribute, ContentBlocksValidator validator, ContentBlocksValueDeserializer deserializer,
-        ContentBlocksValueRefiner refiner, PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache)
+        ContentBlocksValueRefiner refiner, PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache,
+        DataValueReferenceFactoryCollection referenceFactories)
         : base(shortStringHelper, jsonSerializer, ioHelper, attribute)
     {
         Validators.Add(validator);
@@ -30,6 +32,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
         _refiner = refiner;
         _propertyEditors = propertyEditors;
         _dataTypeConfigCache = dataTypeConfigCache;
+        _referenceFactories = referenceFactories;
     }
 
     public override object? ToEditor(IProperty property, string? culture = null, string? segment = null)
@@ -119,8 +122,41 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
     public IEnumerable<UmbracoEntityReference> GetReferences(object? value)
     {
-        // TODO: Implement
+        if (_deserializer.Deserialize(value?.ToString()) is not ContentBlocksValue model)
+        {
+            return [];
+        }
 
-        yield break;
+        _refiner.Refine(model);
+
+        return ContentBlocksValueIterator.Iterate(model,
+            block => GetReferences(block.Content),
+            variant => GetReferences(variant.Content)
+        ).SelectMany(r => r).ToArray();
+
+        UmbracoEntityReference[] GetReferences(BlockItemData? data)
+        {
+            if (data is null)
+            {
+                return [];
+            }
+
+            var references = new HashSet<UmbracoEntityReference>();
+
+            foreach (var property in data.PropertyValues)
+            {
+                if (!_propertyEditors.TryGet(property.Value.PropertyType.PropertyEditorAlias, out IDataEditor? dataEditor))
+                {
+                    continue;
+                }
+
+                foreach (var reference in _referenceFactories.GetReferences(dataEditor, property.Value.Value))
+                {
+                    references.Add(reference);
+                }
+            }
+
+            return [.. references];
+        };
     }
 }
