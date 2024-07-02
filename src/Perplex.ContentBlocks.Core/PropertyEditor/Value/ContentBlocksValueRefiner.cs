@@ -15,48 +15,18 @@ public class ContentBlocksValueRefiner(IContentTypeService contentTypeService)
     {
         var elementTypes = GetElementTypes(model);
 
-        Refine(model.Header, elementTypes);
-
-        foreach (var block in model.Blocks ?? [])
-        {
-            Refine(block, elementTypes);
-        }
-    }
-
-    private static void Refine(ContentBlockValue? block, Dictionary<Guid, IContentType> elementTypes)
-    {
-        if (block is null)
-        {
-            return;
-        }
-
-        Refine(block.Content, elementTypes);
-
-        foreach (var variant in block.Variants ?? [])
-        {
-            Refine(variant.Content, elementTypes);
-        }
+        ContentBlocksValueIterator.Iterate(model,
+            block => Refine(block.Content, elementTypes),
+            variant => Refine(variant.Content, elementTypes));
     }
 
     private static void Refine(BlockItemData? block, Dictionary<Guid, IContentType> elementTypes)
     {
-        if (block is null ||
-            !elementTypes.TryGetValue(block.ContentTypeKey, out var contentType))
+        if (block is null || !elementTypes.TryGetValue(block.ContentTypeKey, out var elementType))
         {
             return;
         }
 
-        Refine(block, contentType);
-    }
-
-    private Dictionary<Guid, IContentType> GetElementTypes(ContentBlocksValue model)
-    {
-        var contentTypeKeys = GetContentTypeKeys(model);
-        return contentTypeService.GetAll(contentTypeKeys).ToDictionary(b => b.Key);
-    }
-
-    private static void Refine(BlockItemData block, IContentType elementType)
-    {
         block.ContentTypeAlias = elementType.Alias;
 
         foreach (IPropertyType propType in elementType.CompositionPropertyTypes)
@@ -79,36 +49,29 @@ public class ContentBlocksValueRefiner(IContentTypeService contentTypeService)
         }
     }
 
-    private static HashSet<Guid> GetContentTypeKeys(ContentBlocksValue model)
+    private Dictionary<Guid, IContentType> GetElementTypes(ContentBlocksValue model)
     {
-        var keys = new HashSet<Guid>();
+        var contentTypeKeys = GetContentTypeKeys(model);
 
-        AddKeys(model.Header, keys);
+        return contentTypeService
+            .GetAll(contentTypeKeys)
+            .ToDictionary(b => b.Key);
 
-        foreach (var block in model.Blocks ?? [])
+        static HashSet<Guid> GetContentTypeKeys(ContentBlocksValue model)
         {
-            AddKeys(block, keys);
-        }
+            var keys = new HashSet<Guid>();
 
-        return keys;
+            ContentBlocksValueIterator.Iterate(model,
+                block => AddKey(block.Content, keys),
+                variant => AddKey(variant.Content, keys));
 
-        static void AddKeys(ContentBlockValue? block, HashSet<Guid> keys)
-        {
-            if (block is null)
+            return keys;
+
+            static void AddKey(BlockItemData? block, HashSet<Guid> keys)
             {
-                return;
-            }
-
-            if (block?.Content?.ContentTypeKey is Guid key)
-            {
-                keys.Add(key);
-            }
-
-            foreach (var variant in block?.Variants ?? [])
-            {
-                if (variant.Content?.ContentTypeKey is Guid variantKey)
+                if (block?.ContentTypeKey is Guid key)
                 {
-                    keys.Add(variantKey);
+                    keys.Add(key);
                 }
             }
         }

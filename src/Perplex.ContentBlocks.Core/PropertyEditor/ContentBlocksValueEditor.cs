@@ -42,40 +42,19 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
         _refiner.Refine(model);
 
-        BlockToEditor(model.Header);
-
-        foreach (var block in model.Blocks ?? [])
-        {
-            BlockToEditor(block);
-        }
+        ContentBlocksValueIterator.Iterate(model,
+            block => ToEditor(block.Content),
+            variant => ToEditor(variant.Content));
 
         return model;
 
-        void BlockToEditor(ContentBlockValue? block)
+        void ToEditor(BlockItemData? data)
         {
-            if (block is null)
+            if (data is null)
             {
                 return;
             }
 
-            if (block.Content is not null)
-            {
-                block.Content = ToEditor(block.Content);
-            }
-
-            foreach (var variant in block.Variants ?? [])
-            {
-                if (variant.Content is null)
-                {
-                    continue;
-                }
-
-                variant.Content = ToEditor(variant.Content);
-            }
-        }
-
-        BlockItemData? ToEditor(BlockItemData data)
-        {
             foreach (var prop in data.PropertyValues)
             {
                 prop.Value.PropertyType.Variations = ContentVariation.Nothing;
@@ -95,8 +74,6 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
                 data.RawPropertyValues[prop.Key] = convValue;
             }
-
-            return data;
         }
     }
 
@@ -110,40 +87,19 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
         _refiner.Refine(model);
 
-        BlockFromEditor(model.Header);
-
-        foreach (var block in model.Blocks ?? [])
-        {
-            BlockFromEditor(block);
-        }
+        ContentBlocksValueIterator.Iterate(model,
+            block => FromEditor(block.Content),
+            variant => FromEditor(variant.Content));
 
         return _jsonSerializer.Serialize(model);
 
-        void BlockFromEditor(ContentBlockValue? block)
+        void FromEditor(BlockItemData? data)
         {
-            if (block is null)
+            if (data is null)
             {
                 return;
             }
 
-            if (block.Content is not null)
-            {
-                block.Content = FromEditor(block.Content);
-            }
-
-            foreach (var variant in block.Variants ?? [])
-            {
-                if (variant.Content is null)
-                {
-                    continue;
-                }
-
-                variant.Content = FromEditor(variant.Content);
-            }
-        }
-
-        BlockItemData? FromEditor(BlockItemData data)
-        {
             foreach (var prop in data.PropertyValues)
             {
                 var configuration = _dataTypeConfigCache.GetConfiguration(prop.Value.PropertyType.DataTypeKey);
@@ -158,8 +114,6 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 var newValue = propEditor.GetValueEditor().FromEditor(contentPropData, prop.Value.Value);
                 data.RawPropertyValues[prop.Key] = newValue;
             }
-
-            return data;
         }
     }
 

@@ -6,64 +6,33 @@ using Umbraco.Cms.Core.Services;
 namespace Perplex.ContentBlocks.PropertyEditor;
 
 public class ContentBlocksValidator(
-    IPropertyValidationService validationService, ContentBlocksValueDeserializer deserializer, ContentBlocksValueRefiner resolver)
+    IPropertyValidationService validationService, ContentBlocksValueDeserializer deserializer, ContentBlocksValueRefiner refiner)
     : ComplexEditorValidator(validationService)
 {
     protected override IEnumerable<ElementTypeValidationModel> GetElementTypeValidation(object? value)
     {
         if (deserializer.Deserialize(value?.ToString()) is not ContentBlocksValue model)
         {
-            yield break;
+            return [];
         }
 
-        resolver.Refine(model);
+        refiner.Refine(model);
 
-        foreach (var headerValidation in GetValidationModels(model.Header))
-        {
-            yield return headerValidation;
-        }
+        var validationModels = ContentBlocksValueIterator.Iterate(model,
+            block => Validate(block.Content, block.Id.ToString()),
+            variant => Validate(variant.Content, variant.Id.ToString()));
 
-        foreach (var blockValidation in model.Blocks?.SelectMany(block => GetValidationModels(block)) ?? [])
-        {
-            yield return blockValidation;
-        }
+        return [.. validationModels.OfType<ElementTypeValidationModel>()];
 
-        static IEnumerable<ElementTypeValidationModel> GetValidationModels(ContentBlockValue? block)
+        static ElementTypeValidationModel? Validate(BlockItemData? data, string jsonPathPrefix)
         {
-            if (block is null)
+            if (data is null)
             {
-                yield break;
+                return null;
             }
 
-            if (Validate(block.Content, block.Id.ToString()) is ElementTypeValidationModel validationModel)
-            {
-                yield return validationModel;
-            }
-
-            foreach (var variant in block.Variants ?? [])
-            {
-                if (Validate(variant.Content, block.Id.ToString()) is ElementTypeValidationModel variantValidationModel)
-                {
-                    yield return variantValidationModel;
-                }
-            }
-
-            static ElementTypeValidationModel? Validate(BlockItemData? data, string jsonPathPrefix)
-            {
-                if (data is null ||
-                    GetValidationModel(data, jsonPathPrefix) is not ElementTypeValidationModel validationModel)
-                {
-                    return null;
-                }
-
-                return validationModel;
-            }
-        }
-
-        static ElementTypeValidationModel? GetValidationModel(BlockItemData block, string jsonPathPrefix)
-        {
-            var elementValidation = new ElementTypeValidationModel(block.ContentTypeAlias, block.Key);
-            foreach (KeyValuePair<string, BlockItemData.BlockPropertyValue> prop in block.PropertyValues)
+            var elementValidation = new ElementTypeValidationModel(data.ContentTypeAlias, data.Key);
+            foreach (var prop in data.PropertyValues)
             {
                 var propTypeValidation = new PropertyTypeValidationModel(prop.Value.PropertyType, prop.Value.Value, $"{jsonPathPrefix}.{prop.Value.PropertyType.Alias}");
                 elementValidation.AddPropertyTypeValidation(propTypeValidation);
