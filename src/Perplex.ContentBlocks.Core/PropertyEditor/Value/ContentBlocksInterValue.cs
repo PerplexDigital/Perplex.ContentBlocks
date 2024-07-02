@@ -1,4 +1,4 @@
-﻿namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿namespace Perplex.ContentBlocks.PropertyEditor.Value;
 
 public class ContentBlocksInterValue
 {

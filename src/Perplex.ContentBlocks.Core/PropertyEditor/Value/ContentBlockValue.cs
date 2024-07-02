@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using Umbraco.Cms.Core.Models.Blocks;
 
-namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
+namespace Perplex.ContentBlocks.PropertyEditor.Value;
 
-public class ContentBlockModelValue
+public class ContentBlockValue
 {
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
@@ -24,5 +24,5 @@ public class ContentBlockModelValue
     public BlockItemData? Content { get; set; }
 
     [JsonPropertyName("variants")]
-    public List<ContentBlockVariantModelValue>? Variants { get; set; }
+    public List<ContentBlockVariantValue>? Variants { get; set; }
 }

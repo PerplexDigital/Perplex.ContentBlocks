@@ -1,6 +1,6 @@
 ﻿using Umbraco.Cms.Core.Models.Blocks;
 
-namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
+namespace Perplex.ContentBlocks.PropertyEditor.Value;
 
 public class ContentBlockInterValue
 {

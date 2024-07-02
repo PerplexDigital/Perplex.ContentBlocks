@@ -5,9 +5,9 @@ using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Notifications;
 
-namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
+namespace Perplex.ContentBlocks.PropertyEditor.Value;
 
-public class ContentBlocksModelValueCopyingHandler(ILogger<ContentBlocksModelValueCopyingHandler> logger) : INotificationHandler<ContentCopyingNotification>
+public class ContentBlocksValueCopyingHandler(ILogger<ContentBlocksValueCopyingHandler> logger) : INotificationHandler<ContentCopyingNotification>
 {
     public void Handle(ContentCopyingNotification notification)
         => UpdateContentBlocksKeys(notification.Copy);

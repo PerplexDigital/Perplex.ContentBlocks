@@ -1,4 +1,4 @@
-﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿using Perplex.ContentBlocks.PropertyEditor.Value;
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
@@ -6,44 +6,43 @@ using Umbraco.Cms.Core.Services;
 namespace Perplex.ContentBlocks.PropertyEditor;
 
 public class ContentBlocksValidator(
-    IPropertyValidationService validationService, ContentBlocksModelValueDeserializer deserializer, ContentBlocksDataResolver resolver)
+    IPropertyValidationService validationService, ContentBlocksValueDeserializer deserializer, ContentBlocksValueRefiner resolver)
     : ComplexEditorValidator(validationService)
 {
     protected override IEnumerable<ElementTypeValidationModel> GetElementTypeValidation(object? value)
     {
-        if (deserializer.Deserialize(value?.ToString()) is not ContentBlocksModelValue modelValue ||
-            resolver.Resolve(modelValue) is not Dictionary<Guid, BlockItemData> data)
+        if (deserializer.Deserialize(value?.ToString()) is not ContentBlocksValue model)
         {
             yield break;
         }
 
-        foreach (var headerValidation in GetValidationModels(modelValue.Header, data))
+        resolver.Refine(model);
+
+        foreach (var headerValidation in GetValidationModels(model.Header))
         {
             yield return headerValidation;
         }
 
-        foreach (var blockValidation in modelValue.Blocks?.SelectMany(block => GetValidationModels(block, data)) ?? [])
+        foreach (var blockValidation in model.Blocks?.SelectMany(block => GetValidationModels(block)) ?? [])
         {
             yield return blockValidation;
         }
 
-        static IEnumerable<ElementTypeValidationModel> GetValidationModels(ContentBlockModelValue? block, Dictionary<Guid, BlockItemData> data)
+        static IEnumerable<ElementTypeValidationModel> GetValidationModels(ContentBlockValue? block)
         {
             if (block is null)
             {
                 yield break;
             }
 
-            if (data.TryGetValue(block.Id, out var blockData) &&
-                Validate(blockData, block.Id.ToString()) is ElementTypeValidationModel validationModel)
+            if (Validate(block.Content, block.Id.ToString()) is ElementTypeValidationModel validationModel)
             {
                 yield return validationModel;
             }
 
             foreach (var variant in block.Variants ?? [])
             {
-                if (data.TryGetValue(variant.Id, out var variantData) &&
-                    Validate(variantData, block.Id.ToString()) is ElementTypeValidationModel variantValidationModel)
+                if (Validate(variant.Content, block.Id.ToString()) is ElementTypeValidationModel variantValidationModel)
                 {
                     yield return variantValidationModel;
                 }

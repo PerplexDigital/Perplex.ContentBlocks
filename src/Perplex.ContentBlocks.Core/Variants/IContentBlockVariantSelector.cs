@@ -1,4 +1,4 @@
-﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿using Perplex.ContentBlocks.PropertyEditor.Value;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace Perplex.ContentBlocks.Variants;
@@ -13,5 +13,5 @@ public interface IContentBlockVariantSelector
     /// <param name="content">The content containing the block</param>
     /// <param name="preview">Indicates if this block is rendered in preview mode</param>
     /// <returns>A variant to render for this block; or null if the default content should be rendered.</returns>
-    ContentBlockVariantModelValue? SelectVariant(ContentBlockModelValue block, IPublishedElement content, bool preview);
+    ContentBlockVariantValue? SelectVariant(ContentBlockValue block, IPublishedElement content, bool preview);
 }

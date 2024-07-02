@@ -1,4 +1,4 @@
-﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿using Perplex.ContentBlocks.PropertyEditor.Value;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace Perplex.ContentBlocks.Variants;
@@ -8,6 +8,6 @@ namespace Perplex.ContentBlocks.Variants;
 /// </summary>
 public class ContentBlockDefaultVariantSelector : IContentBlockVariantSelector
 {
-    public ContentBlockVariantModelValue? SelectVariant(ContentBlockModelValue block, IPublishedElement content, bool preview)
+    public ContentBlockVariantValue? SelectVariant(ContentBlockValue block, IPublishedElement content, bool preview)
         => null;
 }

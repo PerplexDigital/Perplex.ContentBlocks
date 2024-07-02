@@ -1,4 +1,4 @@
-﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿using Perplex.ContentBlocks.PropertyEditor.Value;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
@@ -13,21 +13,21 @@ namespace Perplex.ContentBlocks.PropertyEditor;
 public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 {
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly ContentBlocksModelValueDeserializer _deserializer;
-    private readonly ContentBlocksDataResolver _resolver;
+    private readonly ContentBlocksValueDeserializer _deserializer;
+    private readonly ContentBlocksValueRefiner _refiner;
     private readonly PropertyEditorCollection _propertyEditors;
     private readonly IDataTypeConfigurationCache _dataTypeConfigCache;
 
     public ContentBlocksValueEditor(
         IShortStringHelper shortStringHelper, IJsonSerializer jsonSerializer, IIOHelper ioHelper,
-        DataEditorAttribute attribute, ContentBlocksValidator validator, ContentBlocksModelValueDeserializer deserializer,
-        ContentBlocksDataResolver resolver, PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache)
+        DataEditorAttribute attribute, ContentBlocksValidator validator, ContentBlocksValueDeserializer deserializer,
+        ContentBlocksValueRefiner refiner, PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache)
         : base(shortStringHelper, jsonSerializer, ioHelper, attribute)
     {
         Validators.Add(validator);
         _jsonSerializer = jsonSerializer;
         _deserializer = deserializer;
-        _resolver = resolver;
+        _refiner = refiner;
         _propertyEditors = propertyEditors;
         _dataTypeConfigCache = dataTypeConfigCache;
     }
@@ -35,12 +35,12 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     public override object? ToEditor(IProperty property, string? culture = null, string? segment = null)
     {
         var json = property.GetValue(culture, segment)?.ToString();
-        if (_deserializer.Deserialize(json) is not ContentBlocksModelValue model ||
-            _resolver.Resolve(model) is not Dictionary<Guid, BlockItemData> data ||
-            data.Count == 0)
+        if (_deserializer.Deserialize(json) is not ContentBlocksValue model)
         {
             return base.ToEditor(property, culture, segment);
         }
+
+        _refiner.Refine(model);
 
         BlockToEditor(model.Header);
 
@@ -51,26 +51,26 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
         return model;
 
-        void BlockToEditor(ContentBlockModelValue? block)
+        void BlockToEditor(ContentBlockValue? block)
         {
             if (block is null)
             {
                 return;
             }
 
-            if (data.TryGetValue(block.Id, out var blockData))
+            if (block.Content is not null)
             {
-                block.Content = ToEditor(blockData);
+                block.Content = ToEditor(block.Content);
             }
 
             foreach (var variant in block.Variants ?? [])
             {
-                if (!data.TryGetValue(variant.Id, out var variantData))
+                if (variant.Content is null)
                 {
                     continue;
                 }
 
-                variant.Content = ToEditor(variantData);
+                variant.Content = ToEditor(variant.Content);
             }
         }
 
@@ -103,12 +103,12 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     public override object? FromEditor(ContentPropertyData editorValue, object? currentValue)
     {
         var json = editorValue.Value?.ToString();
-        if (_deserializer.Deserialize(json) is not ContentBlocksModelValue model ||
-            _resolver.Resolve(model) is not Dictionary<Guid, BlockItemData> data ||
-            data.Count == 0)
+        if (_deserializer.Deserialize(json) is not ContentBlocksValue model)
         {
             return base.FromEditor(editorValue, currentValue);
         }
+
+        _refiner.Refine(model);
 
         BlockFromEditor(model.Header);
 
@@ -119,26 +119,26 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
         return _jsonSerializer.Serialize(model);
 
-        void BlockFromEditor(ContentBlockModelValue? block)
+        void BlockFromEditor(ContentBlockValue? block)
         {
             if (block is null)
             {
                 return;
             }
 
-            if (data.TryGetValue(block.Id, out var blockData))
+            if (block.Content is not null)
             {
-                block.Content = FromEditor(blockData);
+                block.Content = FromEditor(block.Content);
             }
 
             foreach (var variant in block.Variants ?? [])
             {
-                if (!data.TryGetValue(variant.Id, out var variantData))
+                if (variant.Content is null)
                 {
                     continue;
                 }
 
-                variant.Content = FromEditor(variantData);
+                variant.Content = FromEditor(variant.Content);
             }
         }
 

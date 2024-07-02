@@ -1,5 +1,5 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
-using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+using Perplex.ContentBlocks.PropertyEditor.Value;
 using Perplex.ContentBlocks.Rendering;
 using Perplex.ContentBlocks.Variants;
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -8,7 +8,7 @@ using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksValueConverter(IServiceProvider serviceProvider, ContentBlocksModelValueDeserializer deserializer,
+public class ContentBlocksValueConverter(IServiceProvider serviceProvider, ContentBlocksValueDeserializer deserializer,
     IContentBlockVariantSelector variantSelector, BlockEditorConverter converter)
     : PropertyValueConverterBase
 {
@@ -20,15 +20,15 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
 
     public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
     {
-        if (deserializer.Deserialize(inter?.ToString()) is not ContentBlocksModelValue modelValue)
+        if (deserializer.Deserialize(inter?.ToString()) is not ContentBlocksValue value)
         {
             return Rendering.ContentBlocks.Empty;
         }
 
         var interValue = new ContentBlocksInterValue
         {
-            Header = SelectBlock(modelValue.Header),
-            Blocks = modelValue.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? [],
+            Header = SelectBlock(value.Header),
+            Blocks = value.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? [],
         };
 
         var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>() ?? ContentBlocksConfiguration.DefaultConfiguration;
@@ -47,7 +47,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
             Blocks = blocks
         };
 
-        ContentBlockInterValue? SelectBlock(ContentBlockModelValue? original)
+        ContentBlockInterValue? SelectBlock(ContentBlockValue? original)
         {
             if (original is null || original.IsDisabled)
             {
@@ -63,7 +63,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
                 Content = original.Content,
             };
 
-            if (variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantModelValue variant)
+            if (variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantValue variant)
             {
                 // Use variant instead, note we always use the definition + layout specified by the block
                 block.Id = variant.Id;
