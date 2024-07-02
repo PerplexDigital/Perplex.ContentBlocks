@@ -4,11 +4,12 @@ using Perplex.ContentBlocks.Rendering;
 using Perplex.ContentBlocks.Variants;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
+using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksValueConverter(ContentBlocksBlockContentConverter converter, IServiceProvider serviceProvider,
-    ContentBlocksModelValueDeserializer deserializer, IContentBlockVariantSelector variantSelector)
+public class ContentBlocksValueConverter(IServiceProvider serviceProvider, ContentBlocksModelValueDeserializer deserializer,
+    IContentBlockVariantSelector variantSelector, BlockEditorConverter converter)
     : PropertyValueConverterBase
 {
     public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
@@ -74,7 +75,7 @@ public class ContentBlocksValueConverter(ContentBlocksBlockContentConverter conv
 
         IContentBlockViewModel? CreateViewModel(ContentBlockInterValue? block)
         {
-            if (block is null || converter.ConvertToElement(block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
+            if (block?.Content is null || converter.ConvertToElement(block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
             {
                 return null;
             }

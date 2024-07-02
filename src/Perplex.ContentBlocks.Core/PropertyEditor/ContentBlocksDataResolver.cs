@@ -1,5 +1,4 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
-using System.Text.Json.Nodes;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Services;
@@ -7,7 +6,7 @@ using Umbraco.Extensions;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksDataResolver(IContentTypeService contentTypeService, ContentBlocksBlockContentConverter converter)
+public class ContentBlocksDataResolver(IContentTypeService contentTypeService)
 {
     public Dictionary<Guid, BlockItemData> Resolve(ContentBlocksModelValue model)
     {
@@ -30,7 +29,7 @@ public class ContentBlocksDataResolver(IContentTypeService contentTypeService, C
         return data;
     }
 
-    private IEnumerable<(Guid id, BlockItemData data)> Resolve(ContentBlockModelValue? block, Dictionary<Guid, IContentType> elementTypes)
+    private static IEnumerable<(Guid id, BlockItemData data)> Resolve(ContentBlockModelValue? block, Dictionary<Guid, IContentType> elementTypes)
     {
         if (block is null)
         {
@@ -51,10 +50,9 @@ public class ContentBlocksDataResolver(IContentTypeService contentTypeService, C
         }
     }
 
-    private BlockItemData? Resolve(JsonNode? content, Dictionary<Guid, IContentType> elementTypes)
+    private static BlockItemData? Resolve(BlockItemData? block, Dictionary<Guid, IContentType> elementTypes)
     {
-        if (content is null ||
-            converter.ConvertToBlockItemData(content) is not BlockItemData block ||
+        if (block is null ||
             !elementTypes.TryGetValue(block.ContentTypeKey, out var contentType))
         {
             return null;
@@ -99,14 +97,14 @@ public class ContentBlocksDataResolver(IContentTypeService contentTypeService, C
     {
         var keys = new List<Guid>();
 
-        if (ParseGuid(model.Header?.Content) is Guid headerKey)
+        if (model.Header?.Content?.ContentTypeKey is Guid headerKey)
         {
             keys.Add(headerKey);
         }
 
         foreach (var block in model.Blocks ?? [])
         {
-            if (ParseGuid(block.Content) is Guid blockKey &&
+            if (block.Content?.ContentTypeKey is Guid blockKey &&
                 !keys.Contains(blockKey))
             {
                 keys.Add(blockKey);
@@ -114,7 +112,5 @@ public class ContentBlocksDataResolver(IContentTypeService contentTypeService, C
         }
 
         return [.. keys];
-
-        static Guid? ParseGuid(JsonNode? content) => content?["contentTypeKey"]?.GetValue<Guid?>();
     }
 }

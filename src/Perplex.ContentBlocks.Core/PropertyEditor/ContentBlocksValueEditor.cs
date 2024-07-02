@@ -1,5 +1,4 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.ModelValue;
-using System.Text.Json.Nodes;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
@@ -37,7 +36,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     {
         var json = property.GetValue(culture, segment)?.ToString();
         if (_deserializer.Deserialize(json) is not ContentBlocksModelValue model ||
-            _resolver.Resolve(model) is not { } data ||
+            _resolver.Resolve(model) is not Dictionary<Guid, BlockItemData> data ||
             data.Count == 0)
         {
             return base.ToEditor(property, culture, segment);
@@ -75,7 +74,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             }
         }
 
-        JsonNode? ToEditor(BlockItemData data)
+        BlockItemData? ToEditor(BlockItemData data)
         {
             foreach (var prop in data.PropertyValues)
             {
@@ -97,7 +96,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 data.RawPropertyValues[prop.Key] = convValue;
             }
 
-            return JsonNode.Parse(_jsonSerializer.Serialize(data));
+            return data;
         }
     }
 
@@ -105,7 +104,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     {
         var json = editorValue.Value?.ToString();
         if (_deserializer.Deserialize(json) is not ContentBlocksModelValue model ||
-            _resolver.Resolve(model) is not { } data ||
+            _resolver.Resolve(model) is not Dictionary<Guid, BlockItemData> data ||
             data.Count == 0)
         {
             return base.FromEditor(editorValue, currentValue);
@@ -143,7 +142,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             }
         }
 
-        JsonNode? FromEditor(BlockItemData data)
+        BlockItemData? FromEditor(BlockItemData data)
         {
             foreach (var prop in data.PropertyValues)
             {
@@ -160,7 +159,7 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 data.RawPropertyValues[prop.Key] = newValue;
             }
 
-            return JsonNode.Parse(_jsonSerializer.Serialize(data));
+            return data;
         }
     }
 
@@ -170,6 +169,4 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
         yield break;
     }
-
-
 }

@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Umbraco.Cms.Core.Models.Blocks;
 
 namespace Perplex.ContentBlocks.PropertyEditor.ModelValue;
 
@@ -12,5 +12,5 @@ public class ContentBlockVariantModelValue
     public string Alias { get; set; } = "";
 
     [JsonPropertyName("content")]
-    public JsonNode? Content { get; set; }
+    public BlockItemData? Content { get; set; }
 }
