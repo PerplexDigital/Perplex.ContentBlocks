@@ -6,6 +6,8 @@ import { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from "
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from "@umbraco-cms/backoffice/document-type";
 import { UMB_VALIDATION_CONTEXT } from "@umbraco-cms/backoffice/validation";
 import { UmbValidationContext } from "@umbraco-cms/backoffice/validation";
+import {ON_BLOCK_HEAD_CLICK} from "./events.ts";
+import {variables} from "./styles.ts";
 
 @customElement("perplex-content-blocks-block")
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
@@ -14,6 +16,9 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     #contentTypeRepository = new UmbDocumentTypeDetailRepository(this);
     elementType!: UmbDocumentTypeDetailModel;
+
+    @state()
+    collapsed: boolean = true;
 
     @state()
     properties: UmbPropertyTypeModel[] | undefined = undefined;
@@ -65,6 +70,14 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         this.consumeContext(UMB_VALIDATION_CONTEXT, ctx => {
             this.#validationContext = ctx;
         });
+
+        this.addEventListener(ON_BLOCK_HEAD_CLICK, this.onHeadClicked)
+    }
+
+
+
+    onHeadClicked = () => {
+        this.collapsed = !this.collapsed;
     }
 
     async firstUpdated() {
@@ -95,46 +108,54 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         }
 
         return html`<div class="block">
-            <div class="block-body">
-                ${repeat(
-                    this.elementType.properties,
-                    property => property.id,
-                    property =>
-                        html`<umb-property-type-based-property
+            <pcb-block-head
+                .name=${this.elementType.name}
+                .icon=${this.elementType.icon}
+                .collapsed="${this.collapsed}"
+            >
+            </pcb-block-head>
+            <div class=${this.collapsed ? 'block__body block__body--hidden' : 'block__body block__body--open'}>
+                <div>
+                    ${repeat(
+                            this.elementType.properties,
+                            property => property.id,
+                            property =>
+                                    html`<umb-property-type-based-property
                             .property=${property}
                             .dataPath=${`${this.dataPath}.${this.block.id}.${property.alias}`}
                         ></umb-property-type-based-property>`
-                )}
+                    )}
+                    <button type="button" class="remove-block" @click=${this.removeBlock.bind(null, this.block.content.udi)}>
+                        &times;
+                    </button>
+                </div>
             </div>
-            <button type="button" class="remove-block" @click=${this.removeBlock.bind(null, this.block.content.udi)}>
-                &times;
-            </button>
         </div>`;
     }
 
     static styles = [
+        variables,
         css`
             .block {
-                display: flex;
-                border: 3px solid #2e3436;
-                min-height: 4rem;
+                box-shadow: var(--bs-base);
 
-                .block-body {
-                    flex: 1;
-                    padding: 0.5rem 1rem;
-                }
+                .block__body {
+                    background-color: var(--c-mystic);
+                    display: grid;
 
-                .remove-block {
-                    font-size: 2rem;
-                    width: 2rem;
-                    height: 2rem;
-                    color: lightgray;
-                    border: none;
-                    background: none;
+                    transition: 250ms grid-template-rows ease;
 
-                    &:hover {
-                        cursor: pointer;
-                        color: #cc0000;
+                    &.block__body--hidden {
+                        grid-template-rows: 0fr;
+                    }
+
+                    &.block__body--open {
+                        grid-template-rows: 1fr;
+                        padding: calc(var(--s) * 6) calc(var(--s) * 8);
+                    }
+
+                    > div {
+                        overflow: hidden;
                     }
                 }
             }

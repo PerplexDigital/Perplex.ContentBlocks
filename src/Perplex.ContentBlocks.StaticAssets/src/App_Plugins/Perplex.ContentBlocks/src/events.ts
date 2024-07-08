@@ -1,0 +1,1 @@
+export const ON_BLOCK_HEAD_CLICK = 'ON_BLOCK_HEAD_CLICK'
