@@ -7,6 +7,7 @@ public class ContentBlockDefinition<T> : IContentBlockDefinition<T> where T : Vi
     public Guid Id { get; set; }
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
+    public string BlockNameTemplate { get; set; } = "";
     public string PreviewImage { get; set; } = "";
     public Guid ElementTypeKey { get; set; }
 

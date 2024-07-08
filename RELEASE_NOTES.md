@@ -18,6 +18,8 @@ Summary of changes in each release. For a full changelog see [the commit history
   - Added properties:
     - `IContentBlockDefinition.ElementTypeKey`
       - Required to reference the Element Type that should be used for the definition. Replaces `DataTypeKey` / `DataTypeId` from v1 - v3.
+    - `IContentBlockDefinition.BlockNameTemplate`
+      - Replaces the Template property on a NestedContent datatype. This can be used to define the name of an individual block based on its content, e.g. `"{{title}}"` to render the current value of the "title" property of a block.
   - Removed classes:
     - `IContentBlockRenderer` + `ContentBlockRenderer`
       - Does not support `IContentBlockDefinition<TViewComponent>`

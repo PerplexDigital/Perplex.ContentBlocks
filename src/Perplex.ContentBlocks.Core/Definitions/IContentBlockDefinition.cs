@@ -20,6 +20,11 @@ public interface IContentBlockDefinition
     string Description { get; }
 
     /// <summary>
+    /// Template to use for the block name. To render the value of a block property, use {{propertyAlias}}.
+    /// </summary>
+    string BlockNameTemplate { get; }
+
+    /// <summary>
     /// Preview image that will appear in the backoffice UI when selecting blocks
     /// </summary>
     string PreviewImage { get; }
