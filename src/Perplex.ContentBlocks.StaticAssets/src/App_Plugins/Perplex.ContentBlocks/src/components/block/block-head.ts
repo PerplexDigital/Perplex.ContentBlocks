@@ -1,7 +1,7 @@
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { html, customElement, property, css } from "@umbraco-cms/backoffice/external/lit";
-import {ON_BLOCK_HEAD_CLICK} from "../../events.ts";
+import {html, customElement, property, css, nothing} from "@umbraco-cms/backoffice/external/lit";
 import {variables} from "../../styles.ts";
+import {ON_BLOCK_HEAD_CLICK} from "../../events/block.ts";
 
 @customElement("pcb-block-head")
 export default class PcbBlockHead extends UmbLitElement {
@@ -9,21 +9,18 @@ export default class PcbBlockHead extends UmbLitElement {
     icon!: string;
 
     @property({ attribute: false })
-    name!: string;
+    blockDefinitionName!: string;
+
+    @property({ attribute: false })
+    blockTemplateName?: string;
 
     @property({ attribute: false })
     collapsed: boolean = false;
 
 
-    constructor() {
-        super();
-
-    }
-
     onHeadClicked = (e: Event) => {
         this.dispatchEvent(new CustomEvent(ON_BLOCK_HEAD_CLICK, e))
     }
-
 
     render() {
         return html`
@@ -38,8 +35,8 @@ export default class PcbBlockHead extends UmbLitElement {
                 >
                 </uui-icon>
                 <div class="block-head__title">
-                    <strong>${this.name}</strong>
-                    <div>${this.icon}</div>
+                    ${ this.blockTemplateName ? html`<strong>${this.blockTemplateName}</strong>` : nothing }
+                    <div>${this.blockDefinitionName}</div>
                 </div>
 
                 <uui-icon

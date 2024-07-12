@@ -1,46 +1,39 @@
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { html, customElement, property, repeat, css, state, nothing } from "@umbraco-cms/backoffice/external/lit";
+import { html, customElement, property, repeat, css, state, nothing, query } from "@umbraco-cms/backoffice/external/lit";
 import { UmbPropertyEditorUiElement } from "@umbraco-cms/backoffice/extension-registry";
 import { UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
 import { type UmbPropertyEditorConfigCollection } from "@umbraco-cms/backoffice/property-editor";
 import { UmbId } from "@umbraco-cms/backoffice/id";
 import type { UmbPropertyTypeModel } from "@umbraco-cms/backoffice/content-type";
-import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 import { UmbDataPathPropertyValueFilter } from "@umbraco-cms/backoffice/validation";
 import { UMB_PROPERTY_CONTEXT } from "@umbraco-cms/backoffice/property";
 import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
+
+import {OpenAPI} from '@umbraco-cms/backoffice/external/backend-api';
+import {fetchAllDefinitions} from "./queries/definitions.ts";
+import {getToken} from "./utils/token.ts";
+import {connect} from "pwa-helpers";
+import { store} from "./state/store.ts";
+import {PropertyValues} from "lit";
+import {setDefinitions} from "./state/slices/definitions.ts";
+import {PerplexContentBlocksBlock, PerplexContentBlocksValue} from "./types.ts";
+import {setAddBlockModal, toggleAddBlockModal} from "./state/slices/ui.ts";
+import {createUdi} from "./utils/common.ts";
+import {ON_ADD_TOAST} from "./events/toast.ts";
+import {addToast} from "./utils/toast.ts";
+import {UUIPopoverContainerElement} from "@umbraco-cms/backoffice/external/uui";
+import {ON_BLOCK_SAVED} from "./events/block.ts";
 
 // TODO: Use dynamic ids from endpoint /umbraco/perplex-content-blocks/api/definitions/all
 const BLOCK_ELEMENT_TYPE_KEY = "65217f3b-78f5-44d6-8af1-7eb675fbaef0";
 const DEFINITION_ID = "34269420-0bb9-48a4-b868-64698a05f6e1";
 const LAYOUT_ID = "31fda9e9-d960-4a26-8b39-54d1a5a9e5be";
 
-export type PerplexContentBlocksValue = {
-    version: number;
-    header: PerplexContentBlocksBlock | null;
-    blocks: PerplexContentBlocksBlock[];
-};
-
-export type PerplexContentBlocksBlock = {
-    id: string;
-    definitionId: string;
-    layoutId: string;
-    presetId?: string;
-    isDisabled: boolean;
-    content: UmbBlockDataType;
-    variants?: PerplexContentBlocksBlockVariant[];
-};
-
-export type PerplexContentBlocksBlockVariant = {
-    id: string;
-    alias: string;
-    content: UmbBlockDataType;
-};
-
-export type PerplexContentBlocksBlockOnChangeFn = (block: PerplexContentBlocksBlock) => void;
-
 @customElement("perplex-content-blocks")
-export default class PerplexContentBlocksElement extends UmbLitElement implements UmbPropertyEditorUiElement {
+export default class PerplexContentBlocksElement extends connect(store)(UmbLitElement) implements UmbPropertyEditorUiElement {
+    @query('#notifications')
+    private _notificationsElement?: HTMLElement;
+
     @state()
     properties: UmbPropertyTypeModel[] | undefined = undefined;
 
@@ -79,9 +72,36 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
     @state()
     culture!: string | null;
 
+    @state()
+    definiitons = [];
+
+    async fetchDefinitions() {
+        if (OpenAPI.TOKEN){
+            const token = await getToken();
+            const result = await fetchAllDefinitions(token);
+
+            if (result) {
+                store.dispatch(setDefinitions(result))
+                this.requestUpdate();
+            }
+        }
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.fetchDefinitions();
+        this.addEventListener(ON_ADD_TOAST, (e: Event) => {
+            addToast(e as CustomEvent, this)
+
+            this._notificationsElement?.hidePopover?.();
+            this._notificationsElement?.showPopover?.();
+        })
+
+        this.addEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent))
+    }
+
     constructor() {
         super();
-
         this.consumeContext(UMB_PROPERTY_CONTEXT, ctx => {
             const alias = ctx.getAlias() || "";
             const culture = ctx.getVariantId()?.culture;
@@ -93,6 +113,7 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
             this.culture = ctx.getVariantId().culture;
         });
     }
+
 
     valueChanged() {
         this.dispatchEvent(new UmbPropertyValueChangeEvent());
@@ -115,21 +136,20 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
     }
 
     addBlock() {
-        // TODO: Dynamic content type
-        const block = this.createBlock(BLOCK_ELEMENT_TYPE_KEY);
+        store.dispatch(setAddBlockModal(true))
+    }
 
-        const blocks = [...this._value.blocks, block];
+    onBlockAdded(event: CustomEvent) {
+        const blocks = [...this._value.blocks, event.detail.block];
         this._value = { ...this._value, blocks };
 
         this.valueChanged();
-    }
 
-    createUdi(entityType: string) {
-        return `umb://${entityType}/${UmbId.new().replace(/-/g, "")}`;
+        store.dispatch(setAddBlockModal(false));
     }
 
     createBlock(contentTypeKey: string): PerplexContentBlocksBlock {
-        const udi = this.createUdi("element");
+        const udi = createUdi("element");
         return {
             id: UmbId.new(),
             definitionId: DEFINITION_ID,
@@ -161,53 +181,69 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
     }
 
     render() {
-        return html`<div class="main">
-                <h2>Editor</h2>
-
-                ${(!this._value.header &&
-                    html`<uui-button look="primary" label="Add header" @click=${this.addHeader}></uui-button>`) ||
-                nothing}
-
-                <div class="blocks">
-                    ${(this._value.header &&
-                        html` <perplex-content-blocks-block
-                            .block=${this._value.header}
-                            .removeBlock=${this.removeHeader.bind(this)}
-                            .onChange=${this.updateHeader.bind(this)}
-                            .dataPath=${this.dataPath}
-                        ></perplex-content-blocks-block>`) ||
+        return html`
+                <div class="main">
+                    <h2>Editor</h2>
+                    ${(!this._value.header &&
+                        html`<uui-button look="primary" label="Add header" @click=${this.addHeader}></uui-button>`) ||
                     nothing}
-                    ${repeat(
-                        this._value.blocks,
-                        block => block.id,
-                        block =>
-                            html`<perplex-content-blocks-block
-                                .block=${block}
-                                .removeBlock=${this.removeBlock.bind(this)}
-                                .onChange=${this.updateBlock.bind(this)}
+
+                    <div class="blocks">
+                        ${(this._value.header &&
+                            html` <perplex-content-blocks-block
+                                .block=${this._value.header}
+                                .removeBlock=${this.removeHeader.bind(this)}
+                                .onChange=${this.updateHeader.bind(this)}
                                 .dataPath=${this.dataPath}
-                            ></perplex-content-blocks-block>`
-                    )}
+                            ></perplex-content-blocks-block>`) ||
+                        nothing}
+                        ${repeat(
+                            this._value.blocks,
+                            block => block.id,
+                            block =>
+                                html`<perplex-content-blocks-block
+                                    .block=${block}
+                                    .removeBlock=${this.removeBlock.bind(this)}
+                                    .onChange=${this.updateBlock.bind(this)}
+                                    .dataPath=${this.dataPath}
+                                ></perplex-content-blocks-block>`
+                        )}
+                    </div>
+
+                    <uui-button look="primary" label="Add block" @click=${this.addBlock}></uui-button>
+
+                    <div class="debug">
+                        <uui-button
+                            look="outline"
+                            label="raw value"
+                            @click=${() => (this.showDebug = !this.showDebug)}
+                        ></uui-button>
+                        ${(this.showDebug && html`<pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
+                    </div>
                 </div>
 
-                <uui-button look="primary" label="Add block" @click=${this.addBlock}></uui-button>
-
-                <div class="debug">
-                    <uui-button
-                        look="outline"
-                        label="raw value"
-                        @click=${() => (this.showDebug = !this.showDebug)}
-                    ></uui-button>
-                    ${(this.showDebug && html`<pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
+                <div class="sidebar">
+                    <h2>Sidebar</h2>
+                    <perplex-content-blocks-preview
+                        .culture=${this.culture}
+                        .pageId=${this.pageId}
+                    ></perplex-content-blocks-preview>
                 </div>
-            </div>
-            <div class="sidebar">
-                <h2>Sidebar</h2>
-                <perplex-content-blocks-preview
-                    .culture=${this.culture}
-                    .pageId=${this.pageId}
-                ></perplex-content-blocks-preview>
-            </div>`;
+                <uui-toast-notification-container
+                        auto-close="7000"
+                        bottom-up=""
+                        id="notifications"
+                        popover="manual"
+                        style="z-index: 2000;"
+                        padding: var(--uui-size-layout-1);"
+                >
+                </uui-toast-notification-container>
+
+                <pcb-add-block-modal>
+                </pcb-add-block-modal>
+
+
+        `;
     }
 
     static styles = [
@@ -216,6 +252,23 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
                 display: grid;
                 grid-template-columns: 3fr 1fr;
                 gap: 1rem;
+                overflow: hidden;
+            }
+
+            #notifications {
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 45px;
+                height: auto;
+                padding: var(--uui-size-layout-1);
+
+                position: fixed;
+                width: 100vw;
+                background: 0;
+                outline: 0;
+                border: 0;
+                margin: 0;
             }
 
             .main,

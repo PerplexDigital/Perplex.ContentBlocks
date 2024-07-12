@@ -10,8 +10,10 @@
         "watch": "vite build --watch"
     },
     "dependencies": {
+        "@reduxjs/toolkit": "^2.2.6",
         "lit": "^3.1.2",
-        "mutative": "^1.0.5"
+        "mutative": "^1.0.5",
+        "pwa-helpers": "^0.9.1"
     },
     "devDependencies": {
         "@umbraco-cms/backoffice": "14.0.0",

@@ -2,12 +2,13 @@ import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { html, repeat, customElement, property, css, state } from "@umbraco-cms/backoffice/external/lit";
 import type { UmbPropertyTypeModel } from "@umbraco-cms/backoffice/content-type";
 import { PerplexContentBlocksPropertyDatasetContext } from "./perplex-content-blocks-dataset-context";
-import { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from "./perplex-content-blocks";
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from "@umbraco-cms/backoffice/document-type";
 import { UMB_VALIDATION_CONTEXT } from "@umbraco-cms/backoffice/validation";
 import { UmbValidationContext } from "@umbraco-cms/backoffice/validation";
-import {ON_BLOCK_HEAD_CLICK} from "./events.ts";
 import {variables} from "./styles.ts";
+import contentBlockName from "./utils/contentBlockName.ts";
+import {PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn} from "./types.ts";
+import {ON_BLOCK_HEAD_CLICK} from "./events/block.ts";
 
 @customElement("perplex-content-blocks-block")
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
@@ -39,7 +40,6 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     connectedCallback() {
         super.connectedCallback();
-
         const errors: string[] = [];
 
         if (!this.block) {
@@ -109,9 +109,10 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
         return html`<div class="block">
             <pcb-block-head
-                .name=${this.elementType.name}
+                .blockDefinitionName=${this.elementType.name}
                 .icon=${this.elementType.icon}
                 .collapsed="${this.collapsed}"
+                .blockTemplateName="${contentBlockName('', {})}"
             >
             </pcb-block-head>
             <div class=${this.collapsed ? 'block__body block__body--hidden' : 'block__body block__body--open'}>
@@ -143,10 +144,11 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     background-color: var(--c-mystic);
                     display: grid;
 
-                    transition: 250ms grid-template-rows ease;
+                    transition: 250ms grid-template-rows ease, 250ms padding ease;
 
                     &.block__body--hidden {
                         grid-template-rows: 0fr;
+                        padding: 0 calc(var(--s) * 8);
                     }
 
                     &.block__body--open {
