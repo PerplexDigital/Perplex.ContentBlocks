@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet package">
+    <Version>1.0.0-rc.1</Version>
     <PackageId>Perplex.ContentBlocks.DeliveryApi</PackageId>
     <Description>Adds support for the Content Delivery API in Umbraco 12+</Description>
     <PackageTags>umbraco</PackageTags>
