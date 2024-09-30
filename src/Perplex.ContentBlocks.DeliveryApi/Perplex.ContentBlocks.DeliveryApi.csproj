@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <NoWarn>$(NoWarn);NU1902</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet package">
+    <PackageId>Perplex.ContentBlocks.DeliveryApi</PackageId>
+    <Description>Adds support for the Content Delivery API in Umbraco 12+</Description>
+    <PackageTags>umbraco</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="12.0.0" />
+    <ProjectReference Include="..\Perplex.ContentBlocks.Core\Perplex.ContentBlocks.Core.csproj" />
+  </ItemGroup>
+
+</Project>

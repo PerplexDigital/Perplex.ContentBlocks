@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.Core"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.StaticAssets", "Perplex.ContentBlocks.StaticAssets\Perplex.ContentBlocks.StaticAssets.csproj", "{B8986C6A-0F31-4963-A439-441844FD262A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.DeliveryApi", "Perplex.ContentBlocks.DeliveryApi\Perplex.ContentBlocks.DeliveryApi.csproj", "{36578E2A-1833-459B-A573-CFC7AB141AAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B8986C6A-0F31-4963-A439-441844FD262A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8986C6A-0F31-4963-A439-441844FD262A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8986C6A-0F31-4963-A439-441844FD262A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36578E2A-1833-459B-A573-CFC7AB141AAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36578E2A-1833-459B-A573-CFC7AB141AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36578E2A-1833-459B-A573-CFC7AB141AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36578E2A-1833-459B-A573-CFC7AB141AAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
