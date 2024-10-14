@@ -1,7 +1,7 @@
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import {html, customElement, property, css, nothing} from "@umbraco-cms/backoffice/external/lit";
 import {variables} from "../../styles.ts";
-import {ON_BLOCK_HEAD_CLICK} from "../../events/block.ts";
+import {BlockToggleEvent, ON_BLOCK_REMOVE} from "../../events/block.ts";
 
 @customElement("pcb-block-head")
 export default class PcbBlockHead extends UmbLitElement {
@@ -17,34 +17,49 @@ export default class PcbBlockHead extends UmbLitElement {
     @property({ attribute: false })
     collapsed: boolean = false;
 
+    @property({ attribute: false })
+    id!: string;
 
-    onHeadClicked = (e: Event) => {
-        this.dispatchEvent(new CustomEvent(ON_BLOCK_HEAD_CLICK, e))
+
+    onHeadClicked = () => {
+        this.dispatchEvent(BlockToggleEvent(this.id));
+    }
+
+    onRemoveClicked = (e: Event) => {
+        this.dispatchEvent(new CustomEvent(ON_BLOCK_REMOVE, e))
     }
 
     render() {
         return html`
-            <button
+            <div class="block-head">
+                <button
+                        type="button"
+                        @click=${this.onHeadClicked}
+                        class=${`block-head__toggle ${this.collapsed ? '' : 'block-head--open'}`}
+                >
+                    <uui-icon
+                            style="font-size: 20px; color: var(--c-submarine);"
+                            .name=${this.icon}
+                    >
+                    </uui-icon>
+                    <div class="block-head__title">
+                        ${this.blockTemplateName ? html`<strong>${this.blockTemplateName}</strong>` : nothing}
+                        <div>${this.blockDefinitionName}</div>
+                    </div>
+                </button>
+                <button
+                    class="block-head__control"
                     type="button"
-                    @click=${this.onHeadClicked}
-                    class=${`block-head ${this.collapsed ? '' : 'block-head--open'}`}
-            >
-                <uui-icon
-                    style="font-size: 20px; color: var(--c-submarine);"
-                    .name=${this.icon}
+                    @click=${this.onRemoveClicked}
                 >
-                </uui-icon>
-                <div class="block-head__title">
-                    ${ this.blockTemplateName ? html`<strong>${this.blockTemplateName}</strong>` : nothing }
-                    <div>${this.blockDefinitionName}</div>
-                </div>
+                    <uui-icon
+                            style="font-size: 20px; color: var(--c-submarine);"
+                            name="icon-trash"
+                    >
+                    </uui-icon>
+                </button>
+            </div>
 
-                <uui-icon
-                        style="font-size: 20px; color: var(--c-submarine);"
-                        name="icon-trash"
-                >
-                </uui-icon>
-            </button>
         `;
     }
 
@@ -61,6 +76,23 @@ export default class PcbBlockHead extends UmbLitElement {
                 cursor: pointer;
                 border-bottom: 1px solid rgba(var(--c-submarine), 0);
                 transition: 250ms border ease;
+
+                .block-head__control {
+                    border: none;
+                    cursor: pointer;
+                    &:hover {
+                        color: var(--c-danger);
+                    }
+                }
+
+                .block-head__toggle {
+                    display: flex;
+                    align-items: stretch;
+                    width: 100%;
+                    border: none;
+                    cursor: pointer;
+                    transition: 250ms border ease;
+                }
 
                 &.block-head--open {
                     border-radius: var(--r-lg) 0 border-radius: var(--r-lg) 0;

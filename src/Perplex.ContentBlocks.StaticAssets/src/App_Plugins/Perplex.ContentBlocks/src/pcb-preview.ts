@@ -2,7 +2,7 @@ import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { html, customElement, state, nothing, property } from "@umbraco-cms/backoffice/external/lit";
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from "@umbraco-cms/backoffice/auth";
 
-@customElement("perplex-content-blocks-preview")
+@customElement("pcb-preview")
 export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
     #authContext!: UmbAuthContext;
 
