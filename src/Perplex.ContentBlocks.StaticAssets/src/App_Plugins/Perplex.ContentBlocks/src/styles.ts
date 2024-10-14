@@ -3,9 +3,10 @@ import {css} from "@umbraco-cms/backoffice/external/lit";
 export const variables = css`
     :host {
         --c-submarine: 190, 190, 190;
-        --c-mystic: #f6f6f6;
+        --c-mystic: #fcfcfc;
         --c-wild-sand: #f5f5f5;
         --c-black: #212121;
+        --c-danger: #e33434;
 
         --s: 4px;
 

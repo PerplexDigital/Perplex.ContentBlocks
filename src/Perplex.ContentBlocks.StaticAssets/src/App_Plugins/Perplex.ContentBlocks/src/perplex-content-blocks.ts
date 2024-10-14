@@ -1,41 +1,55 @@
-import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { html, customElement, property, repeat, css, state, nothing, query } from "@umbraco-cms/backoffice/external/lit";
-import { UmbPropertyEditorUiElement } from "@umbraco-cms/backoffice/extension-registry";
-import { UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
-import { type UmbPropertyEditorConfigCollection } from "@umbraco-cms/backoffice/property-editor";
-import { UmbId } from "@umbraco-cms/backoffice/id";
-import type { UmbPropertyTypeModel } from "@umbraco-cms/backoffice/content-type";
-import { UmbDataPathPropertyValueFilter } from "@umbraco-cms/backoffice/validation";
-import { UMB_PROPERTY_CONTEXT } from "@umbraco-cms/backoffice/property";
-import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
+import {
+    html,
+    customElement,
+    property,
+    repeat,
+    css,
+    state,
+    nothing,
+    query,
+} from '@umbraco-cms/backoffice/external/lit';
+import { UmbPropertyEditorUiElement } from '@umbraco-cms/backoffice/extension-registry';
+import { UmbPropertyValueChangeEvent } from '@umbraco-cms/backoffice/property-editor';
+import { type UmbPropertyEditorConfigCollection } from '@umbraco-cms/backoffice/property-editor';
+import { UmbId } from '@umbraco-cms/backoffice/id';
+import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
+import { UmbDataPathPropertyValueFilter } from '@umbraco-cms/backoffice/validation';
+import { UMB_PROPERTY_CONTEXT } from '@umbraco-cms/backoffice/property';
+import { UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
 
-import {OpenAPI} from '@umbraco-cms/backoffice/external/backend-api';
-import {fetchAllDefinitions} from "./queries/definitions.ts";
-import {getToken} from "./utils/token.ts";
-import {connect} from "pwa-helpers";
-import { store} from "./state/store.ts";
-import {PropertyValues} from "lit";
-import {setDefinitions} from "./state/slices/definitions.ts";
-import {PerplexContentBlocksBlock, PerplexContentBlocksValue} from "./types.ts";
-import {setAddBlockModal, toggleAddBlockModal} from "./state/slices/ui.ts";
-import {createUdi} from "./utils/common.ts";
-import {ON_ADD_TOAST} from "./events/toast.ts";
-import {addToast} from "./utils/toast.ts";
-import {UUIPopoverContainerElement} from "@umbraco-cms/backoffice/external/uui";
-import {ON_BLOCK_SAVED} from "./events/block.ts";
+import { OpenAPI } from '@umbraco-cms/backoffice/external/backend-api';
+import { fetchAllDefinitions } from './queries/definitions.ts';
+import { getToken } from './utils/token.ts';
+import { connect } from 'pwa-helpers';
+import { store } from './state/store.ts';
+import { setDefinitions } from './state/slices/definitions.ts';
+import { PerplexContentBlocksBlock, PerplexContentBlocksValue } from './types.ts';
+import { setAddBlockModal } from './state/slices/ui.ts';
+import { createUdi } from './utils/common.ts';
+import { ON_ADD_TOAST } from './events/toast.ts';
+import { addToast } from './utils/toast.ts';
+import { ON_BLOCK_SAVED, ON_BLOCK_TOGGLE } from './events/block.ts';
+import { animate } from '@lit-labs/motion';
 
 // TODO: Use dynamic ids from endpoint /umbraco/perplex-content-blocks/api/definitions/all
-const BLOCK_ELEMENT_TYPE_KEY = "65217f3b-78f5-44d6-8af1-7eb675fbaef0";
-const DEFINITION_ID = "34269420-0bb9-48a4-b868-64698a05f6e1";
-const LAYOUT_ID = "31fda9e9-d960-4a26-8b39-54d1a5a9e5be";
+const BLOCK_ELEMENT_TYPE_KEY = '65217f3b-78f5-44d6-8af1-7eb675fbaef0';
+const DEFINITION_ID = '34269420-0bb9-48a4-b868-64698a05f6e1';
+const LAYOUT_ID = '31fda9e9-d960-4a26-8b39-54d1a5a9e5be';
 
-@customElement("perplex-content-blocks")
-export default class PerplexContentBlocksElement extends connect(store)(UmbLitElement) implements UmbPropertyEditorUiElement {
+@customElement('perplex-content-blocks')
+export default class PerplexContentBlocksElement
+    extends connect(store)(UmbLitElement)
+    implements UmbPropertyEditorUiElement
+{
     @query('#notifications')
     private _notificationsElement?: HTMLElement;
 
     @state()
     properties: UmbPropertyTypeModel[] | undefined = undefined;
+
+    @state()
+    openedBlocks: string[] = [];
 
     @state()
     showDebug: boolean = false;
@@ -76,12 +90,12 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
     definiitons = [];
 
     async fetchDefinitions() {
-        if (OpenAPI.TOKEN){
+        if (OpenAPI.TOKEN) {
             const token = await getToken();
             const result = await fetchAllDefinitions(token);
 
             if (result) {
-                store.dispatch(setDefinitions(result))
+                store.dispatch(setDefinitions(result));
                 this.requestUpdate();
             }
         }
@@ -91,29 +105,29 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
         super.connectedCallback();
         this.fetchDefinitions();
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
-            addToast(e as CustomEvent, this)
+            addToast(e as CustomEvent, this);
 
             this._notificationsElement?.hidePopover?.();
             this._notificationsElement?.showPopover?.();
-        })
+        });
 
-        this.addEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent))
+        this.addEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent));
+        this.addEventListener(ON_BLOCK_TOGGLE, (e: Event) => this.onBlockToggled(e as CustomEvent));
     }
 
     constructor() {
         super();
-        this.consumeContext(UMB_PROPERTY_CONTEXT, ctx => {
-            const alias = ctx.getAlias() || "";
+        this.consumeContext(UMB_PROPERTY_CONTEXT, (ctx) => {
+            const alias = ctx.getAlias() || '';
             const culture = ctx.getVariantId()?.culture;
             this.dataPath = `$.values[${UmbDataPathPropertyValueFilter({ alias, culture })}].value`;
         });
 
-        this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, ctx => {
+        this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (ctx) => {
             this.pageId = ctx.getUnique()!;
             this.culture = ctx.getVariantId().culture;
         });
     }
-
 
     valueChanged() {
         this.dispatchEvent(new UmbPropertyValueChangeEvent());
@@ -136,11 +150,20 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
     }
 
     addBlock() {
-        store.dispatch(setAddBlockModal(true))
+        store.dispatch(setAddBlockModal(true));
+    }
+
+    onBlockToggled(event: CustomEvent) {
+        if (!this.openedBlocks.includes(event.detail.id)) {
+            this.openedBlocks = [...this.openedBlocks, event.detail.id];
+        } else {
+            this.openedBlocks = this.openedBlocks.filter((id) => id !== event.detail.id);
+        }
     }
 
     onBlockAdded(event: CustomEvent) {
         const blocks = [...this._value.blocks, event.detail.block];
+        this.openedBlocks = [...this.openedBlocks, event.detail.block.id];
         this._value = { ...this._value, blocks };
 
         this.valueChanged();
@@ -149,7 +172,7 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
     }
 
     createBlock(contentTypeKey: string): PerplexContentBlocksBlock {
-        const udi = createUdi("element");
+        const udi = createUdi('element');
         return {
             id: UmbId.new(),
             definitionId: DEFINITION_ID,
@@ -163,13 +186,13 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
     }
 
     removeBlock(contentUdi: string) {
-        const blocks = this._value.blocks.filter(block => block.content.udi !== contentUdi);
+        const blocks = this._value.blocks.filter((block) => block.content.udi !== contentUdi);
         this._value = { ...this._value, blocks };
         this.valueChanged();
     }
 
     updateBlock(block: PerplexContentBlocksBlock) {
-        const idx = this._value.blocks.findIndex(b => b.id === block.id);
+        const idx = this._value.blocks.findIndex((b) => b.id === block.id);
         if (idx === -1) {
             return;
         }
@@ -182,65 +205,106 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
 
     render() {
         return html`
-                <div class="main">
-                    <h2>Editor</h2>
-                    ${(!this._value.header &&
-                        html`<uui-button look="primary" label="Add header" @click=${this.addHeader}></uui-button>`) ||
-                    nothing}
+            <div class="main">
+                <div class="pcb__wrapper">
+                    <div class="pcb__headers">
+                        <h2>Header</h2>
+                        <div class="pcb__blocks" ${animate()}>
+                            ${
+                                (this._value.header &&
+                                    html` <pcb-block
+                                        .block=${this._value.header}
+                                        .collapsed="${!this.openedBlocks.includes(this._value.header.id)}"
+                                        .removeBlock=${this.removeHeader.bind(this)}
+                                        .onChange=${this.updateHeader.bind(this)}
+                                        .dataPath=${this.dataPath}
+                                    ></pcb-block>`) ||
+                                nothing
+                            }
+                        </div>
 
-                    <div class="blocks">
-                        ${(this._value.header &&
-                            html` <perplex-content-blocks-block
-                                .block=${this._value.header}
-                                .removeBlock=${this.removeHeader.bind(this)}
-                                .onChange=${this.updateHeader.bind(this)}
-                                .dataPath=${this.dataPath}
-                            ></perplex-content-blocks-block>`) ||
-                        nothing}
-                        ${repeat(
-                            this._value.blocks,
-                            block => block.id,
-                            block =>
-                                html`<perplex-content-blocks-block
-                                    .block=${block}
-                                    .removeBlock=${this.removeBlock.bind(this)}
-                                    .onChange=${this.updateBlock.bind(this)}
-                                    .dataPath=${this.dataPath}
-                                ></perplex-content-blocks-block>`
-                        )}
+                        ${
+                            (!this._value.header &&
+                                html` <div class="pcb__headers-add">
+                                    <uui-button
+                                        look="primary"
+                                        @click=${this.addHeader}
+                                    >
+                                        <slot name="label"> Add header</slot>
+
+                                        <slot name="extra">
+                                            <uui-icon name="icon-add"></uui-icon>
+                                        </slot>
+                                    </uui-button>
+                                </div>`) ||
+                            nothing
+                        }
+
                     </div>
+                    <div class="pcb__content">
+                        <h2>Content</h2>
+                        <div class="pcb__blocks" ${animate()}>
+                            ${repeat(
+                                this._value.blocks,
+                                (block) => block.id,
+                                (block) =>
+                                    html` <pcb-block
+                                        .block=${block}
+                                        .collapsed="${!this.openedBlocks.includes(block.id)}"
+                                        .removeBlock=${this.removeBlock.bind(this)}
+                                        .onChange=${this.updateBlock.bind(this)}
+                                        .dataPath=${this.dataPath}
+                                        ${animate({ id: block.id })}
+                                    ></pcb-block>`,
+                            )}
+                        </div>
+                        <div class="pcb__block-add">
+                            <uui-button look="primary" @click=${this.addBlock}>
 
-                    <uui-button look="primary" label="Add block" @click=${this.addBlock}></uui-button>
+                                <slot name="label">
+                                    Add content
+                                </slot>
 
-                    <div class="debug">
-                        <uui-button
+                                <slot name="extra">
+                                    <uui-icon name="icon-add"></uui-icon>
+                                </slot>
+                            </uui-button>
+                        </div>
+                    </div>
+                </div>
+                <div class="debug">
+                    <uui-button
                             look="outline"
                             label="raw value"
                             @click=${() => (this.showDebug = !this.showDebug)}
-                        ></uui-button>
-                        ${(this.showDebug && html`<pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
-                    </div>
+                    ></uui-button>
+                    ${(this.showDebug && html` <pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
                 </div>
+            </div>
 
+            <uui-box
+                    headline="Smart Preview"
+                    headline-variant="h5"
+            >
                 <div class="sidebar">
-                    <h2>Sidebar</h2>
-                    <perplex-content-blocks-preview
-                        .culture=${this.culture}
-                        .pageId=${this.pageId}
-                    ></perplex-content-blocks-preview>
+                    <pcb-preview
+                            .culture=${this.culture}
+                            .pageId=${this.pageId}
+                    ></pcb-preview>
                 </div>
-                <uui-toast-notification-container
-                        auto-close="7000"
-                        bottom-up=""
-                        id="notifications"
-                        popover="manual"
-                        style="z-index: 2000;"
-                        padding: var(--uui-size-layout-1);"
-                >
-                </uui-toast-notification-container>
+            </uui-box>
+            <uui-toast-notification-container
+                    auto-close="7000"
+                    bottom-up=""
+                    id="notifications"
+                    popover="manual"
+                    style="z-index: 2000;"
+                    padding: var(--uui-size-layout-1);"
+            >
+            </uui-toast-notification-container>
 
-                <pcb-add-block-modal>
-                </pcb-add-block-modal>
+            <pcb-add-block-modal>
+            </pcb-add-block-modal>
 
 
         `;
@@ -276,15 +340,17 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
                 padding: 1rem 1.5rem;
             }
 
-            .main {
-                border: 4px solid #3465a4;
+            .pcb__wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 2rem;
             }
 
-            .sidebar {
-                border: 4px solid #75507b;
+            .pcb__region {
+                background-color: var(--c-wild-sand);
             }
 
-            .blocks {
+            .pcb__blocks {
                 display: grid;
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -293,6 +359,17 @@ export default class PerplexContentBlocksElement extends connect(store)(UmbLitEl
 
             .debug {
                 margin-top: 1rem;
+            }
+
+            .pcb__content {
+                .pcb__block-add {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+
+            .pcb__headers {
             }
         `,
     ];
