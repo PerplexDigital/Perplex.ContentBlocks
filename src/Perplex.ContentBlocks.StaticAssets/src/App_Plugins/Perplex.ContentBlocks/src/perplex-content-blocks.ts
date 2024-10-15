@@ -175,6 +175,7 @@ export default class PerplexContentBlocksElement
     onBlockAdded(event: CustomEvent) {
         if (event.detail.section === 'header') {
             this.updateHeader(event.detail.block);
+            this.openedBlocks = [...this.openedBlocks, event.detail.block.id];
             store.dispatch(resetAddBlockModal());
             return;
         }
@@ -186,20 +187,6 @@ export default class PerplexContentBlocksElement
         this.valueChanged();
 
         store.dispatch(setAddBlockModal(false));
-    }
-
-    createBlock(contentTypeKey: string): PerplexContentBlocksBlock {
-        const udi = createUdi('element');
-        return {
-            id: UmbId.new(),
-            definitionId: DEFINITION_ID,
-            layoutId: LAYOUT_ID,
-            isDisabled: false,
-            content: {
-                udi: udi,
-                contentTypeKey: contentTypeKey,
-            },
-        };
     }
 
     removeBlock(contentUdi: string) {
@@ -226,20 +213,23 @@ export default class PerplexContentBlocksElement
                 <div class="pcb__wrapper">
                     <div class="pcb__headers">
                         <h2>Header</h2>
-                        <div class="pcb__blocks" ${animate()}>
+
                             ${
                                 (this._value.header &&
-                                    html` <pcb-block
-                                        .block=${this._value.header}
-                                        .collapsed="${!this.openedBlocks.includes(this._value.header.id)}"
-                                        .removeBlock=${this.removeHeader.bind(this)}
-                                        .onChange=${this.updateHeader.bind(this)}
-                                        .dataPath=${this.dataPath}
-                                    ></pcb-block>`) ||
+                                    html` <div
+                                        class="pcb__blocks"
+                                        ${animate()}
+                                    >
+                                        <pcb-block
+                                            .block=${this._value.header}
+                                            .collapsed="${!this.openedBlocks.includes(this._value.header.id)}"
+                                            .removeBlock=${this.removeHeader.bind(this)}
+                                            .onChange=${this.updateHeader.bind(this)}
+                                            .dataPath=${this.dataPath}
+                                        ></pcb-block>
+                                    </div>`) ||
                                 nothing
                             }
-                        </div>
-
                         ${
                             (!this._value.header &&
                                 html` <div class="pcb__headers-add">
@@ -387,6 +377,11 @@ export default class PerplexContentBlocksElement
             }
 
             .pcb__headers {
+                .pcb__headers-add {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
             }
         `,
     ];
