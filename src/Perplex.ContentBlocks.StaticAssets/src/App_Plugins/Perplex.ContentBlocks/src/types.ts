@@ -1,22 +1,40 @@
-import type {UmbBlockDataType} from "@umbraco-cms/backoffice/block";
+import type { UmbBlockDataType } from '@umbraco-cms/backoffice/block';
 
 export interface PerplexBlockDefinition {
-    id:                   string;
-    name:                 string;
-    description:          string;
-    blockNameTemplate:    string;
-    previewImage:         string;
-    elementTypeKey:       string;
-    categoryIds:          string[];
-    layouts:              Layout[];
+    id: string;
+    name: string;
+    description: string;
+    blockNameTemplate: string;
+    previewImage: string;
+    elementTypeKey: string;
+    categoryIds: string[];
+    layouts: Layout[];
     limitToDocumentTypes: any[];
-    limitToCultures:      any[];
+    limitToCultures: any[];
+}
+
+export interface PCBCategory {
+    id: string;
+    name: string;
+    icon: string;
+    isHidden: boolean;
+    isEnabledForHeaders: boolean;
+    isDisabledForBlocks: boolean;
+}
+
+export interface DefinitionsDictionary {
+    [key: string]: PerplexBlockDefinition;
+}
+
+export interface PCBCategoryWithDefinitions {
+    category: PCBCategory;
+    definitions: DefinitionsDictionary;
 }
 
 export interface Layout {
-    id:           string;
-    name:         string;
-    description:  null;
+    id: string;
+    name: string;
+    description: null;
     previewImage: string;
 }
 
@@ -43,3 +61,5 @@ export type PerplexContentBlocksBlockVariant = {
 };
 
 export type PerplexContentBlocksBlockOnChangeFn = (block: PerplexContentBlocksBlock) => void;
+
+export type Section = 'header' | 'content';

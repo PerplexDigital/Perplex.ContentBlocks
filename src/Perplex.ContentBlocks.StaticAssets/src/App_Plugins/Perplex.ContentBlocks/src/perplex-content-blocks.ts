@@ -19,13 +19,13 @@ import { UMB_PROPERTY_CONTEXT } from '@umbraco-cms/backoffice/property';
 import { UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
 
 import { OpenAPI } from '@umbraco-cms/backoffice/external/backend-api';
-import { fetchAllDefinitions } from './queries/definitions.ts';
+import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
 import { getToken } from './utils/token.ts';
 import { connect } from 'pwa-helpers';
 import { store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
 import { PerplexContentBlocksBlock, PerplexContentBlocksValue } from './types.ts';
-import { setAddBlockModal } from './state/slices/ui.ts';
+import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
 import { createUdi } from './utils/common.ts';
 import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
@@ -87,12 +87,15 @@ export default class PerplexContentBlocksElement
     culture!: string | null;
 
     @state()
-    definiitons = [];
+    definitions = [];
 
-    async fetchDefinitions() {
+    @state()
+    categories = [];
+
+    async fetchDefinitonsPerCategory() {
         if (OpenAPI.TOKEN) {
             const token = await getToken();
-            const result = await fetchAllDefinitions(token);
+            const result = await fetchDefinitionsPerCategory(token);
 
             if (result) {
                 store.dispatch(setDefinitions(result));
@@ -103,7 +106,7 @@ export default class PerplexContentBlocksElement
 
     connectedCallback() {
         super.connectedCallback();
-        this.fetchDefinitions();
+        this.fetchDefinitonsPerCategory();
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
 
@@ -134,9 +137,12 @@ export default class PerplexContentBlocksElement
     }
 
     addHeader() {
-        const header = this.createBlock(BLOCK_ELEMENT_TYPE_KEY);
-        this.updateHeader(header);
-        this.valueChanged();
+        store.dispatch(
+            setAddBlockModal({
+                display: true,
+                section: 'header',
+            }),
+        );
     }
 
     updateHeader(header: PerplexContentBlocksBlock) {
@@ -150,7 +156,12 @@ export default class PerplexContentBlocksElement
     }
 
     addBlock() {
-        store.dispatch(setAddBlockModal(true));
+        store.dispatch(
+            setAddBlockModal({
+                display: true,
+                section: 'content',
+            }),
+        );
     }
 
     onBlockToggled(event: CustomEvent) {
@@ -162,6 +173,12 @@ export default class PerplexContentBlocksElement
     }
 
     onBlockAdded(event: CustomEvent) {
+        if (event.detail.section === 'header') {
+            this.updateHeader(event.detail.block);
+            store.dispatch(resetAddBlockModal());
+            return;
+        }
+
         const blocks = [...this._value.blocks, event.detail.block];
         this.openedBlocks = [...this.openedBlocks, event.detail.block.id];
         this._value = { ...this._value, blocks };

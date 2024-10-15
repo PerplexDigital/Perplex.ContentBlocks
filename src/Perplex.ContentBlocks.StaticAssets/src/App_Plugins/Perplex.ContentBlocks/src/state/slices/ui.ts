@@ -1,21 +1,36 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
+import { Section } from '../../types.ts';
 
+type UiState = {
+    addBlock: {
+        display: boolean;
+        section: Section;
+    };
+};
 
-const {actions: authActions, reducer: uiReducer} = createSlice({
+const { actions: authActions, reducer: uiReducer } = createSlice({
     name: 'ui',
     initialState: {
-        displayAddBlockModal: false,
-    },
+        addBlock: {
+            display: false,
+            section: 'content',
+        },
+    } as UiState,
     reducers: {
         toggleAddBlockModal: (state) => {
-            state.displayAddBlockModal = !state.displayAddBlockModal;
+            state.addBlock.display = !state.addBlock.display;
         },
         setAddBlockModal: (state, action) => {
-            state.displayAddBlockModal = action.payload;
-        }
-    }
-})
+            state.addBlock.display = action.payload.display;
+            state.addBlock.section = action.payload.section;
+        },
+        resetAddBlockModal: (state) => {
+            state.addBlock.display = false;
+            state.addBlock.section = 'content';
+        },
+    },
+});
 
-const {toggleAddBlockModal, setAddBlockModal} = authActions
+const { toggleAddBlockModal, setAddBlockModal, resetAddBlockModal } = authActions;
 
-export {uiReducer, setAddBlockModal, toggleAddBlockModal}
+export { uiReducer, setAddBlockModal, toggleAddBlockModal, resetAddBlockModal };

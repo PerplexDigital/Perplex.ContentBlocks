@@ -1,29 +1,26 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {PerplexBlockDefinition} from "../../types.ts";
+import { createSlice } from '@reduxjs/toolkit';
+import { PCBCategoryWithDefinitions, PerplexBlockDefinition } from '../../types.ts';
 
 export interface DefinitionsDictionary {
-    [key: string]: PerplexBlockDefinition
+    [key: string]: PerplexBlockDefinition;
 }
 
-const {actions: authActions, reducer: definitionsReducer} = createSlice({
+type DefinitionsState = {
+    value: PCBCategoryWithDefinitions[];
+};
+
+const { actions: authActions, reducer: definitionsReducer } = createSlice({
     name: 'definitions',
     initialState: {
-        value: {}
-    },
+        value: {},
+    } as DefinitionsState,
     reducers: {
         setDefinitions: (state, action) => {
-            // Convert array to DefinitionsDictionary
-            state.value = action.payload.reduce((acc: DefinitionsDictionary, curr: PerplexBlockDefinition) => {
-                acc[curr.id] = {
-                    ...curr,
-                }
+            state.value = action.payload;
+        },
+    },
+});
 
-                return acc;
-            }, {})
-        }
-    }
-})
+const { setDefinitions } = authActions;
 
-const {setDefinitions} = authActions
-
-export {definitionsReducer, setDefinitions}
+export { definitionsReducer, setDefinitions };
