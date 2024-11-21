@@ -12,7 +12,6 @@ import {
 import { UmbPropertyEditorUiElement } from '@umbraco-cms/backoffice/extension-registry';
 import { UmbPropertyValueChangeEvent } from '@umbraco-cms/backoffice/property-editor';
 import { type UmbPropertyEditorConfigCollection } from '@umbraco-cms/backoffice/property-editor';
-import { UmbId } from '@umbraco-cms/backoffice/id';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueFilter } from '@umbraco-cms/backoffice/validation';
 import { UMB_PROPERTY_CONTEXT } from '@umbraco-cms/backoffice/property';
@@ -26,16 +25,10 @@ import { store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
 import { PerplexContentBlocksBlock, PerplexContentBlocksValue } from './types.ts';
 import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
-import { createUdi } from './utils/common.ts';
 import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
 import { ON_BLOCK_SAVED, ON_BLOCK_TOGGLE } from './events/block.ts';
 import { animate } from '@lit-labs/motion';
-
-// TODO: Use dynamic ids from endpoint /umbraco/perplex-content-blocks/api/definitions/all
-const BLOCK_ELEMENT_TYPE_KEY = '65217f3b-78f5-44d6-8af1-7eb675fbaef0';
-const DEFINITION_ID = '34269420-0bb9-48a4-b868-64698a05f6e1';
-const LAYOUT_ID = '31fda9e9-d960-4a26-8b39-54d1a5a9e5be';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
