@@ -12,7 +12,4 @@ export default defineConfig({
             external: [/^@umbraco/],
         },
     },
-    define: {
-        'process.env': {}
-    }
 });

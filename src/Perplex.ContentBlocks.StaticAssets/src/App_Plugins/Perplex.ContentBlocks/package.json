@@ -5,21 +5,16 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "tsc && vite build",
         "preview": "vite preview",
         "watch": "vite build --watch"
     },
     "dependencies": {
-        "@lit-labs/motion": "^1.0.7",
-        "@reduxjs/toolkit": "^2.2.6",
         "lit": "^3.1.2",
-        "mutative": "^1.0.5",
-        "pwa-helpers": "^0.9.1"
+        "mutative": "^1.0.5"
     },
     "devDependencies": {
-        "@umbraco-cms/backoffice": "14.0.0",
-        "eslint-plugin-lit": "^1.15.0",
-        "prettier": "^3.3.3",
+        "@umbraco-cms/backoffice": "15.0.0",
         "typescript": "^5.2.2",
         "vite": "^5.2.0"
     }
