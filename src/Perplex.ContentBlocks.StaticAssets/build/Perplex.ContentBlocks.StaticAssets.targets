@@ -1,43 +1,51 @@
 ﻿<Project>
 
-  <PropertyGroup>
-    <ResolveStaticWebAssetsInputsDependsOn>PerplexContentBlocks_StaticAssets/IncludeAppPlugins;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
-  </PropertyGroup>
+    <PropertyGroup>
+        <ResolveStaticWebAssetsInputsDependsOn>PerplexContentBlocks_StaticAssets/IncludeAppPlugins;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix>src\</_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix>
-    <_Perplex_ContentBlocks_StaticAssets_AppPluginsDir>$(MSBuildProjectDirectory)\$(_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix)App_Plugins\Perplex.ContentBlocks</_Perplex_ContentBlocks_StaticAssets_AppPluginsDir>
-  </PropertyGroup>
+    <PropertyGroup>
+        <_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix>src\</_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix>
+        <_Perplex_ContentBlocks_StaticAssets_AppPluginsDir>$(MSBuildProjectDirectory)\$(_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix)App_Plugins\Perplex.ContentBlocks</_Perplex_ContentBlocks_StaticAssets_AppPluginsDir>
+    </PropertyGroup>
 
-  <Target Name="PerplexContentBlocks_StaticAssets/BeforeBuild" BeforeTargets="BeforeBuild">
-    <CallTarget Targets="PerplexContentBlocks_StaticAssets/Build" Condition="'$(Configuration)' == 'Release'" />
-  </Target>
+    <Target Name="PerplexContentBlocks_StaticAssets/BeforeBuild" BeforeTargets="BeforeBuild">
+        <CallTarget Targets="PerplexContentBlocks_StaticAssets/Build" Condition="'$(Configuration)' == 'Release'" />
+    </Target>
 
-  <Target Name="PerplexContentBlocks_StaticAssets/Build">
-    <Message Importance="High" Text="Perplex.ContentBlocks: Build Static Assets" />
-    <Exec Command="npm install" WorkingDirectory="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)" />
-    <Exec Command="npm run build" WorkingDirectory="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)" />
-  </Target>
+    <Target Name="PerplexContentBlocks_StaticAssets/Build">
+        <Message Importance="High" Text="Perplex.ContentBlocks: Build Static Assets" />
+        <Exec Command="pnpm install" WorkingDirectory="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)" />
+        <Exec Command="pnpm build" WorkingDirectory="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)" />
+    </Target>
 
-  <Target Name="PerplexContentBlocks_StaticAssets/IncludeAppPlugins">
-    <ItemGroup>
-      <_AppPluginsFiles Include="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)\umbraco-package.json"></_AppPluginsFiles>
-      <_AppPluginsFiles Include="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)\dist\**"></_AppPluginsFiles>
-    </ItemGroup>
+    <Target Name="PerplexContentBlocks_StaticAssets/IncludeAppPlugins">
+        <ItemGroup>
+            <_AppPluginsFiles Include="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)\umbraco-package.json"></_AppPluginsFiles>
+            <_AppPluginsFiles Include="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsDir)\dist\**"></_AppPluginsFiles>
+        </ItemGroup>
 
-    <DiscoverStaticWebAssets Candidates="@(_AppPluginsFiles)"
-      SourceId="$(PackageId)"
-      Pattern="$(_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix)**"
-      ContentRoot="$(MSBuildProjectDirectory)"
-      BasePath="$(StaticWebAssetBasePath)">
-      <Output TaskParameter="DiscoveredStaticWebAssets" ItemName="_DiscoveredAssets" />
-    </DiscoverStaticWebAssets>
+        <DefineStaticWebAssets
+          CandidateAssets="@(_AppPluginsFiles)"
+          SourceType="Computed"
+          SourceId="$(PackageId)"
+          ContentRoot="$(MSBuildProjectDirectory)\$(_Perplex_ContentBlocks_StaticAssets_AppPluginsPrefix)"
+          BasePath="$(StaticWebAssetBasePath)">
+            <Output TaskParameter="Assets" ItemName="_PerplexContentBlocksStaticWebAssets" />
+        </DefineStaticWebAssets>
 
-    <ItemGroup>
-      <StaticWebAsset Remove="@(_DiscoveredAssets)" />
-      <StaticWebAsset Include="@(_DiscoveredAssets)" />
-    </ItemGroup>
+        <DefineStaticWebAssetEndpoints
+            CandidateAssets="@(_PerplexContentBlocksStaticWebAssets)"
+            ExistingEndpoints="@(StaticWebAssetEndpoint)"
+            ContentTypeMappings="@(StaticWebAssetContentTypeMapping)">
+            <Output TaskParameter="Endpoints" ItemName="_PerplexContentBlocksStaticWebAssetEndpoint" />
+        </DefineStaticWebAssetEndpoints>
 
-  </Target>
+        <ItemGroup>
+            <StaticWebAsset Include="@(_PerplexContentBlocksStaticWebAssets)" />
+            <StaticWebAssetEndpoint Include="@(_PerplexContentBlocksStaticWebAssetEndpoint)" />
+        </ItemGroup>
+
+    </Target>
 
 </Project>

@@ -22,6 +22,9 @@ public class ContentBlocksValueRefiner(IContentTypeService contentTypeService)
 
     private static void Refine(BlockItemData? block, Dictionary<Guid, IContentType> elementTypes)
     {
+        /*
+         * TODO: This method may be obsolete in v15.
+
         if (block is null || !elementTypes.TryGetValue(block.ContentTypeKey, out var elementType))
         {
             return;
@@ -47,6 +50,8 @@ public class ContentBlocksValueRefiner(IContentTypeService contentTypeService)
             block.PropertyValues[propType.Alias] = new BlockItemData.BlockPropertyValue(null, propType);
             block.RawPropertyValues[propType.Alias] = null;
         }
+
+        */
     }
 
     private Dictionary<Guid, IContentType> GetElementTypes(ContentBlocksValue model)
@@ -54,7 +59,7 @@ public class ContentBlocksValueRefiner(IContentTypeService contentTypeService)
         var contentTypeKeys = GetContentTypeKeys(model);
 
         return contentTypeService
-            .GetAll(contentTypeKeys)
+            .GetMany(contentTypeKeys)
             .ToDictionary(b => b.Key);
 
         static HashSet<Guid> GetContentTypeKeys(ContentBlocksValue model)

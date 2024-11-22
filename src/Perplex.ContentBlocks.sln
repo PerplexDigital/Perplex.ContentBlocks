@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.Core"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Perplex.ContentBlocks.StaticAssets", "Perplex.ContentBlocks.StaticAssets\Perplex.ContentBlocks.StaticAssets.csproj", "{B8986C6A-0F31-4963-A439-441844FD262A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{2104B1D4-30BA-4D89-9E9F-10F6FCBDAF88}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

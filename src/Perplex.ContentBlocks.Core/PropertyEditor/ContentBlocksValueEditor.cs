@@ -58,24 +58,30 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 return;
             }
 
-            foreach (var prop in data.PropertyValues)
+            foreach (var prop in data.Values)
             {
-                prop.Value.PropertyType.Variations = ContentVariation.Nothing;
-                var tempProp = new Property(prop.Value.PropertyType);
-                tempProp.SetValue(prop.Value.Value);
+                if (prop.PropertyType is null)
+                {
+                    continue;
+                }
 
-                IDataEditor? propEditor = _propertyEditors[prop.Value.PropertyType.PropertyEditorAlias];
+                prop.PropertyType.Variations = ContentVariation.Nothing;
+                var tempProp = new Property(prop.PropertyType);
+                tempProp.SetValue(prop.Value);
+
+                IDataEditor? propEditor = _propertyEditors[prop.PropertyType.PropertyEditorAlias];
                 if (propEditor is null)
                 {
                     continue;
                 }
 
-                Guid dataTypeKey = prop.Value.PropertyType.DataTypeKey;
+                Guid dataTypeKey = prop.PropertyType.DataTypeKey;
                 var configuration = _dataTypeConfigCache.GetConfiguration(dataTypeKey);
                 var valEditor = propEditor.GetValueEditor(configuration);
                 var convValue = valEditor.ToEditor(tempProp);
 
-                data.RawPropertyValues[prop.Key] = convValue;
+                // Update raw value
+                prop.Value = convValue;
             }
         }
     }
@@ -103,19 +109,26 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 return;
             }
 
-            foreach (var prop in data.PropertyValues)
+            foreach (var prop in data.Values)
             {
-                var configuration = _dataTypeConfigCache.GetConfiguration(prop.Value.PropertyType.DataTypeKey);
+                if (prop.PropertyType is null)
+                {
+                    continue;
+                }
 
-                IDataEditor? propEditor = _propertyEditors[prop.Value.PropertyType.PropertyEditorAlias];
+                var configuration = _dataTypeConfigCache.GetConfiguration(prop.PropertyType.DataTypeKey);
+
+                IDataEditor? propEditor = _propertyEditors[prop.PropertyType.PropertyEditorAlias];
                 if (propEditor is null)
                 {
                     continue;
                 }
 
-                var contentPropData = new ContentPropertyData(prop.Value.Value, configuration);
-                var newValue = propEditor.GetValueEditor().FromEditor(contentPropData, prop.Value.Value);
-                data.RawPropertyValues[prop.Key] = newValue;
+                var contentPropData = new ContentPropertyData(prop.Value, configuration);
+                var newValue = propEditor.GetValueEditor().FromEditor(contentPropData, prop.Value);
+
+                // Update raw value
+                prop.Value = newValue;
             }
         }
     }
@@ -143,14 +156,19 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 
             var references = new HashSet<UmbracoEntityReference>();
 
-            foreach (var property in data.PropertyValues)
+            foreach (var property in data.Values)
             {
-                if (!_propertyEditors.TryGet(property.Value.PropertyType.PropertyEditorAlias, out IDataEditor? dataEditor))
+                if (property.PropertyType is null)
                 {
                     continue;
                 }
 
-                foreach (var reference in _referenceFactories.GetReferences(dataEditor, property.Value.Value))
+                if (!_propertyEditors.TryGet(property.PropertyType.PropertyEditorAlias, out IDataEditor? dataEditor))
+                {
+                    continue;
+                }
+
+                foreach (var reference in _referenceFactories.GetReferences(dataEditor, property.Value))
                 {
                     references.Add(reference);
                 }

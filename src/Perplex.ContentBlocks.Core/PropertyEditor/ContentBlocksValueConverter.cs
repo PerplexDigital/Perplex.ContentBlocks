@@ -13,7 +13,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
     : PropertyValueConverterBase
 {
     public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
-        => PropertyCacheLevel.Snapshot;
+        => PropertyCacheLevel.Elements;
 
     public override bool IsConverter(IPublishedPropertyType propertyType)
         => propertyType.EditorAlias == Constants.PropertyEditor.Alias;
@@ -27,8 +27,8 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
 
         var interValue = new ContentBlocksInterValue
         {
-            Header = SelectBlock(value.Header),
-            Blocks = value.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? [],
+            Header = SelectBlock(value.Header, owner),
+            Blocks = value.Blocks?.Select(block => SelectBlock(block, owner)).OfType<ContentBlockInterValue>().ToArray() ?? [],
         };
 
         var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>() ?? ContentBlocksConfiguration.DefaultConfiguration;
@@ -39,7 +39,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
 
         var blocks = config.Structure.HasFlag(Structure.Blocks)
             ? interValue.Blocks.Select(CreateViewModel).OfType<IContentBlockViewModel>().ToArray()
-            : Array.Empty<IContentBlockViewModel>();
+            : [];
 
         return new Rendering.ContentBlocks
         {
@@ -47,7 +47,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
             Blocks = blocks
         };
 
-        ContentBlockInterValue? SelectBlock(ContentBlockValue? original)
+        ContentBlockInterValue? SelectBlock(ContentBlockValue? original, IPublishedElement owner)
         {
             if (original is null || original.IsDisabled)
             {
@@ -75,7 +75,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
 
         IContentBlockViewModel? CreateViewModel(ContentBlockInterValue? block)
         {
-            if (block?.Content is null || converter.ConvertToElement(block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
+            if (block?.Content is null || converter.ConvertToElement(owner, block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
             {
                 return null;
             }
