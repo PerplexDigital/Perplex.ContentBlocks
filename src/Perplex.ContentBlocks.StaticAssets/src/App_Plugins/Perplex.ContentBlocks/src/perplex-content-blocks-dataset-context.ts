@@ -1,37 +1,37 @@
-import type { UmbPropertyDatasetContext } from "@umbraco-cms/backoffice/property";
-import type { UmbControllerHost } from "@umbraco-cms/backoffice/controller-api";
-import { UmbControllerBase } from "@umbraco-cms/backoffice/class-api";
-import { UmbVariantId } from "@umbraco-cms/backoffice/variant";
-import type { UmbBlockDataModel } from "@umbraco-cms/backoffice/block";
-import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from "./perplex-content-blocks.js";
-import { Observable, UmbBooleanState, UmbObjectState, UmbStringState } from "@umbraco-cms/backoffice/observable-api";
-import { UmbContextToken } from "@umbraco-cms/backoffice/context-api";
-import { create } from "mutative";
+import type { UmbPropertyDatasetContext } from '@umbraco-cms/backoffice/property';
+import type { UmbControllerHost } from '@umbraco-cms/backoffice/controller-api';
+import { UmbControllerBase } from '@umbraco-cms/backoffice/class-api';
+import { UmbVariantId } from '@umbraco-cms/backoffice/variant';
+import type { UmbBlockDataModel } from '@umbraco-cms/backoffice/block';
+import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from './types.js';
+import { Observable, UmbBooleanState, UmbObjectState, UmbStringState } from '@umbraco-cms/backoffice/observable-api';
+import { UmbContextToken } from '@umbraco-cms/backoffice/context-api';
+import { create } from 'mutative';
 
 export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBase implements UmbPropertyDatasetContext {
     #block: PerplexContentBlocksBlock;
     #content: UmbObjectState<UmbBlockDataModel>;
-    #token = new UmbContextToken<PerplexContentBlocksPropertyDatasetContext>("UmbPropertyDatasetContext");
+    #token = new UmbContextToken<PerplexContentBlocksPropertyDatasetContext>('UmbPropertyDatasetContext');
     #onChange: (block: PerplexContentBlocksBlock) => void;
 
     getVariantId() {
         return UmbVariantId.CreateInvariant();
     }
     getEntityType() {
-        return "element";
+        return 'element';
     }
     getUnique() {
         return this.#block.id;
     }
 
     getName(): string | undefined {
-        return "TODO: ContentBlocks name";
+        return 'TODO: ContentBlocks name';
     }
 
     constructor(
         host: UmbControllerHost,
         block: PerplexContentBlocksBlock,
-        onChange: PerplexContentBlocksBlockOnChangeFn
+        onChange: PerplexContentBlocksBlockOnChangeFn,
     ) {
         super(host);
 
@@ -42,7 +42,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         this.provideContext(this.#token, this);
     }
     getReadOnly(): boolean {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     readOnly: Observable<boolean> = new UmbBooleanState(false).asObservable();
@@ -52,14 +52,18 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
     propertyVariantId?: ((propertyAlias: string) => Promise<Observable<UmbVariantId | undefined>>) | undefined;
 
     async propertyValueByAlias<ReturnType = unknown>(propertyAlias: string) {
-        return this.#content.asObservablePart(c => c.values.find(v => v.alias === propertyAlias)?.value as ReturnType);
+        return this.#content.asObservablePart(
+            (c) =>
+                c.values.find((v) => v.alias === propertyAlias && v.culture == null && v.segment == null)
+                    ?.value as ReturnType,
+        );
     }
 
     async setPropertyValue(propertyAlias: string, value: unknown) {
-        const updated = create(this.#content.getValue(), content => {
-            let item = content.values.find(v => v.alias === propertyAlias);
+        const updated = create(this.#content.getValue(), (content) => {
+            let item = content.values.find((v) => v.alias === propertyAlias && v.culture == null && v.segment == null);
             if (item == null) {
-                item = { alias: propertyAlias, editorAlias: "", culture: null, segment: null };
+                item = { alias: propertyAlias, editorAlias: '', culture: null, segment: null };
                 content.values.push(item);
             }
 

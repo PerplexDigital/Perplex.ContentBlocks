@@ -1,8 +1,8 @@
-import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { html, customElement, state, nothing, property } from "@umbraco-cms/backoffice/external/lit";
-import { UMB_AUTH_CONTEXT, UmbAuthContext } from "@umbraco-cms/backoffice/auth";
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
+import { html, customElement, state, nothing, property } from '@umbraco-cms/backoffice/external/lit';
+import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 
-@customElement("perplex-content-blocks-preview")
+@customElement('pcb-preview')
 export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
     #authContext!: UmbAuthContext;
 
@@ -20,7 +20,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
         if (this.culture != null) qs.push(`culture=${this.culture}`);
         qs.push(`token=${this.token}`);
 
-        return `/umbraco/perplex-content-blocks/api/preview?${qs.join("&")}`;
+        return `/umbraco/perplex-content-blocks/api/preview?${qs.join('&')}`;
     }
 
     @property({ attribute: false })
@@ -32,7 +32,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
     constructor() {
         super();
 
-        this.consumeContext(UMB_AUTH_CONTEXT, ctx => {
+        this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
             this.#authContext = ctx;
         });
     }
@@ -46,7 +46,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
     }
 
     scrollToBlock(blockId: string) {
-        const iframe = this.renderRoot.querySelector("iframe");
+        const iframe = this.renderRoot.querySelector('iframe');
         if (iframe == null) {
             // Cannot scroll without an iframe
             return;
