@@ -1,10 +1,16 @@
-import type { UmbPropertyDatasetContext } from '@umbraco-cms/backoffice/property';
+import type { UmbPropertyDatasetContext, UmbPropertyValueData } from '@umbraco-cms/backoffice/property';
 import type { UmbControllerHost } from '@umbraco-cms/backoffice/controller-api';
 import { UmbControllerBase } from '@umbraco-cms/backoffice/class-api';
 import { UmbVariantId } from '@umbraco-cms/backoffice/variant';
 import type { UmbBlockDataModel } from '@umbraco-cms/backoffice/block';
 import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from './types.js';
-import { Observable, UmbBooleanState, UmbObjectState, UmbStringState } from '@umbraco-cms/backoffice/observable-api';
+import {
+    Observable,
+    UmbArrayState,
+    UmbBooleanState,
+    UmbObjectState,
+    UmbStringState,
+} from '@umbraco-cms/backoffice/observable-api';
 import { UmbContextToken } from '@umbraco-cms/backoffice/context-api';
 import { create } from 'mutative';
 
@@ -12,6 +18,8 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
     #block: PerplexContentBlocksBlock;
     #content: UmbObjectState<UmbBlockDataModel>;
     #token = new UmbContextToken<PerplexContentBlocksPropertyDatasetContext>('UmbPropertyDatasetContext');
+    #properties = new UmbArrayState<UmbPropertyValueData>([], (x) => x.alias);
+
     #onChange: (block: PerplexContentBlocksBlock) => void;
 
     getVariantId() {
@@ -39,10 +47,17 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         this.#content = new UmbObjectState<UmbBlockDataModel>(this.#block.content);
         this.#onChange = onChange;
 
+        this.properties = this.#properties.asObservable();
+
         this.provideContext(this.#token, this);
     }
     getReadOnly(): boolean {
         throw new Error('Method not implemented.');
+    }
+
+    readonly properties: Observable<Array<UmbPropertyValueData> | undefined>;
+    getProperties(): Promise<Array<UmbPropertyValueData> | undefined> {
+        return Promise.resolve(this.#properties.getValue());
     }
 
     readOnly: Observable<boolean> = new UmbBooleanState(false).asObservable();
