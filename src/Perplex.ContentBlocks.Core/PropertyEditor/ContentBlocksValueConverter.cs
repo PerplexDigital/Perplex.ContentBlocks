@@ -1,15 +1,13 @@
 ﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
 using Perplex.ContentBlocks.PropertyEditor.Value;
 using Perplex.ContentBlocks.Rendering;
-using Perplex.ContentBlocks.Variants;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksValueConverter(IServiceProvider serviceProvider, ContentBlocksValueDeserializer deserializer,
-    IContentBlockVariantSelector variantSelector, BlockEditorConverter converter)
+public class ContentBlocksValueConverter(IServiceProvider serviceProvider, ContentBlocksValueDeserializer deserializer, BlockEditorConverter converter)
     : PropertyValueConverterBase
 {
     public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
@@ -25,20 +23,14 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
             return Rendering.ContentBlocks.Empty;
         }
 
-        var interValue = new ContentBlocksInterValue
-        {
-            Header = SelectBlock(value.Header, owner),
-            Blocks = value.Blocks?.Select(block => SelectBlock(block, owner)).OfType<ContentBlockInterValue>().ToArray() ?? [],
-        };
-
         var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>() ?? ContentBlocksConfiguration.DefaultConfiguration;
 
         var header = config.Structure.HasFlag(Structure.Header)
-            ? CreateViewModel(interValue.Header)
+            ? CreateViewModel(value.Header)
             : null;
 
         var blocks = config.Structure.HasFlag(Structure.Blocks)
-            ? interValue.Blocks.Select(CreateViewModel).OfType<IContentBlockViewModel>().ToArray()
+            ? value.Blocks?.Select(CreateViewModel).OfType<IContentBlockViewModel>().ToArray() ?? []
             : [];
 
         return new Rendering.ContentBlocks
@@ -47,33 +39,7 @@ public class ContentBlocksValueConverter(IServiceProvider serviceProvider, Conte
             Blocks = blocks
         };
 
-        ContentBlockInterValue? SelectBlock(ContentBlockValue? original, IPublishedElement owner)
-        {
-            if (original is null || original.IsDisabled)
-            {
-                return null;
-            }
-
-            // Start with default content
-            var block = new ContentBlockInterValue
-            {
-                Id = original.Id,
-                DefinitionId = original.DefinitionId,
-                LayoutId = original.LayoutId,
-                Content = original.Content,
-            };
-
-            if (variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantValue variant)
-            {
-                // Use variant instead, note we always use the definition + layout specified by the block
-                block.Id = variant.Id;
-                block.Content = variant.Content;
-            };
-
-            return block;
-        }
-
-        IContentBlockViewModel? CreateViewModel(ContentBlockInterValue? block)
+        IContentBlockViewModel? CreateViewModel(ContentBlockValue? block)
         {
             if (block?.Content is null || converter.ConvertToElement(owner, block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
             {

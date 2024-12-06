@@ -14,7 +14,6 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 {
     private readonly IJsonSerializer _jsonSerializer;
     private readonly ContentBlocksValueDeserializer _deserializer;
-    private readonly ContentBlocksValueRefiner _refiner;
     private readonly PropertyEditorCollection _propertyEditors;
     private readonly IDataTypeConfigurationCache _dataTypeConfigCache;
     private readonly DataValueReferenceFactoryCollection _referenceFactories;
@@ -22,14 +21,13 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     public ContentBlocksValueEditor(
         IShortStringHelper shortStringHelper, IJsonSerializer jsonSerializer, IIOHelper ioHelper,
         DataEditorAttribute attribute, ContentBlocksValidator validator, ContentBlocksValueDeserializer deserializer,
-        ContentBlocksValueRefiner refiner, PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache,
+        PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache,
         DataValueReferenceFactoryCollection referenceFactories)
         : base(shortStringHelper, jsonSerializer, ioHelper, attribute)
     {
         Validators.Add(validator);
         _jsonSerializer = jsonSerializer;
         _deserializer = deserializer;
-        _refiner = refiner;
         _propertyEditors = propertyEditors;
         _dataTypeConfigCache = dataTypeConfigCache;
         _referenceFactories = referenceFactories;
@@ -43,11 +41,15 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             return base.ToEditor(property, culture, segment);
         }
 
-        _refiner.Refine(model);
+        ToEditor(model.Header?.Content);
 
-        ContentBlocksValueIterator.Iterate(model,
-            block => ToEditor(block.Content),
-            variant => ToEditor(variant.Content));
+        if (model.Blocks is not null)
+        {
+            foreach (var block in model.Blocks)
+            {
+                ToEditor(block.Content);
+            }
+        }
 
         return model;
 
@@ -94,11 +96,15 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             return base.FromEditor(editorValue, currentValue);
         }
 
-        _refiner.Refine(model);
+        FromEditor(model.Header?.Content);
 
-        ContentBlocksValueIterator.Iterate(model,
-            block => FromEditor(block.Content),
-            variant => FromEditor(variant.Content));
+        if (model.Blocks is not null)
+        {
+            foreach (var block in model.Blocks)
+            {
+                FromEditor(block.Content);
+            }
+        }
 
         return _jsonSerializer.Serialize(model);
 
@@ -137,15 +143,27 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
     {
         if (_deserializer.Deserialize(value?.ToString()) is not ContentBlocksValue model)
         {
-            return [];
+            yield break;
         }
 
-        _refiner.Refine(model);
+        if (model.Header is not null)
+        {
+            foreach (var reference in GetReferences(model.Header.Content))
+            {
+                yield return reference;
+            }
+        }
 
-        return ContentBlocksValueIterator.Iterate(model,
-            block => GetReferences(block.Content),
-            variant => GetReferences(variant.Content)
-        ).SelectMany(r => r).ToArray();
+        if (model.Blocks is not null)
+        {
+            foreach (var block in model.Blocks)
+            {
+                foreach (var reference in GetReferences(block.Content))
+                {
+                    yield return reference;
+                }
+            }
+        }
 
         UmbracoEntityReference[] GetReferences(BlockItemData? data)
         {

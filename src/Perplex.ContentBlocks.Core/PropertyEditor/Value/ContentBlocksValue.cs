@@ -4,6 +4,11 @@ namespace Perplex.ContentBlocks.PropertyEditor.Value;
 
 public class ContentBlocksValue
 {
+    /// <summary>
+    /// The current model value version
+    /// </summary>
+    public const int CurrentVersion = 4;
+
     [JsonPropertyName("version")]
     public int Version { get; set; }
 

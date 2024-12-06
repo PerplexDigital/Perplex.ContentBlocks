@@ -7,7 +7,7 @@ using Umbraco.Cms.Core.Services;
 namespace Perplex.ContentBlocks.PropertyEditor;
 
 public class ContentBlocksValidator(
-    IPropertyValidationService validationService, ContentBlocksValueDeserializer deserializer, ContentBlocksValueRefiner refiner)
+    IPropertyValidationService validationService, ContentBlocksValueDeserializer deserializer)
     : ComplexEditorValidator(validationService)
 {
     protected override IEnumerable<ElementTypeValidationModel> GetElementTypeValidation(object? value, PropertyValidationContext validationContext)
@@ -17,13 +17,16 @@ public class ContentBlocksValidator(
             return [];
         }
 
-        refiner.Refine(model);
+        ContentBlockValue?[] blocks = [
+            model.Header,
+            .. model.Blocks
+        ];
 
-        var validationModels = ContentBlocksValueIterator.Iterate(model,
-            block => Validate(block.Content, block.Id.ToString()),
-            variant => Validate(variant.Content, variant.Id.ToString()));
-
-        return [.. validationModels.OfType<ElementTypeValidationModel>()];
+        return blocks
+            .OfType<ContentBlockValue>()
+            .Select(block => Validate(block.Content, block.Id.ToString()))
+            .OfType<ElementTypeValidationModel>()
+            .ToArray();
 
         static ElementTypeValidationModel? Validate(BlockItemData? data, string jsonPathPrefix)
         {

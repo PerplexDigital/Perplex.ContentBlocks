@@ -22,7 +22,4 @@ public class ContentBlockValue
 
     [JsonPropertyName("content")]
     public BlockItemData? Content { get; set; }
-
-    [JsonPropertyName("variants")]
-    public List<ContentBlockVariantValue>? Variants { get; set; }
 }

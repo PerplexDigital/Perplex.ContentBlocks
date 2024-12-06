@@ -1,4 +1,5 @@
-﻿using Umbraco.Cms.Core.Serialization;
+﻿using System.Text.Json.Nodes;
+using Umbraco.Cms.Core.Serialization;
 
 namespace Perplex.ContentBlocks.PropertyEditor.Value;
 
@@ -18,7 +19,7 @@ public class ContentBlocksValueDeserializer(IJsonSerializer jsonSerializer)
 
         try
         {
-            var value = jsonSerializer.Deserialize<ContentBlocksValue>(json);
+            var value = jsonSerializer.Deserialize<JsonNode>(json);
 
             if (value is null)
             {
@@ -33,25 +34,19 @@ public class ContentBlocksValueDeserializer(IJsonSerializer jsonSerializer)
         }
     }
 
-    private static ContentBlocksValue MaybeTransformData(ContentBlocksValue value)
+    private ContentBlocksValue? MaybeTransformData(JsonNode value)
     {
-        if (value.Version < 3)
+        if (value["version"]?.GetValue<int>() is not int version)
         {
-            // We added a Variants property in v3, for any older version we will ensure this property becomes an empty Array.
-            if (value.Header != null && value.Header.Variants == null)
-            {
-                value.Header.Variants = [];
-            }
-
-            if (value.Blocks != null)
-            {
-                foreach (var block in value.Blocks)
-                {
-                    block.Variants ??= [];
-                }
-            }
+            return null;
         }
 
-        return value;
+        if (version < 4)
+        {
+            // TODO:
+            // v1 - v3: upgrade format to v4
+        }
+
+        return jsonSerializer.Deserialize<ContentBlocksValue>(value.ToString());
     }
 }
