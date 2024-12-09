@@ -2,39 +2,25 @@ import type { UmbPropertyDatasetContext, UmbPropertyValueData } from '@umbraco-c
 import type { UmbControllerHost } from '@umbraco-cms/backoffice/controller-api';
 import { UmbControllerBase } from '@umbraco-cms/backoffice/class-api';
 import { UmbVariantId } from '@umbraco-cms/backoffice/variant';
-import type { UmbBlockDataModel } from '@umbraco-cms/backoffice/block';
-import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from './types.js';
+import type { UmbBlockDataValueModel } from '@umbraco-cms/backoffice/block';
 import {
     Observable,
     UmbArrayState,
     UmbBooleanState,
-    UmbObjectState,
+    UmbClassState,
     UmbStringState,
 } from '@umbraco-cms/backoffice/observable-api';
-import { UmbContextToken } from '@umbraco-cms/backoffice/context-api';
 import { create } from 'mutative';
+import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from './types.js';
+import { propertyAliasPrefix } from './components/block';
+import { UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
 
 export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBase implements UmbPropertyDatasetContext {
     #block: PerplexContentBlocksBlock;
-    #content: UmbObjectState<UmbBlockDataModel>;
-    #token = new UmbContextToken<PerplexContentBlocksPropertyDatasetContext>('UmbPropertyDatasetContext');
-    #properties = new UmbArrayState<UmbPropertyValueData>([], (x) => x.alias);
-
+    #properties: UmbArrayState<UmbBlockDataValueModel>;
+    #variantId: UmbClassState<UmbVariantId>;
+    #PROPERTY_ALIAS_PREFIX_LENGTH: number;
     #onChange: (block: PerplexContentBlocksBlock) => void;
-
-    getVariantId() {
-        return UmbVariantId.CreateInvariant();
-    }
-    getEntityType() {
-        return 'element';
-    }
-    getUnique() {
-        return this.#block.id;
-    }
-
-    getName(): string | undefined {
-        return 'TODO: ContentBlocks name';
-    }
 
     constructor(
         host: UmbControllerHost,
@@ -44,48 +30,80 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         super(host);
 
         this.#block = block;
-        this.#content = new UmbObjectState<UmbBlockDataModel>(this.#block.content);
         this.#onChange = onChange;
 
+        this.#properties = new UmbArrayState(block.content.values, (p) => p.alias + '#' + p.culture + '#' + p.segment);
+        this.#variantId = new UmbClassState(UmbVariantId.CreateInvariant());
+
+        this.#PROPERTY_ALIAS_PREFIX_LENGTH = propertyAliasPrefix(this.#block).length;
+
+        this.name = new UmbStringState(this.getName()).asObservable();
         this.properties = this.#properties.asObservable();
+        this.readOnly = new UmbBooleanState(this.getReadOnly()).asObservable();
 
-        this.provideContext(this.#token, this);
-    }
-    getReadOnly(): boolean {
-        throw new Error('Method not implemented.');
+        this.provideContext(UMB_PROPERTY_DATASET_CONTEXT.contextAlias, this);
     }
 
-    readonly properties: Observable<Array<UmbPropertyValueData> | undefined>;
+    getEntityType() {
+        return 'element';
+    }
+
+    getName() {
+        return 'TODO: Block';
+    }
+
     getProperties(): Promise<Array<UmbPropertyValueData> | undefined> {
         return Promise.resolve(this.#properties.getValue());
     }
 
-    readOnly: Observable<boolean> = new UmbBooleanState(false).asObservable();
+    getReadOnly(): boolean {
+        return false;
+    }
 
-    readonly name: Observable<string | undefined> = new UmbStringState(this.getName()).asObservable();
+    getUnique() {
+        return this.#block.id;
+    }
 
-    propertyVariantId?: ((propertyAlias: string) => Promise<Observable<UmbVariantId | undefined>>) | undefined;
+    getVariantId() {
+        return this.#variantId.getValue();
+    }
+
+    readonly name: Observable<string | undefined>;
+    readonly properties: Observable<Array<UmbPropertyValueData>>;
+    readonly readOnly: Observable<boolean>;
+    readonly propertyVariantId? = () => Promise.resolve(this.#variantId.asObservable());
+
+    cleanAlias(alias: string): string {
+        return alias.substring(this.#PROPERTY_ALIAS_PREFIX_LENGTH);
+    }
 
     async propertyValueByAlias<ReturnType = unknown>(propertyAlias: string) {
-        return this.#content.asObservablePart(
-            (c) =>
-                c.values.find((v) => v.alias === propertyAlias && v.culture == null && v.segment == null)
+        const alias = this.cleanAlias(propertyAlias);
+        return this.#properties.asObservablePart(
+            (props) =>
+                props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null)
                     ?.value as ReturnType,
         );
     }
 
     async setPropertyValue(propertyAlias: string, value: unknown) {
-        const updated = create(this.#content.getValue(), (content) => {
-            let item = content.values.find((v) => v.alias === propertyAlias && v.culture == null && v.segment == null);
+        const alias = this.cleanAlias(propertyAlias);
+        const values = create(this.#properties.getValue(), (props) => {
+            let item = props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null);
             if (item == null) {
-                item = { alias: propertyAlias, editorAlias: '', culture: null, segment: null };
-                content.values.push(item);
+                item = { alias, editorAlias: '', culture: null, segment: null };
+                props.push(item);
             }
 
             item.value = value;
         });
-        this.#content.setValue(updated);
-        this.#block = { ...this.#block, content: updated };
+
+        this.#properties.setValue(values);
+
+        this.#block = create(this.#block, (block) => {
+            block.content.values = values;
+        });
+
         this.#onChange(this.#block);
     }
 }
