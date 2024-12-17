@@ -27,15 +27,15 @@ Umbraco 14+ no longer supports Nested Content and the Backoffice is completely r
 
 The next major version of ContentBlocks - `v4` - will transition from Nested Content as the underlying data storage to Umbraco's Block Editor technology which is used in Block List + Block Grid. In addition we will migrate the property editor UI in the Backoffice from AngularJS to Web Components. ContentBlocks v4 will no longer support Umbraco v10-v13.
 
-We intend to release v4 at the end of this year, around the same time as Umbraco v15. This timeline is still subject to change.
-
-Because Umbraco is planning to introduce [Block Level Variations in v15](https://github.com/umbraco/Announcements/issues/16) which requires breaking changes to the Block data structure and other Block related code ContentBlocks v4 will target Umbraco v15+, skipping v14 entirely. The current (unstable) state of v14 contributes to this idea too as it is unlikely many companies want to use v14 in production at the moment.
+Because Umbraco is planning to introduce [Block Level Variations in v15](https://github.com/umbraco/Announcements/issues/16) which requires breaking changes to the Block data structure and other Block related code ContentBlocks v4 will target Umbraco v15 or v16, skipping v14 entirely. The current (unstable) state of v14 contributes to this idea too as it is unlikely many companies want to use v14 in production at the moment.
 
 ContentBlocks v4 will automatically migrate property data of ContentBlocks v1 - v3 to v4. This is necessary for any websites that upgrade from Umbraco 8-13 to 15+ and have existing ContentBlocks property data. This data needs to be migrated from the Nested Content format to the new Block Editor format. Both editors use Element Types which means the actual property data is the same but they use a different wrapper structure around it so that will have to be migrated.
 
 Until ContentBlocks v4 is out Umbraco 15+ is not supported.
 
-ContentBlocks v4 will be released no later than January 31<sup>st</sup>, 2025.
+ContentBlocks v4 was originally scheduled for release at the end of 2024 but we need more time. 
+
+When we have more information about a release date it will be posted here.
 
 ## Umbraco 10+ / .NET 6+
 
