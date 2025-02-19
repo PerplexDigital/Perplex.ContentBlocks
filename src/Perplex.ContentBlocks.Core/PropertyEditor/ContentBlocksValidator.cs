@@ -19,7 +19,7 @@ public class ContentBlocksValidator(
 
         ContentBlockValue?[] blocks = [
             model.Header,
-            .. model.Blocks
+            .. model.Blocks ?? []
         ];
 
         return blocks
