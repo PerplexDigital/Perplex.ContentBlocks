@@ -91,7 +91,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         const values = create(this.#properties.getValue(), (props) => {
             let item = props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null);
             if (item == null) {
-                item = { alias, editorAlias: '', culture: null, segment: null };
+                item = { alias, editorAlias: '', culture: null, segment: null, entityType: '' };
                 props.push(item);
             }
 

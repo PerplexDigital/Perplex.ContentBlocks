@@ -50,7 +50,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     @property({ attribute: false })
     dataPath!: string;
 
-    #validationController!: UmbValidationController;
+    #validationController?: UmbValidationController;
 
     connectedCallback() {
         super.connectedCallback();
@@ -124,8 +124,8 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     clearValidationMessages() {
         for (const property of this.elementType.properties) {
             const path = `${this.dataPath}.${this.block.id}.${property.alias}`;
-            this.#validationController.messages.removeMessagesByTypeAndPath('client', path);
-            this.#validationController.messages.removeMessagesByTypeAndPath('server', path);
+            this.#validationController?.messages.removeMessagesByTypeAndPath('client', path);
+            this.#validationController?.messages.removeMessagesByTypeAndPath('server', path);
         }
     }
 

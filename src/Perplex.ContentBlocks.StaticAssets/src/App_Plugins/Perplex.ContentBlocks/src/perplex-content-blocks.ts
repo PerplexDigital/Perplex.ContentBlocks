@@ -9,16 +9,13 @@ import {
     nothing,
     query,
 } from '@umbraco-cms/backoffice/external/lit';
-import { UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from '@umbraco-cms/backoffice/property-editor';
+import { UmbPropertyEditorUiElement } from '@umbraco-cms/backoffice/property-editor';
 import { type UmbPropertyEditorConfigCollection } from '@umbraco-cms/backoffice/property-editor';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
 import { UMB_PROPERTY_CONTEXT } from '@umbraco-cms/backoffice/property';
 import { UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
-
-import { OpenAPI } from '@umbraco-cms/backoffice/external/backend-api';
 import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
-import { getToken } from './utils/token.ts';
 import { connect } from 'pwa-helpers';
 import { store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
@@ -28,6 +25,8 @@ import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
 import { ON_BLOCK_SAVED, ON_BLOCK_TOGGLE } from './events/block.ts';
 import { animate } from '@lit-labs/motion';
+import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
+import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -84,15 +83,19 @@ export default class PerplexContentBlocksElement
     @state()
     categories = [];
 
-    async fetchDefinitonsPerCategory() {
-        if (OpenAPI.TOKEN) {
-            const token = await getToken();
-            const result = await fetchDefinitionsPerCategory(token);
+    #authContext?: UmbAuthContext;
 
-            if (result) {
-                store.dispatch(setDefinitions(result));
-                this.requestUpdate();
-            }
+    async fetchDefinitonsPerCategory() {
+        const token = await this.#authContext?.getLatestToken();
+        if (token == null) {
+            throw new Error('No auth token available');
+        }
+
+        const result = await fetchDefinitionsPerCategory(token);
+
+        if (result) {
+            store.dispatch(setDefinitions(result));
+            this.requestUpdate();
         }
     }
 
@@ -113,19 +116,23 @@ export default class PerplexContentBlocksElement
     constructor() {
         super();
         this.consumeContext(UMB_PROPERTY_CONTEXT, (ctx) => {
-            const alias = ctx.getAlias() || '';
-            const culture = ctx.getVariantId()?.culture;
+            const alias = ctx?.getAlias() || '';
+            const culture = ctx?.getVariantId()?.culture;
             this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture })}].value`;
         });
 
         this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (ctx) => {
-            this.pageId = ctx.getUnique()!;
-            this.culture = ctx.getVariantId().culture;
+            this.pageId = ctx?.getUnique()!;
+            this.culture = ctx?.getVariantId().culture || '';
+        });
+
+        this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
+            this.#authContext = ctx;
         });
     }
 
     valueChanged() {
-        this.dispatchEvent(new UmbPropertyValueChangeEvent());
+        this.dispatchEvent(new UmbChangeEvent());
     }
 
     addHeader() {

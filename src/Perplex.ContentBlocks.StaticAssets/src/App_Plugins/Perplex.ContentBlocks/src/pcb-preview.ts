@@ -4,7 +4,7 @@ import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 
 @customElement('pcb-preview')
 export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
-    #authContext!: UmbAuthContext;
+    #authContext?: UmbAuthContext;
 
     @state()
     private ok: boolean = false;
@@ -38,7 +38,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
     }
 
     async firstUpdated() {
-        const token = await this.#authContext.getLatestToken();
+        const token = await this.#authContext?.getLatestToken();
         if (token != null && token.length > 0) {
             this.token = token;
             this.ok = true;
