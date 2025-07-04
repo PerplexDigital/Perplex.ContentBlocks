@@ -25,8 +25,8 @@ importers:
         version: 0.9.1
     devDependencies:
       '@umbraco-cms/backoffice':
-        specifier: 16.0.0-rc5
-        version: 16.0.0-rc5(13d39b038cef8ca03edbba614f263f31)
+        specifier: 16.0.0
+        version: 16.0.0(13d39b038cef8ca03edbba614f263f31)
       eslint-plugin-lit:
         specifier: ^1.15.0
         version: 1.15.0(eslint@9.12.0(jiti@2.4.2))
@@ -551,8 +551,8 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@umbraco-cms/backoffice@16.0.0-rc5':
-    resolution: {integrity: sha512-0YXVMFROzEYw2wOwv0rcFHusRZFivuTssZge1jpe1CePCqwlsDJmS1n6DhxMGOU61VGIZF0u2KR9VqGIV+H/9w==}
+  '@umbraco-cms/backoffice@16.0.0':
+    resolution: {integrity: sha512-d8YvcCu4Bddps4agKHZoBgmhPhJhffoEEHUFD18iiRx+6ccRighO/qaE/5X8SeZzusSuyFnbeyJRo/5tyu0FRA==}
     engines: {node: '>=22', npm: '>=10.9'}
     peerDependencies:
       '@hey-api/client-fetch': ^0.10.0
@@ -572,8 +572,8 @@ packages:
       '@tiptap/pm': 2.11.7
       '@tiptap/starter-kit': 2.11.7
       '@types/diff': ^7.0.2
-      '@umbraco-ui/uui': 1.14.0-rc.4
-      '@umbraco-ui/uui-css': 1.14.0-rc.4
+      '@umbraco-ui/uui': 1.14.0
+      '@umbraco-ui/uui-css': 1.14.0
       diff: ^7.0.0
       dompurify: ^3.2.5
       element-internals-polyfill: ^3.0.2
@@ -840,11 +840,6 @@ packages:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
-
-  acorn@8.12.1:
-    resolution: {integrity: sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==}
-    engines: {node: '>=0.4.0'}
-    hasBin: true
 
   acorn@8.14.1:
     resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
@@ -1924,7 +1919,7 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
-  '@umbraco-cms/backoffice@16.0.0-rc5(13d39b038cef8ca03edbba614f263f31)':
+  '@umbraco-cms/backoffice@16.0.0(13d39b038cef8ca03edbba614f263f31)':
     dependencies:
       '@hey-api/client-fetch': 0.10.2(@hey-api/openapi-ts@0.71.0(typescript@5.5.4))
       '@tiptap/core': 2.10.2(@tiptap/pm@2.10.2)
@@ -2595,11 +2590,9 @@ snapshots:
     transitivePeerDependencies:
       - lit
 
-  acorn-jsx@5.3.2(acorn@8.12.1):
+  acorn-jsx@5.3.2(acorn@8.14.1):
     dependencies:
-      acorn: 8.12.1
-
-  acorn@8.12.1: {}
+      acorn: 8.14.1
 
   acorn@8.14.1: {}
 
@@ -2791,8 +2784,8 @@ snapshots:
 
   espree@10.2.0:
     dependencies:
-      acorn: 8.12.1
-      acorn-jsx: 5.3.2(acorn@8.12.1)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       eslint-visitor-keys: 4.1.0
 
   esquery@1.6.0:
