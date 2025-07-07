@@ -6,8 +6,20 @@ public static partial class Constants
 {
     public static partial class PropertyEditor
     {
+        /// <summary>
+        /// The property editor alias of Perplex.ContentBlocks.
+        /// </summary>
         public const string Alias = "Perplex.ContentBlocks";
+
+        /// <summary>
+        /// The property editor name of Perplex.ContentBlocks.
+        /// </summary>
         public const string Name = "Perplex.ContentBlocks";
+
+        /// <summary>
+        /// The property editor UI alias of Perplex.ContentBlocks.
+        /// </summary>
+        public const string UiAlias = "Perplex.ContentBlocks.UI";
 
         /// <summary>
         /// The view path to the main ContentBlocks HTML, including a cache buster when the product version can be read from the DLL.
