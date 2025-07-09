@@ -5,8 +5,8 @@
   "extensions": [
     {
       "type": "propertyEditorUi",
-      "alias": "Perplex.ContentBlocks.UI",
-      "name": "Perplex.ContentBlocks.UI",
+      "alias": "Perplex.ContentBlocks",
+      "name": "Perplex.ContentBlocks",
       "element": "/App_Plugins/Perplex.ContentBlocks/dist/perplex.content-blocks.js",
       "elementName": "perplex-content-blocks",
       "meta": {

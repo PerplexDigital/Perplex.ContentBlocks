@@ -19,7 +19,7 @@ public static partial class Constants
         /// <summary>
         /// The property editor UI alias of Perplex.ContentBlocks.
         /// </summary>
-        public const string UiAlias = "Perplex.ContentBlocks.UI";
+        public const string UiAlias = "Perplex.ContentBlocks";
 
         /// <summary>
         /// The view path to the main ContentBlocks HTML, including a cache buster when the product version can be read from the DLL.
