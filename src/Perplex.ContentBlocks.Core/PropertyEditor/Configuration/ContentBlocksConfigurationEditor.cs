@@ -59,11 +59,18 @@ public class ContentBlocksConfigurationEditor(IIOHelper ioHelper, IConfiguration
         {
             const string LegacyVersionKey = "Version";
 
-            if (!source.TryGetValue(LegacyVersionKey, out var versionObj) ||
-                !int.TryParse(versionObj?.ToString(), out var version) ||
-                version >= 4)
+            if (source.TryGetValue(LegacyVersionKey, out var legacyVersion))
             {
-                // Up to date
+                source[VersionKey] = legacyVersion;
+            }
+
+            int version = default;
+
+            if (source.TryGetValue(VersionKey, out var versionObj) &&
+                int.TryParse(versionObj?.ToString(), out version) &&
+                version >= ContentBlocksConfiguration.CurrentVersion)
+            {
+                // Already up-to-date
                 return source;
             }
 
@@ -111,5 +118,17 @@ public class ContentBlocksConfigurationEditor(IIOHelper ioHelper, IConfiguration
                 };
             }
         }
+    }
+
+    public override string ToDatabase(IDictionary<string, object> configuration, IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
+    {
+        if (!configuration.TryGetValue(VersionKey, out var versionObj) ||
+            !int.TryParse(versionObj?.ToString(), out var version) ||
+            version < ContentBlocksConfiguration.CurrentVersion)
+        {
+            configuration[VersionKey] = ContentBlocksConfiguration.CurrentVersion;
+        }
+
+        return base.ToDatabase(configuration, configurationEditorJsonSerializer);
     }
 }
