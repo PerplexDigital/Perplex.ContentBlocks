@@ -58,6 +58,7 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
         }
 
         this.dispatchEvent(BlockSavedEvent({ block: this.selectedBlock, section: this.section }));
+        this.selectedBlock = null;
     }
 
     renderBlocks() {
@@ -116,6 +117,7 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
                         <uui-button
                             look="primary"
                             type="button"
+                            ?disabled=${!this.selectedBlock}
                             @click=${this.onSaveClicked}
                         >
                             Save
