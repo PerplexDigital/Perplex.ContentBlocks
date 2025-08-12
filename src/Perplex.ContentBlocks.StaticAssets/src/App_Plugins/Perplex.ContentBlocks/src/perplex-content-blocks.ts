@@ -19,14 +19,16 @@ import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
 import { connect } from 'pwa-helpers';
 import { store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
-import { PerplexContentBlocksBlock, PerplexContentBlocksValue } from './types.ts';
+import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, PerplexContentBlocksValue } from './types.ts';
 import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
 import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
-import { ON_BLOCK_SAVED, ON_BLOCK_TOGGLE } from './events/block.ts';
+import {ON_BLOCK_SAVED, ON_BLOCK_TOGGLE, ON_BLOCK_UPDATED} from './events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
+import { PropertyValues } from 'lit';
+import { register } from 'swiper/element/bundle';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -78,7 +80,7 @@ export default class PerplexContentBlocksElement
     culture!: string | null;
 
     @state()
-    definitions = [];
+    definitions: PCBCategoryWithDefinitions[] = [];
 
     @state()
     categories = [];
@@ -99,6 +101,10 @@ export default class PerplexContentBlocksElement
         }
     }
 
+    stateChanged(state: any) {
+        this.definitions = state.definitions.value;
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.fetchDefinitonsPerCategory();
@@ -111,6 +117,24 @@ export default class PerplexContentBlocksElement
 
         this.addEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent));
         this.addEventListener(ON_BLOCK_TOGGLE, (e: Event) => this.onBlockToggled(e as CustomEvent));
+        this.addEventListener(ON_BLOCK_UPDATED, (e: Event) => this.updateBlock(e as CustomEvent));
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeEventListener(ON_ADD_TOAST, (e: Event) => {
+            addToast(e as CustomEvent, this);
+
+            this._notificationsElement?.hidePopover?.();
+            this._notificationsElement?.showPopover?.();
+        });
+        this.removeEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent));
+        this.removeEventListener(ON_BLOCK_TOGGLE, (e: Event) => this.onBlockToggled(e as CustomEvent));
+        this.removeEventListener(ON_BLOCK_UPDATED, (e: Event) => this.updateBlock(e as CustomEvent));
+    }
+
+    protected firstUpdated(_changedProperties: PropertyValues) {
+        register()
     }
 
     constructor() {
@@ -188,22 +212,33 @@ export default class PerplexContentBlocksElement
         store.dispatch(setAddBlockModal(false));
     }
 
-    removeBlock(key: string) {
-        const blocks = this._value.blocks.filter((block) => block.content.key !== key);
+    removeBlock(id: string) {
+        const blocks = this._value.blocks.filter((block) => block.id !== id);
+
         this._value = { ...this._value, blocks };
         this.valueChanged();
     }
 
-    updateBlock(block: PerplexContentBlocksBlock) {
-        const idx = this._value.blocks.findIndex((b) => b.id === block.id);
+    updateBlock(event: CustomEvent) {
+        const idx = this._value.blocks.findIndex((b) => b.id === event.detail.block.id);
         if (idx === -1) {
             return;
         }
 
         const blocks = [...this._value.blocks];
-        blocks.splice(idx, 1, block);
+        blocks.splice(idx, 1, event.detail.block);
         this._value = { ...this._value, blocks };
         this.valueChanged();
+    }
+
+    findDefinitionById(id: string) {
+        if (!Array.isArray(this.definitions)) {
+            return null;
+        }
+        const found = this.definitions
+            .map(cat => cat.definitions[id])
+            .find(def => def !== undefined);
+        return found || null;
     }
 
     render() {
@@ -212,7 +247,6 @@ export default class PerplexContentBlocksElement
                 <div class="pcb__wrapper">
                     <div class="pcb__headers">
                         <h2>Header</h2>
-
                             ${
                                 (this._value.header &&
                                     html` <div
@@ -223,7 +257,6 @@ export default class PerplexContentBlocksElement
                                             .block=${this._value.header}
                                             .collapsed="${!this.openedBlocks.includes(this._value.header.id)}"
                                             .removeBlock=${this.removeHeader.bind(this)}
-                                            .onChange=${this.updateHeader.bind(this)}
                                             .dataPath=${this.dataPath}
                                         ></pcb-block>
                                     </div>`) ||
@@ -258,8 +291,8 @@ export default class PerplexContentBlocksElement
                                         .block=${block}
                                         .collapsed="${!this.openedBlocks.includes(block.id)}"
                                         .removeBlock=${this.removeBlock.bind(this)}
-                                        .onChange=${this.updateBlock.bind(this)}
                                         .dataPath=${this.dataPath}
+                                        .definition=${this.findDefinitionById(block.definitionId)}
                                         ${animate({ id: block.id })}
                                     ></pcb-block>`,
                             )}
@@ -278,6 +311,7 @@ export default class PerplexContentBlocksElement
                         </div>
                     </div>
                 </div>
+
                 <div class="debug">
                     <uui-button
                             look="outline"
@@ -287,18 +321,6 @@ export default class PerplexContentBlocksElement
                     ${(this.showDebug && html` <pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
                 </div>
             </div>
-
-            <uui-box
-                    headline="Smart Preview"
-                    headline-variant="h5"
-            >
-                <div class="sidebar">
-                    <pcb-preview
-                            .culture=${this.culture}
-                            .pageId=${this.pageId}
-                    ></pcb-preview>
-                </div>
-            </uui-box>
             <uui-toast-notification-container
                     auto-close="7000"
                     bottom-up=""
@@ -320,9 +342,12 @@ export default class PerplexContentBlocksElement
         css`
             :host {
                 display: grid;
-                grid-template-columns: 3fr 1fr;
                 gap: 1rem;
-                overflow: hidden;
+                min-height: 40rem;
+
+                @media only screen and (min-width: 1800px) {
+                    grid-template-columns: 3fr 1fr;
+                }
             }
 
             #notifications {

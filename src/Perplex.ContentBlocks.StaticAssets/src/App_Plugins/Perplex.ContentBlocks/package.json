@@ -14,7 +14,8 @@
         "@reduxjs/toolkit": "^2.2.6",
         "lit": "^3.1.2",
         "mutative": "^1.0.5",
-        "pwa-helpers": "^0.9.1"
+        "pwa-helpers": "^0.9.1",
+        "swiper": "^11.2.10"
     },
     "devDependencies": {
         "@umbraco-cms/backoffice": "16.0.0",

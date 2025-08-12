@@ -5,11 +5,12 @@ import { PerplexContentBlocksPropertyDatasetContext } from '../../perplex-conten
 import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@umbraco-cms/backoffice/document-type';
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
-import { variables } from '../../styles.ts';
 import contentBlockName from '../../utils/contentBlockName.ts';
-import { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from '../../types.ts';
-import { ON_BLOCK_REMOVE } from '../../events/block.ts';
+import { PerplexBlockDefinition, PerplexContentBlocksBlock } from '../../types.ts';
+import {BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE} from '../../events/block.ts';
 import { animate } from '@lit-labs/motion';
+import { PropertyValues } from 'lit';
+
 
 export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
     return block.id + '_';
@@ -32,6 +33,9 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     @property({ attribute: false })
     collapsed: boolean = true;
 
+    @property()
+    definition?: PerplexBlockDefinition;
+
     @state()
     properties: UmbPropertyTypeModel[] | undefined = undefined;
 
@@ -43,9 +47,6 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     @property({ attribute: false })
     removeBlock!: (udi: string) => void;
-
-    @property({ attribute: false })
-    onChange!: PerplexContentBlocksBlockOnChangeFn;
 
     @property({ attribute: false })
     dataPath!: string;
@@ -71,12 +72,28 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         if (errors.length > 0) {
             throw new Error(errors.join(' | '));
         }
+
+
+        this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
-
+        this.removeEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
         this.clearValidationMessages();
+    }
+
+    onLayoutChange = (event: CustomEvent<any>) => {
+        // do nothing if the layout didn't change
+        if (this.block.layoutId === event.detail.selectedLayout.id) {
+            return;
+        }
+        const updatedBlock: PerplexContentBlocksBlock = {
+            ...this.block,
+            layoutId: event.detail.selectedLayout.id,
+        }
+
+        this.dispatchEvent(BlockUpdatedEvent(updatedBlock))
     }
 
     constructor() {
@@ -93,9 +110,13 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
         // Remove the block after the animation has finished
         setTimeout(() => {
-            this.removeBlock(this.block.content.key);
+            this.removeBlock(this.block.id);
         }, 250);
     };
+
+    onBlockUpdate = (block: PerplexContentBlocksBlock) => {
+        this.dispatchEvent(BlockUpdatedEvent(block));
+    }
 
     async firstUpdated() {
         const elementTypeResponse = await this.#contentTypeRepository.requestByUnique(
@@ -106,7 +127,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         }
 
         this.elementType = elementTypeResponse.data;
-        new PerplexContentBlocksPropertyDatasetContext(this, this.block, this.onChange);
+        new PerplexContentBlocksPropertyDatasetContext(this, this.block, this.onBlockUpdate);
 
         // TODO: Fetch only the distinct dataTypes + in parallel
         for (const property of this.elementType.properties) {
@@ -146,11 +167,13 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             })}
         >
             <pcb-block-head
+                .block=${this.block}
                 .id=${this.block.id}
                 .blockDefinitionName=${this.elementType.name}
                 .icon=${this.elementType.icon}
                 .collapsed="${this.collapsed}"
-                .blockTemplateName="${contentBlockName('', {})}"
+                .blockTemplateName="${contentBlockName(this.definition?.blockNameTemplate ?? '', this.block)}"
+                .definition=${this.definition}
             >
             </pcb-block-head>
             <div class=${this.collapsed ? 'block__body block__body--hidden' : 'block__body block__body--open'}>
@@ -169,6 +192,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                                 .description=${property.description}
                                 .appearance=${property.appearance}
                                 property-editor-ui-alias=${dataType.editorUiAlias}
+                                orientation="vertical"
                                 .config=${dataType.values}
                                 .validation=${property.validation}
                             >
@@ -180,8 +204,18 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         </div>`;
     }
 
+    updated(changedProperties: PropertyValues) {
+        super.updated(changedProperties);
+
+        this.updateComplete.then(() => {
+            Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
+                const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
+                if (layout) layout.orientation = 'vertical';
+            });
+        });
+    }
+
     static styles = [
-        variables,
         css`
             .block {
                 box-shadow: var(--bs-base);

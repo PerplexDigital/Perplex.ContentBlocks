@@ -81,7 +81,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         const alias = this.cleanAlias(propertyAlias);
         return this.#properties.asObservablePart(
             (props) =>
-                props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null)
+                props?.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null)
                     ?.value as ReturnType,
         );
     }

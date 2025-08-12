@@ -2,7 +2,6 @@ import { html, customElement, state, repeat, css, query } from '@umbraco-cms/bac
 import { connect } from 'pwa-helpers';
 import { store } from '../../state/store.ts';
 import { LitElement } from 'lit';
-import { variables } from '../../styles.ts';
 import { setAddBlockModal } from '../../state/slices/ui.ts';
 import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock } from '../../types.ts';
 import { BlockSavedEvent, ON_BLOCK_SELECTED } from '../../events/block.ts';
@@ -128,7 +127,6 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
     }
 
     static styles = [
-        variables,
         css`
             :host {
                 --slider-width: 95vw;
@@ -191,20 +189,12 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
 
                 .addBlockModal__blockList {
                     display: grid;
-                    grid-template-columns: repeat(1, 1fr);
+                    grid-template-columns: repeat(1, minmax(0, 1fr));
                     gap: 20px;
                     padding: calc(var(--s) * 20);
 
                     @media only screen and (min-width: 500px) {
-                        grid-template-columns: repeat(2, 1fr);
-                    }
-
-                    @media only screen and (min-width: 900px) {
-                        grid-template-columns: repeat(3, 1fr);
-                    }
-
-                    @media only screen and (min-width: 1400px) {
-                        grid-template-columns: repeat(4, 1fr);
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
                     }
                 }
 
