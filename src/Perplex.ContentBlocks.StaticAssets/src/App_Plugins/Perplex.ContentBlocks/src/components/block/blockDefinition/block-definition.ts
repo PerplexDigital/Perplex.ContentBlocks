@@ -1,8 +1,7 @@
 import { html, customElement, property, nothing, state } from '@umbraco-cms/backoffice/external/lit';
-import { PerplexBlockDefinition } from '../../../types.ts';
+import { PerplexBlockDefinition, PerplexContentBlocksBlock } from '../../../types.ts';
 import { UUICardElement } from '@umbraco-cms/backoffice/external/uui';
 import { UmbId } from '@umbraco-cms/backoffice/id';
-import { createUdi } from '../../../utils/common.ts';
 import { LitElement, PropertyValues, unsafeCSS } from 'lit';
 import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
@@ -32,8 +31,7 @@ export class PcbBlockDefinition extends LitElement {
 
     onSelected() {
         if (!this.definition) return;
-        const udi = createUdi('element');
-        //Todo dynamically select layout
+
         this.dispatchEvent(
             new CustomEvent(ON_BLOCK_SELECTED, {
                 bubbles: true,
@@ -43,10 +41,10 @@ export class PcbBlockDefinition extends LitElement {
                     layoutId: this.definition?.layouts[this.selectedLayoutIndex].id,
                     isDisabled: false,
                     content: {
-                        udi: udi,
+                        key: UmbId.new(),
                         contentTypeKey: this.definition.elementTypeKey,
                     },
-                },
+                } as PerplexContentBlocksBlock,
                 composed: true,
             }),
         );
@@ -109,9 +107,5 @@ export class PcbBlockDefinition extends LitElement {
         `;
     }
 
-    static styles = [
-        ...UUICardElement.styles,
-        unsafeCSS(styles)
-    ];
+    static styles = [...UUICardElement.styles, unsafeCSS(styles)];
 }
-

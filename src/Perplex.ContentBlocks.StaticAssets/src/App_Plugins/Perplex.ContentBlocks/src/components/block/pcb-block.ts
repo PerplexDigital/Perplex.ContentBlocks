@@ -7,10 +7,9 @@ import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@um
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
 import contentBlockName from '../../utils/contentBlockName.ts';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock } from '../../types.ts';
-import {BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE} from '../../events/block.ts';
+import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { PropertyValues } from 'lit';
-
 
 export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
     return block.id + '_';
@@ -73,7 +72,6 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             throw new Error(errors.join(' | '));
         }
 
-
         this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
     }
 
@@ -91,10 +89,12 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         const updatedBlock: PerplexContentBlocksBlock = {
             ...this.block,
             layoutId: event.detail.selectedLayout.id,
-        }
+        };
 
-        this.dispatchEvent(BlockUpdatedEvent(updatedBlock))
-    }
+        if (this.definition) {
+            this.dispatchEvent(BlockUpdatedEvent(updatedBlock, this.definition));
+        }
+    };
 
     constructor() {
         super();
@@ -115,8 +115,10 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     };
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
-        this.dispatchEvent(BlockUpdatedEvent(block));
-    }
+        if (this.definition) {
+            this.dispatchEvent(BlockUpdatedEvent(block, this.definition));
+        }
+    };
 
     async firstUpdated() {
         const elementTypeResponse = await this.#contentTypeRepository.requestByUnique(

@@ -5,7 +5,7 @@ import { PropertyValues, unsafeCSS } from 'lit';
 import { PerplexBlockDefinition } from '../../../types.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
 import { Swiper } from 'swiper/types';
-import {BLockLayoutChangeEvent} from "../../../events/block.ts";
+import { BLockLayoutChangeEvent } from '../../../events/block.ts';
 type SwiperContainerEl = HTMLElement & { swiper: Swiper };
 @customElement('pcb-inline-layout-switch')
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
@@ -66,24 +66,23 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     init="false"
                     pagination="false"
                     id="swiper-preview"
-
                 >
                     ${this.definition!.layouts.map(
                         (layout) => html`
-                        <swiper-slide>
-                            <div class="inline-layout-switch__layout"><img
-                                src=${layout.previewImage}
-                                alt="Preview image for ${this.definition!.name}"
-                            /></div>
-                        </swiper-slide>
-                    `,
+                            <swiper-slide>
+                                <div class="inline-layout-switch__layout">
+                                    <img
+                                        src=${layout.previewImage}
+                                        alt="Preview image for ${this.definition!.name}"
+                                    />
+                                </div>
+                            </swiper-slide>
+                        `,
                     )}
                 </swiper-container>
             </div>
         </div>`;
     }
 
-    static styles = [
-       unsafeCSS(styles),
-    ];
+    static styles = [unsafeCSS(styles)];
 }

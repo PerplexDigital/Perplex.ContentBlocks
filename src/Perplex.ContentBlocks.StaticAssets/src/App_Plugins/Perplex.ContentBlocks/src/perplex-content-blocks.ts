@@ -23,12 +23,13 @@ import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, PerplexContentBl
 import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
 import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
-import {ON_BLOCK_SAVED, ON_BLOCK_TOGGLE, ON_BLOCK_UPDATED} from './events/block.ts';
+import { ON_BLOCK_SAVED, ON_BLOCK_TOGGLE, ON_BLOCK_UPDATED } from './events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
+import { HEADER_GUID } from './constants.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -134,7 +135,7 @@ export default class PerplexContentBlocksElement
     }
 
     protected firstUpdated(_changedProperties: PropertyValues) {
-        register()
+        register();
     }
 
     constructor() {
@@ -220,6 +221,11 @@ export default class PerplexContentBlocksElement
     }
 
     updateBlock(event: CustomEvent) {
+        if (event.detail.definition.categoryIds.includes(HEADER_GUID)) {
+            this.updateHeader(event.detail.block);
+            return;
+        }
+
         const idx = this._value.blocks.findIndex((b) => b.id === event.detail.block.id);
         if (idx === -1) {
             return;
@@ -235,9 +241,7 @@ export default class PerplexContentBlocksElement
         if (!Array.isArray(this.definitions)) {
             return null;
         }
-        const found = this.definitions
-            .map(cat => cat.definitions[id])
-            .find(def => def !== undefined);
+        const found = this.definitions.map((cat) => cat.definitions[id]).find((def) => def !== undefined);
         return found || null;
     }
 
@@ -258,6 +262,7 @@ export default class PerplexContentBlocksElement
                                             .collapsed="${!this.openedBlocks.includes(this._value.header.id)}"
                                             .removeBlock=${this.removeHeader.bind(this)}
                                             .dataPath=${this.dataPath}
+                                            .definition=${this.findDefinitionById(this._value.header.definitionId)}
                                         ></pcb-block>
                                     </div>`) ||
                                 nothing

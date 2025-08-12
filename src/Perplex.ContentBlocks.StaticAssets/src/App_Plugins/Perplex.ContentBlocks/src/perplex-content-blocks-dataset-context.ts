@@ -79,17 +79,19 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
 
     async propertyValueByAlias<ReturnType = unknown>(propertyAlias: string) {
         const alias = this.cleanAlias(propertyAlias);
-        return this.#properties.asObservablePart(
-            (props) =>
-                props?.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null)
-                    ?.value as ReturnType,
-        );
+        return this.#properties.asObservablePart((props) => {
+            if (!Array.isArray(props)) return undefined;
+            return props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null)
+                ?.value as ReturnType;
+        });
     }
 
     async setPropertyValue(propertyAlias: string, value: unknown) {
         const alias = this.cleanAlias(propertyAlias);
-        const values = create(this.#properties.getValue(), (props) => {
+
+        const values = create(this.#properties.getValue() ?? [], (props) => {
             let item = props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null);
+
             if (item == null) {
                 item = { alias, editorAlias: '', culture: null, segment: null, entityType: '' };
                 props.push(item);

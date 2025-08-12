@@ -1,4 +1,4 @@
-import { PerplexContentBlocksBlock, Section } from '../types.ts';
+import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../types.ts';
 export const ON_BLOCK_HEAD_CLICK = 'ON_BLOCK_HEAD_CLICK';
 export const ON_BLOCK_SELECTED = 'ON_BLOCK_SELECTED';
 export const ON_BLOCK_SAVED = 'ON_BLOCK_SAVED';
@@ -33,10 +33,11 @@ export const BlockToggleEvent = (id: string) =>
         composed: true,
     });
 
-export const BlockUpdatedEvent = (block: PerplexContentBlocksBlock) =>
+export const BlockUpdatedEvent = (block: PerplexContentBlocksBlock, definition: PerplexBlockDefinition) =>
     new CustomEvent(ON_BLOCK_UPDATED, {
         detail: {
             block,
+            definition,
         },
         bubbles: true,
         cancelable: true,
