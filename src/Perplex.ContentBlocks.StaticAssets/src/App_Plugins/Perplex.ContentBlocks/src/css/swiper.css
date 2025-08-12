@@ -1,0 +1,39 @@
+:host(.swiper--small) {
+    .swiper-button-next, .swiper-button-prev {
+        color: white;
+        background-color: var(--uui-palette-mine-grey);
+        border-radius: 100%;
+        height: 1.5rem;
+        width: 1.5rem;
+        --swiper-navigation-size: 1.5rem;
+
+        svg {
+            width: 0.35rem;
+        }
+    }
+}
+.swiper-pagination {
+    height: 2rem;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: var(--uui-palette-mine-grey);
+}
+
+
+.swiper-button-next, .swiper-button-prev {
+    color: white;
+    background-color: var(--uui-palette-mine-grey);
+    border-radius: 100%;
+    height: 2rem;
+    width: 2rem;
+    --swiper-navigation-size: 2rem;
+
+    svg {
+        width: 0.5rem;
+    }
+}

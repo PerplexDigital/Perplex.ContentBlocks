@@ -1,0 +1,132 @@
+:host {
+    flex-direction: column;
+    justify-content: flex-start;
+    background: white;
+}
+
+:host([selected='true']) {
+    outline: 3px solid var(--uui-color-focus, #3879ff);
+    outline-offset: 0;
+}
+
+:host(:hover) #info {
+    color: var(--uui-color-interactive-emphasis);
+}
+
+.blockDefinition {
+    width: 100%;
+
+    .blockDefinition__controls {
+        height: 2rem;
+        width: 100%;
+    }
+
+    .blockDefinition__single {
+        width: 100%;
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+    }
+}
+
+#portrait {
+    background-color: var(--uui-color-surface-alt);
+    display: flex;
+    justify-content: center;
+    height: 250px;
+
+    img {
+        align-self: center;
+        display: block;
+        font-size: var(--uui-size-8);
+        border-radius: var(--uui-border-radius);
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+#open-part {
+    text-align: left;
+    background-color: var(--uui-color-surface);
+    cursor: pointer;
+    color: var(--uui-color-interactive);
+    border: none;
+    border-top: 1px solid var(--uui-color-divider);
+    border-radius: 0 0 var(--uui-border-radius) var(--uui-border-radius);
+    font-family: inherit;
+    font-size: var(--uui-type-small-size);
+    box-sizing: border-box;
+    padding: var(--uui-size-2) var(--uui-size-4);
+    display: flex;
+    flex-direction: column;
+    line-height: var(--uui-size-6);
+
+    strong {
+        font-size: var(--uui-size-5);
+    }
+
+    span {
+        font-size: var(--uui-size-4);
+    }
+}
+
+:host([disabled]) #open-part {
+    pointer-events: none;
+    background: var(--uui-color-disabled);
+    color: var(--uui-color-contrast-disabled);
+}
+
+#open-part:hover strong {
+    text-decoration: underline;
+}
+
+#open-part:hover {
+    color: var(--uui-color-interactive-emphasis);
+}
+
+:host([image]:not([image=''])) #open-part {
+    transition: opacity 0.5s 0.5s;
+    opacity: 0;
+}
+
+#tag {
+    position: absolute;
+    top: var(--uui-size-4);
+    right: var(--uui-size-4);
+    display: flex;
+    justify-content: right;
+}
+
+#actions {
+    position: absolute;
+    top: var(--uui-size-4);
+    right: var(--uui-size-4);
+    display: flex;
+    justify-content: right;
+
+    opacity: 0;
+    transition: opacity 120ms;
+}
+
+:host(:focus) #actions,
+:host(:focus-within) #actions,
+:host(:hover) #actions {
+    opacity: 1;
+}
+
+:host(
+                    [image]:not([image='']):hover,
+                    [image]:not([image='']):focus,
+                    [image]:not([image='']):focus-within,
+                    [selected][image]:not([image='']),
+                    [error][image]:not([image=''])
+                )
+#open-part {
+    opacity: 1;
+    transition-duration: 120ms;
+    transition-delay: 0s;
+}

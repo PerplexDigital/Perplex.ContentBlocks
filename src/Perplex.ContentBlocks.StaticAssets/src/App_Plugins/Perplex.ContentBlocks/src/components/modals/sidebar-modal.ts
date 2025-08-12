@@ -17,17 +17,13 @@ export class UUIModalSidebarElement extends UUIModalElement {
         this.addEventListener(UUIModalCloseEvent, this.#onClose.bind(this));
     }
 
-    protected firstUpdated(
-        _changedProperties: Map<string | number | symbol, unknown>,
-    ): void {
+    protected firstUpdated(_changedProperties: Map<string | number | symbol, unknown>): void {
         super.firstUpdated(_changedProperties);
 
         this.style.setProperty('--uui-modal-offset', -this.#getWidth + 'px');
     }
 
-    protected updated(
-        _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
-    ): void {
+    protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
         super.updated(_changedProperties);
 
         // if we've reached over X layers of sidebars, hide for better performance.
@@ -52,59 +48,56 @@ export class UUIModalSidebarElement extends UUIModalElement {
         this.style.setProperty('--uui-modal-offset', -this.#getWidth + 'px');
 
         setTimeout(() => {
-            this._closeModal();
+            (this as any)._closeModal();
         }, this.transitionDuration);
     }
 
     render() {
         return html`<dialog>
-          <slot></slot>
+            <slot></slot>
         </dialog>`;
     }
 
     static styles = [
         ...UUIModalElement.styles,
         css`
-      :host {
-        --uui-modal-sidebar-left-gap: 24px;
-        --uui-modal-sidebar-background: var(--uui-color-surface);
-      }
-      @media (min-width: 600px) {
-        :host {
-          --uui-modal-sidebar-left-gap: 64px;
-        }
-      }
-      dialog {
-        height: 100%;
-        width: 100%;
-        box-sizing: border-box;
-        max-width: calc(100% - var(--uui-modal-sidebar-left-gap));
-        margin-left: auto;
-        right: var(--uui-modal-offset);
-        transition: right var(--uui-modal-transition-duration, 250ms);
-        background: var(
-          --uui-modal-sidebar-background,
-          var(--uui-color-surface)
-        );
-      }
-      :host([index='0']) dialog {
-        box-shadow: var(--uui-shadow-depth-5);
-      }
-      :host(:not([index='0'])) dialog {
-        outline: 1px solid rgba(0, 0, 0, 0.1);
-      }
-      :host([hide]) dialog {
-        display: none;
-      }
-      :host([size='large']) dialog {
-        max-width: min(1200px, calc(100% - var(--uui-modal-sidebar-left-gap)));
-      }
-      :host([size='medium']) dialog {
-        max-width: min(800px, calc(100% - var(--uui-modal-sidebar-left-gap)));
-      }
-      :host([size='small']) dialog {
-        max-width: min(400px, calc(100% - var(--uui-modal-sidebar-left-gap)));
-      }
-    `,
+            :host {
+                --uui-modal-sidebar-left-gap: 24px;
+                --uui-modal-sidebar-background: var(--uui-color-surface);
+            }
+            @media (min-width: 600px) {
+                :host {
+                    --uui-modal-sidebar-left-gap: 64px;
+                }
+            }
+            dialog {
+                height: 100%;
+                width: 100%;
+                box-sizing: border-box;
+                max-width: calc(100% - var(--uui-modal-sidebar-left-gap));
+                margin-left: auto;
+                right: var(--uui-modal-offset);
+                transition: right var(--uui-modal-transition-duration, 250ms);
+                background: var(--uui-modal-sidebar-background, var(--uui-color-surface));
+            }
+            :host([index='0']) dialog {
+                box-shadow: var(--uui-shadow-depth-5);
+            }
+            :host(:not([index='0'])) dialog {
+                outline: 1px solid rgba(0, 0, 0, 0.1);
+            }
+            :host([hide]) dialog {
+                display: none;
+            }
+            :host([size='large']) dialog {
+                max-width: min(1200px, calc(100% - var(--uui-modal-sidebar-left-gap)));
+            }
+            :host([size='medium']) dialog {
+                max-width: min(800px, calc(100% - var(--uui-modal-sidebar-left-gap)));
+            }
+            :host([size='small']) dialog {
+                max-width: min(400px, calc(100% - var(--uui-modal-sidebar-left-gap)));
+            }
+        `,
     ];
 }
