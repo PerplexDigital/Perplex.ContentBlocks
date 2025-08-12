@@ -192,6 +192,7 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
                     grid-template-columns: repeat(1, minmax(0, 1fr));
                     gap: 20px;
                     padding: calc(var(--s) * 20);
+                    overflow-y: scroll;
 
                     @media only screen and (min-width: 500px) {
                         grid-template-columns: repeat(2, minmax(0, 1fr));
