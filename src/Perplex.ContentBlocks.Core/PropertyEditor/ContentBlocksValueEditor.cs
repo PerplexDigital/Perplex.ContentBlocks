@@ -41,19 +41,19 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             return base.ToEditor(property, culture, segment);
         }
 
-        ToEditor(model.Header?.Content);
+        ToEditor(model.Header?.Content, culture, segment);
 
         if (model.Blocks is not null)
         {
             foreach (var block in model.Blocks)
             {
-                ToEditor(block.Content);
+                ToEditor(block.Content, culture, segment);
             }
         }
 
         return model;
 
-        void ToEditor(BlockItemData? data)
+        void ToEditor(BlockItemData? data, string? culture, string? segment)
         {
             if (data is null)
             {
@@ -67,23 +67,24 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                     continue;
                 }
 
-                prop.PropertyType.Variations = ContentVariation.Nothing;
-                var tempProp = new Property(prop.PropertyType);
-                tempProp.SetValue(prop.Value);
+                var configuration = _dataTypeConfigCache.GetConfiguration(prop.PropertyType.DataTypeKey);
 
                 IDataEditor? propEditor = _propertyEditors[prop.PropertyType.PropertyEditorAlias];
-                if (propEditor is null)
+
+                if (propEditor?.GetValueEditor(configuration) is not IDataValueEditor valueEditor)
                 {
                     continue;
                 }
 
-                Guid dataTypeKey = prop.PropertyType.DataTypeKey;
-                var configuration = _dataTypeConfigCache.GetConfiguration(dataTypeKey);
-                var valEditor = propEditor.GetValueEditor(configuration);
-                var convValue = valEditor.ToEditor(tempProp);
+                var variations = ContentVariation.Nothing;
+                if (!string.IsNullOrEmpty(culture)) variations |= ContentVariation.Culture;
+                if (!string.IsNullOrEmpty(segment)) variations |= ContentVariation.Segment;
+                prop.PropertyType.Variations = variations;
 
-                // Update raw value
-                prop.Value = convValue;
+                var tempProp = new Property(prop.PropertyType);
+                tempProp.SetValue(prop.Value);
+
+                prop.Value = valueEditor.ToEditor(tempProp);
             }
         }
     }
@@ -125,16 +126,13 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 var configuration = _dataTypeConfigCache.GetConfiguration(prop.PropertyType.DataTypeKey);
 
                 IDataEditor? propEditor = _propertyEditors[prop.PropertyType.PropertyEditorAlias];
-                if (propEditor is null)
+                if (propEditor?.GetValueEditor(configuration) is not IDataValueEditor valueEditor)
                 {
                     continue;
                 }
 
-                var contentPropData = new ContentPropertyData(prop.Value, configuration);
-                var newValue = propEditor.GetValueEditor().FromEditor(contentPropData, prop.Value);
-
-                // Update raw value
-                prop.Value = newValue;
+                var propData = new ContentPropertyData(prop.Value, configuration);
+                prop.Value = valueEditor.FromEditor(propData, prop.Value);
             }
         }
     }
@@ -193,6 +191,6 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             }
 
             return [.. references];
-        };
+        }
     }
 }
