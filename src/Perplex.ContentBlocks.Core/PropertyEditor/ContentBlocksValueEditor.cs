@@ -82,9 +82,9 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                 prop.PropertyType.Variations = variations;
 
                 var tempProp = new Property(prop.PropertyType);
-                tempProp.SetValue(prop.Value);
+                tempProp.SetValue(prop.Value, culture, segment);
 
-                prop.Value = valueEditor.ToEditor(tempProp);
+                prop.Value = valueEditor.ToEditor(tempProp, culture, segment);
             }
         }
     }
