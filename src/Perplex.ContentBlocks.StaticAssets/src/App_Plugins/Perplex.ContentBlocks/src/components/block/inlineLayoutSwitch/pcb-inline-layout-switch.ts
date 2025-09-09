@@ -22,14 +22,19 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         if (swiperEl && swiperPreviewEl) {
             initSwiper(swiperEl);
             initSwiper(swiperPreviewEl);
-
-            swiperEl.swiper.slideTo(this.initialSlideIndex, 0, true);
+            swiperEl.swiper.slideTo(this.initialSlideIndex, 0, false);
 
             swiperEl.addEventListener('swiperprogress', ((event: CustomEvent<[Swiper, number]>) => {
-                const [, progress] = event.detail;
-                swiperPreviewEl.swiper.slideTo(progress, 500, true);
-                const selectedLayout = this.definition!.layouts[Math.round(progress)];
+                const [swiper, progress] = event.detail;
 
+                // progress is between 0 and 1 → scale it to slide count
+                const slideCount = swiper.slides.length;
+                const rawIndex = progress * (slideCount - 1);
+                const index = Math.round(rawIndex);
+
+                swiperPreviewEl.swiper.slideTo(index, 500, true);
+
+                const selectedLayout = this.definition!.layouts[index];
                 this.dispatchEvent(BLockLayoutChangeEvent(selectedLayout));
             }) as EventListener);
         }

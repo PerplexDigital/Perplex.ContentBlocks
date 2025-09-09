@@ -13,6 +13,9 @@
         "label": "Perplex.ContentBlocks",
         "icon": "icon-thumbnail-list",
         "group": "lists",
+          "editor": {
+              "hideLabel": true
+          },
         "propertyEditorSchemaAlias": "Perplex.ContentBlocks",
         "settings": {
           "properties": [
@@ -21,12 +24,6 @@
               "label": "Structure",
               "description": "TODO",
               "propertyEditorUiAlias": "Umb.PropertyEditorUi.TextBox"
-            },
-            {
-              "alias": "disablePreview",
-              "label": "Disable preview",
-              "description": "TODO",
-              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
             },
             {
               "alias": "hideLabel",

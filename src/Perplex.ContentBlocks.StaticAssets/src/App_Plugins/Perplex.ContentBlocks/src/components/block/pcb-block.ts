@@ -86,6 +86,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         if (this.block.layoutId === event.detail.selectedLayout.id) {
             return;
         }
+
         const updatedBlock: PerplexContentBlocksBlock = {
             ...this.block,
             layoutId: event.detail.selectedLayout.id,
