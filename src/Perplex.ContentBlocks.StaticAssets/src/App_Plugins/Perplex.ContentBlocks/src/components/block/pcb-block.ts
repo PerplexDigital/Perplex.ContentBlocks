@@ -1,12 +1,12 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { html, repeat, customElement, property, css, state, classMap } from '@umbraco-cms/backoffice/external/lit';
+import { classMap, css, customElement, html, property, repeat, state } from '@umbraco-cms/backoffice/external/lit';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { PerplexContentBlocksPropertyDatasetContext } from '../../perplex-content-blocks-dataset-context.ts';
 import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@umbraco-cms/backoffice/document-type';
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
 import contentBlockName from '../../utils/contentBlockName.ts';
-import { PerplexBlockDefinition, PerplexContentBlocksBlock } from '../../types.ts';
+import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../types.ts';
 import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { PropertyValues } from 'lit';
@@ -17,29 +17,11 @@ export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
 
 @customElement('pcb-block')
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
-    @state()
-    private ok: boolean = false;
-
-    #contentTypeRepository = new UmbDocumentTypeDetailRepository(this);
-    elementType!: UmbDocumentTypeDetailModel;
-
-    #dataTypeRepository = new UmbDataTypeDetailRepository(this);
-
-    #dataTypes: {
-        [key: string]: UmbDataTypeDetailModel;
-    } = {};
-
     @property({ attribute: false })
     collapsed: boolean = true;
 
     @property()
     definition?: PerplexBlockDefinition;
-
-    @state()
-    properties: UmbPropertyTypeModel[] | undefined = undefined;
-
-    @state()
-    removing: boolean = false;
 
     @property({ attribute: false })
     block!: PerplexContentBlocksBlock;
@@ -49,6 +31,27 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     @property({ attribute: false })
     dataPath!: string;
+
+    @property({ attribute: false })
+    section: Section = Section.CONTENT;
+
+    @state()
+    private ok: boolean = false;
+
+    @state()
+    properties: UmbPropertyTypeModel[] | undefined = undefined;
+
+    @state()
+    removing: boolean = false;
+
+    #contentTypeRepository = new UmbDocumentTypeDetailRepository(this);
+    elementType!: UmbDocumentTypeDetailModel;
+
+    #dataTypeRepository = new UmbDataTypeDetailRepository(this);
+
+    #dataTypes: {
+        [key: string]: UmbDataTypeDetailModel;
+    } = {};
 
     #validationController?: UmbValidationController;
 
@@ -93,7 +96,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         };
 
         if (this.definition) {
-            this.dispatchEvent(BlockUpdatedEvent(updatedBlock, this.definition));
+            this.dispatchEvent(BlockUpdatedEvent(updatedBlock, this.definition, this.section));
         }
     };
 
@@ -117,7 +120,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
         if (this.definition) {
-            this.dispatchEvent(BlockUpdatedEvent(block, this.definition));
+            this.dispatchEvent(BlockUpdatedEvent(block, this.definition, this.section));
         }
     };
 

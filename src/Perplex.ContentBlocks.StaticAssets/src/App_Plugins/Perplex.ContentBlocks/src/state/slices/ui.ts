@@ -13,7 +13,7 @@ const { actions: authActions, reducer: uiReducer } = createSlice({
     initialState: {
         addBlock: {
             display: false,
-            section: 'content',
+            section: Section.CONTENT,
         },
     } as UiState,
     reducers: {
@@ -26,7 +26,7 @@ const { actions: authActions, reducer: uiReducer } = createSlice({
         },
         resetAddBlockModal: (state) => {
             state.addBlock.display = false;
-            state.addBlock.section = 'content';
+            state.addBlock.section = Section.CONTENT;
         },
     },
 });

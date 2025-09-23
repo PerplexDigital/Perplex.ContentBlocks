@@ -19,7 +19,7 @@ import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
 import { connect } from 'pwa-helpers';
 import { store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
-import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, PerplexContentBlocksValue } from './types.ts';
+import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, PerplexContentBlocksValue, Section } from './types.ts';
 import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
 import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
@@ -164,7 +164,7 @@ export default class PerplexContentBlocksElement
         store.dispatch(
             setAddBlockModal({
                 display: true,
-                section: 'header',
+                section: Section.HEADER,
             }),
         );
     }
@@ -183,7 +183,7 @@ export default class PerplexContentBlocksElement
         store.dispatch(
             setAddBlockModal({
                 display: true,
-                section: 'content',
+                section: Section.CONTENT,
             }),
         );
     }
@@ -197,7 +197,7 @@ export default class PerplexContentBlocksElement
     }
 
     onBlockAdded(event: CustomEvent) {
-        if (event.detail.section === 'header') {
+        if (event.detail.section === Section.HEADER) {
             this.updateHeader(event.detail.block);
             this.openedBlocks = [...this.openedBlocks, event.detail.block.id];
             store.dispatch(resetAddBlockModal());
@@ -221,7 +221,7 @@ export default class PerplexContentBlocksElement
     }
 
     updateBlock(event: CustomEvent) {
-        if (event.detail.definition.categoryIds.includes(HEADER_GUID)) {
+        if (event.detail.section === Section.HEADER) {
             this.updateHeader(event.detail.block);
             return;
         }
@@ -263,6 +263,7 @@ export default class PerplexContentBlocksElement
                                             .removeBlock=${this.removeHeader.bind(this)}
                                             .dataPath=${this.dataPath}
                                             .definition=${this.findDefinitionById(this._value.header.definitionId)}
+                                            .section=${Section.HEADER}
                                         ></pcb-block>
                                     </div>`) ||
                                 nothing
@@ -298,6 +299,7 @@ export default class PerplexContentBlocksElement
                                         .removeBlock=${this.removeBlock.bind(this)}
                                         .dataPath=${this.dataPath}
                                         .definition=${this.findDefinitionById(block.definitionId)}
+                                        .section=${Section.CONTENT}
                                         ${animate({ id: block.id })}
                                     ></pcb-block>`,
                             )}

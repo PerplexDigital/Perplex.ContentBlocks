@@ -55,4 +55,7 @@ export type PerplexContentBlocksBlock = {
 
 export type PerplexContentBlocksBlockOnChangeFn = (block: PerplexContentBlocksBlock) => void;
 
-export type Section = 'header' | 'content';
+export enum Section {
+    HEADER,
+    CONTENT
+}
