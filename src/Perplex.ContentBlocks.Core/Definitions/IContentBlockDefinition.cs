@@ -25,6 +25,11 @@ public interface IContentBlockDefinition
     string BlockNameTemplate { get; }
 
     /// <summary>
+    /// The icon of this block that will show up in the backoffice when a block is added to the page.
+    /// </summary>
+    string Icon { get; }
+
+    /// <summary>
     /// Preview image that will appear in the backoffice UI when selecting blocks
     /// </summary>
     string PreviewImage { get; }
