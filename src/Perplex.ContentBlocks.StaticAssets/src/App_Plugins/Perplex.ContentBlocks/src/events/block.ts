@@ -33,11 +33,12 @@ export const BlockToggleEvent = (id: string) =>
         composed: true,
     });
 
-export const BlockUpdatedEvent = (block: PerplexContentBlocksBlock, definition: PerplexBlockDefinition) =>
+export const BlockUpdatedEvent = (block: PerplexContentBlocksBlock, definition: PerplexBlockDefinition, section: Section) =>
     new CustomEvent(ON_BLOCK_UPDATED, {
         detail: {
             block,
             definition,
+            section,
         },
         bubbles: true,
         cancelable: true,

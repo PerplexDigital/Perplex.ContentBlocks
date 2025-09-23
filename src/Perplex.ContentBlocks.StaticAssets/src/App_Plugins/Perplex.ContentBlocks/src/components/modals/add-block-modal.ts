@@ -1,9 +1,9 @@
-import { html, customElement, state, repeat, css, query } from '@umbraco-cms/backoffice/external/lit';
+import { css, customElement, html, query, repeat, state } from '@umbraco-cms/backoffice/external/lit';
 import { connect } from 'pwa-helpers';
 import { store } from '../../state/store.ts';
 import { LitElement } from 'lit';
 import { setAddBlockModal } from '../../state/slices/ui.ts';
-import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock } from '../../types.ts';
+import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, Section } from '../../types.ts';
 import { BlockSavedEvent, ON_BLOCK_SELECTED } from '../../events/block.ts';
 import { ToastEvent } from '../../events/toast.ts';
 
@@ -19,7 +19,7 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
     selectedBlock: PerplexContentBlocksBlock | null = null;
 
     @state()
-    section: 'header' | 'content' = 'content';
+    section: Section = Section.CONTENT;
 
     connectedCallback() {
         super.connectedCallback();
@@ -66,7 +66,7 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
 
         // Only show categories that match the section.
         const categories = Object.values(this.groupedDefinitions).filter((category) => {
-            return category.category.isEnabledForHeaders === (this.section === 'header');
+            return category.category.isEnabledForHeaders === (this.section === Section.HEADER);
         });
 
         return html`
