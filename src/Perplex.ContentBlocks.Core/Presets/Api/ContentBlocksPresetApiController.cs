@@ -48,7 +48,6 @@ public class ContentBlocksPresetApiController(IContentBlocksPresetRepository pre
             IsMandatory = preset.IsMandatory,
             LayoutId = preset.LayoutId,
             Values = preset.Values,
-            Variants = preset.Variants.Select(Map).ToArray()
         };
     }
 

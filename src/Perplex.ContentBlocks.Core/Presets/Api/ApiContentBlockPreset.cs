@@ -2,10 +2,9 @@
 
 public class ApiContentBlockPreset
 {
-    public Guid Id { get; set; }
-    public Guid DefinitionId { get; set; }
-    public Guid LayoutId { get; set; }
+    public required Guid Id { get; set; }
+    public required Guid DefinitionId { get; set; }
+    public required Guid LayoutId { get; set; }
     public bool IsMandatory { get; set; }
     public required IDictionary<string, object> Values { get; set; }
-    public required ApiContentBlockVariantPreset[] Variants { get; set; }
 }

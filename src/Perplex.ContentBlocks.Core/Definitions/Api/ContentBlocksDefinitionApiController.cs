@@ -22,6 +22,7 @@ public class ContentBlocksDefinitionApiController(IContentBlockDefinitionReposit
             Name = definition.Name,
             Description = definition.Description,
             BlockNameTemplate = definition.BlockNameTemplate,
+            Icon = definition.Icon,
             PreviewImage = definition.PreviewImage,
             ElementTypeKey = definition.ElementTypeKey,
             CategoryIds = definition.CategoryIds,

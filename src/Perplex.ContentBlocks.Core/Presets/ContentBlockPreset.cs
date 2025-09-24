@@ -2,14 +2,11 @@
 
 public class ContentBlockPreset : IContentBlockPreset
 {
-    public Guid Id { get; set; }
-    public Guid DefinitionId { get; set; }
-    public Guid LayoutId { get; set; }
+    public required Guid Id { get; set; }
+    public required Guid DefinitionId { get; set; }
+    public required Guid LayoutId { get; set; }
     public bool IsMandatory { get; set; }
 
     public IDictionary<string, object> Values { get; set; }
         = new Dictionary<string, object>();
-
-    public IEnumerable<IContentBlockVariantPreset> Variants { get; set; }
-        = Enumerable.Empty<IContentBlockVariantPreset>();
 }
