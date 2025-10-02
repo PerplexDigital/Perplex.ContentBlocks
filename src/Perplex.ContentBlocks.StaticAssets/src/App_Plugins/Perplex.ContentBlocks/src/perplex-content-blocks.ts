@@ -29,7 +29,6 @@ import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
-import { HEADER_GUID } from './constants.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
