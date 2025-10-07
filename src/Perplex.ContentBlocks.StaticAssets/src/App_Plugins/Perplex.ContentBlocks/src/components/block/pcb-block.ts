@@ -1,5 +1,14 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { classMap, css, customElement, html, property, repeat, state } from '@umbraco-cms/backoffice/external/lit';
+import {
+    classMap,
+    css,
+    customElement,
+    html,
+    property,
+    repeat,
+    state,
+    unsafeCSS,
+} from '@umbraco-cms/backoffice/external/lit';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { PerplexContentBlocksPropertyDatasetContext } from '../../perplex-content-blocks-dataset-context.ts';
 import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
@@ -10,6 +19,8 @@ import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../.
 import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { PropertyValues } from 'lit';
+
+import baseStyles from './../../css/base.css?inline';
 
 export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
     return block.id + '_';
@@ -176,10 +187,10 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 .block=${this.block}
                 .id=${this.block.id}
                 .blockDefinitionName=${this.elementType.name}
-                .icon=${this.elementType.icon}
                 .collapsed="${this.collapsed}"
                 .blockTemplateName="${contentBlockName(this.definition?.blockNameTemplate ?? '', this.block)}"
                 .definition=${this.definition}
+                .section=${this.section}
             >
             </pcb-block-head>
             <div class=${this.collapsed ? 'block__body block__body--hidden' : 'block__body block__body--open'}>
@@ -222,6 +233,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     }
 
     static styles = [
+        unsafeCSS(baseStyles),
         css`
             .block {
                 box-shadow: var(--bs-base);

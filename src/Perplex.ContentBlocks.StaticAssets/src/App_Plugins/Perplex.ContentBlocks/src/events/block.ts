@@ -10,6 +10,7 @@ export const ON_BLOCK_LAYOUT_CHANGE = 'ON_BLOCK_LAYOUT_CHANGE';
 type BlockCreation = {
     block: PerplexContentBlocksBlock;
     section: Section;
+    desiredIndex?: number;
 };
 
 export const BlockSavedEvent = (blockCreation: BlockCreation) =>
@@ -17,6 +18,7 @@ export const BlockSavedEvent = (blockCreation: BlockCreation) =>
         detail: {
             block: blockCreation.block,
             section: blockCreation.section,
+            desiredIndex: blockCreation.desiredIndex,
         },
         bubbles: true,
         cancelable: true,
@@ -33,7 +35,11 @@ export const BlockToggleEvent = (id: string) =>
         composed: true,
     });
 
-export const BlockUpdatedEvent = (block: PerplexContentBlocksBlock, definition: PerplexBlockDefinition, section: Section) =>
+export const BlockUpdatedEvent = (
+    block: PerplexContentBlocksBlock,
+    definition: PerplexBlockDefinition,
+    section: Section,
+) =>
     new CustomEvent(ON_BLOCK_UPDATED, {
         detail: {
             block,

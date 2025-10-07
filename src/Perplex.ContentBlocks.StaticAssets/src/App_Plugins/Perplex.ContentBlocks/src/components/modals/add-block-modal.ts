@@ -21,6 +21,9 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
     @state()
     section: Section = Section.CONTENT;
 
+    @state()
+    insertAtIndex?: number;
+
     connectedCallback() {
         super.connectedCallback();
         this.addEventListener(ON_BLOCK_SELECTED, (e: Event) => this.onBlockSelected(e as CustomEvent));
@@ -41,6 +44,8 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
         }
 
         this.section = state.ui.addBlock.section;
+
+        this.insertAtIndex = state.ui.addBlock.insertAtIndex;
     }
 
     onPopoverClick() {
@@ -57,7 +62,9 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
             return;
         }
 
-        this.dispatchEvent(BlockSavedEvent({ block: this.selectedBlock, section: this.section }));
+        this.dispatchEvent(
+            BlockSavedEvent({ block: this.selectedBlock, section: this.section, desiredIndex: this.insertAtIndex }),
+        );
         this.selectedBlock = null;
     }
 

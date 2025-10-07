@@ -5,6 +5,7 @@ type UiState = {
     addBlock: {
         display: boolean;
         section: Section;
+        insertAtIndex?: number;
     };
 };
 
@@ -23,10 +24,12 @@ const { actions: authActions, reducer: uiReducer } = createSlice({
         setAddBlockModal: (state, action) => {
             state.addBlock.display = action.payload.display;
             state.addBlock.section = action.payload.section;
+            state.addBlock.insertAtIndex = action.payload.insertAtIndex ?? 0;
         },
         resetAddBlockModal: (state) => {
             state.addBlock.display = false;
             state.addBlock.section = Section.CONTENT;
+            state.addBlock.insertAtIndex = undefined;
         },
     },
 });

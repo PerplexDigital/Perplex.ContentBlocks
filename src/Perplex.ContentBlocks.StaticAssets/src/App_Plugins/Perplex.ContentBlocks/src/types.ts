@@ -5,6 +5,7 @@ export interface PerplexBlockDefinition {
     name: string;
     description: string;
     blockNameTemplate: string;
+    icon: string;
     previewImage: string;
     elementTypeKey: string;
     categoryIds: string[];
@@ -57,5 +58,5 @@ export type PerplexContentBlocksBlockOnChangeFn = (block: PerplexContentBlocksBl
 
 export enum Section {
     HEADER,
-    CONTENT
+    CONTENT,
 }

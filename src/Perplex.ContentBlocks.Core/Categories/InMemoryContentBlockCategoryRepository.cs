@@ -20,7 +20,7 @@ public class InMemoryContentBlockCategoryRepository : IContentBlockCategoryRepos
             Id = Constants.Categories.Content,
             Name = "Content",
             Icon = $"{AssetsFolder}/icons.svg#icon-cat-content",
-        },
+        }
     }.ToDictionary(d => d.Id);
 
     public IContentBlockCategory? GetById(Guid id)

@@ -203,7 +203,15 @@ export default class PerplexContentBlocksElement
             return;
         }
 
-        const blocks = [...this._value.blocks, event.detail.block];
+        // if event contains detail desired index, insert block at that index
+        let blocks;
+        if (event.detail.desiredIndex !== undefined) {
+            blocks = [...this._value.blocks];
+            blocks.splice(event.detail.desiredIndex, 0, event.detail.block);
+        } else {
+            blocks = [...this._value.blocks, event.detail.block];
+        }
+
         this.openedBlocks = [...this.openedBlocks, event.detail.block.id];
         this._value = { ...this._value, blocks };
 
@@ -248,14 +256,11 @@ export default class PerplexContentBlocksElement
         return html`
             <div class="main">
                 <div class="pcb__wrapper">
-                    <div class="pcb__headers">
-                        <h2>Header</h2>
+                    <div class="pcb__content">
+                        <div class="pcb__blocks">
                             ${
                                 (this._value.header &&
-                                    html` <div
-                                        class="pcb__blocks"
-                                        ${animate()}
-                                    >
+                                    html` <div ${animate()}>
                                         <pcb-block
                                             .block=${this._value.header}
                                             .collapsed="${!this.openedBlocks.includes(this._value.header.id)}"
@@ -267,32 +272,30 @@ export default class PerplexContentBlocksElement
                                     </div>`) ||
                                 nothing
                             }
-                        ${
-                            (!this._value.header &&
-                                html` <div class="pcb__headers-add">
-                                    <uui-button
-                                        look="primary"
-                                        @click=${this.addHeader}
-                                    >
-                                        <slot name="label"> Add header</slot>
+                            ${
+                                (!this._value.header &&
+                                    html` <div class="pcb__block-add pcb__block-add--header">
+                                        <uui-button
+                                            look="primary"
+                                            @click=${this.addHeader}
+                                        >
+                                            <slot name="label"> Add header</slot>
 
-                                        <slot name="extra">
-                                            <uui-icon name="icon-add"></uui-icon>
-                                        </slot>
-                                    </uui-button>
-                                </div>`) ||
-                            nothing
-                        }
-
-                    </div>
-                    <div class="pcb__content">
-                        <h2>Content</h2>
-                        <div class="pcb__blocks" ${animate()}>
+                                            <slot name="extra">
+                                                <uui-icon name="icon-add"></uui-icon>
+                                            </slot>
+                                        </uui-button>
+                                    </div>`) ||
+                                nothing
+                            }
                             ${repeat(
                                 this._value.blocks,
                                 (block) => block.id,
-                                (block) =>
-                                    html` <pcb-block
+                                (block, index) => html`
+                                    ${!this._value.header && index === 0
+                                        ? nothing
+                                        : html` <pcb-block-spacer .index="${index}"></pcb-block-spacer>`}
+                                    <pcb-block
                                         .block=${block}
                                         .collapsed="${!this.openedBlocks.includes(block.id)}"
                                         .removeBlock=${this.removeBlock.bind(this)}
@@ -300,7 +303,8 @@ export default class PerplexContentBlocksElement
                                         .definition=${this.findDefinitionById(block.definitionId)}
                                         .section=${Section.CONTENT}
                                         ${animate({ id: block.id })}
-                                    ></pcb-block>`,
+                                    ></pcb-block>
+                                `,
                             )}
                         </div>
                         <div class="pcb__block-add">
@@ -320,20 +324,20 @@ export default class PerplexContentBlocksElement
 
                 <div class="debug">
                     <uui-button
-                            look="outline"
-                            label="raw value"
-                            @click=${() => (this.showDebug = !this.showDebug)}
+                        look="outline"
+                        label="raw value"
+                        @click=${() => (this.showDebug = !this.showDebug)}
                     ></uui-button>
                     ${(this.showDebug && html` <pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
                 </div>
             </div>
             <uui-toast-notification-container
-                    auto-close="7000"
-                    bottom-up=""
-                    id="notifications"
-                    popover="manual"
-                    style="z-index: 2000;"
-                    padding: var(--uui-size-layout-1);
+                auto-close="7000"
+                bottom-up=""
+                id="notifications"
+                popover="manual"
+                style="z-index: 2000;"
+                padding: var(--uui-size-layout-1);
             >
             </uui-toast-notification-container>
 
@@ -378,9 +382,7 @@ export default class PerplexContentBlocksElement
             }
 
             .pcb__wrapper {
-                display: flex;
-                flex-direction: column;
-                gap: 2rem;
+                display: block;
             }
 
             .pcb__region {
@@ -390,7 +392,6 @@ export default class PerplexContentBlocksElement
             .pcb__blocks {
                 display: grid;
                 grid-template-columns: 1fr;
-                gap: 1rem;
                 padding-block-end: 1rem;
             }
 
@@ -403,6 +404,12 @@ export default class PerplexContentBlocksElement
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    padding: calc(var(--s) * 3);
+                    background-color: var(--c-mystic);
+
+                    &.pcb__block-add--header {
+                        margin-block-end: 1rem;
+                    }
                 }
             }
 
