@@ -13,9 +13,9 @@
         "label": "Perplex.ContentBlocks",
         "icon": "icon-thumbnail-list",
         "group": "lists",
-          "editor": {
-              "hideLabel": true
-          },
+        "editor": {
+          "hideLabel": true
+        },
         "propertyEditorSchemaAlias": "Perplex.ContentBlocks",
         "settings": {
           "properties": [
@@ -42,6 +42,12 @@
               "label": "Allow blocks without header",
               "description": "TODO",
               "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
+            },
+            {
+              "alias": "debug",
+              "label": "Debug",
+              "description": "Shows debug information in the backoffice",
+              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
             }
           ],
           "defaultData": [
@@ -64,6 +70,10 @@
             {
               "alias": "allowBlocksWithoutHeader",
               "value": true
+            },
+            {
+              "alias": "debug",
+              "value": false
             }
           ]
         }

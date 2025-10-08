@@ -6,7 +6,7 @@ export default {
     endOfLine: 'auto',
     overrides: [
         {
-            files: ['appsettings.json', 'appsettings.*.json', '*.yml'],
+            files: ['*.json', '*.yml'],
             options: {
                 tabWidth: 2,
             },

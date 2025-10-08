@@ -321,15 +321,18 @@ export default class PerplexContentBlocksElement
                         </div>
                     </div>
                 </div>
-
-                <div class="debug">
-                    <uui-button
-                        look="outline"
-                        label="raw value"
-                        @click=${() => (this.showDebug = !this.showDebug)}
-                    ></uui-button>
-                    ${(this.showDebug && html` <pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
-                </div>
+                ${
+                    this.config?.getValueByAlias('debug') !== true
+                        ? nothing
+                        : html` <div class="debug">
+                              <uui-button
+                                  look="outline"
+                                  label="raw value"
+                                  @click=${() => (this.showDebug = !this.showDebug)}
+                              ></uui-button>
+                              ${(this.showDebug && html` <pre>${JSON.stringify(this.value, null, 4)}</pre>`) || null}
+                          </div>`
+                }
             </div>
             <uui-toast-notification-container
                 auto-close="7000"
