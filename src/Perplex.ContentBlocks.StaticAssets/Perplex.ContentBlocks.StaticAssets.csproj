@@ -10,7 +10,7 @@
   <Import Project="build\*" />
 
   <ItemGroup Label="Exclude from NuGet Package">
-    <Content Remove="**\*.json" />
+    <Content Update="**\*.json" Pack="False" />
   </ItemGroup>
 
 </Project>
