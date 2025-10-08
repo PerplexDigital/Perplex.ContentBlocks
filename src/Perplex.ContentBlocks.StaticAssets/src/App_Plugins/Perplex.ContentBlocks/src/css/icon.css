@@ -1,0 +1,5 @@
+.icon {
+    width: calc(var(--s) * 5);
+    height: calc(var(--s) * 5);
+    color: var(--c-submarine);
+}
