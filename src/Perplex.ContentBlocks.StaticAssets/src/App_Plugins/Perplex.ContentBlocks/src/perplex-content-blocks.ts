@@ -19,7 +19,13 @@ import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
 import { connect } from 'pwa-helpers';
 import { store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
-import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, PerplexContentBlocksValue, Section } from './types.ts';
+import {
+    PCBCategoryWithDefinitions,
+    PerplexContentBlocksBlock,
+    PerplexContentBlocksValue,
+    Section,
+    Structure,
+} from './types.ts';
 import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
 import { ON_ADD_TOAST } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
@@ -86,6 +92,18 @@ export default class PerplexContentBlocksElement
     categories = [];
 
     #authContext?: UmbAuthContext;
+
+    get structure(): Structure {
+        const value = this.config?.getValueByAlias('structure');
+        switch (value) {
+            case Structure.All:
+            case Structure.Blocks:
+            case Structure.Header:
+                return value as Structure;
+            default:
+                return Structure.All;
+        }
+    }
 
     async fetchDefinitonsPerCategory() {
         const token = await this.#authContext?.getLatestToken();
@@ -260,6 +278,7 @@ export default class PerplexContentBlocksElement
                         <div class="pcb__blocks">
                             ${
                                 (this._value.header &&
+                                    this.structure !== Structure.Blocks &&
                                     html` <div ${animate()}>
                                         <pcb-block
                                             .block=${this._value.header}
@@ -274,6 +293,7 @@ export default class PerplexContentBlocksElement
                             }
                             ${
                                 (!this._value.header &&
+                                    this.structure !== Structure.Blocks &&
                                     html` <div class="pcb__block-add pcb__block-add--header">
                                         <uui-button
                                             look="primary"
@@ -288,37 +308,45 @@ export default class PerplexContentBlocksElement
                                     </div>`) ||
                                 nothing
                             }
-                            ${repeat(
-                                this._value.blocks,
-                                (block) => block.id,
-                                (block, index) => html`
-                                    ${!this._value.header && index === 0
-                                        ? nothing
-                                        : html` <pcb-block-spacer .index="${index}"></pcb-block-spacer>`}
-                                    <pcb-block
-                                        .block=${block}
-                                        .collapsed="${!this.openedBlocks.includes(block.id)}"
-                                        .removeBlock=${this.removeBlock.bind(this)}
-                                        .dataPath=${this.dataPath}
-                                        .definition=${this.findDefinitionById(block.definitionId)}
-                                        .section=${Section.CONTENT}
-                                        ${animate({ id: block.id })}
-                                    ></pcb-block>
-                                `,
-                            )}
+                            ${
+                                (this.structure !== Structure.Header &&
+                                    repeat(
+                                        this._value.blocks,
+                                        (block) => block.id,
+                                        (block, index) => html`
+                                            ${!this._value.header && index === 0
+                                                ? nothing
+                                                : html` <pcb-block-spacer .index="${index}"></pcb-block-spacer>`}
+                                            <pcb-block
+                                                .block=${block}
+                                                .collapsed="${!this.openedBlocks.includes(block.id)}"
+                                                .removeBlock=${this.removeBlock.bind(this)}
+                                                .dataPath=${this.dataPath}
+                                                .definition=${this.findDefinitionById(block.definitionId)}
+                                                .section=${Section.CONTENT}
+                                                ${animate({ id: block.id })}
+                                            ></pcb-block>
+                                        `,
+                                    )) ||
+                                nothing
+                            }
                         </div>
-                        <div class="pcb__block-add">
-                            <uui-button look="primary" @click=${this.addBlock}>
+                        ${
+                            (this.structure !== Structure.Header &&
+                                html`<div class="pcb__block-add">
+                                    <uui-button
+                                        look="primary"
+                                        @click=${this.addBlock}
+                                    >
+                                        <slot name="label"> Add content </slot>
 
-                                <slot name="label">
-                                    Add content
-                                </slot>
-
-                                <slot name="extra">
-                                    <uui-icon name="icon-add"></uui-icon>
-                                </slot>
-                            </uui-button>
-                        </div>
+                                        <slot name="extra">
+                                            <uui-icon name="icon-add"></uui-icon>
+                                        </slot>
+                                    </uui-button>
+                                </div>`) ||
+                            nothing
+                        }
                     </div>
                 </div>
                 ${

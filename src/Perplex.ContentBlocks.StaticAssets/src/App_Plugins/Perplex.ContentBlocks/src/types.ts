@@ -60,3 +60,9 @@ export enum Section {
     HEADER,
     CONTENT,
 }
+
+export enum Structure {
+    All = 'All',
+    Blocks = 'Blocks',
+    Header = 'Header',
+}

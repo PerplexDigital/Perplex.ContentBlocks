@@ -22,7 +22,7 @@
             {
               "alias": "structure",
               "label": "Structure",
-              "description": "TODO",
+              "description": "Determines whether to show the header, blocks, or both. This affects the back office UI and front end rendering.",
               "propertyEditorUiAlias": "Umb.PropertyEditorUi.TextBox"
             },
             {
