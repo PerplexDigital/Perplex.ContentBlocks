@@ -50,7 +50,10 @@ public class ContentBlocksValueConverter
 
         IContentBlockViewModel? CreateViewModel(ContentBlockValue? block)
         {
-            if (block?.Content is null || converter.ConvertToElement(owner, block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
+            if (block is null ||
+                block.Content is null ||
+                block.IsDisabled ||
+                converter.ConvertToElement(owner, block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
             {
                 return null;
             }
