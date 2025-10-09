@@ -5,9 +5,9 @@ import blockSpacerStyles from './pcb-block-spacer.css?inline';
 import { connect } from 'pwa-helpers';
 import { store } from '../../../state/store.ts';
 import { setAddBlockModal } from '../../../state/slices/ui.ts';
-import { PerplexContentBlocksBlock, Section } from '../../../types.ts';
+import { Section } from '../../../types.ts';
 import { ValuePastedEvent } from '../../../events/copyPaste.ts';
-import {CopyPasteState} from "../../../state/slices/copyPaste.ts";
+import { CopyPasteState } from '../../../state/slices/copyPaste.ts';
 
 @customElement('pcb-block-spacer')
 export default class PerplexContentBlocksBlockSpacerElement extends connect(store)(UmbLitElement) {
