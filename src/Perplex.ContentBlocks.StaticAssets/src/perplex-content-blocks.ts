@@ -1,4 +1,4 @@
-import {UmbLitElement} from '@umbraco-cms/backoffice/lit-element';
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
 import {
     css,
     customElement,
@@ -13,13 +13,13 @@ import {
     type UmbPropertyEditorConfigCollection,
     UmbPropertyEditorUiElement,
 } from '@umbraco-cms/backoffice/property-editor';
-import type {UmbPropertyTypeModel} from '@umbraco-cms/backoffice/content-type';
-import {UmbDataPathPropertyValueQuery} from '@umbraco-cms/backoffice/validation';
-import {UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT} from '@umbraco-cms/backoffice/property';
-import {fetchDefinitionsPerCategory} from './queries/definitions.ts';
-import {connect} from 'pwa-helpers';
-import {store} from './state/store.ts';
-import {setDefinitions} from './state/slices/definitions.ts';
+import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
+import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
+import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
+import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
+import { connect } from 'pwa-helpers';
+import { store } from './state/store.ts';
+import { setDefinitions } from './state/slices/definitions.ts';
 import {
     PCBCategoryWithDefinitions,
     PerplexContentBlocksBlock,
@@ -27,23 +27,24 @@ import {
     Section,
     Structure,
 } from './types.ts';
-import {setAddBlockModal, resetAddBlockModal} from './state/slices/ui.ts';
-import {ON_ADD_TOAST, ToastEvent} from './events/toast.ts';
-import {addToast} from './utils/toast.ts';
-import {BlockCreation, ON_BLOCK_SAVED, ON_BLOCK_TOGGLE, ON_BLOCK_UPDATED} from './events/block.ts';
-import {animate} from '@lit-labs/motion';
-import {UMB_AUTH_CONTEXT, UmbAuthContext} from '@umbraco-cms/backoffice/auth';
-import {UmbChangeEvent} from '@umbraco-cms/backoffice/event';
-import {PropertyValues} from 'lit';
-import {register} from 'swiper/element/bundle';
-import {ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent} from './events/copyPaste.ts';
-import {CopyPasteState, setCopiedValue} from './state/slices/copyPaste.ts';
-import {CONTENT_GUID, HEADER_GUID} from './constants.ts';
+import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
+import { ON_ADD_TOAST, ToastEvent } from './events/toast.ts';
+import { addToast } from './utils/toast.ts';
+import { BlockCreation, ON_BLOCK_SAVED, ON_BLOCK_TOGGLE, ON_BLOCK_UPDATED } from './events/block.ts';
+import { animate } from '@lit-labs/motion';
+import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
+import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
+import { PropertyValues } from 'lit';
+import { register } from 'swiper/element/bundle';
+import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from './events/copyPaste.ts';
+import { CopyPasteState, setCopiedValue } from './state/slices/copyPaste.ts';
+import { CONTENT_GUID, HEADER_GUID } from './constants.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
     extends connect(store)(UmbLitElement)
-    implements UmbPropertyEditorUiElement {
+    implements UmbPropertyEditorUiElement
+{
     @query('#notifications')
     private _notificationsElement?: HTMLElement;
 
@@ -63,7 +64,7 @@ export default class PerplexContentBlocksElement
         blocks: [],
     };
 
-    @property({attribute: false})
+    @property({ attribute: false })
     public set value(value: PerplexContentBlocksValue | undefined) {
         if (value == null) {
             return;
@@ -76,7 +77,7 @@ export default class PerplexContentBlocksElement
         return this._value;
     }
 
-    @property({attribute: false})
+    @property({ attribute: false })
     config: UmbPropertyEditorConfigCollection | undefined;
 
     @state()
@@ -171,7 +172,7 @@ export default class PerplexContentBlocksElement
         this.consumeContext(UMB_PROPERTY_CONTEXT, (ctx) => {
             const alias = ctx?.getAlias() || '';
             const culture = ctx?.getVariantId()?.culture;
-            this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({alias, culture})}].value`;
+            this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture })}].value`;
         });
 
         this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (ctx) => {
@@ -198,12 +199,12 @@ export default class PerplexContentBlocksElement
     }
 
     updateHeader(header: PerplexContentBlocksBlock) {
-        this._value = {...this._value, header};
+        this._value = { ...this._value, header };
         this.valueChanged();
     }
 
     removeHeader() {
-        this._value = {...this._value, header: null};
+        this._value = { ...this._value, header: null };
         this.valueChanged();
     }
 
@@ -229,7 +230,7 @@ export default class PerplexContentBlocksElement
         if (section === Section.HEADER && blocks.length > 0) {
             const definition = this.findDefinitionById(blocks[0].definitionId);
             if (definition?.categoryIds.includes(HEADER_GUID)) {
-                this._value = {...this._value, header: blocks[0]};
+                this._value = { ...this._value, header: blocks[0] };
             } else {
                 this.dispatchEvent(
                     ToastEvent('warning', {
@@ -260,7 +261,7 @@ export default class PerplexContentBlocksElement
                 updatedBlocks = [...this._value.blocks, ...contentBlocks];
             }
 
-            this._value = {...this._value, blocks: updatedBlocks};
+            this._value = { ...this._value, blocks: updatedBlocks };
         }
 
         this.valueChanged();
@@ -275,7 +276,7 @@ export default class PerplexContentBlocksElement
     removeBlock(id: string) {
         const blocks = this._value.blocks.filter((block) => block.id !== id);
 
-        this._value = {...this._value, blocks};
+        this._value = { ...this._value, blocks };
         this.valueChanged();
     }
 
@@ -292,7 +293,7 @@ export default class PerplexContentBlocksElement
 
         const blocks = [...this._value.blocks];
         blocks.splice(idx, 1, event.detail.block);
-        this._value = {...this._value, blocks};
+        this._value = { ...this._value, blocks };
         this.valueChanged();
     }
 
@@ -328,112 +329,112 @@ export default class PerplexContentBlocksElement
                         <div class="pcb__blocks">
                             ${this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                    <div ${animate()}>
-                                        <pcb-block
-                                            .block=${this._value.header}
-                                            .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
-                                            .removeBlock=${this.removeHeader.bind(this)}
-                                            .dataPath=${this.dataPath}
-                                            .definition=${this.findDefinitionById(this._value.header.definitionId)}
-                                            .section=${Section.HEADER}
-                                        ></pcb-block>
-                                    </div>
-                                `
+                                      <div ${animate()}>
+                                          <pcb-block
+                                              .block=${this._value.header}
+                                              .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
+                                              .removeBlock=${this.removeHeader.bind(this)}
+                                              .dataPath=${this.dataPath}
+                                              .definition=${this.findDefinitionById(this._value.header.definitionId)}
+                                              .section=${Section.HEADER}
+                                          ></pcb-block>
+                                      </div>
+                                  `
                                 : nothing}
-
                             ${!this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                    <div class="pcb__block-add pcb__block-add--header">
-                                        <uui-button look="primary" @click=${this.addHeader}>
-                                            <slot name="label">Add header</slot>
-                                            <slot name="extra">
-                                                <uui-icon name="icon-add"></uui-icon>
-                                            </slot>
-                                        </uui-button>
+                                      <div class="pcb__block-add pcb__block-add--header">
+                                          <uui-button
+                                              look="primary"
+                                              @click=${this.addHeader}
+                                          >
+                                              <slot name="label">Add header</slot>
+                                              <slot name="extra">
+                                                  <uui-icon name="icon-add"></uui-icon>
+                                              </slot>
+                                          </uui-button>
 
-                                        ${this.copiedValue?.copied
-                                            ? html`
-                                                <uui-button
-                                                    look="primary"
-                                                    @click=${() => this.pasteBlock(Section.HEADER)}
-                                                >
-                                                    <slot name="label">Paste header</slot>
-                                                    <slot name="extra">
-                                                        <uui-icon name="icon-clipboard-paste"></uui-icon>
-                                                    </slot>
-                                                </uui-button>
-                                            `
-                                            : nothing}
-                                    </div>
-                                `
+                                          ${this.copiedValue?.copied
+                                              ? html`
+                                                    <uui-button
+                                                        look="primary"
+                                                        @click=${() => this.pasteBlock(Section.HEADER)}
+                                                    >
+                                                        <slot name="label">Paste header</slot>
+                                                        <slot name="extra">
+                                                            <uui-icon name="icon-clipboard-paste"></uui-icon>
+                                                        </slot>
+                                                    </uui-button>
+                                                `
+                                              : nothing}
+                                      </div>
+                                  `
                                 : nothing}
-
                             ${this.structure !== Structure.Header
                                 ? repeat(
-                                    this._value.blocks,
-                                    (block) => block.id,
-                                    (block, index) => html`
-                                        ${!this._value.header && index === 0
-                                            ? nothing
-                                            : html`
-                                                <pcb-block-spacer .index=${index}></pcb-block-spacer>`}
-                                        <pcb-block
-                                            .block=${block}
-                                            .collapsed=${!this.openedBlocks.includes(block.id)}
-                                            .removeBlock=${this.removeBlock.bind(this)}
-                                            .dataPath=${this.dataPath}
-                                            .definition=${this.findDefinitionById(block.definitionId)}
-                                            .section=${Section.CONTENT}
-                                            ${animate({id: block.id})}
-                                        ></pcb-block>
-                                    `
-                                )
+                                      this._value.blocks,
+                                      (block) => block.id,
+                                      (block, index) => html`
+                                          ${!this._value.header && index === 0
+                                              ? nothing
+                                              : html` <pcb-block-spacer .index=${index}></pcb-block-spacer>`}
+                                          <pcb-block
+                                              .block=${block}
+                                              .collapsed=${!this.openedBlocks.includes(block.id)}
+                                              .removeBlock=${this.removeBlock.bind(this)}
+                                              .dataPath=${this.dataPath}
+                                              .definition=${this.findDefinitionById(block.definitionId)}
+                                              .section=${Section.CONTENT}
+                                              ${animate({ id: block.id })}
+                                          ></pcb-block>
+                                      `,
+                                  )
                                 : nothing}
                         </div>
 
                         ${this.structure !== Structure.Header
                             ? html`
-                                <div class="pcb__block-add">
-                                    <uui-button look="primary" @click=${this.addBlock}>
-                                        <slot name="label">Add content</slot>
-                                        <slot name="extra">
-                                            <uui-icon name="icon-add"></uui-icon>
-                                        </slot>
-                                    </uui-button>
+                                  <div class="pcb__block-add">
+                                      <uui-button
+                                          look="primary"
+                                          @click=${this.addBlock}
+                                      >
+                                          <slot name="label">Add content</slot>
+                                          <slot name="extra">
+                                              <uui-icon name="icon-add"></uui-icon>
+                                          </slot>
+                                      </uui-button>
 
-                                    ${this.copiedValue?.copied
-                                        ? html`
-                                            <uui-button
-                                                look="primary"
-                                                @click=${() => this.pasteBlock(Section.CONTENT)}
-                                            >
-                                                <slot name="label">Paste content</slot>
-                                                <slot name="extra">
-                                                    <uui-icon name="icon-clipboard-paste"></uui-icon>
-                                                </slot>
-                                            </uui-button>
-                                        `
-                                        : nothing}
-                                </div>
-                            `
+                                      ${this.copiedValue?.copied
+                                          ? html`
+                                                <uui-button
+                                                    look="primary"
+                                                    @click=${() => this.pasteBlock(Section.CONTENT)}
+                                                >
+                                                    <slot name="label">Paste content</slot>
+                                                    <slot name="extra">
+                                                        <uui-icon name="icon-clipboard-paste"></uui-icon>
+                                                    </slot>
+                                                </uui-button>
+                                            `
+                                          : nothing}
+                                  </div>
+                              `
                             : nothing}
                     </div>
                 </div>
 
                 ${this.config?.getValueByAlias('debug') === true
                     ? html`
-                        <div class="debug">
-                            <uui-button
-                                look="outline"
-                                label="raw value"
-                                @click=${() => (this.showDebug = !this.showDebug)}
-                            ></uui-button>
-                            ${this.showDebug
-                                ? html`
-                                    <pre>${JSON.stringify(this.value, null, 4)}</pre>`
-                                : nothing}
-                        </div>
-                    `
+                          <div class="debug">
+                              <uui-button
+                                  look="outline"
+                                  label="raw value"
+                                  @click=${() => (this.showDebug = !this.showDebug)}
+                              ></uui-button>
+                              ${this.showDebug ? html` <pre>${JSON.stringify(this.value, null, 4)}</pre>` : nothing}
+                          </div>
+                      `
                     : nothing}
             </div>
 
@@ -448,7 +449,6 @@ export default class PerplexContentBlocksElement
             <pcb-add-block-modal></pcb-add-block-modal>
         `;
     }
-
 
     static styles = [
         css`

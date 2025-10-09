@@ -1,5 +1,6 @@
 :host(.swiper--small) {
-    .swiper-button-next, .swiper-button-prev {
+    .swiper-button-next,
+    .swiper-button-prev {
         color: white;
         background-color: var(--uui-palette-mine-grey);
         border-radius: 100%;
@@ -24,8 +25,8 @@
     background-color: var(--uui-palette-mine-grey);
 }
 
-
-.swiper-button-next, .swiper-button-prev {
+.swiper-button-next,
+.swiper-button-prev {
     color: white;
     background-color: var(--uui-palette-mine-grey);
     border-radius: 100%;

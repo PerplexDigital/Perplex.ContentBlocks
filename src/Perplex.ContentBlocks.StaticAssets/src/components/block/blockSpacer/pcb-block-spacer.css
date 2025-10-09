@@ -2,10 +2,11 @@
     padding: calc(var(--s) * 3) 0;
     margin: 0 calc(var(--s) * 12);
 
-
     display: grid;
     grid-template-rows: 0fr;
-    transition: 250ms grid-template-rows ease, 250ms padding ease;
+    transition:
+        250ms grid-template-rows ease,
+        250ms padding ease;
 
     &.pcb-block-spacer > div {
         overflow: hidden;
@@ -29,7 +30,6 @@
                 opacity: 1;
             }
         }
-
     }
 
     .pcb-block-spacer__controls {

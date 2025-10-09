@@ -9,7 +9,6 @@
     transition: 250ms border ease;
     background-color: var(--c-wild-sand);
 
-
     .block-head__controls {
         display: flex;
         align-items: center;
@@ -54,7 +53,6 @@
         border-radius: var(--r-lg) 0;
         border-bottom: 1px solid rgba(var(--c-submarine), 1);
     }
-
 
     .block-head__icon {
         padding: calc(var(--s) * 4);
