@@ -26,7 +26,7 @@ public static partial class Constants
         /// </summary>
         public static readonly string ViewPath = "/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.html" + (GetProductVersion() is string version ? "?v=" + version : "");
 
-        public const string AssetsFolder = "/App_Plugins/Perplex.ContentBlocks/dist";
+        public const string AssetsFolder = "/App_Plugins/Perplex.ContentBlocks";
 
         private static string? GetProductVersion()
         {
