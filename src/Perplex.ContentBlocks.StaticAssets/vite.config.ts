@@ -8,7 +8,7 @@ export default defineConfig({
             entry: 'src/index.ts',
             formats: ['es'],
         },
-        outDir: '../wwwroot/App_Plugins/Perplex.ContentBlocks/',
+        outDir: './wwwroot/App_Plugins/Perplex.ContentBlocks/',
         emptyOutDir: true,
         sourcemap: true,
         rollupOptions: {

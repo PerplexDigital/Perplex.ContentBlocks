@@ -12,7 +12,7 @@ function addContentBlocksVersion() {
         closeBundle: async () => {
             try {
                 // 1. Read Directory.Build.props 4 directories up
-                const propsPath = resolve(__dirname, '../../Directory.Build.props');
+                const propsPath = resolve(__dirname, '../Directory.Build.props');
                 const propsContent = await fs.readFile(propsPath, 'utf-8');
 
                 // 2. Extract <Version> with regex
@@ -25,7 +25,7 @@ function addContentBlocksVersion() {
                 // 3. Read and update umbraco-package.json
                 const distFilePath = resolve(
                     __dirname,
-                    '../wwwroot/App_Plugins/Perplex.ContentBlocks/umbraco-package.json',
+                    './wwwroot/App_Plugins/Perplex.ContentBlocks/umbraco-package.json',
                 );
                 let content = await fs.readFile(distFilePath, 'utf-8');
                 content = content.replace('perplex.content-blocks.js', `perplex.content-blocks.js?v=${version}`);

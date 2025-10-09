@@ -6,11 +6,11 @@
 
     <Message Importance="High" Text="[Perplex.ContentBlocks.StaticAssets] pnpm install" />
     <Exec Command="pnpm install --frozen-lockfile --prefer-offline --config.confirmModulesPurge=false"
-          WorkingDirectory="$(MSBuildProjectDirectory)\src" />
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
 
     <Message Importance="High" Text="[Perplex.ContentBlocks.StaticAssets] pnpm build" />
     <Exec Command="pnpm build"
-          WorkingDirectory="$(MSBuildProjectDirectory)\src" />
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
 
   </Target>
 
