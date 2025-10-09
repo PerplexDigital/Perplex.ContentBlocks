@@ -24,7 +24,7 @@ const { actions: authActions, reducer: uiReducer } = createSlice({
         setAddBlockModal: (state, action) => {
             state.addBlock.display = action.payload.display;
             state.addBlock.section = action.payload.section;
-            state.addBlock.insertAtIndex = action.payload.insertAtIndex ?? 0;
+            state.addBlock.insertAtIndex = action.payload.insertAtIndex ?? null;
         },
         resetAddBlockModal: (state) => {
             state.addBlock.display = false;

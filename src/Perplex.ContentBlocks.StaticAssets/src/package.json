@@ -15,6 +15,7 @@
         "lit": "^3.3.0",
         "mutative": "^1.0.5",
         "pwa-helpers": "^0.9.1",
+        "redux-persist": "^6.0.0",
         "swiper": "^11.2.10"
     },
     "devDependencies": {

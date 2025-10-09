@@ -7,16 +7,16 @@ export const ON_BLOCK_REMOVE = 'ON_BLOCK_REMOVE';
 export const ON_BLOCK_TOGGLE = 'ON_BLOCK_TOGGLE';
 export const ON_BLOCK_LAYOUT_CHANGE = 'ON_BLOCK_LAYOUT_CHANGE';
 
-type BlockCreation = {
-    block: PerplexContentBlocksBlock;
+export type BlockCreation = {
+    blocks: PerplexContentBlocksBlock[];
     section: Section;
-    desiredIndex?: number;
+    desiredIndex: number | null;
 };
 
 export const BlockSavedEvent = (blockCreation: BlockCreation) =>
     new CustomEvent(ON_BLOCK_SAVED, {
         detail: {
-            block: blockCreation.block,
+            blocks: blockCreation.blocks,
             section: blockCreation.section,
             desiredIndex: blockCreation.desiredIndex,
         },

@@ -186,7 +186,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             <pcb-block-head
                 .block=${this.block}
                 .id=${this.block.id}
-                .blockDefinitionName=${this.elementType.name}
+                .blockDefinitionName=${this.definition?.name}
                 .collapsed="${this.collapsed}"
                 .blockTemplateName="${contentBlockName(this.definition?.blockNameTemplate ?? '', this.block)}"
                 .definition=${this.definition}

@@ -63,7 +63,11 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
         }
 
         this.dispatchEvent(
-            BlockSavedEvent({ block: this.selectedBlock, section: this.section, desiredIndex: this.insertAtIndex }),
+            BlockSavedEvent({
+                blocks: [this.selectedBlock],
+                section: this.section,
+                desiredIndex: this.insertAtIndex ?? null,
+            }),
         );
         this.selectedBlock = null;
     }

@@ -5,6 +5,8 @@ import blockHeadStyles from './block-head.css?inline';
 import baseStyles from './../../../css/base.css?inline';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../../types.ts';
 import { PropertyValues } from 'lit';
+import { ValueCopiedEvent } from '../../../events/copyPaste.ts';
+import { ToastEvent } from '../../../events/toast.ts';
 
 @customElement('pcb-block-head')
 export default class PcbBlockHead extends UmbLitElement {
@@ -47,6 +49,16 @@ export default class PcbBlockHead extends UmbLitElement {
         }
     };
 
+    onCopyClicked = () => {
+        this.dispatchEvent(ValueCopiedEvent([this.block]));
+        this.dispatchEvent(
+            ToastEvent('positive', {
+                headline: 'Copied!',
+                message: `${this.definition?.name} copied to clipboard`,
+            }),
+        );
+    };
+
     protected willUpdate(_changedProperties: PropertyValues) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
             this.selectedLayoutIndex = this.definition?.layouts.findIndex((l) => l.id === this.block.layoutId) || 0;
@@ -87,17 +99,17 @@ export default class PcbBlockHead extends UmbLitElement {
                         </uui-icon>
                     </button>
 
-                    <!--<button
+                    <button
                         class="block-head__control"
                         type="button"
-                        @click=${this.onRemoveClicked}
+                        @click=${this.onCopyClicked}
                     >
                         <uui-icon
                             style="font-size: 20px; color: var(--c-submarine);"
                             name="icon-documents"
                         >
                         </uui-icon>
-                    </button>-->
+                    </button>
                     <button
                         class="block-head__control"
                         type="button"
