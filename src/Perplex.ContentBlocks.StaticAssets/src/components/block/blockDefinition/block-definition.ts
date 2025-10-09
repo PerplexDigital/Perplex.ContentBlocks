@@ -94,7 +94,11 @@ export class PcbBlockDefinition extends LitElement {
                                     id="open-part"
                                     tabindex=${this.disabled ? (nothing as any) : '0'}
                                 >
-                                    <strong>${layout.name === 'Default' ? this.definition!.name : layout.name}</strong>
+                                    <strong
+                                        >${layout.name === 'Default'
+                                            ? this.definition!.name
+                                            : `${this.definition!.name} | ${layout.name}`}</strong
+                                    >
                                     <span>${this.definition!.description}</span>
                                 </button>
 
