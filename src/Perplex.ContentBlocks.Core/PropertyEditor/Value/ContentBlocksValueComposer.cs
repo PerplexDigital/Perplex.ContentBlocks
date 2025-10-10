@@ -10,6 +10,9 @@ public class ContentBlocksValueComposer : IComposer
     public void Compose(IUmbracoBuilder builder)
     {
         builder.Services.AddSingleton<ContentBlocksValueDeserializer>();
-        builder.AddNotificationHandler<ContentCopyingNotification, ContentBlocksValueCopyingHandler>();
+
+        builder.AddNotificationHandler<ContentCopyingNotification, ContentBlocksContentNotificationHandler>();
+        builder.AddNotificationHandler<ContentSavingNotification, ContentBlocksContentNotificationHandler>();
+        builder.AddNotificationHandler<ContentScaffoldedNotification, ContentBlocksContentNotificationHandler>();
     }
 }

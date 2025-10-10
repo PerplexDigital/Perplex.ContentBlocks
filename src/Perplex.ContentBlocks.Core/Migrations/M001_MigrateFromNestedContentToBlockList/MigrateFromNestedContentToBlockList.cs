@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NPoco;
+using Perplex.ContentBlocks.Utils;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Umbraco.Cms.Core.Models;
@@ -115,7 +115,7 @@ public class MigrateFromNestedContentToBlockList
 
             foreach (var propertyData in propertyDatas)
             {
-                if (!TryParseJson(propertyData.TextValue, out var node))
+                if (!JsonUtils.TryParseJson(propertyData.TextValue, out var node))
                 {
                     continue;
                 }
@@ -250,7 +250,7 @@ public class MigrateFromNestedContentToBlockList
                 return node?.DeepClone();
             }
 
-            if (!TryParseJson(node?.ToString(), out JsonNode? value))
+            if (!JsonUtils.TryParseJson(node?.ToString(), out JsonNode? value))
             {
                 // In NestedContent everything is stored as a string even if it's actually an Array or Object
                 // so we always first try to parse it as a complex object and use that if possible.
@@ -404,7 +404,7 @@ public class MigrateFromNestedContentToBlockList
 
         string? MapNestedContentConfig(string? configStr)
         {
-            if (!TryParseJson(configStr, out var config))
+            if (!JsonUtils.TryParseJson(configStr, out var config))
             {
                 // Cannot parse, just return the original config
                 return configStr;
@@ -522,26 +522,6 @@ public class MigrateFromNestedContentToBlockList
             WHERE propertyEditorAlias = @propertyEditorAlias";
 
         return [.. Database.Fetch<UmbracoDataType>(query, new { propertyEditorAlias })];
-    }
-
-    private static bool TryParseJson(string? json, [NotNullWhen(true)] out JsonNode? node)
-    {
-        node = null;
-
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            return false;
-        }
-
-        try
-        {
-            node = JsonNode.Parse(json);
-            return node is not null;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private static string GetHumanReadableElapsed(TimeSpan ts)
