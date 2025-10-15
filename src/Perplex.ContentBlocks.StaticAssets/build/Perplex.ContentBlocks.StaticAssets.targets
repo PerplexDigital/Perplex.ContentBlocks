@@ -1,42 +1,16 @@
 ﻿<Project>
 
-  <PropertyGroup>
-    <ResolveStaticWebAssetsInputsDependsOn>PerplexContentBlocks_StaticAssets/IncludeAppPlugins;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
-  </PropertyGroup>
+  <Target Name="Perplex_ContentBlocks_StaticAssets_Build"
+          BeforeTargets="ResolveStaticWebAssetsInputs"
+          Condition="'$(Configuration)' == 'Release' Or !Exists('$(MSBuildProjectDirectory)\wwwroot\App_Plugins\Perplex.ContentBlocks')">
 
-  <PropertyGroup>
-    <_AppPluginsPrefix Condition="'$(Configuration)' == 'Release'">dist\</_AppPluginsPrefix>
-    <_AppPluginsPrefix Condition="'$(Configuration)' != 'Release'">src\</_AppPluginsPrefix>
-  </PropertyGroup>
+    <Message Importance="High" Text="[Perplex.ContentBlocks.StaticAssets] pnpm install" />
+    <Exec Command="pnpm install --frozen-lockfile --prefer-offline --config.confirmModulesPurge=false"
+          WorkingDirectory="$(MSBuildProjectDirectory)\src" />
 
-  <Target Name="PerplexContentBlocks_StaticAssets/BeforeBuild" BeforeTargets="BeforeBuild">
-    <CallTarget Targets="PerplexContentBlocks_StaticAssets/Build" Condition="'$(Configuration)' == 'Release'" />
-  </Target>
-
-  <Target Name="PerplexContentBlocks_StaticAssets/Build">
-    <Message Importance="High" Text="Perplex.ContentBlocks: Build Static Assets" />
-    <Exec Command="npm install -g pnpm" WorkingDirectory="$(MSBuildProjectDirectory)\src" />
-		<Exec Command="pnpm install --ignore-scripts --prefer-offline" WorkingDirectory="$(MSBuildProjectDirectory)\src" />
-    <Exec Command="pnpm build" WorkingDirectory="$(MSBuildProjectDirectory)\src" />
-  </Target>
-
-  <Target Name="PerplexContentBlocks_StaticAssets/IncludeAppPlugins">
-    <ItemGroup>
-      <_AppPluginsFiles Include="$(_AppPluginsPrefix)App_Plugins\Perplex.ContentBlocks\**"></_AppPluginsFiles>
-    </ItemGroup>
-
-    <DiscoverStaticWebAssets Candidates="@(_AppPluginsFiles)"
-      SourceId="$(PackageId)"
-      Pattern="$(_AppPluginsPrefix)**"
-      ContentRoot="$(MSBuildProjectDirectory)"
-      BasePath="$(StaticWebAssetBasePath)">
-      <Output TaskParameter="DiscoveredStaticWebAssets" ItemName="_DiscoveredAssets" />
-    </DiscoverStaticWebAssets>
-
-    <ItemGroup>
-      <StaticWebAsset Remove="@(_DiscoveredAssets)" />
-      <StaticWebAsset Include="@(_DiscoveredAssets)" />
-    </ItemGroup>
+    <Message Importance="High" Text="[Perplex.ContentBlocks.StaticAssets] pnpm build" />
+    <Exec Command="pnpm build"
+          WorkingDirectory="$(MSBuildProjectDirectory)\src" />
 
   </Target>
 

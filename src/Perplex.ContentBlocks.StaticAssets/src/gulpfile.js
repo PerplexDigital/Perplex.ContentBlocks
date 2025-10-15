@@ -18,7 +18,7 @@ const appPluginsSubDir = "Perplex.ContentBlocks";
 const srcDir = path.join("App_Plugins", appPluginsSubDir);
 const lessFileName = "perplex.content-blocks.less";
 const jsOutputFileName = "perplex.content-blocks.js";
-const outputDir = "../dist";
+const outputDir = "../wwwroot";
 
 // We need to distribute this file as is since it cannot be embedded into the JS.
 // In order to do so we need to turn it into an AngularJS component.
