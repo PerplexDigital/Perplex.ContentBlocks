@@ -23,14 +23,16 @@ public class ContentBlocksRenderer : IContentBlocksRenderer
 
         var builder = new HtmlContentBuilder();
 
-        var blocksHtml = await Task.WhenAll(
-            RenderBlockAsync(contentBlocks.Header, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview),
-            RenderBlocksAsync(contentBlocks.Blocks, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview)
-        );
-
-        foreach (var blockHtml in blocksHtml)
+        if (contentBlocks.Header is not null)
         {
-            builder.AppendHtml(blockHtml);
+            var headerHtml = await RenderBlockAsync(contentBlocks.Header, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview);
+            builder.AppendHtml(headerHtml);
+        }
+
+        if (contentBlocks.Blocks?.Any() == true)
+        {
+            var blocksHtml = await RenderBlocksAsync(contentBlocks.Blocks, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview);
+            builder.AppendHtml(blocksHtml);
         }
 
         return builder;
@@ -72,11 +74,9 @@ public class ContentBlocksRenderer : IContentBlocksRenderer
 
         var builder = new HtmlContentBuilder();
 
-        var renderTasks = blocks.Select(block => RenderBlockAsync(block, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview));
-        var blocksHtml = await Task.WhenAll(renderTasks);
-
-        foreach (var blockHtml in blocksHtml)
+        foreach (var block in blocks)
         {
+            var blockHtml = await RenderBlockAsync(block, renderViewComponentAsync, renderPartialViewAsync, isBackOfficePreview);
             builder.AppendHtml(blockHtml);
         }
 
