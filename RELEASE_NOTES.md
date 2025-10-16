@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v3.0.1 - <sub><sup>2025-10-16</sup></sub>
+
+- Render blocks sequentially instead of concurrently to prevent scope exceptions in some cases ([#88](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/88)).
+  - Rendering blocks concurrently with `await Task.WhenAll(...)` does not work well with Umbraco scopes, leading to `The Scope being disposed is not the Ambient Scope` exceptions when you use an Umbraco service during ContentBlock rendering that creates a scope with `IScopeProvider` / `ICoreScopeProvider`.
+  - Thanks to [@Ron-Brouwer](https://github.com/Ron-Brouwer) for raising the issue.
+
 ## v3.0.0 - <sub><sup>2024-01-18</sup></sub>
 
 - Dropped support for v8 and v9
