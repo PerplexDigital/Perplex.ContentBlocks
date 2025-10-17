@@ -112,7 +112,7 @@ export default class PerplexContentBlocksElement
         }
     }
 
-    async fetchDefinitonsPerCategory() {
+    async fetchDefinitionsPerCategory() {
         const token = await this.#authContext?.getLatestToken();
         if (token == null) {
             throw new Error('No auth token available');
@@ -133,7 +133,7 @@ export default class PerplexContentBlocksElement
 
     connectedCallback() {
         super.connectedCallback();
-        this.fetchDefinitonsPerCategory();
+        this.fetchDefinitionsPerCategory();
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
 
