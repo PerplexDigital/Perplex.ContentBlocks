@@ -38,7 +38,7 @@ import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
 import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from './events/copyPaste.ts';
 import { CopyPasteState, setCopiedValue } from './state/slices/copyPaste.ts';
-import { CONTENT_GUID, HEADER_GUID } from './constants.ts';
+import { HEADER_GUID } from './constants.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
