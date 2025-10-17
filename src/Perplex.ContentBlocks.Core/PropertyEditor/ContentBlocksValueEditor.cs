@@ -41,15 +41,8 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             return base.ToEditor(property, culture, segment);
         }
 
-        ToEditor(model.Header?.Content, culture, segment);
-
-        if (model.Blocks is not null)
-        {
-            foreach (var block in model.Blocks)
-            {
-                ToEditor(block.Content, culture, segment);
-            }
-        }
+        ContentBlocksValueUtils.Iterate(model, block =>
+            ToEditor(block.Content, culture, segment));
 
         return model;
 
@@ -97,15 +90,8 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             return base.FromEditor(editorValue, currentValue);
         }
 
-        FromEditor(model.Header?.Content);
-
-        if (model.Blocks is not null)
-        {
-            foreach (var block in model.Blocks)
-            {
-                FromEditor(block.Content);
-            }
-        }
+        ContentBlocksValueUtils.Iterate(model, block =>
+            FromEditor(block.Content));
 
         return _jsonSerializer.Serialize(model);
 

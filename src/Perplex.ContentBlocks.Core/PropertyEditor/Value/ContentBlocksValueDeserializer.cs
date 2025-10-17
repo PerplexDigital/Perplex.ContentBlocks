@@ -27,7 +27,7 @@ public class ContentBlocksValueDeserializer(IJsonSerializer jsonSerializer, ICon
                 return null;
             }
 
-            PopulateMetadata(value);
+            Refine(value);
 
             return value;
         }
@@ -38,23 +38,33 @@ public class ContentBlocksValueDeserializer(IJsonSerializer jsonSerializer, ICon
     }
 
     /// <summary>
-    /// Populates metadata such as content type aliases and property types for all blocks in the given model.
+    /// Refines the given <see cref="ContentBlocksValue"/>. This will remove invalid blocks (e.g. due to missing element types) and populates metadata such as content type aliases and property types for all blocks in the given model.
     /// This data is required for e.g. <see cref="IDataValueEditor.ToEditor(IProperty, string?, string?)"/> of all contained property editors to work correctly.
     /// </summary>
     /// <param name="model"></param>
-    private void PopulateMetadata(ContentBlocksValue model)
+    private void Refine(ContentBlocksValue model)
     {
         var elementTypes = GetElementTypes(model);
-        ContentBlocksValueIterator.Iterate(model, block => PopulateMetadata(block.Content, elementTypes));
+
+        ContentBlocksValueUtils.Modify(model, RefineBlock);
+
+        ContentBlockValue? RefineBlock(ContentBlockValue? block)
+        {
+            if (block?.Content?.ContentTypeKey is not Guid contentTypeKey ||
+                !elementTypes.TryGetValue(contentTypeKey, out var elementType))
+            {
+                // Remove this block
+                return null;
+            }
+
+            PopulateMetadata(block.Content, elementType);
+
+            return block;
+        }
     }
 
-    private static void PopulateMetadata(BlockItemData? block, Dictionary<Guid, IContentType> elementTypes)
+    private static void PopulateMetadata(BlockItemData block, IContentType elementType)
     {
-        if (block is null || !elementTypes.TryGetValue(block.ContentTypeKey, out var elementType))
-        {
-            return;
-        }
-
         block.ContentTypeAlias = elementType.Alias;
 
         var propertiesByAlias = elementType.PropertyTypes.ToDictionary(pt => pt.Alias);
@@ -80,7 +90,7 @@ public class ContentBlocksValueDeserializer(IJsonSerializer jsonSerializer, ICon
         {
             var keys = new HashSet<Guid>();
 
-            ContentBlocksValueIterator.Iterate(model, block => AddKey(block.Content, keys));
+            ContentBlocksValueUtils.Iterate(model, block => AddKey(block.Content, keys));
 
             return keys;
 
