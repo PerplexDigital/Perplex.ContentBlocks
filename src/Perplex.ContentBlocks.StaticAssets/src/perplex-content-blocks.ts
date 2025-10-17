@@ -241,7 +241,8 @@ export default class PerplexContentBlocksElement
         } else {
             const contentBlocks = blocks.filter((b: PerplexContentBlocksBlock) => {
                 const def = this.findDefinitionById(b.definitionId);
-                return def?.categoryIds.includes(CONTENT_GUID);
+                if (def == null) return false;
+                return !def.categoryIds.includes(HEADER_GUID);
             });
 
             if (contentBlocks.length < blocks.length) {
