@@ -255,7 +255,7 @@ export default class PerplexContentBlocksElement
 
             // if event contains detail desired index, insert block at that index
             let updatedBlocks;
-            if (desiredIndex) {
+            if (typeof desiredIndex === 'number' && desiredIndex >= 0) {
                 updatedBlocks = [...this._value.blocks];
                 updatedBlocks.splice(desiredIndex, 0, ...contentBlocks);
             } else {
