@@ -66,3 +66,7 @@ export enum Structure {
     Blocks = 'Blocks',
     Header = 'Header',
 }
+
+export interface PcbDragItemElement extends HTMLElement {
+    blockId: string;
+}

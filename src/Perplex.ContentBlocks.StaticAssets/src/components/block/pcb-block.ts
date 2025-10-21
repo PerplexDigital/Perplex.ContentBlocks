@@ -17,17 +17,54 @@ import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/ba
 import contentBlockName from '../../utils/contentBlockName.ts';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../types.ts';
 import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
-import { animate } from '@lit-labs/motion';
-import { PropertyValues } from 'lit';
+import { nothing, PropertyValues } from 'lit';
+import { connect } from 'pwa-helpers';
 
 import baseStyles from './../../css/base.css?inline';
+import { store } from '../../state/store.ts';
+import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
 
 export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
     return block.id + '_';
 }
 
 @customElement('pcb-block')
-export default class PerplexContentBlocksBlockElement extends UmbLitElement {
+export default class PerplexContentBlocksBlockElement extends connect(store)(UmbLitElement) {
+    @property({ type: Boolean, reflect: true })
+    dragging: boolean | null = null;
+
+    @property({ attribute: false })
+    section: Section = Section.CONTENT;
+
+    @property({ attribute: false })
+    index!: number;
+
+    @property({
+        type: Boolean,
+        reflect: true,
+        attribute: 'draggable',
+        converter: {
+            toAttribute: (value: boolean) => (value ? 'true' : 'false'),
+            fromAttribute: (value: string | null) => value === 'true',
+        },
+    })
+    draggable: boolean = false;
+
+    updated(changedProps: PropertyValues) {
+        super.updated(changedProps);
+
+        if (changedProps.has('section')) {
+            this.draggable = this.section === Section.CONTENT;
+        }
+
+        this.updateComplete.then(() => {
+            Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
+                const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
+                if (layout) layout.orientation = 'vertical';
+            });
+        });
+    }
+
     @property({ attribute: false })
     collapsed: boolean = true;
 
@@ -43,9 +80,6 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     @property({ attribute: false })
     dataPath!: string;
 
-    @property({ attribute: false })
-    section: Section = Section.CONTENT;
-
     @state()
     private ok: boolean = false;
 
@@ -54,6 +88,9 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     @state()
     removing: boolean = false;
+
+    @state()
+    isDraggingBlock: boolean = false;
 
     #contentTypeRepository = new UmbDocumentTypeDetailRepository(this);
     elementType!: UmbDocumentTypeDetailModel;
@@ -87,12 +124,39 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         }
 
         this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
+        this.addEventListener('dragstart', this.onDragStart);
+        this.addEventListener('dragend', this.onDragEnd);
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
         this.removeEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
         this.clearValidationMessages();
+        this.removeEventListener('dragstart', this.onDragStart);
+        this.removeEventListener('dragend', this.onDragEnd);
+    }
+
+    onDragStart = (event: DragEvent) => {
+        this.dragging = true;
+        this.isDraggingBlock = true;
+        const rect = this.getBoundingClientRect();
+        PcbDragAndDrop.activeDrag = { element: this, height: rect.height };
+        event.dataTransfer!.effectAllowed = 'move';
+        event.dataTransfer!.setData('text/plain', '');
+    };
+
+    onDragEnd = () => {
+        const active = PcbDragAndDrop.activeDrag;
+        if (active) {
+            active.element.style.display = ''; // restore visibility
+        }
+        PcbDragAndDrop.activeDrag = null;
+        this.dragging = null;
+        this.isDraggingBlock = false;
+    };
+
+    stateChanged(state: any) {
+        this.isDraggingBlock = state.ui.isDraggingBlock;
     }
 
     onLayoutChange = (event: CustomEvent<any>) => {
@@ -177,59 +241,55 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             block__removing: this.removing,
         };
 
-        return html`<div
-            class="${classMap(classes)}"
-            ${animate({
-                id: this.block.content.key,
-            })}
-        >
-            <pcb-block-head
-                .block=${this.block}
-                .id=${this.block.id}
-                .blockDefinitionName=${this.definition?.name}
-                .collapsed="${this.collapsed}"
-                .blockTemplateName="${contentBlockName(this.definition?.blockNameTemplate ?? '', this.block)}"
-                .definition=${this.definition}
-                .section=${this.section}
-            >
-            </pcb-block-head>
-            <div class=${this.collapsed ? 'block__body block__body--hidden' : 'block__body block__body--open'}>
-                <div>
-                    ${repeat(
-                        this.elementType.properties,
-                        (property) => property.id,
-                        (property) => {
-                            const dataType = this.#dataTypes[property.dataType.unique];
-                            if (dataType == null) throw new Error('missing data type');
+        return html` ${this.section !== Section.HEADER
+                ? html`<pcb-block-spacer .index=${this.index}></pcb-block-spacer>`
+                : nothing}
+            <div class="${classMap(classes)}">
+                <pcb-block-head
+                    .block=${this.block}
+                    .id=${this.block.id}
+                    .blockDefinitionName=${this.definition?.name}
+                    .collapsed="${this.collapsed}"
+                    .blockTemplateName="${contentBlockName(this.definition?.blockNameTemplate ?? '', this.block)}"
+                    .definition=${this.definition}
+                    .section=${this.section}
+                    .isDraggingBlock=${this.isDraggingBlock}
+                >
+                </pcb-block-head>
+                <div
+                    class="
+                    block__body
+                    ${classMap({
+                        'block__body--open': !this.collapsed,
+                        'block__body--hidden': this.collapsed,
+                        'block__body--dragging': this.isDraggingBlock && this.collapsed,
+                    })}"
+                >
+                    <div>
+                        ${repeat(
+                            this.elementType.properties,
+                            (property) => property.id,
+                            (property) => {
+                                const dataType = this.#dataTypes[property.dataType.unique];
+                                if (dataType == null) throw new Error('missing data type');
 
-                            return html`<umb-property
-                                .dataPath=${this.dataPath}
-                                .alias=${propertyAliasPrefix(this.block) + property.alias}
-                                .label=${property.name}
-                                .description=${property.description}
-                                .appearance=${property.appearance}
-                                property-editor-ui-alias=${dataType.editorUiAlias}
-                                orientation="vertical"
-                                .config=${dataType.values}
-                                .validation=${property.validation}
-                            >
-                            </umb-property>`;
-                        },
-                    )}
+                                return html` <umb-property
+                                    .dataPath=${this.dataPath}
+                                    .alias=${propertyAliasPrefix(this.block) + property.alias}
+                                    .label=${property.name}
+                                    .description=${property.description}
+                                    .appearance=${property.appearance}
+                                    property-editor-ui-alias=${dataType.editorUiAlias}
+                                    orientation="vertical"
+                                    .config=${dataType.values}
+                                    .validation=${property.validation}
+                                >
+                                </umb-property>`;
+                            },
+                        )}
+                    </div>
                 </div>
-            </div>
-        </div>`;
-    }
-
-    updated(changedProperties: PropertyValues) {
-        super.updated(changedProperties);
-
-        this.updateComplete.then(() => {
-            Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
-                const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
-                if (layout) layout.orientation = 'vertical';
-            });
-        });
+            </div>`;
     }
 
     static styles = [
@@ -263,6 +323,10 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     &.block__body--open {
                         grid-template-rows: 1fr;
                         padding: calc(var(--s) * 6) calc(var(--s) * 8);
+                    }
+
+                    &.block__body--dragging {
+                        display: none;
                     }
 
                     > div {

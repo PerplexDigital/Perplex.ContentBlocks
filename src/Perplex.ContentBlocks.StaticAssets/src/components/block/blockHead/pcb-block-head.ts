@@ -7,9 +7,11 @@ import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../.
 import { PropertyValues } from 'lit';
 import { ValueCopiedEvent } from '../../../events/copyPaste.ts';
 import { ToastEvent } from '../../../events/toast.ts';
+import { store } from '../../../state/store.ts';
+import { connect } from 'pwa-helpers';
 
 @customElement('pcb-block-head')
-export default class PcbBlockHead extends UmbLitElement {
+export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @property()
     definition?: PerplexBlockDefinition;
 
@@ -31,8 +33,18 @@ export default class PcbBlockHead extends UmbLitElement {
     @property({ attribute: false })
     section: Section = Section.CONTENT;
 
+    @property()
+    isDraggingBlock: boolean = false;
+
     @state()
     selectedLayoutIndex: number = 0;
+
+    @state()
+    isTouchDevice: boolean = false;
+
+    stateChanged(state: any) {
+        this.isTouchDevice = state.isTouchDevice;
+    }
 
     onHeadClicked = () => {
         this.dispatchEvent(BlockToggleEvent(this.id));
@@ -73,18 +85,32 @@ export default class PcbBlockHead extends UmbLitElement {
                     @click=${this.onHeadClicked}
                     class=${`block-head__toggle ${this.block.isDisabled ? 'block-head__toggle--disabled' : ''} ${this.collapsed ? '' : 'block-head--open'}`}
                 >
-                    <svg class="block-head__icon icon icon--base">
-                        <use href="${this.definition?.icon}"></use>
-                    </svg>
+                    ${this.section === Section.CONTENT && !this.isTouchDevice
+                        ? html`
+                              <uui-icon
+                                  class="block-head__handle icon icon--base"
+                                  name="icon-grip"
+                              >
+                              </uui-icon>
+                          `
+                        : nothing}
                     <div class="block-head__title">
                         ${this.blockTemplateName ? html`<strong>${this.blockTemplateName}</strong>` : nothing}
                         <div>${this.blockDefinitionName}</div>
                     </div>
+
+                    <svg class="block-head__icon icon icon--base">
+                        <use href="${this.definition?.icon}"></use>
+                    </svg>
                 </button>
-                <pcb-inline-layout-switch
-                    .definition=${this.definition}
-                    .initialSlideIndex=${this.selectedLayoutIndex}
-                ></pcb-inline-layout-switch>
+                ${this.isDraggingBlock
+                    ? nothing
+                    : html`
+                          <pcb-inline-layout-switch
+                              .definition=${this.definition}
+                              .initialSlideIndex=${this.selectedLayoutIndex}
+                          ></pcb-inline-layout-switch>
+                      `}
 
                 <div class="block-head__controls">
                     <button

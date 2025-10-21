@@ -27,10 +27,17 @@ import {
     Section,
     Structure,
 } from './types.ts';
-import { setAddBlockModal, resetAddBlockModal } from './state/slices/ui.ts';
+import { setAddBlockModal, resetAddBlockModal, setIsTouchDevice } from './state/slices/ui.ts';
 import { ON_ADD_TOAST, ToastEvent } from './events/toast.ts';
 import { addToast } from './utils/toast.ts';
-import { BlockCreation, ON_BLOCK_SAVED, ON_BLOCK_TOGGLE, ON_BLOCK_UPDATED } from './events/block.ts';
+import {
+    BlockCreation,
+    ON_BLOCK_SAVED,
+    ON_BLOCK_TOGGLE,
+    ON_BLOCK_UPDATED,
+    ON_SET_BLOCKS,
+    SetBlocksEvent,
+} from './events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
@@ -141,11 +148,15 @@ export default class PerplexContentBlocksElement
             this._notificationsElement?.showPopover?.();
         });
 
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        store.dispatch(setIsTouchDevice(isTouch));
+
         this.addEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent));
         this.addEventListener(ON_BLOCK_TOGGLE, (e: Event) => this.onBlockToggled(e as CustomEvent));
         this.addEventListener(ON_BLOCK_UPDATED, (e: Event) => this.updateBlock(e as CustomEvent));
         this.addEventListener(ON_VALUE_COPIED, (e: Event) => this.onValueCopied(e as CustomEvent));
         this.addEventListener(ON_VALUE_PASTE, (e: Event) => this.onValuePasted(e as CustomEvent));
+        this.addEventListener(ON_SET_BLOCKS, (e: Event) => this.onSetBlocks(e as CustomEvent));
     }
 
     disconnectedCallback() {
@@ -161,6 +172,7 @@ export default class PerplexContentBlocksElement
         this.removeEventListener(ON_BLOCK_UPDATED, (e: Event) => this.updateBlock(e as CustomEvent));
         this.removeEventListener(ON_VALUE_COPIED, (e: Event) => this.onValueCopied(e as CustomEvent));
         this.removeEventListener(ON_VALUE_PASTE, (e: Event) => this.onValuePasted(e as CustomEvent));
+        this.removeEventListener(ON_SET_BLOCKS, (e: Event) => this.onSetBlocks(e as CustomEvent));
     }
 
     protected firstUpdated(_changedProperties: PropertyValues) {
@@ -274,6 +286,11 @@ export default class PerplexContentBlocksElement
         this.addBlocks(event.detail.blocks, event.detail.section, event.detail.desiredIndex);
     }
 
+    onSetBlocks(event: ReturnType<typeof SetBlocksEvent>) {
+        this._value = { ...this._value, blocks: event.detail.blocks };
+        this.valueChanged();
+    }
+
     removeBlock(id: string) {
         const blocks = this._value.blocks.filter((block) => block.id !== id);
 
@@ -372,24 +389,28 @@ export default class PerplexContentBlocksElement
                                   `
                                 : nothing}
                             ${this.structure !== Structure.Header
-                                ? repeat(
-                                      this._value.blocks,
-                                      (block) => block.id,
-                                      (block, index) => html`
-                                          ${!this._value.header && index === 0
-                                              ? nothing
-                                              : html` <pcb-block-spacer .index=${index}></pcb-block-spacer>`}
-                                          <pcb-block
-                                              .block=${block}
-                                              .collapsed=${!this.openedBlocks.includes(block.id)}
-                                              .removeBlock=${this.removeBlock.bind(this)}
-                                              .dataPath=${this.dataPath}
-                                              .definition=${this.findDefinitionById(block.definitionId)}
-                                              .section=${Section.CONTENT}
-                                              ${animate({ id: block.id })}
-                                          ></pcb-block>
-                                      `,
-                                  )
+                                ? html`
+                                      <pcb-drag-and-drop .blocks="${this._value.blocks}">
+                                          ${repeat(
+                                              this._value.blocks,
+                                              (block) => block.id,
+                                              (block, index) => html`
+                                                  <pcb-drag-item .blockId=${block.id}>
+                                                      <pcb-block
+                                                          .block=${block}
+                                                          .collapsed=${!this.openedBlocks.includes(block.id)}
+                                                          .removeBlock=${this.removeBlock.bind(this)}
+                                                          .dataPath=${this.dataPath}
+                                                          .definition=${this.findDefinitionById(block.definitionId)}
+                                                          .section=${Section.CONTENT}
+                                                          .index=${index}
+                                                          ${animate({ id: block.id })}
+                                                      ></pcb-block>
+                                                  </pcb-drag-item>
+                                              `,
+                                          )}
+                                      </pcb-drag-and-drop>
+                                  `
                                 : nothing}
                         </div>
 
@@ -461,6 +482,11 @@ export default class PerplexContentBlocksElement
                 @media only screen and (min-width: 1800px) {
                     grid-template-columns: 3fr 1fr;
                 }
+            }
+
+            pcb-drag-and-drop {
+                display: flex;
+                flex-direction: column;
             }
 
             #notifications {

@@ -7,15 +7,15 @@ type UiState = {
         section: Section;
         insertAtIndex?: number;
     };
+    isDraggingBlock: boolean;
+    isTouchDevice?: boolean;
 };
 
-const { actions: authActions, reducer: uiReducer } = createSlice({
+const { actions: uiActions, reducer: uiReducer } = createSlice({
     name: 'ui',
     initialState: {
-        addBlock: {
-            display: false,
-            section: Section.CONTENT,
-        },
+        addBlock: { display: false, section: Section.CONTENT },
+        isDraggingBlock: false,
     } as UiState,
     reducers: {
         toggleAddBlockModal: (state) => {
@@ -31,9 +31,15 @@ const { actions: authActions, reducer: uiReducer } = createSlice({
             state.addBlock.section = Section.CONTENT;
             state.addBlock.insertAtIndex = undefined;
         },
+        setIsDraggingBlock: (state, action: { payload: boolean }) => {
+            state.isDraggingBlock = action.payload;
+        },
+        setIsTouchDevice: (state, action: { payload: boolean }) => {
+            state.isTouchDevice = action.payload;
+        },
     },
 });
 
-const { toggleAddBlockModal, setAddBlockModal, resetAddBlockModal } = authActions;
-
-export { uiReducer, setAddBlockModal, toggleAddBlockModal, resetAddBlockModal };
+export const { toggleAddBlockModal, setAddBlockModal, resetAddBlockModal, setIsDraggingBlock, setIsTouchDevice } =
+    uiActions;
+export { uiReducer };

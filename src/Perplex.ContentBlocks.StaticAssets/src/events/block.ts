@@ -6,6 +6,7 @@ export const ON_BLOCK_UPDATED = 'ON_BLOCK_CHANGED';
 export const ON_BLOCK_REMOVE = 'ON_BLOCK_REMOVE';
 export const ON_BLOCK_TOGGLE = 'ON_BLOCK_TOGGLE';
 export const ON_BLOCK_LAYOUT_CHANGE = 'ON_BLOCK_LAYOUT_CHANGE';
+export const ON_SET_BLOCKS = 'ON_SET_BLOCKS';
 
 export type BlockCreation = {
     blocks: PerplexContentBlocksBlock[];
@@ -56,6 +57,16 @@ export const BLockLayoutChangeEvent = (selectedLayout: { id: string; name: strin
         detail: {
             selectedLayout,
         },
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+    });
+
+export const SetBlocksEvent = (
+    blocks: PerplexContentBlocksBlock[],
+): CustomEvent<{ blocks: PerplexContentBlocksBlock[] }> =>
+    new CustomEvent(ON_SET_BLOCKS, {
+        detail: { blocks },
         bubbles: true,
         cancelable: true,
         composed: true,

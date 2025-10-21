@@ -41,6 +41,7 @@
         width: 100%;
         border: none;
         cursor: pointer;
+        padding: 0;
         transition: 250ms border ease;
         background-color: transparent;
 
@@ -55,7 +56,17 @@
     }
 
     .block-head__icon {
-        padding: calc(var(--s) * 4);
+        padding: calc(var(--s) * 4) calc(var(--s) * 4);
+    }
+
+    .block-head__handle {
+        display: none;
+        padding: calc(var(--s) * 4) calc(var(--s) * 2);
+        color: var(--c-boat);
+
+        @media only screen and (min-width: 1000px) {
+            display: block;
+        }
     }
 
     .block-head__title {
@@ -63,7 +74,7 @@
         min-width: 200px;
         align-items: start;
         justify-content: center;
-        padding: 0 calc(var(--s) * 6);
+        padding: 0 calc(var(--s) * 3);
         flex-direction: column;
         border-left: 1px solid rgb(var(--c-submarine));
         flex: 1;
