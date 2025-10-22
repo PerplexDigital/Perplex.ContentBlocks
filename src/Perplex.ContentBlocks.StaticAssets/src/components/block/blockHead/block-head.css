@@ -1,8 +1,6 @@
 .block-head {
     border-radius: var(--r-lg);
     display: flex;
-    align-items: stretch;
-    width: 100%;
     border: none;
     cursor: pointer;
     border-bottom: 1px solid rgba(var(--c-submarine), 0);
@@ -38,7 +36,8 @@
     .block-head__toggle {
         display: flex;
         align-items: stretch;
-        width: 100%;
+        flex: 1 1 0;
+        min-width: 0;
         border: none;
         cursor: pointer;
         padding: 0;
@@ -71,20 +70,29 @@
 
     .block-head__title {
         display: flex;
-        min-width: 200px;
         align-items: start;
         justify-content: center;
         padding: 0 calc(var(--s) * 3);
         flex-direction: column;
         border-left: 1px solid rgb(var(--c-submarine));
-        flex: 1;
+        flex: 1 1 0;
+        min-width: 0;
 
         div {
             font-size: var(--fs-sm);
         }
 
         strong {
+            display: block;
+            flex: 0 0 auto;
+            width: 100%;
+            min-width: 0;
+            text-align: left;
             font-size: var(--fs-base);
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
 }

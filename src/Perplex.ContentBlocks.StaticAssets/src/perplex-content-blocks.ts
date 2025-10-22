@@ -347,16 +347,14 @@ export default class PerplexContentBlocksElement
                         <div class="pcb__blocks">
                             ${this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                      <div ${animate()}>
-                                          <pcb-block
-                                              .block=${this._value.header}
-                                              .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
-                                              .removeBlock=${this.removeHeader.bind(this)}
-                                              .dataPath=${this.dataPath}
-                                              .definition=${this.findDefinitionById(this._value.header.definitionId)}
-                                              .section=${Section.HEADER}
-                                          ></pcb-block>
-                                      </div>
+                                      <pcb-block
+                                          .block=${this._value.header}
+                                          .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
+                                          .removeBlock=${this.removeHeader.bind(this)}
+                                          .dataPath=${this.dataPath}
+                                          .definition=${this.findDefinitionById(this._value.header.definitionId)}
+                                          .section=${Section.HEADER}
+                                      ></pcb-block>
                                   `
                                 : nothing}
                             ${!this._value.header && this.structure !== Structure.Blocks
@@ -503,6 +501,10 @@ export default class PerplexContentBlocksElement
                 outline: 0;
                 border: 0;
                 margin: 0;
+            }
+
+            .main {
+                box-sizing: border-box;
             }
 
             .main,
