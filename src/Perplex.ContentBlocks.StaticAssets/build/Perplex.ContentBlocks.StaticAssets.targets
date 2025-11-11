@@ -1,8 +1,12 @@
 ﻿<Project>
 
   <Target Name="Perplex_ContentBlocks_StaticAssets_Build"
-          BeforeTargets="ResolveStaticWebAssetsInputs"
-          Condition="'$(Configuration)' == 'Release' Or !Exists('$(MSBuildProjectDirectory)\wwwroot\App_Plugins\Perplex.ContentBlocks')">
+          BeforeTargets="BeforeBuild"
+          Condition="!Exists('$(MSBuildProjectDirectory)\wwwroot\App_Plugins\Perplex.ContentBlocks')">
+
+    <Message Importance="High" Text="[Perplex.ContentBlocks.StaticAssets] npm install -g pnpm@latest-10" />
+    <Exec Command="npm install -g pnpm@latest-10 --no-fund --no-audit --prefer-offline"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
 
     <Message Importance="High" Text="[Perplex.ContentBlocks.StaticAssets] pnpm install" />
     <Exec Command="pnpm install --frozen-lockfile --prefer-offline --config.confirmModulesPurge=false"
