@@ -1,0 +1,137 @@
+:host {
+    --slider-width: 95vw;
+
+    @media only screen and (min-width: 1200px) {
+        --slider-width: 70vw;
+    }
+}
+
+[popover] {
+    animation: fadeIn 0.1s ease-in;
+    z-index: 5;
+}
+
+[popover] .addBlockModal {
+    animation: testSlideIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes testSlideIn {
+    from {
+        right: calc(var(--slider-width) * -1);
+    }
+    to {
+        right: 0;
+    }
+}
+
+#popover-container {
+    overflow: hidden;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.addBlockModal {
+    background-color: var(--uui-color-background);
+    position: absolute;
+    top: 0;
+    right: calc(var(--slider-width) * -1);
+    transition: right var(--uui-modal-transition-duration, 250ms);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+    width: var(--slider-width);
+
+    .addBlockModal__filterBar {
+        display: flex;
+        flex-direction: column;
+        grid-column: 1 / -1;
+        gap: calc(var(--s) * 3);
+
+        .addBlockModal__searchBar {
+            display: flex;
+            gap: calc(var(--s) * 3);
+
+
+            uui-input {
+                width: 100%;
+            }
+        }
+
+        .addBlockModal__filters {
+            display: flex;
+            gap: calc(var(--s) * 2);
+            flex-wrap: wrap;
+
+            .addBlockModal__filter {
+                display: flex;
+                align-items: center;
+                gap: calc(var(--s) * 2);
+                background-color: var(--uui-color-surface);
+                border: 1px solid var(--uui-color-border);
+                border-radius: var(--uui-border-radius);
+                padding: calc(var(--s) * 2) calc(var(--s) * 4);
+                cursor: pointer;
+                transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+
+                input {
+                    margin: 0;
+                }
+
+                &:hover {
+                    background-color: var(--uui-color-surface-alt);
+                    border-color: var(--uui-color-border-emphasis);
+                }
+
+                &:has(input[type="radio"]:checked) {
+                    border-color: var(--uui-color-focus);
+                    color: var(--uui-color-focus);
+                }
+            }
+        }
+    }
+
+
+
+    @media only screen and (min-width: 1200px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .addBlockModal__blockList {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 20px;
+        padding: calc(var(--s) * 10);
+        overflow-y: scroll;
+
+        @media only screen and (min-width: 500px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        @media only screen and (min-width: 2000px) {
+            padding: calc(var(--s) * 20);
+        }
+    }
+
+    .addBlockModal__sidebarButtons {
+        margin-top: auto;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: end;
+        padding: 1rem 2rem;
+        background: var(--uui-color-surface);
+        box-shadow: var(--uui-shadow-depth-4);
+    }
+}

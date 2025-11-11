@@ -1,1 +1,1 @@
-export * from './add-block-modal.ts';
+export * from './addBlockModal/add-block-modal.ts';

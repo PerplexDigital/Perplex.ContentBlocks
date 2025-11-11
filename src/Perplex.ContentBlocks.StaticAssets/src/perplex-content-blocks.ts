@@ -45,7 +45,6 @@ import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
 import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from './events/copyPaste.ts';
 import { CopyPasteState, setCopiedValue } from './state/slices/copyPaste.ts';
-import { HEADER_GUID } from './constants.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -100,12 +99,10 @@ export default class PerplexContentBlocksElement
     definitions: PCBCategoryWithDefinitions[] = [];
 
     @state()
-    categories = [];
-
-    @state()
     copiedValue?: CopyPasteState;
 
     #authContext?: UmbAuthContext;
+    headerCategories: string[] = [];
 
     get structure(): Structure {
         const value = this.config?.getValueByAlias('structure');
@@ -128,6 +125,13 @@ export default class PerplexContentBlocksElement
         const result = await fetchDefinitionsPerCategory(token);
 
         if (result) {
+            this.headerCategories = result.reduce((acc: string[], currentValue) => {
+                if (currentValue.category.isEnabledForHeaders) {
+                    acc.push(currentValue.category.id);
+                }
+
+                return acc;
+            }, []);
             store.dispatch(setDefinitions(result));
             this.requestUpdate();
         }
@@ -141,6 +145,7 @@ export default class PerplexContentBlocksElement
     connectedCallback() {
         super.connectedCallback();
         this.fetchDefinitionsPerCategory();
+
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
 
@@ -239,9 +244,10 @@ export default class PerplexContentBlocksElement
 
     addBlocks(blocks: PerplexContentBlocksBlock[], section: Section, desiredIndex: number | null) {
         this.openedBlocks = [...this.openedBlocks, ...blocks.map((b: PerplexContentBlocksBlock) => b.id)];
+
         if (section === Section.HEADER && blocks.length > 0) {
             const definition = this.findDefinitionById(blocks[0].definitionId);
-            if (definition?.categoryIds.includes(HEADER_GUID)) {
+            if (definition?.categoryIds.some((id) => this.headerCategories.includes(id))) {
                 this._value = { ...this._value, header: blocks[0] };
             } else {
                 this.dispatchEvent(
@@ -253,8 +259,9 @@ export default class PerplexContentBlocksElement
         } else {
             const contentBlocks = blocks.filter((b: PerplexContentBlocksBlock) => {
                 const def = this.findDefinitionById(b.definitionId);
-                if (def == null) return false;
-                return !def.categoryIds.includes(HEADER_GUID);
+                if (!def) return false;
+                // only allow blocks that are NOT headers
+                return !def.categoryIds.some((id) => this.headerCategories.includes(id));
             });
 
             if (contentBlocks.length < blocks.length) {
@@ -265,7 +272,6 @@ export default class PerplexContentBlocksElement
                 );
             }
 
-            // if event contains detail desired index, insert block at that index
             let updatedBlocks;
             if (typeof desiredIndex === 'number' && desiredIndex >= 0) {
                 updatedBlocks = [...this._value.blocks];
