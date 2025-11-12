@@ -13,8 +13,12 @@
     <RootNamespace>Perplex.ContentBlocks</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="Umbraco.Cms.Api.Common" Version="16.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.0.0-rc1" />
   </ItemGroup>
 
 </Project>
