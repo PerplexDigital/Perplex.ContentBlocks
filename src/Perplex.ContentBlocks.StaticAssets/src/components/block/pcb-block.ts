@@ -160,7 +160,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     stateChanged(state: AppState) {
         this.isDraggingBlock = state.ui.isDraggingBlock;
-        if (state.presets.value && state.presets.value.blocks.length > 0) {
+        if (state.presets.value && state.presets.value.blocks && state.presets.value.blocks.length > 0) {
             const presetItem = state.presets.value.blocks.find((item) => {
                 return item.id === this.block.presetId && item.definitionId === this.block.definitionId;
             });
