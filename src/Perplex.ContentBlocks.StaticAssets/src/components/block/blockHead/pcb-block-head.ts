@@ -36,6 +36,9 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @property()
     isDraggingBlock: boolean = false;
 
+    @property()
+    isMandatory!: boolean;
+
     @state()
     selectedLayoutIndex: number = 0;
 
@@ -137,9 +140,10 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         </uui-icon>
                     </button>
                     <button
-                        class="block-head__control"
+                        class="block-head__control ${this.isMandatory ? 'block-head__control--disabled' : ''}"
                         type="button"
                         @click=${this.onRemoveClicked}
+                        ?disabled=${this.isMandatory}
                     >
                         <uui-icon
                             style="font-size: 20px; color: var(--c-submarine);"

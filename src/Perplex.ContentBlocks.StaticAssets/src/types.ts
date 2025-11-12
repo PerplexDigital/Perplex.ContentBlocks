@@ -70,3 +70,22 @@ export enum Structure {
 export interface PcbDragItemElement extends HTMLElement {
     blockId: string;
 }
+
+export type PresetItem = {
+    id: string;
+    definitionId: string;
+    layoutId: string;
+    isMandatory: boolean;
+    values: {
+        [key: string]: unknown;
+    };
+};
+
+export type Preset = {
+    id: string;
+    name: string;
+    applyToCultures: string[];
+    applyToDocumentTypes: string[];
+    header: PresetItem;
+    blocks: PresetItem[];
+};

@@ -16,9 +16,9 @@ import {
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
 import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
-import { fetchDefinitionsPerCategory } from './queries/definitions.ts';
+import { fetchDefinitionsPerCategory, fetchPagePresets } from './queries/definitions.ts';
 import { connect } from 'pwa-helpers';
-import { store } from './state/store.ts';
+import { AppState, store } from './state/store.ts';
 import { setDefinitions } from './state/slices/definitions.ts';
 import {
     PCBCategoryWithDefinitions,
@@ -45,6 +45,8 @@ import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
 import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from './events/copyPaste.ts';
 import { CopyPasteState, setCopiedValue } from './state/slices/copyPaste.ts';
+import { setPresets } from './state/slices/presets.ts';
+import { getBlocksFromPreset } from './utils/preset.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -103,6 +105,7 @@ export default class PerplexContentBlocksElement
 
     #authContext?: UmbAuthContext;
     headerCategories: string[] = [];
+    private _presetApplied = false;
 
     get structure(): Structure {
         const value = this.config?.getValueByAlias('structure');
@@ -137,15 +140,43 @@ export default class PerplexContentBlocksElement
         }
     }
 
-    stateChanged(state: any) {
+    async fetchPresets() {
+        const token = await this.#authContext?.getLatestToken();
+        if (token == null) {
+            throw new Error('No auth token available');
+        }
+
+        const result = await fetchPagePresets(token, this.pageId, this.culture || undefined);
+
+        if (result) {
+            store.dispatch(setPresets(result));
+            this.requestUpdate();
+        }
+    }
+
+    stateChanged(state: AppState) {
         this.definitions = state.definitions.value;
         this.copiedValue = state.copyPaste;
+
+        if (this._presetApplied) return;
+
+        if (state.presets.value && this.definitions && this.definitions.length > 0) {
+            this._presetApplied = true;
+            const presetBlocks = getBlocksFromPreset(state.presets.value, this.definitions, this._value);
+            if (presetBlocks.header) {
+                this.addBlocks([presetBlocks.header], Section.HEADER, 0);
+            }
+
+            if (presetBlocks.blocks.length > 0) {
+                this.addBlocks(presetBlocks.blocks, Section.CONTENT, 0);
+            }
+        }
     }
 
     connectedCallback() {
         super.connectedCallback();
         this.fetchDefinitionsPerCategory();
-
+        this.fetchPresets();
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
 
@@ -189,6 +220,7 @@ export default class PerplexContentBlocksElement
         this.consumeContext(UMB_PROPERTY_CONTEXT, (ctx) => {
             const alias = ctx?.getAlias() || '';
             const culture = ctx?.getVariantId()?.culture;
+
             this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture })}].value`;
         });
 

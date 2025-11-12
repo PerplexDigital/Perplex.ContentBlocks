@@ -3,6 +3,7 @@ import { DefinitionsDictionary } from '../state/slices/definitions.ts';
 
 const DEFINITIONS_ENDPOINT = '/umbraco/perplex-content-blocks/api/definitions/all';
 const CATEGORIES_ENDPOINT = '/umbraco/perplex-content-blocks/api/categories/all';
+const PRESETS_ENDPOINT = '/umbraco/perplex-content-blocks/api/presets/forpage';
 
 export const fetchAllDefinitions = async (token: string) => {
     try {
@@ -31,6 +32,24 @@ export const fetchAllCategories = async (token: string) => {
         return (await result.json()) as PCBCategory[];
     } catch (e) {
         // Todo error handling
+        console.log(e);
+    }
+};
+
+export const fetchPagePresets = async (token: string, documentType: string, culture?: string) => {
+    const params = new URLSearchParams({ documentType });
+    if (culture) params.append('culture', culture);
+
+    try {
+        const result = await fetch(`${PRESETS_ENDPOINT}?${params}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return (await result.json()) as any[];
+    } catch (e) {
         console.log(e);
     }
 };

@@ -22,13 +22,14 @@
 
         &.block-head__control--disabled {
             opacity: 0.3;
+            cursor: default;
         }
 
         &:last-child {
             border-right: none;
         }
 
-        &:hover {
+        &:hover:not(.block-head__control--disabled) {
             color: var(--uui-color-default-emphasis);
         }
     }

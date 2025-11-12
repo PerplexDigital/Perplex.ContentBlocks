@@ -21,7 +21,7 @@ import { nothing, PropertyValues } from 'lit';
 import { connect } from 'pwa-helpers';
 
 import baseStyles from './../../css/base.css?inline';
-import { store } from '../../state/store.ts';
+import { AppState, store } from '../../state/store.ts';
 import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
 
 export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
@@ -85,6 +85,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     @state()
     properties: UmbPropertyTypeModel[] | undefined = undefined;
+
+    @state()
+    isMandatory: boolean = false;
 
     @state()
     removing: boolean = false;
@@ -155,8 +158,15 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         this.isDraggingBlock = false;
     };
 
-    stateChanged(state: any) {
+    stateChanged(state: AppState) {
         this.isDraggingBlock = state.ui.isDraggingBlock;
+
+        if (state.presets.value) {
+            const presetItem = state.presets.value.blocks.find((item) => {
+                return item.id === this.block.presetId && item.definitionId === this.block.definitionId;
+            });
+            this.isMandatory = presetItem ? presetItem.isMandatory : false;
+        }
     }
 
     onLayoutChange = (event: CustomEvent<any>) => {
@@ -254,6 +264,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     .definition=${this.definition}
                     .section=${this.section}
                     .isDraggingBlock=${this.isDraggingBlock}
+                    .isMandatory=${this.isMandatory}
                 >
                 </pcb-block-head>
                 <div

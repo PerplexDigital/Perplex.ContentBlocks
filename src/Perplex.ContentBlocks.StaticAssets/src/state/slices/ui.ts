@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Section } from '../../types.ts';
 
-type UiState = {
+export type UiState = {
     addBlock: {
         display: boolean;
         section: Section;

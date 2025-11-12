@@ -5,7 +5,7 @@ export interface DefinitionsDictionary {
     [key: string]: PerplexBlockDefinition;
 }
 
-type DefinitionsState = {
+export type DefinitionsState = {
     value: PCBCategoryWithDefinitions[];
 };
 
