@@ -160,12 +160,19 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     stateChanged(state: AppState) {
         this.isDraggingBlock = state.ui.isDraggingBlock;
-
-        if (state.presets.value) {
+        if (state.presets.value && state.presets.value.blocks.length > 0) {
             const presetItem = state.presets.value.blocks.find((item) => {
                 return item.id === this.block.presetId && item.definitionId === this.block.definitionId;
             });
             this.isMandatory = presetItem ? presetItem.isMandatory : false;
+        }
+
+        if (state.presets.value.header && this.section === Section.HEADER) {
+            const presetItem = state.presets.value.header;
+            this.isMandatory =
+                presetItem.id === this.block.presetId && presetItem.definitionId === this.block.definitionId
+                    ? presetItem.isMandatory
+                    : false;
         }
     }
 

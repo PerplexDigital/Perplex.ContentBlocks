@@ -105,7 +105,6 @@ export default class PerplexContentBlocksElement
 
     #authContext?: UmbAuthContext;
     headerCategories: string[] = [];
-    private _presetApplied = false;
 
     get structure(): Structure {
         const value = this.config?.getValueByAlias('structure');
@@ -150,6 +149,18 @@ export default class PerplexContentBlocksElement
 
         if (result) {
             store.dispatch(setPresets(result));
+
+            if (result && this.definitions && this.definitions.length > 0) {
+                const presetBlocks = getBlocksFromPreset(result, this.definitions, this._value);
+                if (presetBlocks.header) {
+                    this.addBlocks([presetBlocks.header], Section.HEADER, 0);
+                }
+
+                if (presetBlocks.blocks.length > 0) {
+                    this.addBlocks(presetBlocks.blocks, Section.CONTENT, 0);
+                }
+            }
+
             this.requestUpdate();
         }
     }
@@ -157,26 +168,12 @@ export default class PerplexContentBlocksElement
     stateChanged(state: AppState) {
         this.definitions = state.definitions.value;
         this.copiedValue = state.copyPaste;
-
-        if (this._presetApplied) return;
-
-        if (state.presets.value && this.definitions && this.definitions.length > 0) {
-            this._presetApplied = true;
-            const presetBlocks = getBlocksFromPreset(state.presets.value, this.definitions, this._value);
-            if (presetBlocks.header) {
-                this.addBlocks([presetBlocks.header], Section.HEADER, 0);
-            }
-
-            if (presetBlocks.blocks.length > 0) {
-                this.addBlocks(presetBlocks.blocks, Section.CONTENT, 0);
-            }
-        }
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
-        this.fetchDefinitionsPerCategory();
-        this.fetchPresets();
+        await this.fetchDefinitionsPerCategory();
+        await this.fetchPresets();
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
 

@@ -1,4 +1,4 @@
-import { PCBCategory, PerplexBlockDefinition } from '../types.ts';
+import { PCBCategory, PerplexBlockDefinition, Preset } from '../types.ts';
 import { DefinitionsDictionary } from '../state/slices/definitions.ts';
 
 const DEFINITIONS_ENDPOINT = '/umbraco/perplex-content-blocks/api/definitions/all';
@@ -48,7 +48,7 @@ export const fetchPagePresets = async (token: string, documentType: string, cult
             },
         });
 
-        return (await result.json()) as any[];
+        return (await result.json()) as Preset;
     } catch (e) {
         console.log(e);
     }
