@@ -22,26 +22,8 @@
             {
               "alias": "structure",
               "label": "Structure",
-              "description": "Determines whether to show the header, blocks, or both. This affects the back office UI and front end rendering.",
+              "description": "Determines whether to show the header, blocks, or both. The values are `Header`, `Blocks`, or `All`, respectively. This affects the back office UI and front end rendering.",
               "propertyEditorUiAlias": "Umb.PropertyEditorUi.TextBox"
-            },
-            {
-              "alias": "hideLabel",
-              "label": "Hide label",
-              "description": "TODO",
-              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
-            },
-            {
-              "alias": "hidePropertyGroupContainer",
-              "label": "Hide property group container",
-              "description": "TODO",
-              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
-            },
-            {
-              "alias": "allowBlocksWithoutHeader",
-              "label": "Allow blocks without header",
-              "description": "TODO",
-              "propertyEditorUiAlias": "Umb.PropertyEditorUi.Toggle"
             },
             {
               "alias": "debug",
@@ -58,18 +40,6 @@
             {
               "alias": "structure",
               "value": "All"
-            },
-            {
-              "alias": "hideLabel",
-              "value": true
-            },
-            {
-              "alias": "hidePropertyGroupContainer",
-              "value": true
-            },
-            {
-              "alias": "allowBlocksWithoutHeader",
-              "value": true
             },
             {
               "alias": "debug",
