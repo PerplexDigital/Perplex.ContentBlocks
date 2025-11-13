@@ -11,9 +11,9 @@ import {
     UmbStringState,
 } from '@umbraco-cms/backoffice/observable-api';
 import { create } from 'mutative';
-import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from './types.js';
-import { propertyAliasPrefix } from './components/block';
+import type { PerplexContentBlocksBlock, PerplexContentBlocksBlockOnChangeFn } from '../types.js';
 import { UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
+import { propertyAliasPrefix } from '../utils/block.js';
 
 export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBase implements UmbPropertyDatasetContext {
     #block: PerplexContentBlocksBlock;

@@ -10,7 +10,7 @@ import {
     unsafeCSS,
 } from '@umbraco-cms/backoffice/external/lit';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
-import { PerplexContentBlocksPropertyDatasetContext } from '../../perplex-content-blocks-dataset-context.ts';
+import { PerplexContentBlocksPropertyDatasetContext } from '../../editor/perplex-content-blocks-dataset-context.ts';
 import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@umbraco-cms/backoffice/document-type';
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
@@ -23,10 +23,7 @@ import { connect } from 'pwa-helpers';
 import baseStyles from './../../css/base.css?inline';
 import { AppState, store } from '../../state/store.ts';
 import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
-
-export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
-    return block.id + '_';
-}
+import { propertyAliasPrefix } from '../../utils/block.ts';
 
 @customElement('pcb-block')
 export default class PerplexContentBlocksBlockElement extends connect(store)(UmbLitElement) {

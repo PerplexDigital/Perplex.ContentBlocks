@@ -1,1 +1,2 @@
-export * from './addBlockModal/add-block-modal.ts';
+import './addBlockModal/add-block-modal';
+import './sidebar-modal';

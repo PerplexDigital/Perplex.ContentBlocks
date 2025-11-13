@@ -16,20 +16,20 @@ import {
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
 import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
-import { fetchDefinitionsPerCategory, fetchPagePresets } from './queries/definitions.ts';
+import { fetchDefinitionsPerCategory, fetchPagePresets } from '../queries/definitions.ts';
 import { connect } from 'pwa-helpers';
-import { AppState, store } from './state/store.ts';
-import { setDefinitions } from './state/slices/definitions.ts';
+import { AppState, store } from '../state/store.ts';
+import { setDefinitions } from '../state/slices/definitions.ts';
 import {
     PCBCategoryWithDefinitions,
     PerplexContentBlocksBlock,
     PerplexContentBlocksValue,
     Section,
     Structure,
-} from './types.ts';
-import { setAddBlockModal, resetAddBlockModal, setIsTouchDevice } from './state/slices/ui.ts';
-import { ON_ADD_TOAST, ToastEvent } from './events/toast.ts';
-import { addToast } from './utils/toast.ts';
+} from '../types.ts';
+import { setAddBlockModal, resetAddBlockModal, setIsTouchDevice } from '../state/slices/ui.ts';
+import { ON_ADD_TOAST, ToastEvent } from '../events/toast.ts';
+import { addToast } from '../utils/toast.ts';
 import {
     BlockCreation,
     ON_BLOCK_SAVED,
@@ -37,16 +37,16 @@ import {
     ON_BLOCK_UPDATED,
     ON_SET_BLOCKS,
     SetBlocksEvent,
-} from './events/block.ts';
+} from '../events/block.ts';
 import { animate } from '@lit-labs/motion';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
-import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from './events/copyPaste.ts';
-import { CopyPasteState, setCopiedValue } from './state/slices/copyPaste.ts';
-import { setPresets } from './state/slices/presets.ts';
-import { getBlocksFromPreset } from './utils/preset.ts';
+import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from '../events/copyPaste.ts';
+import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';
+import { setPresets } from '../state/slices/presets.ts';
+import { getBlocksFromPreset } from '../utils/preset.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement

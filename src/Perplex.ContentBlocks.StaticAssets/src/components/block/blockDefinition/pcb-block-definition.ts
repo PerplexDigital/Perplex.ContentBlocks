@@ -5,7 +5,7 @@ import { UmbId } from '@umbraco-cms/backoffice/id';
 import { LitElement, PropertyValues, unsafeCSS } from 'lit';
 import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
-import styles from './block-definition.css?inline';
+import styles from './pcb-block-definition.css?inline';
 import { Swiper } from 'swiper/types';
 
 @customElement('pcb-block-definition')
