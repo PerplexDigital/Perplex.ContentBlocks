@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import addContentBlocksVersion from './add-content-blocks-version.ts';
 
 export default defineConfig({
@@ -18,15 +17,5 @@ export default defineConfig({
     define: {
         'process.env': {},
     },
-    plugins: [
-        viteStaticCopy({
-            targets: [
-                {
-                    src: 'umbraco-package.json',
-                    dest: '.',
-                },
-            ],
-        }),
-        addContentBlocksVersion(),
-    ],
+    plugins: [addContentBlocksVersion()],
 });
