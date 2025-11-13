@@ -289,8 +289,8 @@ export default class PerplexContentBlocksElement
             const contentBlocks = blocks.filter((b: PerplexContentBlocksBlock) => {
                 const def = this.findDefinitionById(b.definitionId);
                 if (!def) return false;
-                // only allow blocks that are NOT headers
-                return !def.categoryIds.some((id) => this.headerCategories.includes(id));
+                // Do not allow header-only blocks as content.
+                return !def.categoryIds.every((id) => this.headerCategories.includes(id));
             });
 
             if (contentBlocks.length < blocks.length) {
