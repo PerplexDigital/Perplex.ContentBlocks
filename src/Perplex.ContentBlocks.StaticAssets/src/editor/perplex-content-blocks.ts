@@ -510,7 +510,6 @@ export default class PerplexContentBlocksElement
             :host {
                 display: grid;
                 gap: 1rem;
-                min-height: 40rem;
 
                 @media only screen and (min-width: 1800px) {
                     grid-template-columns: 3fr 1fr;
