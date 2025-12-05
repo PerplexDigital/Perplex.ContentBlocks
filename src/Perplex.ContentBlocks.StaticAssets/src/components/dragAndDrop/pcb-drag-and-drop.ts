@@ -21,6 +21,7 @@ export class PcbDragAndDrop extends LitElement {
         super.connectedCallback();
         this.addEventListener('dragover', this.onDragOver);
         this.addEventListener('drop', this.onDrop);
+        this.addEventListener('dragend', this.onDragEnd);
         this.placeholder.className = 'placeholder';
     }
 
@@ -28,6 +29,7 @@ export class PcbDragAndDrop extends LitElement {
         super.disconnectedCallback();
         this.removeEventListener('dragover', this.onDragOver);
         this.removeEventListener('drop', this.onDrop);
+        this.removeEventListener('dragend', this.onDragEnd);
     }
 
     onDragOver = (event: DragEvent) => {
@@ -77,6 +79,18 @@ export class PcbDragAndDrop extends LitElement {
 
         this.dispatchEvent(SetBlocksEvent(reorderedItems));
     };
+
+    onDragEnd = () => {
+        this.resetDrag();
+    };
+
+    resetDrag() {
+        if (this.placeholder.parentElement) {
+            this.placeholder.remove();
+        }
+
+        PcbDragAndDrop.activeDrag = null;
+    }
 
     static styles = css`
         :host {
