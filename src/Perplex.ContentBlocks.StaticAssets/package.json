@@ -7,12 +7,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "watch": "vite build --watch"
+    "watch": "concurrently \"tsc --noEmit --watch\" \"vite build --watch\""
   },
   "dependencies": {
     "@lit-labs/motion": "^1.0.7",
     "@reduxjs/toolkit": "^2.2.6",
-    "lit": "^3.3.0",
     "mutative": "^1.0.5",
     "pwa-helpers": "^0.9.1",
     "redux-persist": "^6.0.0",
@@ -20,10 +19,11 @@
   },
   "devDependencies": {
     "@umbraco-cms/backoffice": "16.2.0",
+    "concurrently": "^9.2.1",
     "eslint-plugin-lit": "^1.15.0",
     "prettier": "^3.3.3",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.4.21"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -1,10 +1,18 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { html, customElement, property, unsafeCSS, nothing, state, query } from '@umbraco-cms/backoffice/external/lit';
+import {
+    html,
+    customElement,
+    property,
+    unsafeCSS,
+    nothing,
+    state,
+    query,
+    PropertyValues,
+} from '@umbraco-cms/backoffice/external/lit';
 import { BlockToggleEvent, BlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../../events/block.ts';
 import blockHeadStyles from './block-head.css?inline';
 import baseStyles from './../../../css/base.css?inline';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../../types.ts';
-import { PropertyValues } from 'lit';
 import { ValueCopiedEvent } from '../../../events/copyPaste.ts';
 import { ToastEvent } from '../../../events/toast.ts';
 import { store } from '../../../state/store.ts';

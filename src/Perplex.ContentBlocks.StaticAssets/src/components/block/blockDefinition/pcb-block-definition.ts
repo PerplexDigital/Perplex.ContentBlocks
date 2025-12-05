@@ -1,8 +1,16 @@
-import { html, customElement, property, nothing, state } from '@umbraco-cms/backoffice/external/lit';
+import {
+    html,
+    customElement,
+    property,
+    nothing,
+    state,
+    LitElement,
+    PropertyValues,
+    unsafeCSS,
+} from '@umbraco-cms/backoffice/external/lit';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock } from '../../../types.ts';
 import { UUICardElement } from '@umbraco-cms/backoffice/external/uui';
 import { UmbId } from '@umbraco-cms/backoffice/id';
-import { LitElement, PropertyValues, unsafeCSS } from 'lit';
 import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
 import styles from './pcb-block-definition.css?inline';

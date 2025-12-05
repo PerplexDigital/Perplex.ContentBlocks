@@ -8,6 +8,8 @@ import {
     repeat,
     state,
     unsafeCSS,
+    nothing,
+    PropertyValues,
 } from '@umbraco-cms/backoffice/external/lit';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { PerplexContentBlocksPropertyDatasetContext } from '../../editor/perplex-content-blocks-dataset-context.ts';
@@ -17,7 +19,6 @@ import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/ba
 import contentBlockName from '../../utils/contentBlockName.ts';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../types.ts';
 import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
-import { nothing, PropertyValues } from 'lit';
 import { connect } from 'pwa-helpers';
 
 import baseStyles from './../../css/base.css?inline';

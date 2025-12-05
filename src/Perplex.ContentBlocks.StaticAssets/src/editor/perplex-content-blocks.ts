@@ -8,6 +8,7 @@ import {
     query,
     repeat,
     state,
+    PropertyValues,
 } from '@umbraco-cms/backoffice/external/lit';
 import {
     type UmbPropertyEditorConfigCollection,
@@ -41,7 +42,6 @@ import {
 import { animate } from '@lit-labs/motion';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
-import { PropertyValues } from 'lit';
 import { register } from 'swiper/element/bundle';
 import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from '../events/copyPaste.ts';
 import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';

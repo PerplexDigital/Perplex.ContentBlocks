@@ -1,7 +1,6 @@
-import { customElement, html, query, repeat, state } from '@umbraco-cms/backoffice/external/lit';
+import { customElement, html, query, repeat, state, LitElement, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
 import { connect } from 'pwa-helpers';
 import { store } from '../../../state/store.ts';
-import { LitElement, unsafeCSS } from 'lit';
 import { resetAddBlockModal, setAddBlockModal } from '../../../state/slices/ui.ts';
 import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, Section } from '../../../types.ts';
 import { BlockSavedEvent, ON_BLOCK_SELECTED } from '../../../events/block.ts';

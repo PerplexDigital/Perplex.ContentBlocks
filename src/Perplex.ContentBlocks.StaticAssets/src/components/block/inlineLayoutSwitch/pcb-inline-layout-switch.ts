@@ -1,7 +1,6 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { html, customElement, property } from '@umbraco-cms/backoffice/external/lit';
+import { html, customElement, property, PropertyValues, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
 import styles from './pcb-inline-layout-switch.css?inline';
-import { PropertyValues, unsafeCSS } from 'lit';
 import { PerplexBlockDefinition } from '../../../types.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
 import { Swiper } from 'swiper/types';
