@@ -1,5 +1,5 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { html, customElement, property, unsafeCSS, nothing, state } from '@umbraco-cms/backoffice/external/lit';
+import { html, customElement, property, unsafeCSS, nothing, state, query } from '@umbraco-cms/backoffice/external/lit';
 import { BlockToggleEvent, BlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../../events/block.ts';
 import blockHeadStyles from './block-head.css?inline';
 import baseStyles from './../../../css/base.css?inline';
@@ -44,6 +44,25 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     @state()
     isTouchDevice: boolean = false;
+
+    @query('#tooltip-toggle')
+    private _tooltipToggle!: HTMLElement;
+
+    @query('#tooltip-popover')
+    private _tooltipPopover!: HTMLElement;
+
+    private _listenersAttached: boolean = false;
+
+    protected updated() {
+        const toggle = this.renderRoot.querySelector('#tooltip-toggle');
+        const popover = this.renderRoot.querySelector('#tooltip-popover');
+
+        if (toggle && popover && !this._listenersAttached && !this.collapsed) {
+            toggle.addEventListener('mouseenter', () => this._tooltipPopover.showPopover());
+            toggle.addEventListener('mouseleave', () => this._tooltipPopover.hidePopover());
+            this._listenersAttached = true;
+        }
+    }
 
     stateChanged(state: any) {
         this.isTouchDevice = state.isTouchDevice;
@@ -90,11 +109,23 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                 >
                     ${this.section === Section.CONTENT && !this.isTouchDevice
                         ? html`
-                              <uui-icon
-                                  class="block-head__handle icon icon--base"
-                                  name="icon-grip"
+                              <b
+                                  id="tooltip-toggle"
+                                  popovertarget="tooltip-popover"
                               >
-                              </uui-icon>
+                                  <uui-icon
+                                      class="block-head__handle icon icon--base"
+                                      name="icon-grip"
+                                  >
+                                  </uui-icon
+                              ></b>
+                              <uui-popover-container id="tooltip-popover">
+                                  <div
+                                      style="background-color: var(--uui-color-surface); max-width: 150px; box-shadow: var(--uui-shadow-depth-4); padding: var(--uui-size-space-4); border-radius: var(--uui-border-radius); font-size: 0.9rem;"
+                                  >
+                                      An expanded block cannot be dragged. Collapse the block to drag it.
+                                  </div>
+                              </uui-popover-container>
                           `
                         : nothing}
                     <div class="block-head__title">

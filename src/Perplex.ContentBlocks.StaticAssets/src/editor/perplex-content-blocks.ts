@@ -383,6 +383,7 @@ export default class PerplexContentBlocksElement
                             ${this._value.header && this.structure !== Structure.Blocks
                                 ? html`
                                       <pcb-block
+                                          .draggable=${false}
                                           .block=${this._value.header}
                                           .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
                                           .removeBlock=${this.removeHeader.bind(this)}
@@ -428,8 +429,12 @@ export default class PerplexContentBlocksElement
                                               this._value.blocks,
                                               (block) => block.id,
                                               (block, index) => html`
-                                                  <pcb-drag-item .blockId=${block.id}>
+                                                  <pcb-drag-item
+                                                      .canDrag=${!this.openedBlocks.includes(block.id)}
+                                                      .blockId=${block.id}
+                                                  >
                                                       <pcb-block
+                                                          .draggable=${!this.openedBlocks.includes(block.id)}
                                                           .block=${block}
                                                           .collapsed=${!this.openedBlocks.includes(block.id)}
                                                           .removeBlock=${this.removeBlock.bind(this)}

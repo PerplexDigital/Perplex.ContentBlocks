@@ -50,10 +50,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     updated(changedProps: PropertyValues) {
         super.updated(changedProps);
 
-        if (changedProps.has('section')) {
-            this.draggable = this.section === Section.CONTENT;
-        }
-
         this.updateComplete.then(() => {
             Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
                 const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
