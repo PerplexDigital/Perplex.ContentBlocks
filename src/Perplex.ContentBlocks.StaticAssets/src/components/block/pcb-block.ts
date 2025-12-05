@@ -307,6 +307,11 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     static styles = [
         unsafeCSS(baseStyles),
         css`
+            :host {
+                width: 100%;
+                overflow: hidden;
+            }
+
             .block {
                 box-shadow: var(--bs-base);
 
