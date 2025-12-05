@@ -28,6 +28,10 @@ const store = configureStore({
         presets: presetsReducer,
         ui: uiReducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
 });
 
 const persistor = persistStore(store);
