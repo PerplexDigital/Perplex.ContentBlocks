@@ -1,5 +1,5 @@
 // pcb-drag-item.ts
-import { LitElement, customElement, html, property } from '@umbraco-cms/backoffice/external/lit';
+import { LitElement, customElement, html, property, PropertyValues } from '@umbraco-cms/backoffice/external/lit';
 import { PcbDragAndDrop } from './pcb-drag-and-drop';
 
 @customElement('pcb-drag-item')
@@ -13,19 +13,18 @@ export class PcbDragItem extends LitElement {
     @property({ type: Boolean })
     canDrag = true;
 
-    connectedCallback() {
-        super.connectedCallback();
-        if (this.canDrag) {
-            this.addEventListener('dragstart', this.onDragStart);
-            this.addEventListener('dragend', this.onDragEnd);
-        }
-    }
+    updated(changedProps: PropertyValues) {
+        super.updated(changedProps);
 
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        if (this.canDrag) {
-            this.removeEventListener('dragstart', this.onDragStart);
-            this.removeEventListener('dragend', this.onDragEnd);
+        // Update drag listeners if draggable prop changes
+        if (changedProps.has('canDrag')) {
+            if (this.canDrag) {
+                this.addEventListener('dragstart', this.onDragStart);
+                this.addEventListener('dragend', this.onDragEnd);
+            } else {
+                this.removeEventListener('dragstart', this.onDragStart);
+                this.removeEventListener('dragend', this.onDragEnd);
+            }
         }
     }
 

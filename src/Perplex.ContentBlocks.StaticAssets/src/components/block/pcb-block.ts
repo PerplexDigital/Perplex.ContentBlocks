@@ -51,6 +51,17 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     updated(changedProps: PropertyValues) {
         super.updated(changedProps);
 
+        if (changedProps.has('draggable')) {
+            if (this.draggable) {
+                this.addEventListener('dragstart', this.onDragStart);
+                this.addEventListener('dragend', this.onDragEnd);
+            } else {
+                this.removeEventListener('dragstart', this.onDragStart);
+                this.removeEventListener('dragend', this.onDragEnd);
+            }
+        }
+
+        // Ensure vertical layout for umb-property
         this.updateComplete.then(() => {
             Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
                 const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
@@ -121,16 +132,12 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         }
 
         this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
-        this.addEventListener('dragstart', this.onDragStart);
-        this.addEventListener('dragend', this.onDragEnd);
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
         this.removeEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
         this.clearValidationMessages();
-        this.removeEventListener('dragstart', this.onDragStart);
-        this.removeEventListener('dragend', this.onDragEnd);
     }
 
     onDragStart = (event: DragEvent) => {
