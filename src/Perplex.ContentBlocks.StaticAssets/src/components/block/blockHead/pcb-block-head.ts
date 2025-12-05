@@ -45,9 +45,6 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @state()
     isTouchDevice: boolean = false;
 
-    @query('#tooltip-toggle')
-    private _tooltipToggle!: HTMLElement;
-
     @query('#tooltip-popover')
     private _tooltipPopover!: HTMLElement;
 
