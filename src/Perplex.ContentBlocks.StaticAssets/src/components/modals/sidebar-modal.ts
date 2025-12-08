@@ -1,6 +1,5 @@
 import { defineElement, UUIModalCloseEvent, UUIModalElement } from '@umbraco-cms/backoffice/external/uui';
-import { css, html, PropertyValueMap } from '@umbraco-cms/backoffice/external/lit';
-import { property } from 'lit/decorators.js';
+import { css, html, property, PropertyValueMap } from '@umbraco-cms/backoffice/external/lit';
 
 export type UUIModalSidebarSize = 'small' | 'medium' | 'large' | 'full';
 
