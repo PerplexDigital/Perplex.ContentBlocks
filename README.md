@@ -27,15 +27,41 @@ Umbraco 14+ no longer supports Nested Content and the Backoffice is completely r
 
 The next major version of ContentBlocks - `v4` - will transition from Nested Content as the underlying data storage to Umbraco's Block Editor technology which is used in Block List + Block Grid. In addition we will migrate the property editor UI in the Backoffice from AngularJS to Web Components. ContentBlocks v4 will no longer support Umbraco v10-v13.
 
-Because Umbraco is planning to introduce [Block Level Variations in v15](https://github.com/umbraco/Announcements/issues/16) which requires breaking changes to the Block data structure and other Block related code ContentBlocks v4 will target Umbraco v15 or v16, skipping v14 entirely. The current (unstable) state of v14 contributes to this idea too as it is unlikely many companies want to use v14 in production at the moment.
+Because Umbraco is planning to introduce [Block Level Variations in v15](https://github.com/umbraco/Announcements/issues/16) which requires breaking changes to the Block data structure and other Block related code ContentBlocks v4 will target Umbraco v16+, skipping v14 entirely. The current (unstable) state of v14 contributes to this idea too as it is unlikely many companies want to use v14 in production at the moment.
 
-ContentBlocks v4 will automatically migrate property data of ContentBlocks v1 - v3 to v4. This is necessary for any websites that upgrade from Umbraco 8-13 to 15+ and have existing ContentBlocks property data. This data needs to be migrated from the Nested Content format to the new Block Editor format. Both editors use Element Types which means the actual property data is the same but they use a different wrapper structure around it so that will have to be migrated.
+ContentBlocks v4 will automatically migrate property data of ContentBlocks v1 - v3 to v4. This is necessary for any websites that upgrade from Umbraco 8-13 to 16+ and have existing ContentBlocks property data. This data needs to be migrated from the Nested Content format to the new Block Editor format. Both editors use Element Types which means the actual property data is the same but they use a different wrapper structure around it so that will have to be migrated.
 
-Until ContentBlocks v4 is out Umbraco 15+ is not supported.
+Until ContentBlocks v4 is out Umbraco 16+ is not supported.
 
-ContentBlocks v4 was originally scheduled for release at the end of 2024 but we need more time. 
+ContentBlocks v4 was originally scheduled for release at the end of 2024 but we need more time.
 
-When we have more information about a release date it will be posted here.
+### Update @ 2025-12-10
+
+Version 4 is currently in alpha. The core features are implemented and the editor is usable. Content from a v13 or older installation is migrated when you run the v16+ website for the first time in v4. There are still some issues in the Lit backoffice UI code which is why there is no stable release out on NuGet. However, at Perplex we are using the latest alpha in our v16 and v17 websites that are in development without any major issues.
+
+#### Get the alpha
+
+If you want to test the alpha version you can build the NuGet packages from the source code.
+
+Make sure `npm` is installed on your machine.
+
+Then run this in **PowerShell**:
+
+```
+git clone https://github.com/PerplexDigital/Perplex.ContentBlocks.git -b feature/v4
+cd .\Perplex.ContentBlocks\pkg
+.\pack.ps1
+explorer .
+```
+
+This will open the "pkg" directory with the 3 NuGet files.
+Publish the resulting `.nupkg` files on an internal NuGet feed to be able to install them. It is also possible to create a NuGet feed in a directory on your local computer if you just want to test it locally:
+
+`dotnet nuget add source D:\LocalNuGet -n LocalNuGet`
+
+Put any `.nupkg` files in that directory and you can install them like any other NuGet packages in your websites.
+
+Read about the API changes in v4 [in the preliminary v4 Release Notes](https://github.com/PerplexDigital/Perplex.ContentBlocks/blob/feature/v4/RELEASE_NOTES.md#v400---tbd).
 
 ## Umbraco 10+ / .NET 6+
 
