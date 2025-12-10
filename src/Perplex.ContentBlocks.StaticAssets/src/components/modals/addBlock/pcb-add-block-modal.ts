@@ -141,6 +141,10 @@ export default class PerplexContentBlocksAddBlockModalElement
                                     class="addBlockModal__filter"
                                     for=${category.category.name}
                                 >
+                                    <svg style="width: 20px;height: 20px;">
+                                        <use href="${category.category.icon}"></use>
+                                    </svg>
+
                                     <span> ${category.category.name} </span>
                                     <input
                                         id=${category.category.name}
