@@ -261,7 +261,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     }
 
     render() {
-        if (!this.ok) {
+        if (!this.ok || this.definition == null) {
             return;
         }
 
