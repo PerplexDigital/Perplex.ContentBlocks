@@ -25,7 +25,10 @@ export class PcbBlockDefinition extends LitElement {
     disabled?: boolean;
 
     @property()
-    selected?: boolean;
+    selectedDefinition?: string;
+
+    @property()
+    selectedLayout?: string;
 
     @property({ type: String, attribute: 'background' })
     background?: string;
@@ -33,8 +36,28 @@ export class PcbBlockDefinition extends LitElement {
     @state()
     selectedLayoutIndex = 0;
 
+    @state()
+    selected: boolean = false;
+
     connectedCallback() {
         super.connectedCallback();
+    }
+
+    updated(changedProperties: PropertyValues) {
+        if (
+            changedProperties.has('selectedDefinition') ||
+            changedProperties.has('selectedLayout') ||
+            changedProperties.has('definition') ||
+            changedProperties.has('selectedLayoutIndex')
+        ) {
+            if (!this.definition) {
+                return;
+            }
+
+            this.selected =
+                this.definition.id === this.selectedDefinition &&
+                this.definition.layouts[this.selectedLayoutIndex].id === this.selectedLayout;
+        }
     }
 
     onSelected() {
@@ -65,8 +88,11 @@ export class PcbBlockDefinition extends LitElement {
             initSwiper(swiperEl);
 
             swiperEl.addEventListener('swiperprogress', ((event: CustomEvent<[Swiper, number]>) => {
-                const [, progress] = event.detail;
-                this.selectedLayoutIndex = progress;
+                const [swiper, progress] = event.detail;
+                const slideCount = swiper.slides.length;
+                const rawIndex = progress * (slideCount - 1);
+                const index = Math.round(rawIndex);
+                this.selectedLayoutIndex = index;
             }) as EventListener);
         }
     }
@@ -79,7 +105,7 @@ export class PcbBlockDefinition extends LitElement {
                 slides-per-view="1"
                 speed="500"
                 allow-touch-move="false"
-                class="blockDefinition"
+                class="blockDefinition ${this.selected ? 'blockDefinition--selected' : ''}"
                 navigation="true"
                 init="false"
                 pagination="true"
@@ -88,7 +114,7 @@ export class PcbBlockDefinition extends LitElement {
                     (layout) => html`
                         <swiper-slide>
                             <button
-                                class="blockDefinition"
+                                class="blockDefinition__inner"
                                 @click=${this.onSelected}
                             >
                                 <div id="portrait">
@@ -98,7 +124,7 @@ export class PcbBlockDefinition extends LitElement {
                                     />
                                 </div>
 
-                                <button
+                                <div
                                     id="open-part"
                                     tabindex=${this.disabled ? (nothing as any) : '0'}
                                 >
@@ -108,7 +134,7 @@ export class PcbBlockDefinition extends LitElement {
                                             : `${this.definition!.name} | ${layout.name}`}</strong
                                     >
                                     <span>${this.definition!.description}</span>
-                                </button>
+                                </div>
 
                                 <div class="blockDefinition__controls"></div>
                             </button>

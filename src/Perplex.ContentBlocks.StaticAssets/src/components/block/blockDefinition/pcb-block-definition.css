@@ -4,17 +4,26 @@
     background: white;
 }
 
-:host([selected='true']) {
-    outline: 3px solid var(--uui-color-focus, #3879ff);
-    outline-offset: 0;
-}
-
 :host(:hover) #info {
     color: var(--uui-color-interactive-emphasis);
 }
 
 .blockDefinition {
     width: 100%;
+
+    .blockDefinition__inner {
+        width: 100%;
+        display: block;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &.blockDefinition--selected {
+        outline: 2px solid var(--uui-color-interactive);
+        border-radius: var(--uui-border-radius);
+    }
 
     .blockDefinition__controls {
         height: 2rem;

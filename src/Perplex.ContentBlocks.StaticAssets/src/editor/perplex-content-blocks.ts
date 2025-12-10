@@ -399,7 +399,7 @@ export default class PerplexContentBlocksElement
             },
         }).catch(() => undefined);
         if (!returnedValue) return;
-        console.log(returnedValue);
+
         this.addBlocks(returnedValue.blocks, returnedValue.section, returnedValue.desiredIndex);
     };
 

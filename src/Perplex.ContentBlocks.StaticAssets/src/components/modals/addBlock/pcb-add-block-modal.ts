@@ -164,7 +164,8 @@ export default class PerplexContentBlocksAddBlockModalElement
                                   (definition) => definition.id,
                                   (definition) => html`
                                       <pcb-block-definition
-                                          selected=${definition.id === this.selectedBlock?.definitionId}
+                                          .selectedDefinition=${this.selectedBlock?.definitionId}
+                                          .selectedLayout=${this.selectedBlock?.layoutId}
                                           .definition=${definition}
                                       ></pcb-block-definition>
                                   `,
