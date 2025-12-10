@@ -28,7 +28,7 @@ import {
     Section,
     Structure,
 } from '../types.ts';
-import { setAddBlockModal, resetAddBlockModal, setIsTouchDevice } from '../state/slices/ui.ts';
+import { setAddBlockModal, setIsTouchDevice } from '../state/slices/ui.ts';
 import { ON_ADD_TOAST, ToastEvent } from '../events/toast.ts';
 import { addToast } from '../utils/toast.ts';
 import {
@@ -133,7 +133,8 @@ export default class PerplexContentBlocksElement
             throw new Error('No auth token available');
         }
 
-        const result = await fetchDefinitionsPerCategory(token);
+        // TODO: Daniël fix documentType alias
+        const result = await fetchDefinitionsPerCategory(token, 'Ellard', this.culture || undefined);
 
         if (result) {
             this.headerCategories = result.reduce((acc: string[], currentValue) => {
@@ -153,7 +154,7 @@ export default class PerplexContentBlocksElement
         if (token == null) {
             throw new Error('No auth token available');
         }
-
+        // TODO: Daniël fix documentType alias
         const result = await fetchPagePresets(token, this.pageId, this.culture || undefined);
 
         if (result) {
@@ -317,7 +318,6 @@ export default class PerplexContentBlocksElement
         }
 
         this.valueChanged();
-        store.dispatch(resetAddBlockModal());
     }
 
     onBlockAdded(e: Event) {
@@ -388,12 +388,14 @@ export default class PerplexContentBlocksElement
             },
         }).catch(() => undefined);
         if (!returnedValue) return;
+        console.log(returnedValue);
         this.addBlocks(returnedValue.blocks, returnedValue.section, returnedValue.desiredIndex);
     };
 
     render() {
         return html`
             <div class="main">
+                <h1>${this.editorId}</h1>
                 <div class="pcb__wrapper">
                     <div class="pcb__content">
                         <div class="pcb__blocks">

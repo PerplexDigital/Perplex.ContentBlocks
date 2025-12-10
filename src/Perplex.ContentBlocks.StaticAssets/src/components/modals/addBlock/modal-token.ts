@@ -1,5 +1,6 @@
 import { UmbModalToken } from '@umbraco-cms/backoffice/modal';
 import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, Section } from '../../../types.ts';
+export const MODAL_ALIAS = 'Pcb.AddBlock';
 
 export type PcbAddBlockModalData = {
     editorId: string;
@@ -14,12 +15,9 @@ export type PcbAddBlockModalValue = {
     desiredIndex: number | null;
 };
 
-export const PCB_ADD_BLOCK_MODAL_TOKEN = new UmbModalToken<PcbAddBlockModalData, PcbAddBlockModalValue>(
-    'Pcb.AddBlock',
-    {
-        modal: {
-            type: 'sidebar',
-            size: 'large',
-        },
+export const PCB_ADD_BLOCK_MODAL_TOKEN = new UmbModalToken<PcbAddBlockModalData, PcbAddBlockModalValue>(MODAL_ALIAS, {
+    modal: {
+        type: 'sidebar',
+        size: 'large',
     },
-);
+});

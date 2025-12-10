@@ -1,13 +1,15 @@
 import { PCBCategory, PerplexBlockDefinition, Preset } from '../types.ts';
 import { DefinitionsDictionary } from '../state/slices/definitions.ts';
 
-const DEFINITIONS_ENDPOINT = '/umbraco/perplex-content-blocks/api/definitions/all';
+const DEFINITIONS_ENDPOINT = '/umbraco/perplex-content-blocks/api/definitions/forpage';
 const CATEGORIES_ENDPOINT = '/umbraco/perplex-content-blocks/api/categories/all';
 const PRESETS_ENDPOINT = '/umbraco/perplex-content-blocks/api/presets/forpage';
 
-export const fetchAllDefinitions = async (token: string) => {
+export const fetchAllDefinitions = async (token: string, documentType: string, culture?: string) => {
     try {
-        const result = await fetch(DEFINITIONS_ENDPOINT, {
+        const params = new URLSearchParams({ documentType });
+        if (culture) params.append('culture', culture);
+        const result = await fetch(`${DEFINITIONS_ENDPOINT}?${params}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -54,9 +56,9 @@ export const fetchPagePresets = async (token: string, documentType: string, cult
     }
 };
 
-export const fetchDefinitionsPerCategory = async (token: string) => {
+export const fetchDefinitionsPerCategory = async (token: string, documentType: string, culture?: string) => {
     try {
-        let definitions = (await fetchAllDefinitions(token)) as PerplexBlockDefinition[];
+        let definitions = (await fetchAllDefinitions(token, documentType, culture)) as PerplexBlockDefinition[];
         const categories = (await fetchAllCategories(token)) as PCBCategory[];
 
         const definitionsDictionary = definitions.reduce((acc: DefinitionsDictionary, curr: PerplexBlockDefinition) => {

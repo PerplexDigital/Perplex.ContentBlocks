@@ -40,6 +40,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     }
 
     render() {
+        if (!this.definition?.layouts) return;
         return html`<div class="inline-layout-switch">
             <swiper-container
                 slides-per-view="1"
@@ -51,7 +52,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 init="false"
                 pagination="false"
             >
-                ${this.definition!.layouts.map(
+                ${this.definition.layouts.map(
                     (layout) => html`
                         <swiper-slide>
                             <div class="inline-layout-switch__layout"><span>${layout.name}</span></div>

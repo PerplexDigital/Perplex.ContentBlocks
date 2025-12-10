@@ -8,8 +8,10 @@ import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
 import { ToastEvent } from '../../../events/toast.ts';
 import addBlockModalStyles from './addBlockModal.css?inline';
 
-@customElement('pcb-add-block-modal')
-export class MyDialogElement
+export const ELEMENT_NAME = 'pcb-add-block-modal';
+
+@customElement(ELEMENT_NAME)
+export default class PerplexContentBlocksAddBlockModalElement
     extends UmbLitElement
     implements UmbModalExtensionElement<PcbAddBlockModalData, PcbAddBlockModalValue>
 {
@@ -205,5 +207,3 @@ export class MyDialogElement
 
     static styles = [unsafeCSS(addBlockModalStyles)];
 }
-
-export const element = MyDialogElement;
