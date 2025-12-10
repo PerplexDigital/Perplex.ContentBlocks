@@ -120,11 +120,13 @@ export default class PerplexContentBlocksAddBlockModalElement
                 <div class="addBlockModal__filterBar">
                     <div class="addBlockModal__searchBar">
                         <uui-input
+                            label="search blocks"
                             @input=${this.onSearchTermChanged}
                             placeholder="Search blocks..."
                             .value=${this.searchTerm || ''}
                         ></uui-input>
                         <uui-button
+                            label="reset filters"
                             look="primary"
                             ?disabled=${!this.searchTerm && !this.selectedCategories}
                             @click=${this.onResetFilters}
@@ -186,6 +188,7 @@ export default class PerplexContentBlocksAddBlockModalElement
 
                 <div class="addBlockModal__sidebarButtons">
                     <uui-button
+                        label="close"
                         look="secondary"
                         type="button"
                         @click=${this._handleCancel}
@@ -194,6 +197,7 @@ export default class PerplexContentBlocksAddBlockModalElement
                     </uui-button>
 
                     <uui-button
+                        label="save"
                         look="primary"
                         type="button"
                         ?disabled=${!this.selectedBlock}

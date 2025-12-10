@@ -427,6 +427,7 @@ export default class PerplexContentBlocksElement
                                 ? html`
                                       <div class="pcb__block-add pcb__block-add--header">
                                           <uui-button
+                                              label="add header"
                                               look="primary"
                                               @click=${this.addHeader}
                                           >
@@ -439,6 +440,7 @@ export default class PerplexContentBlocksElement
                                           ${this.copiedValue?.copied
                                               ? html`
                                                     <uui-button
+                                                        label="paste header"
                                                         look="primary"
                                                         @click=${() => this.pasteBlock(Section.HEADER)}
                                                     >
@@ -487,6 +489,7 @@ export default class PerplexContentBlocksElement
                             ? html`
                                   <div class="pcb__block-add">
                                       <uui-button
+                                          label="add content"
                                           look="primary"
                                           @click=${this.addBlock}
                                       >
@@ -500,6 +503,7 @@ export default class PerplexContentBlocksElement
                                           ? html`
                                                 <uui-button
                                                     look="primary"
+                                                    label="paste content"
                                                     @click=${() => this.pasteBlock(Section.CONTENT)}
                                                 >
                                                     <slot name="label">Paste content</slot>

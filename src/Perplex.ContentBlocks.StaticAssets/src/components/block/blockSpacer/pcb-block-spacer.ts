@@ -38,6 +38,7 @@ export default class PerplexContentBlocksBlockSpacerElement extends connect(stor
             <div>
                 <div class="pcb-block-spacer__controls">
                     <uui-button
+                        label="add block"
                         look="primary"
                         @click=${this.addBlock}
                     >
@@ -50,6 +51,7 @@ export default class PerplexContentBlocksBlockSpacerElement extends connect(stor
 
                     ${this.copiedValue?.copied
                         ? html` <uui-button
+                              label="paste content"
                               look="primary"
                               @click=${this.pasteBlock}
                           >
