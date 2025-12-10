@@ -12,7 +12,7 @@ export type DefinitionsState = {
 const { actions: authActions, reducer: definitionsReducer } = createSlice({
     name: 'definitions',
     initialState: {
-        value: {},
+        value: [],
     } as DefinitionsState,
     reducers: {
         setDefinitions: (state, action) => {
