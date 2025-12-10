@@ -3,12 +3,12 @@ import {
     css,
     customElement,
     html,
-    nothing,
     property,
     query,
-    repeat,
     state,
     PropertyValues,
+    nothing,
+    repeat,
 } from '@umbraco-cms/backoffice/external/lit';
 import {
     type UmbPropertyEditorConfigCollection,
@@ -39,7 +39,6 @@ import {
     ON_SET_BLOCKS,
     SetBlocksEvent,
 } from '../events/block.ts';
-import { animate } from '@lit-labs/motion';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 import { register } from 'swiper/element/bundle';
@@ -47,6 +46,11 @@ import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from '../events/cop
 import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';
 import { setPresets } from '../state/slices/presets.ts';
 import { getBlocksFromPreset } from '../utils/preset.ts';
+import { provide } from '@lit/context';
+import { editorContext } from '../context/index.ts';
+import { animate } from '@lit-labs/motion';
+import { umbOpenModal } from '@umbraco-cms/backoffice/modal';
+import { PCB_ADD_BLOCK_MODAL_TOKEN } from '../components/modals/addBlock/modal-token.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -102,6 +106,11 @@ export default class PerplexContentBlocksElement
 
     @state()
     copiedValue?: CopyPasteState;
+
+    editorId: string = crypto.randomUUID();
+
+    @provide({ context: editorContext })
+    providedEditorId = this.editorId;
 
     #authContext?: UmbAuthContext;
     headerCategories: string[] = [];
@@ -255,12 +264,7 @@ export default class PerplexContentBlocksElement
     }
 
     addBlock() {
-        store.dispatch(
-            setAddBlockModal({
-                display: true,
-                section: Section.CONTENT,
-            }),
-        );
+        this._openModal(Section.CONTENT);
     }
 
     onBlockToggled(event: CustomEvent) {
@@ -374,6 +378,19 @@ export default class PerplexContentBlocksElement
         }
     }
 
+    private _openModal = async (section: Section, insertAtIndex?: number) => {
+        const returnedValue = await umbOpenModal(this, PCB_ADD_BLOCK_MODAL_TOKEN, {
+            data: {
+                editorId: this.editorId,
+                groupedDefinitions: this.definitions,
+                section,
+                insertAtIndex,
+            },
+        }).catch(() => undefined);
+        if (!returnedValue) return;
+        this.addBlocks(returnedValue.blocks, returnedValue.section, returnedValue.desiredIndex);
+    };
+
     render() {
         return html`
             <div class="main">
@@ -390,6 +407,7 @@ export default class PerplexContentBlocksElement
                                           .dataPath=${this.dataPath}
                                           .definition=${this.findDefinitionById(this._value.header.definitionId)}
                                           .section=${Section.HEADER}
+                                          .openModal=${this._openModal}
                                       ></pcb-block>
                                   `
                                 : nothing}
@@ -443,6 +461,7 @@ export default class PerplexContentBlocksElement
                                                           .section=${Section.CONTENT}
                                                           .index=${index}
                                                           ${animate({ id: block.id })}
+                                                          .openModal=${this._openModal}
                                                       ></pcb-block>
                                                   </pcb-drag-item>
                                               `,
@@ -505,8 +524,6 @@ export default class PerplexContentBlocksElement
                 popover="manual"
                 style="z-index: 2000; padding: var(--uui-size-layout-1);"
             ></uui-toast-notification-container>
-
-            <pcb-add-block-modal></pcb-add-block-modal>
         `;
     }
 

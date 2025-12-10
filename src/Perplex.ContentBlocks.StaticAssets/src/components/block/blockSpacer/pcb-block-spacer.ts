@@ -4,7 +4,6 @@ import { customElement, html, nothing, property, state, unsafeCSS } from '@umbra
 import blockSpacerStyles from './pcb-block-spacer.css?inline';
 import { connect } from 'pwa-helpers';
 import { store } from '../../../state/store.ts';
-import { setAddBlockModal } from '../../../state/slices/ui.ts';
 import { Section } from '../../../types.ts';
 import { ValuePastedEvent } from '../../../events/copyPaste.ts';
 import { CopyPasteState } from '../../../state/slices/copyPaste.ts';
@@ -14,6 +13,9 @@ export default class PerplexContentBlocksBlockSpacerElement extends connect(stor
     @property({ type: Number, attribute: 'index' })
     index: number = 0;
 
+    @property({ attribute: false })
+    openModal!: (section: Section, insertAtIndex: number) => any;
+
     @state()
     copiedValue?: CopyPasteState;
 
@@ -22,13 +24,7 @@ export default class PerplexContentBlocksBlockSpacerElement extends connect(stor
     }
 
     addBlock() {
-        store.dispatch(
-            setAddBlockModal({
-                display: true,
-                section: Section.CONTENT,
-                insertAtIndex: this.index,
-            }),
-        );
+        this.openModal(Section.CONTENT, this.index);
     }
 
     pasteBlock() {

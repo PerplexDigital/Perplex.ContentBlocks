@@ -25,6 +25,9 @@ import baseStyles from './../../css/base.css?inline';
 import { AppState, store } from '../../state/store.ts';
 import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
 import { propertyAliasPrefix } from '../../utils/block.ts';
+import { withEditorId } from '../../events/generic.ts';
+import { consume } from '@lit/context';
+import { editorContext } from '../../context';
 
 @customElement('pcb-block')
 export default class PerplexContentBlocksBlockElement extends connect(store)(UmbLitElement) {
@@ -85,6 +88,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     @property({ attribute: false })
     dataPath!: string;
 
+    @property({ attribute: false })
+    openModal!: (section: Section, insertAtIndex: number) => any;
+
     @state()
     private ok: boolean = false;
 
@@ -110,6 +116,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     } = {};
 
     #validationController?: UmbValidationController;
+
+    @consume({ context: editorContext })
+    editorId!: string;
 
     connectedCallback() {
         super.connectedCallback();
@@ -189,7 +198,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         };
 
         if (this.definition) {
-            this.dispatchEvent(BlockUpdatedEvent(updatedBlock, this.definition, this.section));
+            this.dispatchEvent(
+                withEditorId(BlockUpdatedEvent(updatedBlock, this.definition, this.section), this.editorId),
+            );
         }
     };
 
@@ -213,7 +224,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
         if (this.definition) {
-            this.dispatchEvent(BlockUpdatedEvent(block, this.definition, this.section));
+            this.dispatchEvent(withEditorId(BlockUpdatedEvent(block, this.definition, this.section), this.editorId));
         }
     };
 
@@ -260,7 +271,10 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         };
 
         return html` ${this.section !== Section.HEADER
-                ? html`<pcb-block-spacer .index=${this.index}></pcb-block-spacer>`
+                ? html`<pcb-block-spacer
+                      .openModal=${this.openModal}
+                      .index=${this.index}
+                  ></pcb-block-spacer>`
                 : nothing}
             <div class="${classMap(classes)}">
                 <pcb-block-head

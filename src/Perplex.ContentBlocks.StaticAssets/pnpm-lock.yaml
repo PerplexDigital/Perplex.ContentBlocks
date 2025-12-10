@@ -11,6 +11,9 @@ importers:
       '@lit-labs/motion':
         specifier: ^1.0.7
         version: 1.0.9
+      '@lit/context':
+        specifier: ^1.1.6
+        version: 1.1.6
       '@reduxjs/toolkit':
         specifier: ^2.2.6
         version: 2.9.0
@@ -290,6 +293,9 @@ packages:
 
   '@lit-labs/ssr-dom-shim@1.4.0':
     resolution: {integrity: sha512-ficsEARKnmmW5njugNYKipTm4SFnbik7CXtoencDZzmzo/dQ+2Q0bgkzJuoJP20Aj0F+izzJjOqsnkd6F/o1bw==}
+
+  '@lit/context@1.1.6':
+    resolution: {integrity: sha512-M26qDE6UkQbZA2mQ3RjJ3Gzd8TxP+/0obMgE5HfkfLhEEyYE3Bui4A5XHiGPjy0MUGAyxB3QgVuw2ciS0kHn6A==}
 
   '@lit/reactive-element@2.1.1':
     resolution: {integrity: sha512-N+dm5PAYdQ8e6UlywyyrgI2t++wFGXfHx+dSJ1oBrg6FAxUj40jId++EaRm80MKX5JnlH1sBsyZ5h0bcZKemCg==}
@@ -1941,6 +1947,10 @@ snapshots:
       lit: 3.3.1
 
   '@lit-labs/ssr-dom-shim@1.4.0': {}
+
+  '@lit/context@1.1.6':
+    dependencies:
+      '@lit/reactive-element': 2.1.1
 
   '@lit/reactive-element@2.1.1':
     dependencies:

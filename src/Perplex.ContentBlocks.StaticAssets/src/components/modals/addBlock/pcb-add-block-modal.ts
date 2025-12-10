@@ -1,28 +1,26 @@
-import { customElement, html, query, repeat, state, LitElement, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
-import { connect } from 'pwa-helpers';
-import { store } from '../../../state/store.ts';
-import { resetAddBlockModal, setAddBlockModal } from '../../../state/slices/ui.ts';
-import { PCBCategoryWithDefinitions, PerplexContentBlocksBlock, Section } from '../../../types.ts';
-import { BlockSavedEvent, ON_BLOCK_SELECTED } from '../../../events/block.ts';
+import { customElement, html, property, state, repeat, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
+import { UmbModalExtensionElement } from '@umbraco-cms/backoffice/modal';
+import type { UmbModalContext } from '@umbraco-cms/backoffice/modal';
+import { PcbAddBlockModalData, PcbAddBlockModalValue } from './modal-token.ts';
+import { PerplexContentBlocksBlock, Section } from '../../../types.ts';
+import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
 import { ToastEvent } from '../../../events/toast.ts';
 import addBlockModalStyles from './addBlockModal.css?inline';
 
 @customElement('pcb-add-block-modal')
-export default class PcbAddBlockModal extends connect(store)(LitElement) {
-    @query('#popover-container')
-    private _notificationsElement?: HTMLElement;
+export class MyDialogElement
+    extends UmbLitElement
+    implements UmbModalExtensionElement<PcbAddBlockModalData, PcbAddBlockModalValue>
+{
+    @property({ attribute: false })
+    modalContext?: UmbModalContext<PcbAddBlockModalData, PcbAddBlockModalValue>;
 
-    @state()
-    groupedDefinitions?: PCBCategoryWithDefinitions[];
+    @property({ attribute: false })
+    data?: PcbAddBlockModalData;
 
     @state()
     selectedBlock: PerplexContentBlocksBlock | null = null;
-
-    @state()
-    section: Section = Section.CONTENT;
-
-    @state()
-    insertAtIndex?: number;
 
     @state()
     searchTerm: string | null = null;
@@ -30,35 +28,11 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
     @state()
     selectedCategories: string[] | null = null;
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.addEventListener(ON_BLOCK_SELECTED, (e: Event) => this.onBlockSelected(e as CustomEvent));
+    private _handleCancel() {
+        this.modalContext?.submit();
     }
 
-    onBlockSelected(event: CustomEvent) {
-        this.selectedBlock = event.detail;
-    }
-
-    stateChanged(state: any) {
-        this.groupedDefinitions = state.definitions.value;
-
-        if (state.ui.addBlock.display) {
-            this._notificationsElement?.showPopover?.();
-        } else {
-            this._notificationsElement?.hidePopover?.();
-        }
-
-        this.section = state.ui.addBlock.section;
-
-        this.insertAtIndex = state.ui.addBlock.insertAtIndex;
-    }
-
-    onPopoverClick() {
-        store.dispatch(resetAddBlockModal());
-        this._notificationsElement?.hidePopover?.();
-    }
-
-    onSaveClicked() {
+    private _handleSubmit() {
         if (!this.selectedBlock) {
             this.dispatchEvent(
                 ToastEvent('warning', {
@@ -68,14 +42,21 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
             return;
         }
 
-        this.dispatchEvent(
-            BlockSavedEvent({
-                blocks: [this.selectedBlock],
-                section: this.section,
-                desiredIndex: this.insertAtIndex ?? null,
-            }),
-        );
-        this.selectedBlock = null;
+        this.modalContext?.updateValue({
+            blocks: [this.selectedBlock],
+            section: this.modalContext?.data.section,
+            desiredIndex: this.modalContext?.data.insertAtIndex ?? null,
+        });
+        this.modalContext?.submit();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener(ON_BLOCK_SELECTED, (e: Event) => this.onBlockSelected(e as CustomEvent));
+    }
+
+    onBlockSelected(event: CustomEvent) {
+        this.selectedBlock = event.detail;
     }
 
     onSearchTermChanged(e: Event) {
@@ -102,13 +83,13 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
     }
 
     renderBlocks() {
-        if (!this.groupedDefinitions) return;
+        if (!this.modalContext?.data.groupedDefinitions) return;
 
         const searchTerm = this.searchTerm?.toLowerCase().trim() || '';
 
         // Only show categories that match the section.
-        const categories = Object.values(this.groupedDefinitions).filter((category) => {
-            const isHeader = this.section === Section.HEADER;
+        const categories = Object.values(this.modalContext?.data.groupedDefinitions).filter((category) => {
+            const isHeader = this.modalContext?.data.section === Section.HEADER;
             return category.category.isEnabledForHeaders === isHeader;
         });
 
@@ -193,37 +174,30 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
     }
 
     render() {
-        if (!this.groupedDefinitions) return;
         return html`
             <div
-                id="popover-container"
-                popover
-                @click=${this.onPopoverClick}
+                class="addBlockModal"
+                @click=${(e: Event) => e.stopPropagation()}
             >
-                <div
-                    class="addBlockModal"
-                    @click=${(e: Event) => e.stopPropagation()}
-                >
-                    ${this.renderBlocks()}
+                ${this.renderBlocks()}
 
-                    <div class="addBlockModal__sidebarButtons">
-                        <uui-button
-                            look="secondary"
-                            type="button"
-                            @click=${() => store.dispatch(setAddBlockModal(false))}
-                        >
-                            Close
-                        </uui-button>
+                <div class="addBlockModal__sidebarButtons">
+                    <uui-button
+                        look="secondary"
+                        type="button"
+                        @click=${this._handleCancel}
+                    >
+                        Close
+                    </uui-button>
 
-                        <uui-button
-                            look="primary"
-                            type="button"
-                            ?disabled=${!this.selectedBlock}
-                            @click=${this.onSaveClicked}
-                        >
-                            Save
-                        </uui-button>
-                    </div>
+                    <uui-button
+                        look="primary"
+                        type="button"
+                        ?disabled=${!this.selectedBlock}
+                        @click=${this._handleSubmit}
+                    >
+                        Save
+                    </uui-button>
                 </div>
             </div>
         `;
@@ -231,3 +205,5 @@ export default class PcbAddBlockModal extends connect(store)(LitElement) {
 
     static styles = [unsafeCSS(addBlockModalStyles)];
 }
+
+export const element = MyDialogElement;

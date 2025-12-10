@@ -8,6 +8,12 @@
       "alias": "Perplex.ContentBlocks.EntryPoint",
       "type": "backofficeEntryPoint",
       "js": "/App_Plugins/Perplex.ContentBlocks/perplex.content-blocks.js"
+    },
+    {
+      "type": "modal",
+      "alias": "Pcb.AddBlock",
+      "name": "Content Blocks add Block modal",
+      "element": "/App_Plugins/Perplex.ContentBlocks/AddBlockModal.js"
     }
   ]
 }
