@@ -7,13 +7,25 @@ type BlockValue = {
     expose?: any[];
 };
 
-function regenerateBlockListKeys(value: BlockValue): BlockValue {
-    if (!value?.layout || !value?.contentData) return value;
+function regenerateBlockListKeys(value: BlockValue | null | undefined): BlockValue | null | undefined {
+    if (!value) return value;
 
-    // Map old contentKey → new UUID
+    const blockListLayout = (value.layout?.['Umbraco.BlockList'] ?? []) as any[];
+    const contentData = value.contentData ?? [];
+
+    if (!blockListLayout.length || !contentData.length) {
+        // still return a shallow clone to avoid mutating original object
+        return {
+            ...value,
+            layout: { 'Umbraco.BlockList': blockListLayout },
+            contentData,
+            expose: value.expose ?? [],
+        };
+    }
+
     const keyMap = new Map<string, string>();
-    for (const item of value.layout['Umbraco.BlockList'] ?? []) {
-        if (item.contentKey) keyMap.set(item.contentKey, crypto.randomUUID());
+    for (const item of blockListLayout) {
+        if (item?.contentKey) keyMap.set(item.contentKey, crypto.randomUUID());
     }
 
     const remapKey = (oldKey: string | null | undefined) => {
@@ -21,27 +33,25 @@ function regenerateBlockListKeys(value: BlockValue): BlockValue {
         return keyMap.get(oldKey) ?? oldKey;
     };
 
-    // Replace keys in layout
     const newLayout = {
-        'Umbraco.BlockList': value.layout['Umbraco.BlockList'].map((item: any) => ({
+        'Umbraco.BlockList': blockListLayout.map((item: any) => ({
             ...item,
-            contentKey: remapKey(item.contentKey),
+            contentKey: remapKey(item?.contentKey),
         })),
     };
 
-    // Replace keys + recurse inside contentData
-    const newContentData = value.contentData.map((data: any) => {
-        const newKey = remapKey(data.key);
-        const newValues =
-            data.values?.map((val: any) => {
-                if (val.editorAlias === 'Umbraco.BlockList' && val.value) {
-                    return {
-                        ...val,
-                        value: regenerateBlockListKeys(val.value),
-                    };
-                }
-                return val;
-            }) ?? [];
+    const newContentData = contentData.map((data: any) => {
+        const newKey = remapKey(data?.key);
+        const originalValues = Array.isArray(data?.values) ? data.values : [];
+        const newValues = originalValues.map((val: any) => {
+            if (val?.editorAlias === 'Umbraco.BlockList' && val?.value && typeof val.value === 'object') {
+                return {
+                    ...val,
+                    value: regenerateBlockListKeys(val.value),
+                };
+            }
+            return val;
+        });
 
         return {
             ...data,
@@ -50,12 +60,10 @@ function regenerateBlockListKeys(value: BlockValue): BlockValue {
         };
     });
 
-    // Replace keys in expose (if present)
-    const newExpose =
-        value.expose?.map((e: any) => ({
-            ...e,
-            contentKey: remapKey(e.contentKey),
-        })) ?? [];
+    const newExpose = (Array.isArray(value.expose) ? value.expose : []).map((e: any) => ({
+        ...e,
+        contentKey: remapKey(e?.contentKey),
+    }));
 
     return {
         ...value,
@@ -67,18 +75,21 @@ function regenerateBlockListKeys(value: BlockValue): BlockValue {
 
 export const differentiateBlocks = (blocks: PerplexContentBlocksBlock[]) => {
     return blocks.map((block) => {
+        const originalValues = Array.isArray(block?.content?.values) ? block.content.values : [];
+        const newValues = originalValues.map((val: any) => {
+            if (val?.editorAlias === 'Umbraco.BlockList' && val?.value && typeof val.value === 'object') {
+                return {
+                    ...val,
+                    value: regenerateBlockListKeys(val.value),
+                };
+            }
+            return val;
+        });
+
         const newContent = {
             ...block.content,
             key: crypto.randomUUID(),
-            values: block.content.values.map((val: any) => {
-                if (val.editorAlias === 'Umbraco.BlockList' && val.value) {
-                    return {
-                        ...val,
-                        value: regenerateBlockListKeys(val.value),
-                    };
-                }
-                return val;
-            }),
+            values: newValues,
         };
 
         return {
