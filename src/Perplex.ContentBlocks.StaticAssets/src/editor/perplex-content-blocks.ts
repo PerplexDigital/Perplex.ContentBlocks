@@ -17,6 +17,7 @@ import {
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
 import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
+import { UMB_CONTENT_WORKSPACE_CONTEXT } from '@umbraco-cms/backoffice/content';
 import { fetchDefinitionsPerCategory, fetchPagePresets } from '../queries/definitions.ts';
 import { connect } from 'pwa-helpers';
 import { AppState, store } from '../state/store.ts';
@@ -51,6 +52,7 @@ import { editorContext } from '../context/index.ts';
 import { animate } from '@lit-labs/motion';
 import { umbOpenModal } from '@umbraco-cms/backoffice/modal';
 import { PCB_ADD_BLOCK_MODAL_TOKEN } from '../components/modals/addBlock/modal-token.ts';
+import { firstValueFrom } from '@umbraco-cms/backoffice/external/rxjs';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
@@ -115,6 +117,8 @@ export default class PerplexContentBlocksElement
     #authContext?: UmbAuthContext;
     headerCategories: string[] = [];
 
+    #documentTypeAlias: string = '';
+
     get structure(): Structure {
         const value = this.config?.getValueByAlias('structure');
         switch (value) {
@@ -133,8 +137,7 @@ export default class PerplexContentBlocksElement
             throw new Error('No auth token available');
         }
 
-        // TODO: Daniël fix documentType alias
-        const result = await fetchDefinitionsPerCategory(token, 'Ellard', this.culture || undefined);
+        const result = await fetchDefinitionsPerCategory(token, this.#documentTypeAlias, this.culture || undefined);
 
         if (result) {
             this.headerCategories = result.reduce((acc: string[], currentValue) => {
@@ -154,8 +157,8 @@ export default class PerplexContentBlocksElement
         if (token == null) {
             throw new Error('No auth token available');
         }
-        // TODO: Daniël fix documentType alias
-        const result = await fetchPagePresets(token, this.pageId, this.culture || undefined);
+
+        const result = await fetchPagePresets(token, this.#documentTypeAlias, this.culture || undefined);
 
         if (result) {
             store.dispatch(setPresets(result));
@@ -238,6 +241,14 @@ export default class PerplexContentBlocksElement
 
         this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
             this.#authContext = ctx;
+        });
+
+        this.consumeContext(UMB_CONTENT_WORKSPACE_CONTEXT, (ctx) => {
+            if (ctx == null) return;
+
+            firstValueFrom(ctx.structure.ownerContentTypeAlias).then((alias) => {
+                this.#documentTypeAlias = alias ?? '';
+            });
         });
     }
 
@@ -395,7 +406,6 @@ export default class PerplexContentBlocksElement
     render() {
         return html`
             <div class="main">
-                <h1>${this.editorId}</h1>
                 <div class="pcb__wrapper">
                     <div class="pcb__content">
                         <div class="pcb__blocks">
