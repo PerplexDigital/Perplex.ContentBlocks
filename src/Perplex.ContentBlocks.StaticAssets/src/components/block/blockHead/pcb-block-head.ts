@@ -12,11 +12,17 @@ import {
 import { BlockToggleEvent, BlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../../events/block.ts';
 import blockHeadStyles from './block-head.css?inline';
 import baseStyles from './../../../css/base.css?inline';
-import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../../types.ts';
+import {
+    PCBCategoryWithDefinitions,
+    PerplexBlockDefinition,
+    PerplexContentBlocksBlock,
+    Section,
+} from '../../../types.ts';
 import { ValueCopiedEvent } from '../../../events/copyPaste.ts';
 import { ToastEvent } from '../../../events/toast.ts';
 import { store } from '../../../state/store.ts';
 import { connect } from 'pwa-helpers';
+import { getCategoriesForDefinition } from '../../../utils/block.ts';
 
 @customElement('pcb-block-head')
 export default class PcbBlockHead extends connect(store)(UmbLitElement) {
@@ -53,10 +59,20 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @state()
     isTouchDevice: boolean = false;
 
+    @state()
+    categoryWithDefinitions: PCBCategoryWithDefinitions[] = [];
+
     @query('#tooltip-popover')
     private _tooltipPopover!: HTMLElement;
 
     private _listenersAttached: boolean = false;
+
+    private getIcon() {
+        const categories = getCategoriesForDefinition(this.definition?.id ?? '', this.categoryWithDefinitions);
+        if (this.definition?.icon) return this.definition.icon;
+        if (categories.length > 0) return categories[0].icon;
+        return 'icon-block-default';
+    }
 
     protected updated() {
         const toggle = this.renderRoot.querySelector('#tooltip-toggle');
@@ -71,6 +87,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     stateChanged(state: any) {
         this.isTouchDevice = state.isTouchDevice;
+        this.categoryWithDefinitions = state.definitions.value;
     }
 
     onHeadClicked = () => {
@@ -139,7 +156,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                     </div>
 
                     <svg class="block-head__icon icon icon--base">
-                        <use href="${this.definition?.icon}"></use>
+                        <use href="${this.getIcon()}"></use>
                     </svg>
                 </button>
                 ${this.isDraggingBlock
