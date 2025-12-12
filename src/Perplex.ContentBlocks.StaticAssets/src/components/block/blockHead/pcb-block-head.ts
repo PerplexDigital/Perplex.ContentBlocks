@@ -122,6 +122,12 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     }
 
     render() {
+        const nameTemplate = '{= title | uppercase }';
+        const valuesByAlias: Record<string, any> = {};
+        for (const value of this.block.content.values) {
+            valuesByAlias[value.alias] = value.value;
+        }
+
         return html`
             <div class="block-head">
                 <button
@@ -151,7 +157,13 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                           `
                         : nothing}
                     <div class="block-head__title">
-                        ${this.blockTemplateName ? html`<strong>${this.blockTemplateName}</strong>` : nothing}
+                        <strong>
+                            <umb-ufm-render
+                                inline
+                                .markdown=${nameTemplate}
+                                .value=${valuesByAlias}
+                            ></umb-ufm-render
+                        ></strong>
                         <div>${this.blockDefinitionName}</div>
                     </div>
 
