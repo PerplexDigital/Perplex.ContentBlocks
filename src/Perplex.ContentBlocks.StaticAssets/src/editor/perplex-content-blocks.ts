@@ -29,7 +29,7 @@ import {
     Section,
     Structure,
 } from '../types.ts';
-import { setAddBlockModal, setIsTouchDevice } from '../state/slices/ui.ts';
+import { setIsTouchDevice } from '../state/slices/ui.ts';
 import { ON_ADD_TOAST, ToastEvent } from '../events/toast.ts';
 import { addToast } from '../utils/toast.ts';
 import {
@@ -257,12 +257,7 @@ export default class PerplexContentBlocksElement
     }
 
     addHeader() {
-        store.dispatch(
-            setAddBlockModal({
-                display: true,
-                section: Section.HEADER,
-            }),
-        );
+        this._openModal(Section.HEADER);
     }
 
     updateHeader(header: PerplexContentBlocksBlock) {
