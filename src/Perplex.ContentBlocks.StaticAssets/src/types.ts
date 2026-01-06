@@ -1,4 +1,5 @@
 import type { UmbBlockDataModel } from '@umbraco-cms/backoffice/block';
+import { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 
 export interface PerplexBlockDefinition {
     id: string;
@@ -89,3 +90,18 @@ export type Preset = {
     header: PresetItem;
     blocks: PresetItem[];
 };
+
+export interface Tab {
+    id: string;
+    name: string;
+    sortOrder: number;
+    groups: Group[];
+    properties: UmbPropertyTypeModel[];
+}
+
+export interface Group {
+    id: string;
+    name: string;
+    sortOrder: number;
+    properties: UmbPropertyTypeModel[];
+}

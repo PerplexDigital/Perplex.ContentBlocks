@@ -11,13 +11,13 @@ import {
     nothing,
     PropertyValues,
 } from '@umbraco-cms/backoffice/external/lit';
-import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
+import type { UmbPropertyTypeContainerModel, UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { PerplexContentBlocksPropertyDatasetContext } from '../../editor/perplex-content-blocks-dataset-context.ts';
 import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@umbraco-cms/backoffice/document-type';
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
 import contentBlockName from '../../utils/contentBlockName.ts';
-import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../types.ts';
+import { Group, PerplexBlockDefinition, PerplexContentBlocksBlock, Section, Tab } from '../../types.ts';
 import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
 import { connect } from 'pwa-helpers';
 
@@ -95,7 +95,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     private ok: boolean = false;
 
     @state()
-    properties: UmbPropertyTypeModel[] | undefined = undefined;
+    properties!: UmbPropertyTypeModel[];
 
     @state()
     isMandatory: boolean = false;
@@ -107,7 +107,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     isDraggingBlock: boolean = false;
 
     #contentTypeRepository = new UmbDocumentTypeDetailRepository(this);
-    elementType!: UmbDocumentTypeDetailModel;
 
     #dataTypeRepository = new UmbDataTypeDetailRepository(this);
 
@@ -232,28 +231,200 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         const elementTypeResponse = await this.#contentTypeRepository.requestByUnique(
             this.block.content.contentTypeKey,
         );
+
         if (elementTypeResponse.data == null) {
             throw new Error(`Cannot retrieve content type ${this.block.content.contentTypeKey}`);
         }
 
-        this.elementType = elementTypeResponse.data;
+        const elementType = elementTypeResponse.data;
+        this.properties = await this.#getOrderedProperties(elementType);
+
         new PerplexContentBlocksPropertyDatasetContext(this, this.block, this.onBlockUpdate);
 
-        // TODO: Fetch only the distinct dataTypes + in parallel
-        for (const property of this.elementType.properties) {
-            const dataTypeResponse = await this.#dataTypeRepository.requestByUnique(property.dataType.unique);
+        const dataTypeUniques = new Set(this.properties.map((p) => p.dataType.unique));
+
+        for (const dataTypeUnique of dataTypeUniques) {
+            const dataTypeResponse = await this.#dataTypeRepository.requestByUnique(dataTypeUnique);
             if (dataTypeResponse.data == null) {
-                throw new Error(`Cannot retrieve data type ${property.dataType.unique}`);
+                throw new Error(`Cannot retrieve data type ${dataTypeUnique}`);
             }
 
-            this.#dataTypes[property.dataType.unique] = dataTypeResponse.data;
+            this.#dataTypes[dataTypeUnique] = dataTypeResponse.data;
         }
 
         this.ok = true;
     }
 
+    async #getOrderedProperties(elementType: UmbDocumentTypeDetailModel) {
+        if (elementType.compositions.length === 0) {
+            return [...elementType.properties];
+        }
+
+        // When the element type has compositions we need to ensure the properties are returned in the proper order,
+        // we cannot simply concat all contentType.properties together unfortunately.
+        // The order is determined by the tabs and groups defined on each content type.
+        // The order is:
+        // 1) For each group without a parent tab:
+        //      1) Properties in that group
+        // 2) For each tab:
+        //      1) Properties directly on the tab (not in a group)
+        //      2) For each group in that tab:
+        //          1) Properties in that group
+        // Ensure each step orders by sortOrder of the tab, group or property.
+        // Note that we must first merge tabs and groups at each level based on their name,
+        // e.g. if an Element Type defines 'Tab A' and a composition also defines 'Tab A' we need to merge them.
+        // Same goes for groups, also those within merged tabs.
+
+        const contentTypes: UmbDocumentTypeDetailModel[] = [];
+        contentTypes.push(elementType);
+
+        for (const composition of elementType.compositions) {
+            const compositionTypeResponse = await this.#contentTypeRepository.requestByUnique(
+                composition.contentType.unique,
+            );
+
+            if (compositionTypeResponse.data == null) {
+                // Ignore
+                continue;
+            }
+
+            contentTypes.push(compositionTypeResponse.data);
+        }
+
+        const tabs: Tab[] = [];
+        const groups: Group[] = [];
+
+        const propertiesByContainerId: { [key: string]: UmbPropertyTypeModel[] } = {};
+
+        for (const contentType of contentTypes) {
+            for (const property of contentType.properties) {
+                if (property.container?.id == null) continue;
+
+                if (!propertiesByContainerId[property.container.id])
+                    propertiesByContainerId[property.container.id] = [];
+
+                propertiesByContainerId[property.container.id].push(property);
+            }
+
+            const containersByParentId: { [key: string]: UmbPropertyTypeContainerModel[] } = {};
+            for (const container of contentType.containers) {
+                const parentId = container.parent?.id;
+                if (parentId == null) continue;
+                if (!containersByParentId[parentId]) containersByParentId[parentId] = [];
+                containersByParentId[parentId].push(container);
+            }
+
+            for (const container of contentType.containers) {
+                if (container.type === 'Tab') {
+                    const groups: Group[] = (containersByParentId[container.id] || []).map(buildGroup);
+
+                    const tab: Tab = {
+                        id: container.id,
+                        name: container.name,
+                        sortOrder: container.sortOrder,
+                        groups: groups,
+                        properties: propertiesByContainerId[container.id] || [],
+                    };
+
+                    const existingTab = tabs.find((t) => t.name === tab.name);
+                    if (existingTab) {
+                        // Merge
+                        const merged = mergeTabs(existingTab, tab);
+                        tabs.splice(tabs.indexOf(existingTab), 1, merged);
+                    } else {
+                        tabs.push(tab);
+                    }
+                } else if (container.type === 'Group' && container.parent?.id == null) {
+                    const group = buildGroup(container);
+                    const existingGroup = groups.find((g) => g.name === group.name);
+                    if (existingGroup) {
+                        // Merge
+                        const merged = mergeGroups(existingGroup, group);
+                        groups.splice(groups.indexOf(existingGroup), 1, merged);
+                    } else {
+                        groups.push(group);
+                    }
+                }
+            }
+
+            function buildGroup(container: UmbPropertyTypeContainerModel): Group {
+                return {
+                    id: container.id,
+                    name: container.name,
+                    sortOrder: container.sortOrder,
+                    properties: propertiesByContainerId[container.id] || [],
+                };
+            }
+        }
+
+        tabs.sort((a, b) => a.sortOrder - b.sortOrder);
+        groups.sort((a, b) => a.sortOrder - b.sortOrder);
+
+        const properties: UmbPropertyTypeModel[] = [];
+
+        for (const group of groups) {
+            addSortedProperties(group);
+        }
+
+        for (const tab of tabs) {
+            addSortedProperties(tab);
+
+            for (const group of tab.groups) {
+                addSortedProperties(group);
+            }
+        }
+
+        function addSortedProperties(container: Group | Tab) {
+            const props = container.properties.slice();
+            props.sort((a, b) => a.sortOrder - b.sortOrder);
+            properties.push(...props);
+        }
+
+        function mergeTabs(tabA: Tab, tabB: Tab): Tab {
+            const properties = [...tabA.properties, ...tabB.properties];
+            properties.sort((a, b) => a.sortOrder - b.sortOrder);
+
+            const groups: Group[] = [];
+            for (const group of [...tabA.groups, ...tabB.groups]) {
+                const existingGroup = groups.find((g) => g.name === group.name);
+                if (existingGroup) {
+                    const merged = mergeGroups(existingGroup, group);
+                    groups.splice(groups.indexOf(existingGroup), 1, merged);
+                } else {
+                    groups.push(group);
+                }
+            }
+
+            const mergedTab: Tab = {
+                id: tabA.id,
+                name: tabA.name,
+                sortOrder: Math.min(tabA.sortOrder, tabB.sortOrder),
+                properties,
+                groups,
+            };
+
+            return mergedTab;
+        }
+
+        function mergeGroups(groupA: Group, groupB: Group): Group {
+            const properties = [...groupA.properties, ...groupB.properties];
+            properties.sort((a, b) => a.sortOrder - b.sortOrder);
+
+            const mergedGroup: Group = {
+                id: groupA.id,
+                name: groupA.name,
+                sortOrder: Math.min(groupA.sortOrder, groupB.sortOrder),
+                properties,
+            };
+
+            return mergedGroup;
+        }
+
+        return properties;
+    }
+
     clearValidationMessages() {
-        for (const property of this.elementType.properties) {
+        for (const property of this.properties) {
             const path = `${this.dataPath}.${this.block.id}.${property.alias}`;
             this.#validationController?.messages.removeMessagesByTypeAndPath('client', path);
             this.#validationController?.messages.removeMessagesByTypeAndPath('server', path);
@@ -300,8 +471,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 >
                     <div>
                         ${repeat(
-                            this.elementType.properties,
-                            (property) => property.id,
+                            this.properties,
+                            (property) => property.unique,
                             (property) => {
                                 const dataType = this.#dataTypes[property.dataType.unique];
                                 if (dataType == null) throw new Error('missing data type');
