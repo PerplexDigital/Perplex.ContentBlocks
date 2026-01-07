@@ -40,7 +40,7 @@ import {
     ON_SET_BLOCKS,
     SetBlocksEvent,
 } from '../events/block.ts';
-import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
+
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 import { register } from 'swiper/element/bundle';
 import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from '../events/copyPaste.ts';
@@ -114,7 +114,6 @@ export default class PerplexContentBlocksElement
     @provide({ context: editorContext })
     providedEditorId = this.editorId;
 
-    #authContext?: UmbAuthContext;
     headerCategories: string[] = [];
 
     #documentTypeAlias: string = '';
@@ -132,12 +131,7 @@ export default class PerplexContentBlocksElement
     }
 
     async fetchDefinitionsPerCategory() {
-        const token = await this.#authContext?.getLatestToken();
-        if (token == null) {
-            throw new Error('No auth token available');
-        }
-
-        const result = await fetchDefinitionsPerCategory(token, this.#documentTypeAlias, this.culture || undefined);
+        const result = await fetchDefinitionsPerCategory(this.#documentTypeAlias, this.culture || undefined);
 
         if (result) {
             this.headerCategories = result.reduce((acc: string[], currentValue) => {
@@ -153,12 +147,7 @@ export default class PerplexContentBlocksElement
     }
 
     async fetchPresets() {
-        const token = await this.#authContext?.getLatestToken();
-        if (token == null) {
-            throw new Error('No auth token available');
-        }
-
-        const result = await fetchPagePresets(token, this.#documentTypeAlias, this.culture || undefined);
+        const result = await fetchPagePresets(this.#documentTypeAlias, this.culture || undefined);
 
         if (result) {
             store.dispatch(setPresets(result));
@@ -185,8 +174,13 @@ export default class PerplexContentBlocksElement
 
     async connectedCallback() {
         super.connectedCallback();
+
+        const workspaceContext = await this.getContext(UMB_CONTENT_WORKSPACE_CONTEXT);
+        this.#documentTypeAlias = (await firstValueFrom(workspaceContext!.structure.ownerContentTypeAlias)) ?? '';
+
         await this.fetchDefinitionsPerCategory();
         await this.fetchPresets();
+
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
 
@@ -237,18 +231,6 @@ export default class PerplexContentBlocksElement
         this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (ctx) => {
             this.pageId = ctx?.getUnique()!;
             this.culture = ctx?.getVariantId().culture || '';
-        });
-
-        this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
-            this.#authContext = ctx;
-        });
-
-        this.consumeContext(UMB_CONTENT_WORKSPACE_CONTEXT, (ctx) => {
-            if (ctx == null) return;
-
-            firstValueFrom(ctx.structure.ownerContentTypeAlias).then((alias) => {
-                this.#documentTypeAlias = alias ?? '';
-            });
         });
     }
 

@@ -1,65 +1,46 @@
 import { PCBCategory, PerplexBlockDefinition, Preset } from '../types.ts';
 import { DefinitionsDictionary } from '../state/slices/definitions.ts';
+import { get } from '../api/index.ts';
 
-const DEFINITIONS_ENDPOINT = '/umbraco/perplex-content-blocks/api/definitions/forpage';
-const CATEGORIES_ENDPOINT = '/umbraco/perplex-content-blocks/api/categories/all';
-const PRESETS_ENDPOINT = '/umbraco/perplex-content-blocks/api/presets/forpage';
+const DEFINITIONS_ENDPOINT = '/definitions/forpage';
+const CATEGORIES_ENDPOINT = '/categories/all';
+const PRESETS_ENDPOINT = '/presets/forpage';
 
-export const fetchAllDefinitions = async (token: string, documentType: string, culture?: string) => {
+export const fetchAllDefinitions = async (documentType: string, culture?: string) => {
     try {
         const params = new URLSearchParams({ documentType });
         if (culture) params.append('culture', culture);
-        const result = await fetch(`${DEFINITIONS_ENDPOINT}?${params}`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return (await result.json()) as PerplexBlockDefinition[];
+        return await get<PerplexBlockDefinition[]>(`${DEFINITIONS_ENDPOINT}?${params.toString()}`);
     } catch (e) {
         // Todo error handling
         console.log(e);
     }
 };
 
-export const fetchAllCategories = async (token: string) => {
+export const fetchAllCategories = async () => {
     try {
-        const result = await fetch(CATEGORIES_ENDPOINT, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return (await result.json()) as PCBCategory[];
+        return await get<PCBCategory[]>(CATEGORIES_ENDPOINT);
     } catch (e) {
         // Todo error handling
         console.log(e);
     }
 };
 
-export const fetchPagePresets = async (token: string, documentType: string, culture?: string) => {
+export const fetchPagePresets = async (documentType: string, culture?: string) => {
     const params = new URLSearchParams({ documentType });
     if (culture) params.append('culture', culture);
 
     try {
-        const result = await fetch(`${PRESETS_ENDPOINT}?${params}`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return (await result.json()) as Preset;
+        return await get<Preset>(`${PRESETS_ENDPOINT}?${params}`);
     } catch (e) {
         console.log(e);
     }
 };
 
-export const fetchDefinitionsPerCategory = async (token: string, documentType: string, culture?: string) => {
+export const fetchDefinitionsPerCategory = async (documentType: string, culture?: string) => {
     try {
-        let definitions = (await fetchAllDefinitions(token, documentType, culture)) as PerplexBlockDefinition[];
-        const categories = (await fetchAllCategories(token)) as PCBCategory[];
+        const definitions = (await fetchAllDefinitions(documentType, culture)) ?? [];
+        const categories = (await fetchAllCategories()) ?? [];
 
         const definitionsDictionary = definitions.reduce((acc: DefinitionsDictionary, curr: PerplexBlockDefinition) => {
             acc[curr.id] = {
