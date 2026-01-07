@@ -312,16 +312,16 @@ public class MigrateFromNestedContentToBlockList
             // BlockList format
             return new JsonObject
             {
-                ["layout"] = new JsonObject
-                {
-                    ["Umbraco.BlockList"] = layouts,
-                },
-
                 ["contentData"] = contentDatas,
 
                 ["settingsData"] = new JsonArray(),
 
                 ["expose"] = exposes,
+
+                ["Layout"] = new JsonObject
+                {
+                    ["Umbraco.BlockList"] = layouts,
+                },
             };
         }
 
