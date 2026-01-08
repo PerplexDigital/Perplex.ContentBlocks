@@ -51,6 +51,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     })
     draggable: boolean = false;
 
+    @state()
+    invalid: boolean = false;
+
     updated(changedProps: PropertyValues) {
         super.updated(changedProps);
 
@@ -207,6 +210,16 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         super();
         this.consumeContext(UMB_VALIDATION_CONTEXT, (ctx) => {
             this.#validationController = ctx;
+
+            ctx?.messages.messages.subscribe((messages) => {
+                this.invalid = false;
+
+                for (const message of messages) {
+                    if (message.path.indexOf(this.block.id) !== -1) {
+                        this.invalid = true;
+                    }
+                }
+            });
         });
 
         this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
@@ -433,12 +446,13 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     render() {
         if (!this.ok || this.definition == null) {
-            return;
+            return nothing;
         }
 
         const classes = {
             block: true,
             block__removing: this.removing,
+            block__invalid: this.invalid && !this.removing,
         };
 
         return html` ${this.section !== Section.HEADER
@@ -478,7 +492,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                                 if (dataType == null) throw new Error('missing data type');
 
                                 return html` <umb-property
-                                    .dataPath=${this.dataPath}
+                                    .dataPath=${`${this.dataPath}.${this.block.id}.${property.alias}`}
                                     .alias=${propertyAliasPrefix(this.block) + property.alias}
                                     .label=${property.name}
                                     .description=${property.description}
@@ -508,12 +522,15 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 box-shadow: var(--bs-base);
 
                 &.block__removing {
-                    background-color: red !important;
                     opacity: 0;
                     transform: scaleY(0);
                     transition:
                         opacity 250ms,
                         transform 250ms;
+                }
+
+                &.block__invalid {
+                    border: 2px solid var(--uui-color-danger);
                 }
 
                 .block__body {
