@@ -16,7 +16,7 @@ import {
 } from '@umbraco-cms/backoffice/property-editor';
 import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
-import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
+import { UMB_PROPERTY_CONTEXT } from '@umbraco-cms/backoffice/property';
 import { UMB_CONTENT_WORKSPACE_CONTEXT } from '@umbraco-cms/backoffice/content';
 import { fetchDefinitionsPerCategory, fetchPagePresets } from '../queries/definitions.ts';
 import { connect } from 'pwa-helpers';
@@ -97,11 +97,7 @@ export default class PerplexContentBlocksElement
     @state()
     dataPath!: string;
 
-    @state()
-    pageId!: string;
-
-    @state()
-    culture!: string | null;
+    #culture!: string;
 
     @state()
     definitions: PCBCategoryWithDefinitions[] = [];
@@ -131,7 +127,7 @@ export default class PerplexContentBlocksElement
     }
 
     async fetchDefinitionsPerCategory() {
-        const result = await fetchDefinitionsPerCategory(this.#documentTypeAlias, this.culture || undefined);
+        const result = await fetchDefinitionsPerCategory(this.#documentTypeAlias, this.#culture || undefined);
 
         if (result) {
             this.headerCategories = result.reduce((acc: string[], currentValue) => {
@@ -147,7 +143,7 @@ export default class PerplexContentBlocksElement
     }
 
     async fetchPresets() {
-        const result = await fetchPagePresets(this.#documentTypeAlias, this.culture || undefined);
+        const result = await fetchPagePresets(this.#documentTypeAlias, this.#culture || undefined);
 
         if (result) {
             store.dispatch(setPresets(result));
@@ -175,11 +171,21 @@ export default class PerplexContentBlocksElement
     async connectedCallback() {
         super.connectedCallback();
 
-        const workspaceContext = await this.getContext(UMB_CONTENT_WORKSPACE_CONTEXT);
-        this.#documentTypeAlias = (await firstValueFrom(workspaceContext!.structure.ownerContentTypeAlias)) ?? '';
+        const [propertyCtx, workspaceCtx] = await Promise.all([
+            this.getContext(UMB_PROPERTY_CONTEXT),
+            this.getContext(UMB_CONTENT_WORKSPACE_CONTEXT),
+        ]);
 
-        await this.fetchDefinitionsPerCategory();
-        await this.fetchPresets();
+        if (!propertyCtx) throw new Error('Property context is required');
+        if (!workspaceCtx) throw new Error('Workspace context is required');
+
+        const alias = propertyCtx.getAlias() || '';
+        this.#culture = propertyCtx.getVariantId()?.culture || '';
+        this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture: this.#culture })}].value`;
+
+        this.#documentTypeAlias = (await firstValueFrom(workspaceCtx.structure.ownerContentTypeAlias)) ?? '';
+
+        await Promise.all([this.fetchDefinitionsPerCategory(), this.fetchPresets()]);
 
         this.addEventListener(ON_ADD_TOAST, (e: Event) => {
             addToast(e as CustomEvent, this);
@@ -217,21 +223,6 @@ export default class PerplexContentBlocksElement
 
     protected firstUpdated(_changedProperties: PropertyValues) {
         register();
-    }
-
-    constructor() {
-        super();
-        this.consumeContext(UMB_PROPERTY_CONTEXT, (ctx) => {
-            const alias = ctx?.getAlias() || '';
-            const culture = ctx?.getVariantId()?.culture;
-
-            this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture })}].value`;
-        });
-
-        this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (ctx) => {
-            this.pageId = ctx?.getUnique()!;
-            this.culture = ctx?.getVariantId().culture || '';
-        });
     }
 
     valueChanged() {
