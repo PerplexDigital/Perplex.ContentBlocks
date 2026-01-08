@@ -67,7 +67,7 @@ public class ContentBlocksValueDeserializer(IJsonSerializer jsonSerializer, ICon
     {
         block.ContentTypeAlias = elementType.Alias;
 
-        var propertiesByAlias = elementType.PropertyTypes.ToDictionary(pt => pt.Alias);
+        var propertiesByAlias = elementType.CompositionPropertyTypes.ToDictionary(pt => pt.Alias);
 
         foreach (var blockValue in block.Values)
         {
