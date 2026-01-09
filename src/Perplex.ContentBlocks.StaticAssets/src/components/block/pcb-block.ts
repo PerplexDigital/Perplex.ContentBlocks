@@ -143,6 +143,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         }
 
         this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
+        this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
     }
 
     disconnectedCallback() {
@@ -208,8 +209,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     constructor() {
         super();
-        this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
-
         this.getContext(UMB_VALIDATION_CONTEXT).then((validationContext) => {
             if (validationContext == null) throw new Error('Validation context is required');
 
