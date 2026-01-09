@@ -152,13 +152,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         this.clearValidationMessages();
     }
 
-    onDragStart = (event: DragEvent) => {
+    onDragStart = (_: DragEvent) => {
         this.dragging = true;
         this.isDraggingBlock = true;
-        const rect = this.getBoundingClientRect();
-        PcbDragAndDrop.activeDrag = { element: this, height: rect.height };
-        event.dataTransfer!.effectAllowed = 'move';
-        event.dataTransfer!.setData('text/plain', '');
     };
 
     onDragEnd = () => {

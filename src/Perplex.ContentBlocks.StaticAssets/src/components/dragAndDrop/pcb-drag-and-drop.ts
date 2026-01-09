@@ -4,7 +4,7 @@ import { PcbDragItemElement, PerplexContentBlocksBlock } from '../../types.ts';
 import { SetBlocksEvent } from '../../events/block.ts';
 
 interface ActiveDrag {
-    element: HTMLElement;
+    element: PcbDragItemElement;
     height: number;
 }
 
@@ -37,6 +37,9 @@ export class PcbDragAndDrop extends LitElement {
         const active = PcbDragAndDrop.activeDrag;
         if (!active) return;
 
+        // The blockId is used to identify where the original block will end up
+        this.placeholder.setAttribute('blockId', active.element.blockId);
+
         if (!this.placeholder.parentElement) {
             active.element.style.display = 'none';
             this.placeholder.style.height = `${active.height}px`;
@@ -65,17 +68,14 @@ export class PcbDragAndDrop extends LitElement {
         const active = PcbDragAndDrop.activeDrag;
         if (!active) return;
 
-        this.placeholder.replaceWith(active.element);
         active.element.style.display = '';
         PcbDragAndDrop.activeDrag = null;
 
-        const reorderedDomItems: PcbDragItemElement[] = Array.from(this.children).filter(
-            (child): child is PcbDragItemElement => child instanceof HTMLElement && 'blockId' in child,
-        );
+        const reorderedDomItems: string[] = Array.from(this.children)
+            .filter((child) => child != active.element && child instanceof HTMLElement && child.hasAttribute('blockId'))
+            .map((child) => (child as HTMLElement).getAttribute('blockId')!);
 
-        const reorderedItems = reorderedDomItems.map(
-            (domItem) => this.blocks.find((block) => block.id === domItem.blockId)!,
-        );
+        const reorderedItems = reorderedDomItems.map((domItem) => this.blocks.find((block) => block.id === domItem)!);
 
         this.dispatchEvent(SetBlocksEvent(reorderedItems));
     };
@@ -87,6 +87,7 @@ export class PcbDragAndDrop extends LitElement {
     resetDrag() {
         if (this.placeholder.parentElement) {
             this.placeholder.remove();
+            this.placeholder.removeAttribute('blockId');
         }
 
         PcbDragAndDrop.activeDrag = null;
