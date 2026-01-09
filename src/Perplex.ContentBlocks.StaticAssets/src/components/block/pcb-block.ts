@@ -117,12 +117,12 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         [key: string]: UmbDataTypeDetailModel;
     } = {};
 
-    #validationController?: UmbValidationController;
+    #validationContext!: UmbValidationController;
 
     @consume({ context: editorContext })
     editorId!: string;
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
         const errors: string[] = [];
 
@@ -143,6 +143,21 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         }
 
         this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
+
+        const validationContext = await this.getContext(UMB_VALIDATION_CONTEXT);
+        if (validationContext == null) throw new Error('Validation context is required');
+
+        this.#validationContext = validationContext;
+
+        this.#validationContext.messages.messages.subscribe((messages) => {
+            this.invalid = false;
+
+            for (const message of messages) {
+                if (message.path.indexOf(this.block.id) !== -1) {
+                    this.invalid = true;
+                }
+            }
+        });
     }
 
     disconnectedCallback() {
@@ -208,20 +223,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     constructor() {
         super();
-        this.consumeContext(UMB_VALIDATION_CONTEXT, (ctx) => {
-            this.#validationController = ctx;
-
-            ctx?.messages.messages.subscribe((messages) => {
-                this.invalid = false;
-
-                for (const message of messages) {
-                    if (message.path.indexOf(this.block.id) !== -1) {
-                        this.invalid = true;
-                    }
-                }
-            });
-        });
-
         this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
     }
 
@@ -439,8 +440,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     clearValidationMessages() {
         for (const property of this.properties) {
             const path = `${this.dataPath}.${this.block.id}.${property.alias}`;
-            this.#validationController?.messages.removeMessagesByTypeAndPath('client', path);
-            this.#validationController?.messages.removeMessagesByTypeAndPath('server', path);
+            this.#validationContext.messages.removeMessagesByPath(path);
         }
     }
 
