@@ -65,8 +65,6 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @query('#tooltip-popover')
     private _tooltipPopover!: HTMLElement;
 
-    private _listenersAttached: boolean = false;
-
     private getIcon() {
         const categories = getCategoriesForDefinition(this.definition?.id ?? '', this.categoryWithDefinitions);
         if (this.definition?.icon) return this.definition.icon;
@@ -74,15 +72,14 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
         return 'icon-block-default';
     }
 
-    protected updated() {
-        const toggle = this.renderRoot.querySelector('#tooltip-toggle');
-        const popover = this.renderRoot.querySelector('#tooltip-popover');
-
-        if (toggle && popover && !this._listenersAttached && !this.collapsed) {
-            toggle.addEventListener('mouseenter', () => this._tooltipPopover.showPopover());
-            toggle.addEventListener('mouseleave', () => this._tooltipPopover.hidePopover());
-            this._listenersAttached = true;
+    #tooltipOnMouseEnter() {
+        if (!this.collapsed) {
+            this._tooltipPopover.showPopover();
         }
+    }
+
+    #tooltipOnMouseLeave() {
+        this._tooltipPopover.hidePopover();
     }
 
     stateChanged(state: any) {
@@ -134,6 +131,8 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                               <b
                                   id="tooltip-toggle"
                                   popovertarget="tooltip-popover"
+                                  @mouseenter=${this.#tooltipOnMouseEnter}
+                                  @mouseleave=${this.#tooltipOnMouseLeave}
                               >
                                   <uui-icon
                                       class="block-head__handle icon icon--base"
