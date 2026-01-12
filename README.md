@@ -21,6 +21,10 @@ This package works on top of NestedContent but provides a more advanced user int
 
 Release notes are [available here](RELEASE_NOTES.md).
 
+## Migrate to Umbraco.BlockList
+
+If you want to replace Perplex.ContentBlocks by Umbraco.BlockList in Umbraco v17, you can use [Perplex.ContentBlocksToBlockList](https://github.com/PerplexDigital/Perplex.ContentBlocksToBlockList) to migrate the data types and property data.
+
 ## Umbraco 14+
 
 Umbraco 14+ no longer supports Nested Content and the Backoffice is completely rewritten using Web Components instead of AngularJS. As a result, all current versions of Perplex.ContentBlocks do not work in Umbraco 14.
