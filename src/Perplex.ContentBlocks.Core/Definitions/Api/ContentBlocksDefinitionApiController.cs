@@ -3,8 +3,11 @@ using Perplex.ContentBlocks.Api;
 
 namespace Perplex.ContentBlocks.Definitions.Api;
 
-public class ContentBlocksDefinitionApiController(IContentBlockDefinitionRepository definitionRepository)
-    : ContentBlocksApiControllerBase
+[ApiExplorerSettings(GroupName = "Definitions")]
+public class ContentBlocksDefinitionApiController
+(
+    IContentBlockDefinitionRepository definitionRepository
+) : ContentBlocksApiControllerBase
 {
     [HttpGet("definitions/all")]
     public ApiContentBlockDefinition[] GetAllDefinitions()

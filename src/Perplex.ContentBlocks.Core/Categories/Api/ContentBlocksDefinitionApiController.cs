@@ -3,8 +3,11 @@ using Perplex.ContentBlocks.Api;
 
 namespace Perplex.ContentBlocks.Categories.Api;
 
-public class ContentBlocksCategoriesApiController(IContentBlockCategoryRepository categoryRepository)
-    : ContentBlocksApiControllerBase
+[ApiExplorerSettings(GroupName = "Categories")]
+public class ContentBlocksCategoriesApiController
+(
+    IContentBlockCategoryRepository categoryRepository
+) : ContentBlocksApiControllerBase
 {
     [HttpGet("categories/all")]
     public ApiContentBlockCategory[] GetAllCategories()

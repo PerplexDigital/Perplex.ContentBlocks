@@ -9,9 +9,13 @@ using Umbraco.Cms.Core.Security;
 
 namespace Perplex.ContentBlocks.Preview;
 
-public class ContentBlocksPreviewApiController(
-    IPreviewScrollScriptProvider scrollScriptProvider, IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
-    IPreviewTokenGenerator previewTokenGenerator) : ContentBlocksApiControllerBase
+[ApiExplorerSettings(GroupName = "Preview")]
+public class ContentBlocksPreviewApiController
+(
+    IPreviewScrollScriptProvider scrollScriptProvider,
+    IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+    IPreviewTokenGenerator previewTokenGenerator
+) : ContentBlocksApiControllerBase
 {
     private static readonly HttpClient _httpClient;
 

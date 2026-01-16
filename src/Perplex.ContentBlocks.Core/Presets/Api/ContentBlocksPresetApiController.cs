@@ -4,7 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Perplex.ContentBlocks.Presets.Api;
 
-public class ContentBlocksPresetApiController(IContentBlocksPresetRepository presetRepository) : ContentBlocksApiControllerBase
+[ApiExplorerSettings(GroupName = "Presets")]
+public class ContentBlocksPresetApiController
+(
+    IContentBlocksPresetRepository presetRepository
+) : ContentBlocksApiControllerBase
 {
     [HttpGet("presets/all")]
     public ApiContentBlocksPreset[] GetAllPresets()
@@ -48,16 +52,6 @@ public class ContentBlocksPresetApiController(IContentBlocksPresetRepository pre
             IsMandatory = preset.IsMandatory,
             LayoutId = preset.LayoutId,
             Values = preset.Values,
-        };
-    }
-
-    private static ApiContentBlockVariantPreset Map(IContentBlockVariantPreset preset)
-    {
-        return new ApiContentBlockVariantPreset
-        {
-            Alias = preset.Alias,
-            Id = preset.Id,
-            Values = preset.Values
         };
     }
 }
