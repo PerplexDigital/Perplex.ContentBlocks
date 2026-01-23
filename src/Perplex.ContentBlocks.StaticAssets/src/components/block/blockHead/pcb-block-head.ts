@@ -103,7 +103,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     };
 
     onCopyClicked = () => {
-        this.dispatchEvent(ValueCopiedEvent([this.block]));
+        this.dispatchEvent(ValueCopiedEvent([this.block], this.section));
         this.dispatchEvent(
             ToastEvent('positive', {
                 headline: 'Copied!',

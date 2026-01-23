@@ -28,6 +28,7 @@ import { propertyAliasPrefix } from '../../utils/block.ts';
 import { withEditorId } from '../../events/generic.ts';
 import { consume } from '@lit/context';
 import { editorContext } from '../../context';
+import {PcbFocusBlockInPreviewEvent} from "../../events/preview.ts";
 
 @customElement('pcb-block')
 export default class PerplexContentBlocksBlockElement extends connect(store)(UmbLitElement) {
@@ -64,6 +65,12 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             } else {
                 this.removeEventListener('dragstart', this.onDragStart);
                 this.removeEventListener('dragend', this.onDragEnd);
+            }
+        }
+
+        if (changedProps.has('collapsed')) {
+            if (changedProps.get('collapsed') === true) {
+                this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id))
             }
         }
 

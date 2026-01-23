@@ -1,9 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PerplexContentBlocksBlock } from '../../types.ts';
 import { differentiateBlocks } from '../../utils/copyPaste.ts';
 
+export type CopiedData = {
+    header: PerplexContentBlocksBlock | null;
+    blocks: PerplexContentBlocksBlock[];
+};
+
 export type CopyPasteState = {
-    copied: PerplexContentBlocksBlock[] | null;
+    copied: CopiedData | null;
 };
 
 const { actions, reducer: copyPasteReducer } = createSlice({
@@ -12,8 +17,11 @@ const { actions, reducer: copyPasteReducer } = createSlice({
         copied: null,
     } as CopyPasteState,
     reducers: {
-        setCopiedValue: (state, action) => {
-            state.copied = differentiateBlocks(action.payload);
+        setCopiedValue: (state, action: PayloadAction<CopiedData>) => {
+            state.copied = {
+                header: action.payload.header ? differentiateBlocks([action.payload.header])[0] : null,
+                blocks: differentiateBlocks(action.payload.blocks),
+            };
         },
     },
 });

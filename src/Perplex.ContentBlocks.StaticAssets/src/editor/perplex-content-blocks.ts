@@ -1,4 +1,4 @@
-import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
+import {UmbLitElement} from '@umbraco-cms/backoffice/lit-element';
 import {
     css,
     customElement,
@@ -6,7 +6,6 @@ import {
     property,
     query,
     state,
-    PropertyValues,
     nothing,
     repeat,
 } from '@umbraco-cms/backoffice/external/lit';
@@ -14,14 +13,14 @@ import {
     type UmbPropertyEditorConfigCollection,
     UmbPropertyEditorUiElement,
 } from '@umbraco-cms/backoffice/property-editor';
-import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
-import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
-import { UMB_PROPERTY_CONTEXT } from '@umbraco-cms/backoffice/property';
-import { UMB_CONTENT_WORKSPACE_CONTEXT } from '@umbraco-cms/backoffice/content';
-import { fetchDefinitionsPerCategory, fetchPagePresets } from '../queries/definitions.ts';
-import { connect } from 'pwa-helpers';
-import { AppState, store } from '../state/store.ts';
-import { setDefinitions } from '../state/slices/definitions.ts';
+import type {UmbPropertyTypeModel} from '@umbraco-cms/backoffice/content-type';
+import {UmbDataPathPropertyValueQuery} from '@umbraco-cms/backoffice/validation';
+import {UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT} from '@umbraco-cms/backoffice/property';
+import {UMB_CONTENT_WORKSPACE_CONTEXT} from '@umbraco-cms/backoffice/content';
+import {fetchDefinitionsPerCategory, fetchPagePresets} from '../queries/definitions.ts';
+import {connect} from 'pwa-helpers';
+import {AppState, store} from '../state/store.ts';
+import {setDefinitions} from '../state/slices/definitions.ts';
 import {
     PCBCategoryWithDefinitions,
     PerplexContentBlocksBlock,
@@ -29,9 +28,9 @@ import {
     Section,
     Structure,
 } from '../types.ts';
-import { setIsTouchDevice } from '../state/slices/ui.ts';
-import { ON_ADD_TOAST, ToastEvent } from '../events/toast.ts';
-import { addToast } from '../utils/toast.ts';
+import {setIsTouchDevice} from '../state/slices/ui.ts';
+import {ON_ADD_TOAST, ToastEvent} from '../events/toast.ts';
+import {addToast} from '../utils/toast.ts';
 import {
     BlockCreation,
     ON_BLOCK_SAVED,
@@ -41,24 +40,26 @@ import {
     SetBlocksEvent,
 } from '../events/block.ts';
 
-import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
-import { register } from 'swiper/element/bundle';
-import { ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent } from '../events/copyPaste.ts';
-import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';
-import { setPresets } from '../state/slices/presets.ts';
-import { getBlocksFromPreset } from '../utils/preset.ts';
-import { provide } from '@lit/context';
-import { editorContext } from '../context/index.ts';
-import { animate } from '@lit-labs/motion';
-import { umbOpenModal } from '@umbraco-cms/backoffice/modal';
-import { PCB_ADD_BLOCK_MODAL_TOKEN } from '../components/modals/addBlock/modal-token.ts';
-import { firstValueFrom } from '@umbraco-cms/backoffice/external/rxjs';
+
+import {UmbChangeEvent} from '@umbraco-cms/backoffice/event';
+import {ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent} from '../events/copyPaste.ts';
+import {CopyPasteState, setCopiedValue} from '../state/slices/copyPaste.ts';
+import {setPresets} from '../state/slices/presets.ts';
+import {getBlocksFromPreset} from '../utils/preset.ts';
+import {provide} from '@lit/context';
+import {editorContext} from '../context/index.ts';
+import {animate} from '@lit-labs/motion';
+import {umbOpenModal} from '@umbraco-cms/backoffice/modal';
+import {PCB_ADD_BLOCK_MODAL_TOKEN} from '../components/modals/addBlock/modal-token.ts';
+import {firstValueFrom} from '@umbraco-cms/backoffice/external/rxjs';
+import {PcbFocusBlockInPreviewEvent} from "../events/preview.ts";
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
     extends connect(store)(UmbLitElement)
-    implements UmbPropertyEditorUiElement
-{
+    implements UmbPropertyEditorUiElement {
+
+
     @query('#notifications')
     private _notificationsElement?: HTMLElement;
 
@@ -78,26 +79,29 @@ export default class PerplexContentBlocksElement
         blocks: [],
     };
 
-    @property({ attribute: false })
-    public set value(value: PerplexContentBlocksValue | undefined) {
-        if (value == null) {
-            return;
-        }
+    // central event registry
+    private readonly eventHandlers = new Map<string, EventListener>([
+        [ON_BLOCK_SAVED, (e) => this.onBlockAdded(e as CustomEvent)],
+        [ON_BLOCK_TOGGLE, (e) => this.onBlockToggled(e as CustomEvent)],
+        [ON_BLOCK_UPDATED, (e) => this.updateBlock(e as CustomEvent)],
+        [ON_VALUE_COPIED, (e) => this.onValueCopied(e as CustomEvent)],
+        [ON_VALUE_PASTE, (e) => this.onValuePasted(e as CustomEvent)],
+        [ON_SET_BLOCKS, (e) => this.onSetBlocks(e as CustomEvent)],
+        [PcbFocusBlockInPreviewEvent.TYPE, (e) => this.onFocusBlock(e as PcbFocusBlockInPreviewEvent)],
 
-        this._value = value;
-    }
+    ]);
 
-    public get value(): PerplexContentBlocksValue {
-        return this._value;
-    }
-
-    @property({ attribute: false })
+    @property({attribute: false})
     config: UmbPropertyEditorConfigCollection | undefined;
 
     @state()
     dataPath!: string;
 
-    #culture!: string;
+    @state()
+    culture!: string;
+
+    @state()
+    pageId!: string;
 
     @state()
     definitions: PCBCategoryWithDefinitions[] = [];
@@ -105,14 +109,27 @@ export default class PerplexContentBlocksElement
     @state()
     copiedValue?: CopyPasteState;
 
+    @state()
+    private focusedBlockId?: string;
+
     editorId: string = crypto.randomUUID();
 
-    @provide({ context: editorContext })
+    @provide({context: editorContext})
     providedEditorId = this.editorId;
 
     headerCategories: string[] = [];
 
     #documentTypeAlias: string = '';
+
+    @property({attribute: false})
+    public set value(value: PerplexContentBlocksValue | undefined) {
+        if (value == null) return;
+        this._value = value;
+    }
+
+    public get value(): PerplexContentBlocksValue {
+        return this._value;
+    }
 
     get structure(): Structure {
         const value = this.config?.getValueByAlias('structure');
@@ -126,30 +143,286 @@ export default class PerplexContentBlocksElement
         }
     }
 
+    async connectedCallback() {
+        super.connectedCallback();
+
+        const [propertyCtx, workspaceCtx, datasetCtx] = await Promise.all([
+            this.getContext(UMB_PROPERTY_CONTEXT),
+            this.getContext(UMB_CONTENT_WORKSPACE_CONTEXT),
+            this.getContext(UMB_PROPERTY_DATASET_CONTEXT),
+        ]);
+
+        if (!propertyCtx) throw new Error('Property context is required');
+        if (!workspaceCtx) throw new Error('Workspace context is required');
+        if (!datasetCtx) throw new Error('Dataset context is required');
+
+        const alias = propertyCtx.getAlias() || '';
+        this.culture = propertyCtx.getVariantId()?.culture || '';
+        this.pageId = datasetCtx.getUnique()! || '';
+        this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({alias, culture: this.culture})}].value`;
+
+        this.#documentTypeAlias =
+            (await firstValueFrom(workspaceCtx.structure.ownerContentTypeAlias)) ?? '';
+
+        await Promise.all([this.fetchDefinitionsPerCategory(), this.fetchPresets()]);
+
+        this.addEventListener(ON_ADD_TOAST, (e: Event) => {
+            addToast(e as CustomEvent, this);
+            this._notificationsElement?.hidePopover?.();
+            this._notificationsElement?.showPopover?.();
+        });
+
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        store.dispatch(setIsTouchDevice(isTouch));
+
+        for (const [type, handler] of this.eventHandlers) {
+            this.addEventListener(type, handler);
+        }
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+
+        this.removeEventListener(ON_ADD_TOAST, (e: Event) => {
+            addToast(e as CustomEvent, this);
+            this._notificationsElement?.hidePopover?.();
+            this._notificationsElement?.showPopover?.();
+        });
+
+        for (const [type, handler] of this.eventHandlers) {
+            this.removeEventListener(type, handler);
+        }
+    }
+
+    stateChanged(state: AppState) {
+        this.definitions = state.definitions.value;
+        this.copiedValue = state.copyPaste;
+
+        const blocks = this.shadowRoot?.querySelectorAll('pcb-block');
+        if (!blocks?.length) return;
+
+        const observer = new IntersectionObserver(() => {
+            const visibleBlocks = Array.from(blocks).filter(block => {
+                const rect = block.getBoundingClientRect();
+                return rect.bottom > 0 && rect.top < window.innerHeight;
+            });
+
+            if (visibleBlocks.length > 0) {
+                visibleBlocks.sort(
+                    (a, b) =>
+                        a.getBoundingClientRect().top -
+                        b.getBoundingClientRect().top,
+                );
+            }
+        }, {root: null, threshold: 1.0});
+
+        blocks.forEach(block => observer.observe(block));
+    }
+
+    valueChanged() {
+        this.dispatchEvent(new UmbChangeEvent());
+    }
+
+    private onFocusBlock(e: PcbFocusBlockInPreviewEvent) {
+        this.focusedBlockId = e.blockId;
+    }
+
+    private get allBlockIds(): string[] {
+        const ids: string[] = [];
+        if (this._value.header) {
+            ids.push(this._value.header.id);
+        }
+        ids.push(...this._value.blocks.map(b => b.id));
+        return ids;
+    }
+
+    private get areAllBlocksOpen(): boolean {
+        const allIds = this.allBlockIds;
+        if (allIds.length === 0) return false;
+        return allIds.every(id => this.openedBlocks.includes(id));
+    }
+
+    private toggleAllBlocks() {
+        if (this.areAllBlocksOpen) {
+            this.openedBlocks = [];
+        } else {
+            this.openedBlocks = [...this.allBlockIds];
+        }
+    }
+
+    private copyAllBlocks() {
+        const header = this._value.header;
+        const blocks = this._value.blocks;
+        const totalCount = (header ? 1 : 0) + blocks.length;
+
+        if (totalCount === 0) {
+            this.dispatchEvent(
+                ToastEvent('warning', {
+                    headline: 'No blocks to copy',
+                }),
+            );
+            return;
+        }
+
+        store.dispatch(setCopiedValue({ header, blocks }));
+        this.dispatchEvent(
+            ToastEvent('positive', {
+                headline: `Copied ${totalCount} block${totalCount > 1 ? 's' : ''} to clipboard`,
+            }),
+        );
+    }
+
+    addHeader() {
+        this._openModal(Section.HEADER);
+    }
+
+    addBlock() {
+        this._openModal(Section.CONTENT);
+    }
+
+    updateHeader(header: PerplexContentBlocksBlock) {
+        this._value = {...this._value, header};
+        this.valueChanged();
+    }
+
+    removeHeader() {
+        this._value = {...this._value, header: null};
+        this.valueChanged();
+    }
+
+    onBlockToggled(event: CustomEvent) {
+        if (!this.openedBlocks.includes(event.detail.id)) {
+            this.openedBlocks = [...this.openedBlocks, event.detail.id];
+        } else {
+            this.openedBlocks = this.openedBlocks.filter(id => id !== event.detail.id);
+        }
+    }
+
+    onBlockAdded(e: Event) {
+        const event = e as CustomEvent<BlockCreation>;
+        this.addBlocks(event.detail.blocks, event.detail.section, event.detail.desiredIndex);
+    }
+
+    onSetBlocks(event: ReturnType<typeof SetBlocksEvent>) {
+        this._value = {...this._value, blocks: event.detail.blocks};
+        this.valueChanged();
+    }
+
+    updateBlock(event: CustomEvent) {
+        if (event.detail.section === Section.HEADER) {
+            this.updateHeader(event.detail.block);
+            return;
+        }
+
+        const idx = this._value.blocks.findIndex(b => b.id === event.detail.block.id);
+        if (idx === -1) return;
+
+        const blocks = [...this._value.blocks];
+        blocks.splice(idx, 1, event.detail.block);
+        this._value = {...this._value, blocks};
+        this.valueChanged();
+    }
+
+    removeBlock(id: string) {
+        const blocks = this._value.blocks.filter(block => block.id !== id);
+        this._value = {...this._value, blocks};
+        this.valueChanged();
+    }
+
+    onValueCopied(event: CustomEvent) {
+        const { blocks, section } = event.detail;
+        if (section === Section.HEADER && blocks.length > 0) {
+            store.dispatch(setCopiedValue({ header: blocks[0], blocks: [] }));
+        } else {
+            store.dispatch(setCopiedValue({ header: null, blocks }));
+        }
+    }
+
+    onValuePasted(event: CustomEvent) {
+        const { pastedValue, section, desiredIndex } = event.detail;
+        if (!pastedValue) return;
+
+        const warnings: string[] = [];
+        let headerPasted = false;
+
+        // Handle header if present in pasted data
+        if (pastedValue.header) {
+            if (this._value.header) {
+                // Header already exists, skip pasting header
+                warnings.push('Header was ignored because one already exists');
+            } else {
+                // Check if the header's definition is allowed on this page
+                const headerDef = this.findDefinitionById(pastedValue.header.definitionId);
+                if (headerDef) {
+                    // Definition exists for this page, paste the header
+                    this._value = { ...this._value, header: pastedValue.header };
+                    this.openedBlocks = [...this.openedBlocks, pastedValue.header.id];
+                    headerPasted = true;
+                } else {
+                    warnings.push('Header block is not allowed on this page and was ignored');
+                }
+            }
+        }
+
+        // Handle content blocks
+        if (pastedValue.blocks.length > 0) {
+            this.addBlocks(pastedValue.blocks, section, desiredIndex);
+        }
+
+        // Show warnings if any
+        if (warnings.length > 0) {
+            warnings.forEach(warning => {
+                this.dispatchEvent(
+                    ToastEvent('warning', {
+                        headline: warning,
+                    }),
+                );
+            });
+        }
+
+        // Only trigger valueChanged if header was pasted (addBlocks already triggers it for blocks)
+        if (headerPasted && pastedValue.blocks.length === 0) {
+            this.valueChanged();
+        }
+    }
+
+    pasteBlock(section: Section) {
+        if (this.copiedValue?.copied) {
+            this.dispatchEvent(ValuePastedEvent(this.copiedValue.copied, section));
+        }
+    }
+
     async fetchDefinitionsPerCategory() {
-        const result = await fetchDefinitionsPerCategory(this.#documentTypeAlias, this.#culture || undefined);
+        const result = await fetchDefinitionsPerCategory(
+            this.#documentTypeAlias,
+            this.culture || undefined,
+        );
 
         if (result) {
             this.headerCategories = result.reduce((acc: string[], currentValue) => {
                 if (currentValue.category.isEnabledForHeaders) {
                     acc.push(currentValue.category.id);
                 }
-
                 return acc;
             }, []);
+
             store.dispatch(setDefinitions(result));
             this.requestUpdate();
         }
     }
 
     async fetchPresets() {
-        const result = await fetchPagePresets(this.#documentTypeAlias, this.#culture || undefined);
+        const result = await fetchPagePresets(
+            this.#documentTypeAlias,
+            this.culture || undefined,
+        );
 
         if (result) {
             store.dispatch(setPresets(result));
 
-            if (result && this.definitions && this.definitions.length > 0) {
+            if (this.definitions?.length > 0) {
                 const presetBlocks = getBlocksFromPreset(result, this.definitions, this._value);
+
                 if (presetBlocks.header) {
                     this.addBlocks([presetBlocks.header], Section.HEADER, 0);
                 }
@@ -163,105 +436,66 @@ export default class PerplexContentBlocksElement
         }
     }
 
-    stateChanged(state: AppState) {
-        this.definitions = state.definitions.value;
-        this.copiedValue = state.copyPaste;
+    findDefinitionById(id: string) {
+        if (!Array.isArray(this.definitions)) return null;
+        const found = this.definitions
+            .map(cat => cat.definitions[id])
+            .find(def => def !== undefined);
+        return found || null;
     }
 
-    async connectedCallback() {
-        super.connectedCallback();
+    private _openModal = async (section: Section, insertAtIndex?: number) => {
+        const returnedValue = await umbOpenModal(this, PCB_ADD_BLOCK_MODAL_TOKEN, {
+            data: {
+                editorId: this.editorId,
+                groupedDefinitions: this.definitions,
+                section,
+                insertAtIndex,
+            },
+        }).catch(() => undefined);
 
-        const [propertyCtx, workspaceCtx] = await Promise.all([
-            this.getContext(UMB_PROPERTY_CONTEXT),
-            this.getContext(UMB_CONTENT_WORKSPACE_CONTEXT),
-        ]);
+        if (!returnedValue) return;
 
-        if (!propertyCtx) throw new Error('Property context is required');
-        if (!workspaceCtx) throw new Error('Workspace context is required');
+        this.addBlocks(
+            returnedValue.blocks,
+            returnedValue.section,
+            returnedValue.desiredIndex,
+        );
+    };
 
-        const alias = propertyCtx.getAlias() || '';
-        this.#culture = propertyCtx.getVariantId()?.culture || '';
-        this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture: this.#culture })}].value`;
-
-        this.#documentTypeAlias = (await firstValueFrom(workspaceCtx.structure.ownerContentTypeAlias)) ?? '';
-
-        await Promise.all([this.fetchDefinitionsPerCategory(), this.fetchPresets()]);
-
-        this.addEventListener(ON_ADD_TOAST, (e: Event) => {
-            addToast(e as CustomEvent, this);
-
-            this._notificationsElement?.hidePopover?.();
-            this._notificationsElement?.showPopover?.();
+    addBlocks(
+        blocks: PerplexContentBlocksBlock[],
+        section: Section,
+        desiredIndex: number | null,
+    ) {
+        // Filter out blocks whose definitions are not allowed on this page
+        const allowedBlocks = blocks.filter(b => {
+            const def = this.findDefinitionById(b.definitionId);
+            return def !== null;
         });
 
-        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        store.dispatch(setIsTouchDevice(isTouch));
-
-        this.addEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent));
-        this.addEventListener(ON_BLOCK_TOGGLE, (e: Event) => this.onBlockToggled(e as CustomEvent));
-        this.addEventListener(ON_BLOCK_UPDATED, (e: Event) => this.updateBlock(e as CustomEvent));
-        this.addEventListener(ON_VALUE_COPIED, (e: Event) => this.onValueCopied(e as CustomEvent));
-        this.addEventListener(ON_VALUE_PASTE, (e: Event) => this.onValuePasted(e as CustomEvent));
-        this.addEventListener(ON_SET_BLOCKS, (e: Event) => this.onSetBlocks(e as CustomEvent));
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.removeEventListener(ON_ADD_TOAST, (e: Event) => {
-            addToast(e as CustomEvent, this);
-
-            this._notificationsElement?.hidePopover?.();
-            this._notificationsElement?.showPopover?.();
-        });
-        this.removeEventListener(ON_BLOCK_SAVED, (e: Event) => this.onBlockAdded(e as CustomEvent));
-        this.removeEventListener(ON_BLOCK_TOGGLE, (e: Event) => this.onBlockToggled(e as CustomEvent));
-        this.removeEventListener(ON_BLOCK_UPDATED, (e: Event) => this.updateBlock(e as CustomEvent));
-        this.removeEventListener(ON_VALUE_COPIED, (e: Event) => this.onValueCopied(e as CustomEvent));
-        this.removeEventListener(ON_VALUE_PASTE, (e: Event) => this.onValuePasted(e as CustomEvent));
-        this.removeEventListener(ON_SET_BLOCKS, (e: Event) => this.onSetBlocks(e as CustomEvent));
-    }
-
-    protected firstUpdated(_changedProperties: PropertyValues) {
-        register();
-    }
-
-    valueChanged() {
-        this.dispatchEvent(new UmbChangeEvent());
-    }
-
-    addHeader() {
-        this._openModal(Section.HEADER);
-    }
-
-    updateHeader(header: PerplexContentBlocksBlock) {
-        this._value = { ...this._value, header };
-        this.valueChanged();
-    }
-
-    removeHeader() {
-        this._value = { ...this._value, header: null };
-        this.valueChanged();
-    }
-
-    addBlock() {
-        this._openModal(Section.CONTENT);
-    }
-
-    onBlockToggled(event: CustomEvent) {
-        if (!this.openedBlocks.includes(event.detail.id)) {
-            this.openedBlocks = [...this.openedBlocks, event.detail.id];
-        } else {
-            this.openedBlocks = this.openedBlocks.filter((id) => id !== event.detail.id);
+        const skippedCount = blocks.length - allowedBlocks.length;
+        if (skippedCount > 0) {
+            this.dispatchEvent(
+                ToastEvent('warning', {
+                    headline: `${skippedCount} block${skippedCount > 1 ? 's were' : ' was'} not allowed on this page and ignored`,
+                }),
+            );
         }
-    }
 
-    addBlocks(blocks: PerplexContentBlocksBlock[], section: Section, desiredIndex: number | null) {
-        this.openedBlocks = [...this.openedBlocks, ...blocks.map((b: PerplexContentBlocksBlock) => b.id)];
+        if (allowedBlocks.length === 0) {
+            return;
+        }
 
-        if (section === Section.HEADER && blocks.length > 0) {
-            const definition = this.findDefinitionById(blocks[0].definitionId);
-            if (definition?.categoryIds.some((id) => this.headerCategories.includes(id))) {
-                this._value = { ...this._value, header: blocks[0] };
+        this.openedBlocks = [
+            ...this.openedBlocks,
+            ...allowedBlocks.map(b => b.id),
+        ];
+
+        if (section === Section.HEADER && allowedBlocks.length > 0) {
+            const definition = this.findDefinitionById(allowedBlocks[0].definitionId);
+            if (definition?.categoryIds.some(id => this.headerCategories.includes(id))) {
+                this._value = {...this._value, header: allowedBlocks[0]};
             } else {
                 this.dispatchEvent(
                     ToastEvent('warning', {
@@ -270,14 +504,13 @@ export default class PerplexContentBlocksElement
                 );
             }
         } else {
-            const contentBlocks = blocks.filter((b: PerplexContentBlocksBlock) => {
+            const contentBlocks = allowedBlocks.filter(b => {
                 const def = this.findDefinitionById(b.definitionId);
                 if (!def) return false;
-                // Do not allow header-only blocks as content.
-                return !def.categoryIds.every((id) => this.headerCategories.includes(id));
+                return !def.categoryIds.every(id => this.headerCategories.includes(id));
             });
 
-            if (contentBlocks.length < blocks.length) {
+            if (contentBlocks.length < allowedBlocks.length) {
                 this.dispatchEvent(
                     ToastEvent('warning', {
                         headline: 'Header blocks cannot be added as content and will be ignored',
@@ -293,83 +526,11 @@ export default class PerplexContentBlocksElement
                 updatedBlocks = [...this._value.blocks, ...contentBlocks];
             }
 
-            this._value = { ...this._value, blocks: updatedBlocks };
+            this._value = {...this._value, blocks: updatedBlocks};
         }
 
         this.valueChanged();
     }
-
-    onBlockAdded(e: Event) {
-        const event = e as CustomEvent<BlockCreation>;
-        this.addBlocks(event.detail.blocks, event.detail.section, event.detail.desiredIndex);
-    }
-
-    onSetBlocks(event: ReturnType<typeof SetBlocksEvent>) {
-        this._value = { ...this._value, blocks: event.detail.blocks };
-        this.valueChanged();
-    }
-
-    removeBlock(id: string) {
-        const blocks = this._value.blocks.filter((block) => block.id !== id);
-
-        this._value = { ...this._value, blocks };
-        this.valueChanged();
-    }
-
-    updateBlock(event: CustomEvent) {
-        if (event.detail.section === Section.HEADER) {
-            this.updateHeader(event.detail.block);
-            return;
-        }
-
-        const idx = this._value.blocks.findIndex((b) => b.id === event.detail.block.id);
-        if (idx === -1) {
-            return;
-        }
-
-        const blocks = [...this._value.blocks];
-        blocks.splice(idx, 1, event.detail.block);
-        this._value = { ...this._value, blocks };
-        this.valueChanged();
-    }
-
-    onValueCopied(event: CustomEvent) {
-        store.dispatch(setCopiedValue(event.detail));
-    }
-
-    onValuePasted(event: CustomEvent) {
-        if (event.detail.pastedValue) {
-            this.addBlocks(event.detail.pastedValue, event.detail.section, event.detail.desiredIndex);
-        }
-    }
-
-    findDefinitionById(id: string) {
-        if (!Array.isArray(this.definitions)) {
-            return null;
-        }
-        const found = this.definitions.map((cat) => cat.definitions[id]).find((def) => def !== undefined);
-        return found || null;
-    }
-
-    pasteBlock(section: Section) {
-        if (this.copiedValue?.copied) {
-            this.dispatchEvent(ValuePastedEvent(this.copiedValue.copied, section));
-        }
-    }
-
-    private _openModal = async (section: Section, insertAtIndex?: number) => {
-        const returnedValue = await umbOpenModal(this, PCB_ADD_BLOCK_MODAL_TOKEN, {
-            data: {
-                editorId: this.editorId,
-                groupedDefinitions: this.definitions,
-                section,
-                insertAtIndex,
-            },
-        }).catch(() => undefined);
-        if (!returnedValue) return;
-
-        this.addBlocks(returnedValue.blocks, returnedValue.section, returnedValue.desiredIndex);
-    };
 
     render() {
         return html`
@@ -379,128 +540,157 @@ export default class PerplexContentBlocksElement
                         <div class="pcb__blocks">
                             ${this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                      <pcb-block
-                                          .draggable=${false}
-                                          .block=${this._value.header}
-                                          .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
-                                          .removeBlock=${this.removeHeader.bind(this)}
-                                          .dataPath=${this.dataPath}
-                                          .definition=${this.findDefinitionById(this._value.header.definitionId)}
-                                          .section=${Section.HEADER}
-                                          .openModal=${this._openModal}
-                                      ></pcb-block>
-                                  `
+                                    <pcb-block
+                                        .draggable=${false}
+                                        .block=${this._value.header}
+                                        .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
+                                        .removeBlock=${this.removeHeader.bind(this)}
+                                        .dataPath=${this.dataPath}
+                                        .definition=${this.findDefinitionById(this._value.header.definitionId)}
+                                        .section=${Section.HEADER}
+                                        .openModal=${this._openModal}
+                                    ></pcb-block>
+                                `
                                 : nothing}
                             ${!this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                      <div class="pcb__block-add pcb__block-add--header">
-                                          <uui-button
-                                              label="add header"
-                                              look="primary"
-                                              @click=${this.addHeader}
-                                          >
-                                              <slot name="label">Add header</slot>
-                                              <slot name="extra">
-                                                  <uui-icon name="icon-add"></uui-icon>
-                                              </slot>
-                                          </uui-button>
+                                    <div class="pcb__block-add pcb__block-add--header">
+                                        <uui-button
+                                            label="add header"
+                                            look="primary"
+                                            @click=${this.addHeader}
+                                        >
+                                            <slot name="label">Add header</slot>
+                                            <slot name="extra">
+                                                <uui-icon name="icon-add"></uui-icon>
+                                            </slot>
+                                        </uui-button>
 
-                                          ${this.copiedValue?.copied
-                                              ? html`
-                                                    <uui-button
-                                                        label="paste header"
-                                                        look="primary"
-                                                        @click=${() => this.pasteBlock(Section.HEADER)}
-                                                    >
-                                                        <slot name="label">Paste header</slot>
-                                                        <slot name="extra">
-                                                            <uui-icon name="icon-clipboard-paste"></uui-icon>
-                                                        </slot>
-                                                    </uui-button>
-                                                `
-                                              : nothing}
-                                      </div>
-                                  `
-                                : nothing}
-                            ${this.structure !== Structure.Header
-                                ? html`
-                                      <pcb-drag-and-drop .blocks="${this._value.blocks}">
-                                          ${repeat(
-                                              this._value.blocks,
-                                              (block) => block.id,
-                                              (block, index) => html`
-                                                  <pcb-drag-item
-                                                      .canDrag=${!this.openedBlocks.includes(block.id)}
-                                                      .blockId=${block.id}
-                                                  >
-                                                      <pcb-block
-                                                          .draggable=${!this.openedBlocks.includes(block.id)}
-                                                          .block=${block}
-                                                          .collapsed=${!this.openedBlocks.includes(block.id)}
-                                                          .removeBlock=${this.removeBlock.bind(this)}
-                                                          .dataPath=${this.dataPath}
-                                                          .definition=${this.findDefinitionById(block.definitionId)}
-                                                          .section=${Section.CONTENT}
-                                                          .index=${index}
-                                                          ${animate({ id: block.id })}
-                                                          .openModal=${this._openModal}
-                                                      ></pcb-block>
-                                                  </pcb-drag-item>
-                                              `,
-                                          )}
-                                      </pcb-drag-and-drop>
-                                  `
-                                : nothing}
-                        </div>
-
-                        ${this.structure !== Structure.Header
-                            ? html`
-                                  <div class="pcb__block-add">
-                                      <uui-button
-                                          label="add content"
-                                          look="primary"
-                                          @click=${this.addBlock}
-                                      >
-                                          <slot name="label">Add content</slot>
-                                          <slot name="extra">
-                                              <uui-icon name="icon-add"></uui-icon>
-                                          </slot>
-                                      </uui-button>
-
-                                      ${this.copiedValue?.copied
-                                          ? html`
+                                        ${this.copiedValue?.copied
+                                            ? html`
                                                 <uui-button
+                                                    label="paste header"
                                                     look="primary"
-                                                    label="paste content"
-                                                    @click=${() => this.pasteBlock(Section.CONTENT)}
+                                                    @click=${() => this.pasteBlock(Section.HEADER)}
                                                 >
-                                                    <slot name="label">Paste content</slot>
+                                                    <slot name="label">Paste header</slot>
                                                     <slot name="extra">
                                                         <uui-icon name="icon-clipboard-paste"></uui-icon>
                                                     </slot>
                                                 </uui-button>
                                             `
-                                          : nothing}
-                                  </div>
-                              `
+                                            : nothing}
+                                    </div>
+                                `
+                                : nothing}
+                            ${this.structure !== Structure.Header
+                                ? html`
+                                    <pcb-drag-and-drop .blocks="${this._value.blocks}">
+                                        ${repeat(
+                                            this._value.blocks,
+                                            (block) => block.id,
+                                            (block, index) => html`
+                                                <pcb-drag-item
+                                                    .canDrag=${!this.openedBlocks.includes(block.id)}
+                                                    .blockId=${block.id}
+                                                >
+                                                    <pcb-block
+                                                        .draggable=${!this.openedBlocks.includes(block.id)}
+                                                        .block=${block}
+                                                        .collapsed=${!this.openedBlocks.includes(block.id)}
+                                                        .removeBlock=${this.removeBlock.bind(this)}
+                                                        .dataPath=${this.dataPath}
+                                                        .definition=${this.findDefinitionById(block.definitionId)}
+                                                        .section=${Section.CONTENT}
+                                                        .index=${index}
+                                                        ${animate({id: block.id})}
+                                                        .openModal=${this._openModal}
+                                                    ></pcb-block>
+                                                </pcb-drag-item>
+                                            `,
+                                        )}
+                                    </pcb-drag-and-drop>
+                                `
+                                : nothing}
+                        </div>
+
+                        ${this.structure !== Structure.Header
+                            ? html`
+                                <div class="pcb__block-add">
+                                    <uui-button
+                                        label="add content"
+                                        look="primary"
+                                        @click=${this.addBlock}
+                                    >
+                                        <slot name="label">Add content</slot>
+                                        <slot name="extra">
+                                            <uui-icon name="icon-add"></uui-icon>
+                                        </slot>
+                                    </uui-button>
+
+                                    ${this.copiedValue?.copied
+                                        ? html`
+                                            <uui-button
+                                                look="primary"
+                                                label="paste content"
+                                                @click=${() => this.pasteBlock(Section.CONTENT)}
+                                            >
+                                                <slot name="label">Paste content</slot>
+                                                <slot name="extra">
+                                                    <uui-icon name="icon-clipboard-paste"></uui-icon>
+                                                </slot>
+                                            </uui-button>
+                                        `
+                                        : nothing}
+                                </div>
+                            `
                             : nothing}
                     </div>
                 </div>
 
                 ${this.config?.getValueByAlias('debug') === true
                     ? html`
-                          <div class="debug">
-                              <uui-button
-                                  look="outline"
-                                  label="raw value"
-                                  @click=${() => (this.showDebug = !this.showDebug)}
-                              ></uui-button>
-                              ${this.showDebug ? html` <pre>${JSON.stringify(this.value, null, 4)}</pre>` : nothing}
-                          </div>
-                      `
+                        <div class="debug">
+                            <uui-button
+                                look="outline"
+                                label="raw value"
+                                @click=${() => (this.showDebug = !this.showDebug)}
+                            ></uui-button>
+                            ${this.showDebug ? html`
+                                <pre>${JSON.stringify(this.value, null, 4)}</pre>` : nothing}
+                        </div>
+                    `
                     : nothing}
             </div>
-
+            ${this.pageId
+                ? html`
+                    <div class="sidebar">
+                        <div class="sidebar__section">
+                            <pcb-preview
+                                .culture=${this.culture}
+                                .focusedBlockId=${this.focusedBlockId}
+                                .pageId=${this.pageId}
+                            ></pcb-preview>
+                        </div>
+                        <div class="sidebar__section sidebar__controls">
+                            <button
+                                class="sidebar__btn"
+                                @click=${this.toggleAllBlocks}
+                            >
+                                <uui-icon name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}></uui-icon>
+                                ${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}
+                            </button>
+                            <button
+                                class="sidebar__btn"
+                                @click=${this.copyAllBlocks}
+                            >
+                                <uui-icon name="icon-documents"></uui-icon>
+                                Copy all blocks
+                            </button>
+                        </div>
+                    </div>
+                `
+                : nothing}
             <uui-toast-notification-container
                 auto-close="7000"
                 bottom-up
@@ -516,11 +706,13 @@ export default class PerplexContentBlocksElement
             :host {
                 display: grid;
                 gap: 1rem;
+                align-items: start;
 
                 @media only screen and (min-width: 1800px) {
                     grid-template-columns: 3fr 1fr;
                 }
             }
+
 
             pcb-drag-and-drop {
                 display: flex;
@@ -551,6 +743,49 @@ export default class PerplexContentBlocksElement
             .sidebar {
                 padding: 1rem 1.5rem;
             }
+
+            .sidebar {
+                display: flex;
+                flex-direction: column;
+                gap: calc(var(--s, 4px) * 3);
+                position: sticky;
+                top: 0;
+            }
+
+            .sidebar__section {
+                background-color: var(--c-mystic, #fcfcfc);
+                border: 1px solid rgba(var(--c-submarine, 190, 190, 190), 0.5);
+                border-radius: var(--r-lg, 4px);
+            }
+
+            .sidebar__controls {
+                display: flex;
+                flex-direction: column;
+                gap: calc(var(--s, 4px) * 2);
+                padding: calc(var(--s, 4px) * 3);
+            }
+
+            .sidebar__btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: calc(var(--s, 4px) * 2);
+                padding: calc(var(--s, 4px) * 2.5) calc(var(--s, 4px) * 4);
+                border: 1px solid rgba(var(--c-submarine, 190, 190, 190), 0.7);
+                border-radius: var(--r-base, 2px);
+                background-color: var(--c-wild-sand, #f5f5f5);
+                color: var(--c-black, #212121);
+                cursor: pointer;
+                font-size: var(--fs-sm, 14px);
+                font-weight: 500;
+                transition: all 150ms ease;
+            }
+
+            .sidebar__btn:hover {
+                background-color: rgba(var(--c-submarine, 190, 190, 190), 0.3);
+                border-color: rgba(var(--c-submarine, 190, 190, 190), 1);
+            }
+
 
             .pcb__wrapper {
                 display: block;
