@@ -16,7 +16,6 @@ export class PcbDragItem extends LitElement {
     updated(changedProps: PropertyValues) {
         super.updated(changedProps);
 
-        // Update drag listeners if draggable prop changes
         if (changedProps.has('canDrag')) {
             if (this.canDrag) {
                 this.addEventListener('dragstart', this.onDragStart);

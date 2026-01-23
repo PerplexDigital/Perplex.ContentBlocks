@@ -71,14 +71,16 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             if (changedProps.get('collapsed') === true) {
                 this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id))
             }
-        }
 
-        this.updateComplete.then(() => {
-            Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
-                const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
-                if (layout) layout.orientation = 'vertical';
-            });
-        });
+            if (!this.collapsed) {
+                this.updateComplete.then(() => {
+                    Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
+                        const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
+                        if (layout) layout.orientation = 'vertical';
+                    });
+                });
+            }
+        }
     }
 
     @property({ attribute: false })

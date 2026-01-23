@@ -23,6 +23,7 @@ import {AppState, store} from '../state/store.ts';
 import {setDefinitions} from '../state/slices/definitions.ts';
 import {
     PCBCategoryWithDefinitions,
+    PerplexBlockDefinition,
     PerplexContentBlocksBlock,
     PerplexContentBlocksValue,
     Section,
@@ -117,6 +118,8 @@ export default class PerplexContentBlocksElement
     headerCategories: string[] = [];
 
     #documentTypeAlias: string = '';
+    #definitionsMap: Map<string, PerplexBlockDefinition> = new Map();
+    #boundRemoveBlock = this.removeBlock.bind(this);
 
     @property({attribute: false})
     public set value(value: PerplexContentBlocksValue | undefined) {
@@ -195,25 +198,12 @@ export default class PerplexContentBlocksElement
         this.definitions = state.definitions.value;
         this.copiedValue = state.copyPaste;
 
-        const blocks = this.shadowRoot?.querySelectorAll('pcb-block');
-        if (!blocks?.length) return;
-
-        const observer = new IntersectionObserver(() => {
-            const visibleBlocks = Array.from(blocks).filter(block => {
-                const rect = block.getBoundingClientRect();
-                return rect.bottom > 0 && rect.top < window.innerHeight;
-            });
-
-            if (visibleBlocks.length > 0) {
-                visibleBlocks.sort(
-                    (a, b) =>
-                        a.getBoundingClientRect().top -
-                        b.getBoundingClientRect().top,
-                );
+        this.#definitionsMap.clear();
+        for (const cat of this.definitions) {
+            for (const [id, def] of Object.entries(cat.definitions)) {
+                this.#definitionsMap.set(id, def);
             }
-        }, {root: null, threshold: 1.0});
-
-        blocks.forEach(block => observer.observe(block));
+        }
     }
 
     valueChanged() {
@@ -426,11 +416,7 @@ export default class PerplexContentBlocksElement
     }
 
     findDefinitionById(id: string) {
-        if (!Array.isArray(this.definitions)) return null;
-        const found = this.definitions
-            .map(cat => cat.definitions[id])
-            .find(def => def !== undefined);
-        return found || null;
+        return this.#definitionsMap.get(id) || null;
     }
 
     private _openModal = async (section: Section, insertAtIndex?: number) => {
@@ -586,7 +572,7 @@ export default class PerplexContentBlocksElement
                                                         .draggable=${!this.openedBlocks.includes(block.id)}
                                                         .block=${block}
                                                         .collapsed=${!this.openedBlocks.includes(block.id)}
-                                                        .removeBlock=${this.removeBlock.bind(this)}
+                                                        .removeBlock=${this.#boundRemoveBlock}
                                                         .dataPath=${this.dataPath}
                                                         .definition=${this.findDefinitionById(block.definitionId)}
                                                         .section=${Section.CONTENT}

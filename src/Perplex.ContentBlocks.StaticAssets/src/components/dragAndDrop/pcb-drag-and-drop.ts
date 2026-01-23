@@ -16,6 +16,8 @@ export class PcbDragAndDrop extends LitElement {
     static activeDrag: ActiveDrag | null = null;
 
     private placeholder: HTMLElement = document.createElement('div');
+    private _rafId: number | null = null;
+    private _pendingDragEvent: DragEvent | null = null;
 
     connectedCallback() {
         super.connectedCallback();
@@ -30,14 +32,31 @@ export class PcbDragAndDrop extends LitElement {
         this.removeEventListener('dragover', this.onDragOver);
         this.removeEventListener('drop', this.onDrop);
         this.removeEventListener('dragend', this.onDragEnd);
+        if (this._rafId !== null) {
+            cancelAnimationFrame(this._rafId);
+            this._rafId = null;
+        }
     }
 
     onDragOver = (event: DragEvent) => {
         event.preventDefault();
+        this._pendingDragEvent = event;
+
+        if (this._rafId !== null) return;
+
+        this._rafId = requestAnimationFrame(() => {
+            this._rafId = null;
+            this._processDragOver();
+        });
+    };
+
+    private _processDragOver() {
+        const event = this._pendingDragEvent;
+        if (!event) return;
+
         const active = PcbDragAndDrop.activeDrag;
         if (!active) return;
 
-        // The blockId is used to identify where the original block will end up
         this.placeholder.setAttribute('blockId', active.element.blockId);
 
         if (!this.placeholder.parentElement) {
@@ -61,7 +80,7 @@ export class PcbDragAndDrop extends LitElement {
         } else {
             this.appendChild(this.placeholder);
         }
-    };
+    }
 
     onDrop = (event: DragEvent) => {
         event.preventDefault();
