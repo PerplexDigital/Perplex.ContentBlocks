@@ -733,11 +733,15 @@ export default class PerplexContentBlocksElement
             }
 
             .sidebar {
-                display: flex;
+                display: none;
                 flex-direction: column;
                 gap: calc(var(--s, 4px) * 3);
                 position: sticky;
                 top: 0;
+
+                @media only screen and (min-width: 1800px) {
+                    display: flex;
+                }
             }
 
             .sidebar__section {
