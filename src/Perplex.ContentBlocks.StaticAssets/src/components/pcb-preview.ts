@@ -39,7 +39,6 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
 
     private _lastFocusedBlock?: string;
 
-    // Desktop and mobile viewport dimensions (matching legacy behavior)
     private readonly DESKTOP_WIDTH = 1280;
     private readonly DESKTOP_HEIGHT = 800;
     private readonly MOBILE_WIDTH = 345;
@@ -105,7 +104,6 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
         this.loadIframe();
         this.setPreviewScale();
 
-        // Observe host resizing for dynamic scaling
         this.#resizeObserver = new ResizeObserver(() => this.setPreviewScale());
         this.#resizeObserver.observe(this);
 
@@ -123,24 +121,20 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
     };
 
     /**
-     * Loads or reloads the iframe based on current preview URL.
-     * Mirrors legacy updateIframe behavior.
+     * Loads or reloads the iframe with the current preview URL.
      */
     private loadIframe() {
         if (!this.iframe) return;
 
-        // Set up onload handler to sync scroll after load
         this.iframe.onload = () => {
             this._lastFocusedBlock = undefined;
             if (this.focusedBlockId) {
-                // Delay scroll to allow iframe content to fully render
                 setTimeout(() => {
                     this._focusBlockInPreview(this.focusedBlockId!);
                 }, 150);
             }
         };
 
-        // Always set src with cache-busting to ensure onload fires
         const cacheBuster = `&_t=${Date.now()}`;
         this.iframe.src = this.previewUrl + cacheBuster;
 
@@ -149,32 +143,24 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
 
     /**
      * Calculates and applies scale transform to iframe based on container width.
-     * Mirrors legacy setIframeScale behavior.
      */
     private setPreviewScale() {
         if (!this.iframeFrame || !this.iframe) return;
 
         const containerWidth = this.iframeFrame.clientWidth;
         const iframeNaturalWidth = this.iframeWidth;
-
-        // Calculate ratio: container width / iframe natural width
         const ratio = containerWidth / iframeNaturalWidth;
 
-        // Apply scale transform with translateZ for GPU acceleration (legacy behavior)
         this.iframe.style.transform = `scale(${ratio}) translateZ(0)`;
         this.iframe.style.transformOrigin = 'top left';
-
-        // Set iframe dimensions to natural size (scaling handles display size)
         this.iframe.style.width = `${iframeNaturalWidth}px`;
         this.iframe.style.height = `${this.iframeHeight}px`;
 
-        // Adjust wrapper height to match scaled iframe height
         this.iframeFrame.style.height = `${this.iframeHeight * ratio}px`;
     }
 
     /**
      * Posts a message to the iframe to scroll to a specific block.
-     * Mirrors legacy syncScroll behavior.
      */
     private _focusBlockInPreview(blockId: string) {
         if (!this.iframe?.contentWindow) return;
@@ -186,18 +172,15 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
 
     /**
      * Switches between desktop and mobile preview modes.
-     * Mirrors legacy switchTo behavior.
      */
     private switchTo(mode: 'desktop' | 'mobile') {
         if (this.previewMode === mode) return;
 
         this.previewMode = mode;
 
-        // Use requestAnimationFrame to ensure DOM updates before scaling
         requestAnimationFrame(() => {
             this.setPreviewScale();
 
-            // Re-scroll to the focused block after view switch
             if (this.focusedBlockId) {
                 this._lastFocusedBlock = undefined;
                 this._focusBlockInPreview(this.focusedBlockId);

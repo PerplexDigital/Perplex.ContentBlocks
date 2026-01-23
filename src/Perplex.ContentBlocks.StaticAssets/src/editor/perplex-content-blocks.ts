@@ -77,7 +77,6 @@ export default class PerplexContentBlocksElement
         blocks: [],
     };
 
-    // central event registry
     private readonly eventHandlers = new Map<string, EventListener>([
         [PcbBlockSavedEvent.TYPE, (e) => this.onBlockAdded(e as PcbBlockSavedEvent)],
         [PcbBlockToggleEvent.TYPE, (e) => this.onBlockToggled(e as PcbBlockToggleEvent)],
@@ -342,16 +341,12 @@ export default class PerplexContentBlocksElement
         const warnings: string[] = [];
         let headerPasted = false;
 
-        // Handle header if present in pasted data
         if (pastedValue.header) {
             if (this._value.header) {
-                // Header already exists, skip pasting header
                 warnings.push('Header was ignored because one already exists');
             } else {
-                // Check if the header's definition is allowed on this page
                 const headerDef = this.findDefinitionById(pastedValue.header.definitionId);
                 if (headerDef) {
-                    // Definition exists for this page, paste the header
                     this._value = { ...this._value, header: pastedValue.header };
                     this.openedBlocks = [...this.openedBlocks, pastedValue.header.id];
                     headerPasted = true;
@@ -361,12 +356,10 @@ export default class PerplexContentBlocksElement
             }
         }
 
-        // Handle content blocks
         if (pastedValue.blocks.length > 0) {
             this.addBlocks(pastedValue.blocks, section, desiredIndex ?? null);
         }
 
-        // Show warnings if any
         if (warnings.length > 0) {
             warnings.forEach(warning => {
                 this.dispatchEvent(
@@ -377,7 +370,6 @@ export default class PerplexContentBlocksElement
             });
         }
 
-        // Only trigger valueChanged if header was pasted (addBlocks already triggers it for blocks)
         if (headerPasted && pastedValue.blocks.length === 0) {
             this.valueChanged();
         }
@@ -465,7 +457,6 @@ export default class PerplexContentBlocksElement
         section: Section,
         desiredIndex: number | null,
     ) {
-        // Filter out blocks whose definitions are not allowed on this page
         const allowedBlocks = blocks.filter(b => {
             const def = this.findDefinitionById(b.definitionId);
             return def !== null;

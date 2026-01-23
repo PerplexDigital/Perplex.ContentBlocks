@@ -73,7 +73,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             }
         }
 
-        // Ensure vertical layout for umb-property
         this.updateComplete.then(() => {
             Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
                 const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');

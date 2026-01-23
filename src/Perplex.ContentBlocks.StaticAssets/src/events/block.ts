@@ -66,7 +66,6 @@ export class PcbSetBlocksEvent extends Event {
     }
 }
 
-// These events still use the old pattern and need to be converted
 export const ON_BLOCK_HEAD_CLICK = 'ON_BLOCK_HEAD_CLICK';
 export const ON_BLOCK_SELECTED = 'ON_BLOCK_SELECTED';
 export const ON_BLOCK_REMOVE = 'ON_BLOCK_REMOVE';

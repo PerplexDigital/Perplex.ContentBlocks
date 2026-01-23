@@ -5,7 +5,13 @@ import { PerplexBlockDefinition } from '../../../types.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
 import { Swiper } from 'swiper/types';
 import { PcbBlockLayoutChangeEvent } from '../../../events/block.ts';
+
 type SwiperContainerEl = HTMLElement & { swiper: Swiper };
+
+/**
+ * Inline layout switcher component that allows users to switch between
+ * different layouts for a content block using a swiper carousel.
+ */
 @customElement('pcb-inline-layout-switch')
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     @property()
@@ -26,7 +32,6 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             swiperEl.addEventListener('swiperprogress', ((event: CustomEvent<[Swiper, number]>) => {
                 const [swiper, progress] = event.detail;
 
-                // progress is between 0 and 1 → scale it to slide count
                 const slideCount = swiper.slides.length;
                 const rawIndex = progress * (slideCount - 1);
                 const index = Math.round(rawIndex);
