@@ -196,6 +196,12 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
         // Use requestAnimationFrame to ensure DOM updates before scaling
         requestAnimationFrame(() => {
             this.setPreviewScale();
+
+            // Re-scroll to the focused block after view switch
+            if (this.focusedBlockId) {
+                this._lastFocusedBlock = undefined;
+                this._focusBlockInPreview(this.focusedBlockId);
+            }
         });
     }
 
