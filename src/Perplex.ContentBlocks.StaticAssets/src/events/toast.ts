@@ -1,19 +1,18 @@
-export const ON_ADD_TOAST = 'ON_ADD_TOAST';
+export type ToastType = '' | 'default' | 'positive' | 'warning' | 'danger';
 
-type ToastType = '' | 'default' | 'positive' | 'warning' | 'danger';
-
-interface ToastContent {
+export interface ToastContent {
     headline: string;
     message?: string;
 }
 
-export const ToastEvent = (type: ToastType, content: ToastContent) =>
-    new CustomEvent(ON_ADD_TOAST, {
-        detail: {
-            type,
-            content,
-        },
-        bubbles: true,
-        cancelable: true,
-        composed: true,
-    });
+export class PcbToastEvent extends Event {
+    public static readonly TYPE = 'PcbToastEvent';
+    public readonly toastType: ToastType;
+    public readonly content: ToastContent;
+
+    public constructor(toastType: ToastType, content: ToastContent) {
+        super(PcbToastEvent.TYPE, { bubbles: true, composed: true, cancelable: true });
+        this.toastType = toastType;
+        this.content = content;
+    }
+}

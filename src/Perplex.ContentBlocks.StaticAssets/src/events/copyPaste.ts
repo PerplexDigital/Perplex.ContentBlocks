@@ -1,35 +1,28 @@
-export const ON_VALUE_COPIED = 'ON_VALUE_COPIED';
-export const ON_VALUE_PASTE = 'ON_VALUE_PASTE';
 import { PerplexContentBlocksBlock, Section } from '../types.ts';
 import { CopiedData } from '../state/slices/copyPaste.ts';
 
-export type CopiedEventDetail = {
-    blocks: PerplexContentBlocksBlock[];
-    section: Section;
-};
+export class PcbValueCopiedEvent extends Event {
+    public static readonly TYPE = 'PcbValueCopiedEvent';
+    public readonly blocks: PerplexContentBlocksBlock[];
+    public readonly section: Section;
 
-export const ValueCopiedEvent = (copiedValue: PerplexContentBlocksBlock[], section: Section) =>
-    new CustomEvent<CopiedEventDetail>(ON_VALUE_COPIED, {
-        detail: { blocks: copiedValue, section },
-        bubbles: true,
-        cancelable: true,
-        composed: true,
-    });
+    public constructor(blocks: PerplexContentBlocksBlock[], section: Section) {
+        super(PcbValueCopiedEvent.TYPE, { bubbles: true, composed: true, cancelable: true });
+        this.blocks = blocks;
+        this.section = section;
+    }
+}
 
-export type PastedEventDetail = {
-    pastedValue: CopiedData;
-    section: Section;
-    desiredIndex?: number;
-};
+export class PcbValuePastedEvent extends Event {
+    public static readonly TYPE = 'PcbValuePastedEvent';
+    public readonly pastedValue: CopiedData;
+    public readonly section: Section;
+    public readonly desiredIndex?: number;
 
-export const ValuePastedEvent = (pastedValue: CopiedData, section: Section, desiredIndex?: number) =>
-    new CustomEvent<PastedEventDetail>(ON_VALUE_PASTE, {
-        detail: {
-            pastedValue,
-            desiredIndex,
-            section,
-        },
-        bubbles: true,
-        cancelable: true,
-        composed: true,
-    });
+    public constructor(pastedValue: CopiedData, section: Section, desiredIndex?: number) {
+        super(PcbValuePastedEvent.TYPE, { bubbles: true, composed: true, cancelable: true });
+        this.pastedValue = pastedValue;
+        this.section = section;
+        this.desiredIndex = desiredIndex;
+    }
+}

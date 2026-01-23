@@ -9,7 +9,7 @@ import {
     query,
     PropertyValues,
 } from '@umbraco-cms/backoffice/external/lit';
-import { BlockToggleEvent, BlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../../events/block.ts';
+import { PcbBlockToggleEvent, PcbBlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../../events/block.ts';
 import blockHeadStyles from './block-head.css?inline';
 import baseStyles from './../../../css/base.css?inline';
 import {
@@ -18,8 +18,8 @@ import {
     PerplexContentBlocksBlock,
     Section,
 } from '../../../types.ts';
-import { ValueCopiedEvent } from '../../../events/copyPaste.ts';
-import { ToastEvent } from '../../../events/toast.ts';
+import { PcbValueCopiedEvent } from '../../../events/copyPaste.ts';
+import { PcbToastEvent } from '../../../events/toast.ts';
 import { store } from '../../../state/store.ts';
 import { connect } from 'pwa-helpers';
 import { getCategoriesForDefinition } from '../../../utils/block.ts';
@@ -88,7 +88,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     }
 
     onHeadClicked = () => {
-        this.dispatchEvent(BlockToggleEvent(this.id));
+        this.dispatchEvent(new PcbBlockToggleEvent(this.id));
     };
 
     onRemoveClicked = (e: Event) => {
@@ -98,14 +98,14 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     onToggleVisibilityClicked = () => {
         const updatedBlock = { ...this.block, isDisabled: !this.block.isDisabled };
         if (this.definition) {
-            this.dispatchEvent(BlockUpdatedEvent(updatedBlock, this.definition, this.section));
+            this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section));
         }
     };
 
     onCopyClicked = () => {
-        this.dispatchEvent(ValueCopiedEvent([this.block], this.section));
+        this.dispatchEvent(new PcbValueCopiedEvent([this.block], this.section));
         this.dispatchEvent(
-            ToastEvent('positive', {
+            new PcbToastEvent('positive', {
                 headline: 'Copied!',
                 message: `${this.definition?.name} copied to clipboard`,
             }),

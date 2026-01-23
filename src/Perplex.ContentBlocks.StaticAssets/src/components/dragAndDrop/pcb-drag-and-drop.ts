@@ -1,7 +1,7 @@
 // pcb-drag-and-drop.ts
 import { css, LitElement, customElement, html, property } from '@umbraco-cms/backoffice/external/lit';
 import { PcbDragItemElement, PerplexContentBlocksBlock } from '../../types.ts';
-import { SetBlocksEvent } from '../../events/block.ts';
+import { PcbSetBlocksEvent } from '../../events/block.ts';
 
 interface ActiveDrag {
     element: PcbDragItemElement;
@@ -77,7 +77,7 @@ export class PcbDragAndDrop extends LitElement {
 
         const reorderedItems = reorderedDomItems.map((domItem) => this.blocks.find((block) => block.id === domItem)!);
 
-        this.dispatchEvent(SetBlocksEvent(reorderedItems));
+        this.dispatchEvent(new PcbSetBlocksEvent(reorderedItems));
     };
 
     onDragEnd = () => {

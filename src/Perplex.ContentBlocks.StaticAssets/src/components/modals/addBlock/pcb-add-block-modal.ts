@@ -5,7 +5,7 @@ import type { UmbModalContext } from '@umbraco-cms/backoffice/modal';
 import { PcbAddBlockModalData, PcbAddBlockModalValue } from './modal-token.ts';
 import { PerplexContentBlocksBlock, Section } from '../../../types.ts';
 import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
-import { ToastEvent } from '../../../events/toast.ts';
+import { PcbToastEvent } from '../../../events/toast.ts';
 import addBlockModalStyles from './addBlockModal.css?inline';
 
 export const ELEMENT_NAME = 'pcb-add-block-modal';
@@ -37,7 +37,7 @@ export default class PerplexContentBlocksAddBlockModalElement
     private _handleSubmit() {
         if (!this.selectedBlock) {
             this.dispatchEvent(
-                ToastEvent('warning', {
+                new PcbToastEvent('warning', {
                     headline: 'Select a content block',
                 }),
             );

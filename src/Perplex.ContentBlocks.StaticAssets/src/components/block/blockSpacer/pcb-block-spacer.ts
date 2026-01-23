@@ -5,7 +5,7 @@ import blockSpacerStyles from './pcb-block-spacer.css?inline';
 import { connect } from 'pwa-helpers';
 import { store } from '../../../state/store.ts';
 import { Section } from '../../../types.ts';
-import { ValuePastedEvent } from '../../../events/copyPaste.ts';
+import { PcbValuePastedEvent } from '../../../events/copyPaste.ts';
 import { CopyPasteState } from '../../../state/slices/copyPaste.ts';
 
 @customElement('pcb-block-spacer')
@@ -29,7 +29,7 @@ export default class PerplexContentBlocksBlockSpacerElement extends connect(stor
 
     pasteBlock() {
         if (this.copiedValue?.copied) {
-            this.dispatchEvent(ValuePastedEvent(this.copiedValue.copied, Section.CONTENT, this.index));
+            this.dispatchEvent(new PcbValuePastedEvent(this.copiedValue.copied, Section.CONTENT, this.index));
         }
     }
 

@@ -29,20 +29,18 @@ import {
     Structure,
 } from '../types.ts';
 import {setIsTouchDevice} from '../state/slices/ui.ts';
-import {ON_ADD_TOAST, ToastEvent} from '../events/toast.ts';
+import {PcbToastEvent} from '../events/toast.ts';
 import {addToast} from '../utils/toast.ts';
 import {
-    BlockCreation,
-    ON_BLOCK_SAVED,
-    ON_BLOCK_TOGGLE,
-    ON_BLOCK_UPDATED,
-    ON_SET_BLOCKS,
-    SetBlocksEvent,
+    PcbBlockSavedEvent,
+    PcbBlockToggleEvent,
+    PcbBlockUpdatedEvent,
+    PcbSetBlocksEvent,
 } from '../events/block.ts';
 
 
 import {UmbChangeEvent} from '@umbraco-cms/backoffice/event';
-import {ON_VALUE_COPIED, ON_VALUE_PASTE, ValuePastedEvent} from '../events/copyPaste.ts';
+import {PcbValueCopiedEvent, PcbValuePastedEvent} from '../events/copyPaste.ts';
 import {CopyPasteState, setCopiedValue} from '../state/slices/copyPaste.ts';
 import {setPresets} from '../state/slices/presets.ts';
 import {getBlocksFromPreset} from '../utils/preset.ts';
@@ -81,12 +79,12 @@ export default class PerplexContentBlocksElement
 
     // central event registry
     private readonly eventHandlers = new Map<string, EventListener>([
-        [ON_BLOCK_SAVED, (e) => this.onBlockAdded(e as CustomEvent)],
-        [ON_BLOCK_TOGGLE, (e) => this.onBlockToggled(e as CustomEvent)],
-        [ON_BLOCK_UPDATED, (e) => this.updateBlock(e as CustomEvent)],
-        [ON_VALUE_COPIED, (e) => this.onValueCopied(e as CustomEvent)],
-        [ON_VALUE_PASTE, (e) => this.onValuePasted(e as CustomEvent)],
-        [ON_SET_BLOCKS, (e) => this.onSetBlocks(e as CustomEvent)],
+        [PcbBlockSavedEvent.TYPE, (e) => this.onBlockAdded(e as PcbBlockSavedEvent)],
+        [PcbBlockToggleEvent.TYPE, (e) => this.onBlockToggled(e as PcbBlockToggleEvent)],
+        [PcbBlockUpdatedEvent.TYPE, (e) => this.updateBlock(e as PcbBlockUpdatedEvent)],
+        [PcbValueCopiedEvent.TYPE, (e) => this.onValueCopied(e as PcbValueCopiedEvent)],
+        [PcbValuePastedEvent.TYPE, (e) => this.onValuePasted(e as PcbValuePastedEvent)],
+        [PcbSetBlocksEvent.TYPE, (e) => this.onSetBlocks(e as PcbSetBlocksEvent)],
         [PcbFocusBlockInPreviewEvent.TYPE, (e) => this.onFocusBlock(e as PcbFocusBlockInPreviewEvent)],
 
     ]);
@@ -166,8 +164,8 @@ export default class PerplexContentBlocksElement
 
         await Promise.all([this.fetchDefinitionsPerCategory(), this.fetchPresets()]);
 
-        this.addEventListener(ON_ADD_TOAST, (e: Event) => {
-            addToast(e as CustomEvent, this);
+        this.addEventListener(PcbToastEvent.TYPE, (e: Event) => {
+            addToast(e as PcbToastEvent, this);
             this._notificationsElement?.hidePopover?.();
             this._notificationsElement?.showPopover?.();
         });
@@ -183,8 +181,8 @@ export default class PerplexContentBlocksElement
     disconnectedCallback() {
         super.disconnectedCallback();
 
-        this.removeEventListener(ON_ADD_TOAST, (e: Event) => {
-            addToast(e as CustomEvent, this);
+        this.removeEventListener(PcbToastEvent.TYPE, (e: Event) => {
+            addToast(e as PcbToastEvent, this);
             this._notificationsElement?.hidePopover?.();
             this._notificationsElement?.showPopover?.();
         });
@@ -257,7 +255,7 @@ export default class PerplexContentBlocksElement
 
         if (totalCount === 0) {
             this.dispatchEvent(
-                ToastEvent('warning', {
+                new PcbToastEvent('warning', {
                     headline: 'No blocks to copy',
                 }),
             );
@@ -266,7 +264,7 @@ export default class PerplexContentBlocksElement
 
         store.dispatch(setCopiedValue({ header, blocks }));
         this.dispatchEvent(
-            ToastEvent('positive', {
+            new PcbToastEvent('positive', {
                 headline: `Copied ${totalCount} block${totalCount > 1 ? 's' : ''} to clipboard`,
             }),
         );
@@ -290,35 +288,34 @@ export default class PerplexContentBlocksElement
         this.valueChanged();
     }
 
-    onBlockToggled(event: CustomEvent) {
-        if (!this.openedBlocks.includes(event.detail.id)) {
-            this.openedBlocks = [...this.openedBlocks, event.detail.id];
+    onBlockToggled(event: PcbBlockToggleEvent) {
+        if (!this.openedBlocks.includes(event.id)) {
+            this.openedBlocks = [...this.openedBlocks, event.id];
         } else {
-            this.openedBlocks = this.openedBlocks.filter(id => id !== event.detail.id);
+            this.openedBlocks = this.openedBlocks.filter(id => id !== event.id);
         }
     }
 
-    onBlockAdded(e: Event) {
-        const event = e as CustomEvent<BlockCreation>;
-        this.addBlocks(event.detail.blocks, event.detail.section, event.detail.desiredIndex);
+    onBlockAdded(event: PcbBlockSavedEvent) {
+        this.addBlocks(event.blocks, event.section, event.desiredIndex);
     }
 
-    onSetBlocks(event: ReturnType<typeof SetBlocksEvent>) {
-        this._value = {...this._value, blocks: event.detail.blocks};
+    onSetBlocks(event: PcbSetBlocksEvent) {
+        this._value = {...this._value, blocks: event.blocks};
         this.valueChanged();
     }
 
-    updateBlock(event: CustomEvent) {
-        if (event.detail.section === Section.HEADER) {
-            this.updateHeader(event.detail.block);
+    updateBlock(event: PcbBlockUpdatedEvent) {
+        if (event.section === Section.HEADER) {
+            this.updateHeader(event.block);
             return;
         }
 
-        const idx = this._value.blocks.findIndex(b => b.id === event.detail.block.id);
+        const idx = this._value.blocks.findIndex(b => b.id === event.block.id);
         if (idx === -1) return;
 
         const blocks = [...this._value.blocks];
-        blocks.splice(idx, 1, event.detail.block);
+        blocks.splice(idx, 1, event.block);
         this._value = {...this._value, blocks};
         this.valueChanged();
     }
@@ -329,8 +326,8 @@ export default class PerplexContentBlocksElement
         this.valueChanged();
     }
 
-    onValueCopied(event: CustomEvent) {
-        const { blocks, section } = event.detail;
+    onValueCopied(event: PcbValueCopiedEvent) {
+        const { blocks, section } = event;
         if (section === Section.HEADER && blocks.length > 0) {
             store.dispatch(setCopiedValue({ header: blocks[0], blocks: [] }));
         } else {
@@ -338,8 +335,8 @@ export default class PerplexContentBlocksElement
         }
     }
 
-    onValuePasted(event: CustomEvent) {
-        const { pastedValue, section, desiredIndex } = event.detail;
+    onValuePasted(event: PcbValuePastedEvent) {
+        const { pastedValue, section, desiredIndex } = event;
         if (!pastedValue) return;
 
         const warnings: string[] = [];
@@ -366,14 +363,14 @@ export default class PerplexContentBlocksElement
 
         // Handle content blocks
         if (pastedValue.blocks.length > 0) {
-            this.addBlocks(pastedValue.blocks, section, desiredIndex);
+            this.addBlocks(pastedValue.blocks, section, desiredIndex ?? null);
         }
 
         // Show warnings if any
         if (warnings.length > 0) {
             warnings.forEach(warning => {
                 this.dispatchEvent(
-                    ToastEvent('warning', {
+                    new PcbToastEvent('warning', {
                         headline: warning,
                     }),
                 );
@@ -388,7 +385,7 @@ export default class PerplexContentBlocksElement
 
     pasteBlock(section: Section) {
         if (this.copiedValue?.copied) {
-            this.dispatchEvent(ValuePastedEvent(this.copiedValue.copied, section));
+            this.dispatchEvent(new PcbValuePastedEvent(this.copiedValue.copied, section));
         }
     }
 
@@ -477,7 +474,7 @@ export default class PerplexContentBlocksElement
         const skippedCount = blocks.length - allowedBlocks.length;
         if (skippedCount > 0) {
             this.dispatchEvent(
-                ToastEvent('warning', {
+                new PcbToastEvent('warning', {
                     headline: `${skippedCount} block${skippedCount > 1 ? 's were' : ' was'} not allowed on this page and ignored`,
                 }),
             );
@@ -498,7 +495,7 @@ export default class PerplexContentBlocksElement
                 this._value = {...this._value, header: allowedBlocks[0]};
             } else {
                 this.dispatchEvent(
-                    ToastEvent('warning', {
+                    new PcbToastEvent('warning', {
                         headline: 'This block cannot be added as a header',
                     }),
                 );
@@ -512,7 +509,7 @@ export default class PerplexContentBlocksElement
 
             if (contentBlocks.length < allowedBlocks.length) {
                 this.dispatchEvent(
-                    ToastEvent('warning', {
+                    new PcbToastEvent('warning', {
                         headline: 'Header blocks cannot be added as content and will be ignored',
                     }),
                 );

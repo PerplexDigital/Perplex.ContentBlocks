@@ -4,7 +4,7 @@ import styles from './pcb-inline-layout-switch.css?inline';
 import { PerplexBlockDefinition } from '../../../types.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
 import { Swiper } from 'swiper/types';
-import { BLockLayoutChangeEvent } from '../../../events/block.ts';
+import { PcbBlockLayoutChangeEvent } from '../../../events/block.ts';
 type SwiperContainerEl = HTMLElement & { swiper: Swiper };
 @customElement('pcb-inline-layout-switch')
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
@@ -34,7 +34,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 swiperPreviewEl.swiper.slideTo(index, 500, true);
 
                 const selectedLayout = this.definition!.layouts[index];
-                this.dispatchEvent(BLockLayoutChangeEvent(selectedLayout));
+                this.dispatchEvent(new PcbBlockLayoutChangeEvent(selectedLayout));
             }) as EventListener);
         }
     }

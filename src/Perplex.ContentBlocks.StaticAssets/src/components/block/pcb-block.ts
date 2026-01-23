@@ -18,14 +18,13 @@ import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@um
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
 import contentBlockName from '../../utils/contentBlockName.ts';
 import { Group, PerplexBlockDefinition, PerplexContentBlocksBlock, Section, Tab } from '../../types.ts';
-import { BlockUpdatedEvent, ON_BLOCK_LAYOUT_CHANGE, ON_BLOCK_REMOVE } from '../../events/block.ts';
+import { PcbBlockLayoutChangeEvent, PcbBlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../events/block.ts';
 import { connect } from 'pwa-helpers';
 
 import baseStyles from './../../css/base.css?inline';
 import { AppState, store } from '../../state/store.ts';
 import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
 import { propertyAliasPrefix } from '../../utils/block.ts';
-import { withEditorId } from '../../events/generic.ts';
 import { consume } from '@lit/context';
 import { editorContext } from '../../context';
 import {PcbFocusBlockInPreviewEvent} from "../../events/preview.ts";
@@ -149,7 +148,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             throw new Error(errors.join(' | '));
         }
 
-        this.addEventListener(ON_BLOCK_LAYOUT_CHANGE, (e: Event) => this.onLayoutChange(e as CustomEvent));
+        this.addEventListener(PcbBlockLayoutChangeEvent.TYPE, (e: Event) => this.onLayoutChange(e as PcbBlockLayoutChangeEvent));
         this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
     }
 
@@ -192,20 +191,20 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         }
     }
 
-    onLayoutChange = (event: CustomEvent<any>) => {
+    onLayoutChange = (event: PcbBlockLayoutChangeEvent) => {
         // do nothing if the layout didn't change
-        if (this.block.layoutId === event.detail.selectedLayout.id) {
+        if (this.block.layoutId === event.selectedLayout.id) {
             return;
         }
 
         const updatedBlock: PerplexContentBlocksBlock = {
             ...this.block,
-            layoutId: event.detail.selectedLayout.id,
+            layoutId: event.selectedLayout.id,
         };
 
         if (this.definition) {
             this.dispatchEvent(
-                withEditorId(BlockUpdatedEvent(updatedBlock, this.definition, this.section), this.editorId),
+                new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.editorId),
             );
         }
     };
@@ -240,7 +239,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
         if (this.definition) {
-            this.dispatchEvent(withEditorId(BlockUpdatedEvent(block, this.definition, this.section), this.editorId));
+            this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.editorId));
         }
     };
 
