@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package">
-    <Version>4.0.0-alpha.25</Version>
+    <Version>4.0.0-alpha.26</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Company>Perplex Digital</Company>
     <Authors>$(Company)</Authors>
