@@ -64,7 +64,7 @@ export class PcbDragAndDrop extends LitElement {
             this.placeholder.style.height = `${active.height}px`;
         }
 
-        const children = Array.from(this.children).filter((c) => c !== active.element && c !== this.placeholder);
+        const children = Array.from(this.children).filter(c => c !== active.element && c !== this.placeholder);
         let insertBefore: HTMLElement | null = null;
 
         for (const child of children) {
@@ -91,10 +91,10 @@ export class PcbDragAndDrop extends LitElement {
         PcbDragAndDrop.activeDrag = null;
 
         const reorderedDomItems: string[] = Array.from(this.children)
-            .filter((child) => child != active.element && child instanceof HTMLElement && child.hasAttribute('blockId'))
-            .map((child) => (child as HTMLElement).getAttribute('blockId')!);
+            .filter(child => child != active.element && child instanceof HTMLElement && child.hasAttribute('blockId'))
+            .map(child => (child as HTMLElement).getAttribute('blockId')!);
 
-        const reorderedItems = reorderedDomItems.map((domItem) => this.blocks.find((block) => block.id === domItem)!);
+        const reorderedItems = reorderedDomItems.map(domItem => this.blocks.find(block => block.id === domItem)!);
 
         this.dispatchEvent(new PcbSetBlocksEvent(reorderedItems));
     };

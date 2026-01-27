@@ -73,7 +73,7 @@ export default class PerplexContentBlocksAddBlockModalElement
         }
 
         if (this.selectedCategories.includes(categoryId)) {
-            this.selectedCategories = this.selectedCategories.filter((id) => id !== categoryId);
+            this.selectedCategories = this.selectedCategories.filter(id => id !== categoryId);
         } else {
             this.selectedCategories = [...this.selectedCategories, categoryId];
         }
@@ -90,16 +90,16 @@ export default class PerplexContentBlocksAddBlockModalElement
         const searchTerm = this.searchTerm?.toLowerCase().trim() || '';
 
         // Only show categories that match the section.
-        const categories = Object.values(this.modalContext?.data.groupedDefinitions).filter((category) => {
+        const categories = Object.values(this.modalContext?.data.groupedDefinitions).filter(category => {
             const isHeader = this.modalContext?.data.section === Section.HEADER;
             return category.category.isEnabledForHeaders === isHeader;
         });
 
         const filteredCategories = categories
-            .map((category) => {
+            .map(category => {
                 // Filter definitions by search term
-                const filteredDefinitions = Object.values(category.definitions).filter((definition) =>
-                    `${definition!.name} | ${definition.layouts.map((layout) => layout.name).join(' | ')}`
+                const filteredDefinitions = Object.values(category.definitions).filter(definition =>
+                    `${definition!.name} | ${definition.layouts.map(layout => layout.name).join(' | ')}`
                         .toLowerCase()
                         .includes(searchTerm),
                 );
@@ -113,7 +113,7 @@ export default class PerplexContentBlocksAddBlockModalElement
                 return { ...category, filteredDefinitions };
             })
             // Exclude categories with no matching definitions
-            .filter((category) => category.filteredDefinitions.length > 0);
+            .filter(category => category.filteredDefinitions.length > 0);
 
         return html`
             <ul class="addBlockModal__blockList">
@@ -135,7 +135,7 @@ export default class PerplexContentBlocksAddBlockModalElement
                         </uui-button>
                     </div>
                     <div class="addBlockModal__filters">
-                        ${categories.map((category) => {
+                        ${categories.map(category => {
                             return html`
                                 <label
                                     class="addBlockModal__filter"
@@ -163,12 +163,12 @@ export default class PerplexContentBlocksAddBlockModalElement
                     ? html`<div class="addBlockModal__noResults">No blocks found</div>`
                     : repeat(
                           filteredCategories,
-                          (category) => category.category.id,
-                          (category) => html`
+                          category => category.category.id,
+                          category => html`
                               ${repeat(
                                   category.filteredDefinitions,
-                                  (definition) => definition.id,
-                                  (definition) => html`
+                                  definition => definition.id,
+                                  definition => html`
                                       <pcb-block-definition
                                           .selectedDefinition=${this.selectedBlock?.definitionId}
                                           .selectedLayout=${this.selectedBlock?.layoutId}

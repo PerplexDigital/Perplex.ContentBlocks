@@ -58,7 +58,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 pagination="false"
             >
                 ${this.definition.layouts.map(
-                    (layout) => html`
+                    layout => html`
                         <swiper-slide>
                             <div class="inline-layout-switch__layout"><span>${layout.name}</span></div>
                         </swiper-slide>
@@ -78,7 +78,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     id="swiper-preview"
                 >
                     ${this.definition!.layouts.map(
-                        (layout) => html`
+                        layout => html`
                             <swiper-slide>
                                 <div class="inline-layout-switch__layout">
                                     <img

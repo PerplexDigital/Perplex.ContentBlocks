@@ -114,7 +114,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     protected willUpdate(_changedProperties: PropertyValues) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
-            this.selectedLayoutIndex = this.definition?.layouts.findIndex((l) => l.id === this.block.layoutId) || 0;
+            this.selectedLayoutIndex = this.definition?.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
         }
     }
 

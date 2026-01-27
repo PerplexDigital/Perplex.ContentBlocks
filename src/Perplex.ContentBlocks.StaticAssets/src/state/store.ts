@@ -28,7 +28,7 @@ const store = configureStore({
         presets: presetsReducer,
         ui: uiReducer,
     },
-    middleware: (getDefaultMiddleware) =>
+    middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
             serializableCheck: false,
         }),

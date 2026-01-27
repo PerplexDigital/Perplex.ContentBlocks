@@ -32,7 +32,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         this.#block = block;
         this.#onChange = onChange;
 
-        this.#properties = new UmbArrayState(block.content.values, (p) => p.alias + '#' + p.culture + '#' + p.segment);
+        this.#properties = new UmbArrayState(block.content.values, p => p.alias + '#' + p.culture + '#' + p.segment);
         this.#variantId = new UmbClassState(UmbVariantId.CreateInvariant());
 
         this.#PROPERTY_ALIAS_PREFIX_LENGTH = propertyAliasPrefix(this.#block).length;
@@ -79,9 +79,9 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
 
     async propertyValueByAlias<ReturnType = unknown>(propertyAlias: string) {
         const alias = this.cleanAlias(propertyAlias);
-        return this.#properties.asObservablePart((props) => {
+        return this.#properties.asObservablePart(props => {
             if (!Array.isArray(props)) return undefined;
-            return props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null)
+            return props.find(prop => prop.alias === alias && prop.culture == null && prop.segment == null)
                 ?.value as ReturnType;
         });
     }
@@ -89,8 +89,8 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
     async setPropertyValue(propertyAlias: string, value: unknown) {
         const alias = this.cleanAlias(propertyAlias);
 
-        const values = create(this.#properties.getValue() ?? [], (props) => {
-            let item = props.find((prop) => prop.alias === alias && prop.culture == null && prop.segment == null);
+        const values = create(this.#properties.getValue() ?? [], props => {
+            let item = props.find(prop => prop.alias === alias && prop.culture == null && prop.segment == null);
 
             if (item == null) {
                 item = { alias, editorAlias: '', culture: null, segment: null, entityType: '' };
@@ -102,7 +102,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
 
         this.#properties.setValue(values);
 
-        this.#block = create(this.#block, (block) => {
+        this.#block = create(this.#block, block => {
             block.content.values = values;
         });
 

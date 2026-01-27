@@ -5,5 +5,5 @@ export function propertyAliasPrefix(block: PerplexContentBlocksBlock): string {
 }
 
 export function getCategoriesForDefinition(definitionId: string, items: PCBCategoryWithDefinitions[]): PCBCategory[] {
-    return items.filter((x) => x.definitions[definitionId]).map((x) => x.category);
+    return items.filter(x => x.definitions[definitionId]).map(x => x.category);
 }

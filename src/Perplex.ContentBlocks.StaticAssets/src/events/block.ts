@@ -37,7 +37,12 @@ export class PcbBlockUpdatedEvent extends Event {
     public readonly section: Section;
     public editorId?: string;
 
-    public constructor(block: PerplexContentBlocksBlock, definition: PerplexBlockDefinition, section: Section, editorId?: string) {
+    public constructor(
+        block: PerplexContentBlocksBlock,
+        definition: PerplexBlockDefinition,
+        section: Section,
+        editorId?: string,
+    ) {
         super(PcbBlockUpdatedEvent.TYPE, { bubbles: true, composed: true, cancelable: true });
         this.block = block;
         this.definition = definition;

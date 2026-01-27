@@ -1,4 +1,4 @@
-import {UmbLitElement} from '@umbraco-cms/backoffice/lit-element';
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
 import {
     css,
     customElement,
@@ -13,14 +13,14 @@ import {
     type UmbPropertyEditorConfigCollection,
     UmbPropertyEditorUiElement,
 } from '@umbraco-cms/backoffice/property-editor';
-import type {UmbPropertyTypeModel} from '@umbraco-cms/backoffice/content-type';
-import {UmbDataPathPropertyValueQuery} from '@umbraco-cms/backoffice/validation';
-import {UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT} from '@umbraco-cms/backoffice/property';
-import {UMB_CONTENT_WORKSPACE_CONTEXT} from '@umbraco-cms/backoffice/content';
-import {fetchDefinitionsPerCategory, fetchPagePresets} from '../queries/definitions.ts';
-import {connect} from 'pwa-helpers';
-import {AppState, store} from '../state/store.ts';
-import {setDefinitions} from '../state/slices/definitions.ts';
+import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
+import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
+import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
+import { UMB_CONTENT_WORKSPACE_CONTEXT } from '@umbraco-cms/backoffice/content';
+import { fetchDefinitionsPerCategory, fetchPagePresets } from '../queries/definitions.ts';
+import { connect } from 'pwa-helpers';
+import { AppState, store } from '../state/store.ts';
+import { setDefinitions } from '../state/slices/definitions.ts';
 import {
     PCBCategoryWithDefinitions,
     PerplexBlockDefinition,
@@ -29,36 +29,29 @@ import {
     Section,
     Structure,
 } from '../types.ts';
-import {setIsTouchDevice} from '../state/slices/ui.ts';
-import {PcbToastEvent} from '../events/toast.ts';
-import {addToast} from '../utils/toast.ts';
-import {
-    PcbBlockSavedEvent,
-    PcbBlockToggleEvent,
-    PcbBlockUpdatedEvent,
-    PcbSetBlocksEvent,
-} from '../events/block.ts';
+import { setIsTouchDevice } from '../state/slices/ui.ts';
+import { PcbToastEvent } from '../events/toast.ts';
+import { addToast } from '../utils/toast.ts';
+import { PcbBlockSavedEvent, PcbBlockToggleEvent, PcbBlockUpdatedEvent, PcbSetBlocksEvent } from '../events/block.ts';
 
-
-import {UmbChangeEvent} from '@umbraco-cms/backoffice/event';
-import {PcbValueCopiedEvent, PcbValuePastedEvent} from '../events/copyPaste.ts';
-import {CopyPasteState, setCopiedValue} from '../state/slices/copyPaste.ts';
-import {setPresets} from '../state/slices/presets.ts';
-import {getBlocksFromPreset} from '../utils/preset.ts';
-import {provide} from '@lit/context';
-import {editorContext} from '../context/index.ts';
-import {animate} from '@lit-labs/motion';
-import {umbOpenModal} from '@umbraco-cms/backoffice/modal';
-import {PCB_ADD_BLOCK_MODAL_TOKEN} from '../components/modals/addBlock/modal-token.ts';
-import {firstValueFrom} from '@umbraco-cms/backoffice/external/rxjs';
-import {PcbFocusBlockInPreviewEvent} from "../events/preview.ts";
+import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
+import { PcbValueCopiedEvent, PcbValuePastedEvent } from '../events/copyPaste.ts';
+import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';
+import { setPresets } from '../state/slices/presets.ts';
+import { getBlocksFromPreset } from '../utils/preset.ts';
+import { provide } from '@lit/context';
+import { editorContext } from '../context/index.ts';
+import { animate } from '@lit-labs/motion';
+import { umbOpenModal } from '@umbraco-cms/backoffice/modal';
+import { PCB_ADD_BLOCK_MODAL_TOKEN } from '../components/modals/addBlock/modal-token.ts';
+import { firstValueFrom } from '@umbraco-cms/backoffice/external/rxjs';
+import { PcbFocusBlockInPreviewEvent } from '../events/preview.ts';
 
 @customElement('perplex-content-blocks')
 export default class PerplexContentBlocksElement
     extends connect(store)(UmbLitElement)
-    implements UmbPropertyEditorUiElement {
-
-
+    implements UmbPropertyEditorUiElement
+{
     @query('#notifications')
     private _notificationsElement?: HTMLElement;
 
@@ -79,17 +72,16 @@ export default class PerplexContentBlocksElement
     };
 
     private readonly eventHandlers = new Map<string, EventListener>([
-        [PcbBlockSavedEvent.TYPE, (e) => this.onBlockAdded(e as PcbBlockSavedEvent)],
-        [PcbBlockToggleEvent.TYPE, (e) => this.onBlockToggled(e as PcbBlockToggleEvent)],
-        [PcbBlockUpdatedEvent.TYPE, (e) => this.updateBlock(e as PcbBlockUpdatedEvent)],
-        [PcbValueCopiedEvent.TYPE, (e) => this.onValueCopied(e as PcbValueCopiedEvent)],
-        [PcbValuePastedEvent.TYPE, (e) => this.onValuePasted(e as PcbValuePastedEvent)],
-        [PcbSetBlocksEvent.TYPE, (e) => this.onSetBlocks(e as PcbSetBlocksEvent)],
-        [PcbFocusBlockInPreviewEvent.TYPE, (e) => this.onFocusBlock(e as PcbFocusBlockInPreviewEvent)],
-
+        [PcbBlockSavedEvent.TYPE, e => this.onBlockAdded(e as PcbBlockSavedEvent)],
+        [PcbBlockToggleEvent.TYPE, e => this.onBlockToggled(e as PcbBlockToggleEvent)],
+        [PcbBlockUpdatedEvent.TYPE, e => this.updateBlock(e as PcbBlockUpdatedEvent)],
+        [PcbValueCopiedEvent.TYPE, e => this.onValueCopied(e as PcbValueCopiedEvent)],
+        [PcbValuePastedEvent.TYPE, e => this.onValuePasted(e as PcbValuePastedEvent)],
+        [PcbSetBlocksEvent.TYPE, e => this.onSetBlocks(e as PcbSetBlocksEvent)],
+        [PcbFocusBlockInPreviewEvent.TYPE, e => this.onFocusBlock(e as PcbFocusBlockInPreviewEvent)],
     ]);
 
-    @property({attribute: false})
+    @property({ attribute: false })
     config: UmbPropertyEditorConfigCollection | undefined;
 
     @state()
@@ -112,7 +104,7 @@ export default class PerplexContentBlocksElement
 
     editorId: string = crypto.randomUUID();
 
-    @provide({context: editorContext})
+    @provide({ context: editorContext })
     providedEditorId = this.editorId;
 
     headerCategories: string[] = [];
@@ -121,7 +113,7 @@ export default class PerplexContentBlocksElement
     #definitionsMap: Map<string, PerplexBlockDefinition> = new Map();
     #boundRemoveBlock = this.removeBlock.bind(this);
 
-    @property({attribute: false})
+    @property({ attribute: false })
     public set value(value: PerplexContentBlocksValue | undefined) {
         if (value == null) return;
         this._value = value;
@@ -159,10 +151,9 @@ export default class PerplexContentBlocksElement
         const alias = propertyCtx.getAlias() || '';
         this.culture = propertyCtx.getVariantId()?.culture || '';
         this.pageId = datasetCtx.getUnique()! || '';
-        this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({alias, culture: this.culture})}].value`;
+        this.dataPath = `$.values[${UmbDataPathPropertyValueQuery({ alias, culture: this.culture })}].value`;
 
-        this.#documentTypeAlias =
-            (await firstValueFrom(workspaceCtx.structure.ownerContentTypeAlias)) ?? '';
+        this.#documentTypeAlias = (await firstValueFrom(workspaceCtx.structure.ownerContentTypeAlias)) ?? '';
 
         await Promise.all([this.fetchDefinitionsPerCategory(), this.fetchPresets()]);
 
@@ -268,12 +259,12 @@ export default class PerplexContentBlocksElement
     }
 
     updateHeader(header: PerplexContentBlocksBlock) {
-        this._value = {...this._value, header};
+        this._value = { ...this._value, header };
         this.valueChanged();
     }
 
     removeHeader() {
-        this._value = {...this._value, header: null};
+        this._value = { ...this._value, header: null };
         this.valueChanged();
     }
 
@@ -290,7 +281,7 @@ export default class PerplexContentBlocksElement
     }
 
     onSetBlocks(event: PcbSetBlocksEvent) {
-        this._value = {...this._value, blocks: event.blocks};
+        this._value = { ...this._value, blocks: event.blocks };
         this.valueChanged();
     }
 
@@ -305,13 +296,13 @@ export default class PerplexContentBlocksElement
 
         const blocks = [...this._value.blocks];
         blocks.splice(idx, 1, event.block);
-        this._value = {...this._value, blocks};
+        this._value = { ...this._value, blocks };
         this.valueChanged();
     }
 
     removeBlock(id: string) {
         const blocks = this._value.blocks.filter(block => block.id !== id);
-        this._value = {...this._value, blocks};
+        this._value = { ...this._value, blocks };
         this.valueChanged();
     }
 
@@ -372,10 +363,7 @@ export default class PerplexContentBlocksElement
     }
 
     async fetchDefinitionsPerCategory() {
-        const result = await fetchDefinitionsPerCategory(
-            this.#documentTypeAlias,
-            this.culture || undefined,
-        );
+        const result = await fetchDefinitionsPerCategory(this.#documentTypeAlias, this.culture || undefined);
 
         if (result) {
             this.headerCategories = result.reduce((acc: string[], currentValue) => {
@@ -391,10 +379,7 @@ export default class PerplexContentBlocksElement
     }
 
     async fetchPresets() {
-        const result = await fetchPagePresets(
-            this.#documentTypeAlias,
-            this.culture || undefined,
-        );
+        const result = await fetchPagePresets(this.#documentTypeAlias, this.culture || undefined);
 
         if (result) {
             store.dispatch(setPresets(result));
@@ -431,18 +416,10 @@ export default class PerplexContentBlocksElement
 
         if (!returnedValue) return;
 
-        this.addBlocks(
-            returnedValue.blocks,
-            returnedValue.section,
-            returnedValue.desiredIndex,
-        );
+        this.addBlocks(returnedValue.blocks, returnedValue.section, returnedValue.desiredIndex);
     };
 
-    addBlocks(
-        blocks: PerplexContentBlocksBlock[],
-        section: Section,
-        desiredIndex: number | null,
-    ) {
+    addBlocks(blocks: PerplexContentBlocksBlock[], section: Section, desiredIndex: number | null) {
         const allowedBlocks = blocks.filter(b => {
             const def = this.findDefinitionById(b.definitionId);
             return def !== null;
@@ -461,15 +438,12 @@ export default class PerplexContentBlocksElement
             return;
         }
 
-        this.openedBlocks = [
-            ...this.openedBlocks,
-            ...allowedBlocks.map(b => b.id),
-        ];
+        this.openedBlocks = [...this.openedBlocks, ...allowedBlocks.map(b => b.id)];
 
         if (section === Section.HEADER && allowedBlocks.length > 0) {
             const definition = this.findDefinitionById(allowedBlocks[0].definitionId);
             if (definition?.categoryIds.some(id => this.headerCategories.includes(id))) {
-                this._value = {...this._value, header: allowedBlocks[0]};
+                this._value = { ...this._value, header: allowedBlocks[0] };
             } else {
                 this.dispatchEvent(
                     new PcbToastEvent('warning', {
@@ -500,7 +474,7 @@ export default class PerplexContentBlocksElement
                 updatedBlocks = [...this._value.blocks, ...contentBlocks];
             }
 
-            this._value = {...this._value, blocks: updatedBlocks};
+            this._value = { ...this._value, blocks: updatedBlocks };
         }
 
         this.valueChanged();
@@ -514,156 +488,157 @@ export default class PerplexContentBlocksElement
                         <div class="pcb__blocks">
                             ${this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                    <pcb-block
-                                        .draggable=${false}
-                                        .block=${this._value.header}
-                                        .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
-                                        .removeBlock=${this.removeHeader.bind(this)}
-                                        .dataPath=${this.dataPath}
-                                        .definition=${this.findDefinitionById(this._value.header.definitionId)}
-                                        .section=${Section.HEADER}
-                                        .openModal=${this._openModal}
-                                    ></pcb-block>
-                                `
+                                      <pcb-block
+                                          .draggable=${false}
+                                          .block=${this._value.header}
+                                          .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
+                                          .removeBlock=${this.removeHeader.bind(this)}
+                                          .dataPath=${this.dataPath}
+                                          .definition=${this.findDefinitionById(this._value.header.definitionId)}
+                                          .section=${Section.HEADER}
+                                          .openModal=${this._openModal}
+                                      ></pcb-block>
+                                  `
                                 : nothing}
                             ${!this._value.header && this.structure !== Structure.Blocks
                                 ? html`
-                                    <div class="pcb__block-add pcb__block-add--header">
-                                        <uui-button
-                                            label="add header"
-                                            look="primary"
-                                            @click=${this.addHeader}
-                                        >
-                                            <slot name="label">Add header</slot>
-                                            <slot name="extra">
-                                                <uui-icon name="icon-add"></uui-icon>
-                                            </slot>
-                                        </uui-button>
+                                      <div class="pcb__block-add pcb__block-add--header">
+                                          <uui-button
+                                              label="add header"
+                                              look="primary"
+                                              @click=${this.addHeader}
+                                          >
+                                              <slot name="label">Add header</slot>
+                                              <slot name="extra">
+                                                  <uui-icon name="icon-add"></uui-icon>
+                                              </slot>
+                                          </uui-button>
 
-                                        ${this.copiedValue?.copied
-                                            ? html`
-                                                <uui-button
-                                                    label="paste header"
-                                                    look="primary"
-                                                    @click=${() => this.pasteBlock(Section.HEADER)}
-                                                >
-                                                    <slot name="label">Paste header</slot>
-                                                    <slot name="extra">
-                                                        <uui-icon name="icon-clipboard-paste"></uui-icon>
-                                                    </slot>
-                                                </uui-button>
-                                            `
-                                            : nothing}
-                                    </div>
-                                `
+                                          ${this.copiedValue?.copied
+                                              ? html`
+                                                    <uui-button
+                                                        label="paste header"
+                                                        look="primary"
+                                                        @click=${() => this.pasteBlock(Section.HEADER)}
+                                                    >
+                                                        <slot name="label">Paste header</slot>
+                                                        <slot name="extra">
+                                                            <uui-icon name="icon-clipboard-paste"></uui-icon>
+                                                        </slot>
+                                                    </uui-button>
+                                                `
+                                              : nothing}
+                                      </div>
+                                  `
                                 : nothing}
                             ${this.structure !== Structure.Header
                                 ? html`
-                                    <pcb-drag-and-drop .blocks="${this._value.blocks}">
-                                        ${repeat(
-                                            this._value.blocks,
-                                            (block) => block.id,
-                                            (block, index) => html`
-                                                <pcb-drag-item
-                                                    .canDrag=${!this.openedBlocks.includes(block.id)}
-                                                    .blockId=${block.id}
-                                                >
-                                                    <pcb-block
-                                                        .draggable=${!this.openedBlocks.includes(block.id)}
-                                                        .block=${block}
-                                                        .collapsed=${!this.openedBlocks.includes(block.id)}
-                                                        .removeBlock=${this.#boundRemoveBlock}
-                                                        .dataPath=${this.dataPath}
-                                                        .definition=${this.findDefinitionById(block.definitionId)}
-                                                        .section=${Section.CONTENT}
-                                                        .index=${index}
-                                                        ${animate({id: block.id})}
-                                                        .openModal=${this._openModal}
-                                                    ></pcb-block>
-                                                </pcb-drag-item>
-                                            `,
-                                        )}
-                                    </pcb-drag-and-drop>
-                                `
+                                      <pcb-drag-and-drop .blocks="${this._value.blocks}">
+                                          ${repeat(
+                                              this._value.blocks,
+                                              block => block.id,
+                                              (block, index) => html`
+                                                  <pcb-drag-item
+                                                      .canDrag=${!this.openedBlocks.includes(block.id)}
+                                                      .blockId=${block.id}
+                                                  >
+                                                      <pcb-block
+                                                          .draggable=${!this.openedBlocks.includes(block.id)}
+                                                          .block=${block}
+                                                          .collapsed=${!this.openedBlocks.includes(block.id)}
+                                                          .removeBlock=${this.#boundRemoveBlock}
+                                                          .dataPath=${this.dataPath}
+                                                          .definition=${this.findDefinitionById(block.definitionId)}
+                                                          .section=${Section.CONTENT}
+                                                          .index=${index}
+                                                          ${animate({ id: block.id })}
+                                                          .openModal=${this._openModal}
+                                                      ></pcb-block>
+                                                  </pcb-drag-item>
+                                              `,
+                                          )}
+                                      </pcb-drag-and-drop>
+                                  `
                                 : nothing}
                         </div>
 
                         ${this.structure !== Structure.Header
                             ? html`
-                                <div class="pcb__block-add">
-                                    <uui-button
-                                        label="add content"
-                                        look="primary"
-                                        @click=${this.addBlock}
-                                    >
-                                        <slot name="label">Add content</slot>
-                                        <slot name="extra">
-                                            <uui-icon name="icon-add"></uui-icon>
-                                        </slot>
-                                    </uui-button>
+                                  <div class="pcb__block-add">
+                                      <uui-button
+                                          label="add content"
+                                          look="primary"
+                                          @click=${this.addBlock}
+                                      >
+                                          <slot name="label">Add content</slot>
+                                          <slot name="extra">
+                                              <uui-icon name="icon-add"></uui-icon>
+                                          </slot>
+                                      </uui-button>
 
-                                    ${this.copiedValue?.copied
-                                        ? html`
-                                            <uui-button
-                                                look="primary"
-                                                label="paste content"
-                                                @click=${() => this.pasteBlock(Section.CONTENT)}
-                                            >
-                                                <slot name="label">Paste content</slot>
-                                                <slot name="extra">
-                                                    <uui-icon name="icon-clipboard-paste"></uui-icon>
-                                                </slot>
-                                            </uui-button>
-                                        `
-                                        : nothing}
-                                </div>
-                            `
+                                      ${this.copiedValue?.copied
+                                          ? html`
+                                                <uui-button
+                                                    look="primary"
+                                                    label="paste content"
+                                                    @click=${() => this.pasteBlock(Section.CONTENT)}
+                                                >
+                                                    <slot name="label">Paste content</slot>
+                                                    <slot name="extra">
+                                                        <uui-icon name="icon-clipboard-paste"></uui-icon>
+                                                    </slot>
+                                                </uui-button>
+                                            `
+                                          : nothing}
+                                  </div>
+                              `
                             : nothing}
                     </div>
                 </div>
 
                 ${this.config?.getValueByAlias('debug') === true
                     ? html`
-                        <div class="debug">
-                            <uui-button
-                                look="outline"
-                                label="raw value"
-                                @click=${() => (this.showDebug = !this.showDebug)}
-                            ></uui-button>
-                            ${this.showDebug ? html`
-                                <pre>${JSON.stringify(this.value, null, 4)}</pre>` : nothing}
-                        </div>
-                    `
+                          <div class="debug">
+                              <uui-button
+                                  look="outline"
+                                  label="raw value"
+                                  @click=${() => (this.showDebug = !this.showDebug)}
+                              ></uui-button>
+                              ${this.showDebug ? html` <pre>${JSON.stringify(this.value, null, 4)}</pre>` : nothing}
+                          </div>
+                      `
                     : nothing}
             </div>
             ${this.pageId
                 ? html`
-                    <div class="sidebar">
-                        <div class="sidebar__section">
-                            <pcb-preview
-                                .culture=${this.culture}
-                                .focusedBlockId=${this.focusedBlockId}
-                                .pageId=${this.pageId}
-                            ></pcb-preview>
-                        </div>
-                        <div class="sidebar__section sidebar__controls">
-                            <button
-                                class="sidebar__btn"
-                                @click=${this.toggleAllBlocks}
-                            >
-                                <uui-icon name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}></uui-icon>
-                                ${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}
-                            </button>
-                            <button
-                                class="sidebar__btn"
-                                @click=${this.copyAllBlocks}
-                            >
-                                <uui-icon name="icon-documents"></uui-icon>
-                                Copy all blocks
-                            </button>
-                        </div>
-                    </div>
-                `
+                      <div class="sidebar">
+                          <div class="sidebar__section">
+                              <pcb-preview
+                                  .culture=${this.culture}
+                                  .focusedBlockId=${this.focusedBlockId}
+                                  .pageId=${this.pageId}
+                              ></pcb-preview>
+                          </div>
+                          <div class="sidebar__section sidebar__controls">
+                              <button
+                                  class="sidebar__btn"
+                                  @click=${this.toggleAllBlocks}
+                              >
+                                  <uui-icon
+                                      name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}
+                                  ></uui-icon>
+                                  ${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}
+                              </button>
+                              <button
+                                  class="sidebar__btn"
+                                  @click=${this.copyAllBlocks}
+                              >
+                                  <uui-icon name="icon-documents"></uui-icon>
+                                  Copy all blocks
+                              </button>
+                          </div>
+                      </div>
+                  `
                 : nothing}
             <uui-toast-notification-container
                 auto-close="7000"
@@ -686,7 +661,6 @@ export default class PerplexContentBlocksElement
                     grid-template-columns: 3fr 1fr;
                 }
             }
-
 
             pcb-drag-and-drop {
                 display: flex;
@@ -763,7 +737,6 @@ export default class PerplexContentBlocksElement
                 background-color: rgba(var(--c-submarine, 190, 190, 190), 0.3);
                 border-color: rgba(var(--c-submarine, 190, 190, 190), 1);
             }
-
 
             .pcb__wrapper {
                 display: block;

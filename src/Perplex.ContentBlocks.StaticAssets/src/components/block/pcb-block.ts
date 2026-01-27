@@ -27,7 +27,7 @@ import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
 import { propertyAliasPrefix } from '../../utils/block.ts';
 import { consume } from '@lit/context';
 import { editorContext } from '../../context';
-import {PcbFocusBlockInPreviewEvent} from "../../events/preview.ts";
+import { PcbFocusBlockInPreviewEvent } from '../../events/preview.ts';
 
 @customElement('pcb-block')
 export default class PerplexContentBlocksBlockElement extends connect(store)(UmbLitElement) {
@@ -69,7 +69,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
         if (changedProps.has('collapsed')) {
             if (changedProps.get('collapsed') === true) {
-                this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id))
+                this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id));
             }
 
             if (!this.collapsed) {
@@ -149,7 +149,9 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             throw new Error(errors.join(' | '));
         }
 
-        this.addEventListener(PcbBlockLayoutChangeEvent.TYPE, (e: Event) => this.onLayoutChange(e as PcbBlockLayoutChangeEvent));
+        this.addEventListener(PcbBlockLayoutChangeEvent.TYPE, (e: Event) =>
+            this.onLayoutChange(e as PcbBlockLayoutChangeEvent),
+        );
         this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
     }
 
@@ -177,7 +179,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     stateChanged(state: AppState) {
         this.isDraggingBlock = state.ui.isDraggingBlock;
         if (state.presets.value && state.presets.value.blocks && state.presets.value.blocks.length > 0) {
-            const presetItem = state.presets.value.blocks.find((item) => {
+            const presetItem = state.presets.value.blocks.find(item => {
                 return item.id === this.block.presetId && item.definitionId === this.block.definitionId;
             });
             this.isMandatory = presetItem ? presetItem.isMandatory : false;
@@ -204,20 +206,18 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         };
 
         if (this.definition) {
-            this.dispatchEvent(
-                new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.editorId),
-            );
+            this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.editorId));
         }
     };
 
     constructor() {
         super();
-        this.getContext(UMB_VALIDATION_CONTEXT).then((validationContext) => {
+        this.getContext(UMB_VALIDATION_CONTEXT).then(validationContext => {
             if (validationContext == null) throw new Error('Validation context is required');
 
             this.#validationContext = validationContext;
 
-            this.#validationContext.messages.messages.subscribe((messages) => {
+            this.#validationContext.messages.messages.subscribe(messages => {
                 this.invalid = false;
 
                 for (const message of messages) {
@@ -258,7 +258,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
         new PerplexContentBlocksPropertyDatasetContext(this, this.block, this.onBlockUpdate);
 
-        const dataTypeUniques = new Set(this.properties.map((p) => p.dataType.unique));
+        const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
 
         for (const dataTypeUnique of dataTypeUniques) {
             const dataTypeResponse = await this.#dataTypeRepository.requestByUnique(dataTypeUnique);
@@ -343,7 +343,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                         properties: propertiesByContainerId[container.id] || [],
                     };
 
-                    const existingTab = tabs.find((t) => t.name === tab.name);
+                    const existingTab = tabs.find(t => t.name === tab.name);
                     if (existingTab) {
                         // Merge
                         const merged = mergeTabs(existingTab, tab);
@@ -353,7 +353,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     }
                 } else if (container.type === 'Group' && container.parent?.id == null) {
                     const group = buildGroup(container);
-                    const existingGroup = groups.find((g) => g.name === group.name);
+                    const existingGroup = groups.find(g => g.name === group.name);
                     if (existingGroup) {
                         // Merge
                         const merged = mergeGroups(existingGroup, group);
@@ -403,7 +403,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
             const groups: Group[] = [];
             for (const group of [...tabA.groups, ...tabB.groups]) {
-                const existingGroup = groups.find((g) => g.name === group.name);
+                const existingGroup = groups.find(g => g.name === group.name);
                 if (existingGroup) {
                     const merged = mergeGroups(existingGroup, group);
                     groups.splice(groups.indexOf(existingGroup), 1, merged);
@@ -489,8 +489,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     <div>
                         ${repeat(
                             this.properties,
-                            (property) => property.unique,
-                            (property) => {
+                            property => property.unique,
+                            property => {
                                 const dataType = this.#dataTypes[property.dataType.unique];
                                 if (dataType == null) throw new Error('missing data type');
 

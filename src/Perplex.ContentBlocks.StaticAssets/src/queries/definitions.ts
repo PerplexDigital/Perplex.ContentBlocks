@@ -51,11 +51,11 @@ export const fetchDefinitionsPerCategory = async (documentType: string, culture?
         }, {});
 
         // group definitionsDictionary by category
-        const groupedDefinitions = categories.map((category) => {
+        const groupedDefinitions = categories.map(category => {
             return {
                 category,
                 definitions: Object.keys(definitionsDictionary)
-                    .filter((key) => definitionsDictionary[key].categoryIds.includes(category.id))
+                    .filter(key => definitionsDictionary[key].categoryIds.includes(category.id))
                     .reduce((acc: DefinitionsDictionary, key) => {
                         acc[key] = definitionsDictionary[key];
                         return acc;

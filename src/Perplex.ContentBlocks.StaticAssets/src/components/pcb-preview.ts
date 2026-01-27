@@ -1,5 +1,14 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { html, customElement, state, property, css, nothing, PropertyValues, query } from '@umbraco-cms/backoffice/external/lit';
+import {
+    html,
+    customElement,
+    state,
+    property,
+    css,
+    nothing,
+    PropertyValues,
+    query,
+} from '@umbraco-cms/backoffice/external/lit';
 import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth';
 import { UMB_ACTION_EVENT_CONTEXT } from '@umbraco-cms/backoffice/action';
 import { UmbRequestReloadStructureForEntityEvent } from '@umbraco-cms/backoffice/entity-action';
@@ -68,21 +77,18 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
 
     constructor() {
         super();
-        this.consumeContext(UMB_AUTH_CONTEXT, (ctx) => {
+        this.consumeContext(UMB_AUTH_CONTEXT, ctx => {
             this.#authContext = ctx;
         });
 
-        this.consumeContext(UMB_ACTION_EVENT_CONTEXT, (eventContext) => {
+        this.consumeContext(UMB_ACTION_EVENT_CONTEXT, eventContext => {
             if (!eventContext) return;
-            eventContext.addEventListener(
-                UmbRequestReloadStructureForEntityEvent.TYPE,
-                (event) => {
-                    const reloadEvent = event as unknown as UmbRequestReloadStructureForEntityEvent;
-                    if (reloadEvent.getEntityType() === UMB_DOCUMENT_ENTITY_TYPE) {
-                        this.handleRefresh();
-                    }
+            eventContext.addEventListener(UmbRequestReloadStructureForEntityEvent.TYPE, event => {
+                const reloadEvent = event as unknown as UmbRequestReloadStructureForEntityEvent;
+                if (reloadEvent.getEntityType() === UMB_DOCUMENT_ENTITY_TYPE) {
+                    this.handleRefresh();
                 }
-            );
+            });
         });
     }
 
@@ -207,14 +213,16 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                         <button
                             class="preview-btn ${this.previewMode === 'desktop' ? 'active' : ''}"
                             @click=${this.switchToDesktop}
-                            title="Desktop preview">
+                            title="Desktop preview"
+                        >
                             <uui-icon name="icon-display"></uui-icon>
                             Desktop
                         </button>
                         <button
                             class="preview-btn ${this.previewMode === 'mobile' ? 'active' : ''}"
                             @click=${this.switchToMobile}
-                            title="Mobile preview">
+                            title="Mobile preview"
+                        >
                             <uui-icon name="icon-iphone"></uui-icon>
                             Mobile
                         </button>
@@ -229,13 +237,13 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                     ></iframe>
                 </div>
 
-                ${this.lastUpdate ? html`
-                    <div class="preview-footer">
-                    <span class="last-update">
-                        Last updated: ${this.formattedLastUpdate}
-                    </span>
-                    </div>
-                ` : nothing}
+                ${this.lastUpdate
+                    ? html`
+                          <div class="preview-footer">
+                              <span class="last-update"> Last updated: ${this.formattedLastUpdate} </span>
+                          </div>
+                      `
+                    : nothing}
             </div>
         `;
     }

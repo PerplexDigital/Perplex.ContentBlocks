@@ -74,7 +74,7 @@ function regenerateBlockListKeys(value: BlockValue | null | undefined): BlockVal
 }
 
 export const differentiateBlocks = (blocks: PerplexContentBlocksBlock[]) => {
-    return blocks.map((block) => {
+    return blocks.map(block => {
         const originalValues = Array.isArray(block?.content?.values) ? block.content.values : [];
         const newValues = originalValues.map((val: any) => {
             if (val?.editorAlias === 'Umbraco.BlockList' && val?.value && typeof val.value === 'object') {

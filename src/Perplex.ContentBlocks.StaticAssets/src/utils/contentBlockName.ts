@@ -11,9 +11,9 @@ export default (blockTemplateName: string, contentObj: PerplexContentBlocksBlock
     };
 
     return blockTemplateName.replace(/{{(.*?)}}/g, (_, aliases: string) => {
-        const aliasList = aliases.split('|').map((a) => a.trim());
+        const aliasList = aliases.split('|').map(a => a.trim());
         for (const alias of aliasList) {
-            const match = values.find((v) => v.alias === alias);
+            const match = values.find(v => v.alias === alias);
             if (match && match.value != null && getValueAsString(match.value).trim() !== '') {
                 return getValueAsString(match.value);
             }

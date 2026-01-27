@@ -24,7 +24,7 @@ export const getBlocksFromPreset = (
 
         if (preset.blocks && currentValue.blocks.length === 0) {
             returnVal.blocks = preset.blocks
-                .map((item) => makeBlockFromPresetItem(item, definitions))
+                .map(item => makeBlockFromPresetItem(item, definitions))
                 .filter((block): block is PerplexContentBlocksBlock => block !== null);
         }
     }
@@ -36,9 +36,7 @@ const makeBlockFromPresetItem = (
     presetItem: PresetItem,
     definitions: PCBCategoryWithDefinitions[],
 ): PerplexContentBlocksBlock | null => {
-    const definition = definitions
-        .map((cat) => cat.definitions[presetItem.definitionId])
-        .find((def) => def !== undefined);
+    const definition = definitions.map(cat => cat.definitions[presetItem.definitionId]).find(def => def !== undefined);
 
     if (!definition) return null;
 

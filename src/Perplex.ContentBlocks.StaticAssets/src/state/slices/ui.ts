@@ -18,7 +18,7 @@ const { actions: uiActions, reducer: uiReducer } = createSlice({
         isDraggingBlock: false,
     } as UiState,
     reducers: {
-        toggleAddBlockModal: (state) => {
+        toggleAddBlockModal: state => {
             state.addBlock.display = !state.addBlock.display;
         },
         setAddBlockModal: (state, action) => {
@@ -26,7 +26,7 @@ const { actions: uiActions, reducer: uiReducer } = createSlice({
             state.addBlock.section = action.payload.section;
             state.addBlock.insertAtIndex = action.payload.insertAtIndex ?? null;
         },
-        resetAddBlockModal: (state) => {
+        resetAddBlockModal: state => {
             state.addBlock.display = false;
             state.addBlock.section = Section.CONTENT;
             state.addBlock.insertAtIndex = undefined;

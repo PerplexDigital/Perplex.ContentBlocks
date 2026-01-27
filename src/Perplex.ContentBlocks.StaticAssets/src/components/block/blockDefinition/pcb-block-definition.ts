@@ -111,7 +111,7 @@ export class PcbBlockDefinition extends LitElement {
                 pagination="true"
             >
                 ${this.definition!.layouts.map(
-                    (layout) => html`
+                    layout => html`
                         <swiper-slide>
                             <button
                                 class="blockDefinition__inner"
