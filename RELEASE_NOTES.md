@@ -8,18 +8,15 @@ Summary of changes in each release. For a full changelog see [the commit history
   - Umbraco v10 - v13 are only support by v1 - v3
   - Perplex.ContentBlocks v4 only supports Umbraco v16+
 - Replaced NestedContent with Block Editor as underlying data structure.
-
-- `TODO: Other release notes`
-
-- Breaking changes (`INCOMPLETE`):
+- Breaking changes
   - Removed properties:
     - `IContentBlockDefinition.{DataTypeKey,DataTypeId}`
       - These properties referenced the NestedContent data type that is used for the definition. NestedContent is removed thus so are these properties.
   - Added properties:
     - `IContentBlockDefinition.ElementTypeKey`
-      - Required to reference the Element Type that should be used for the definition. Replaces `DataTypeKey` / `DataTypeId` from v1 - v3.
+      - Required to reference the Element Type that should be used for the definition. Replaces `DataTypeKey` / `DataTypeId` from v1 - v3. This should be the unique id of the element type of your ContentBlock, the same that you used in v1 - v3. In v1 - v3 you needed both an element type and a data type, from v4+ you only need the element type. The old data types based on NestedContent can be removed.
     - `IContentBlockDefinition.BlockNameTemplate`
-      - Replaces the Template property on a NestedContent datatype. This can be used to define the name of an individual block based on its content, e.g. `"{{title}}"` to render the current value of the "title" property of a block.
+      - Replaces the Template property on a NestedContent datatype. This can be used to define the name of an individual block based on its content using [Umbraco Flavored Markdown](https://docs.umbraco.com/umbraco-cms/reference/umbraco-flavored-markdown), e.g. `{umbValue: title}` to render the current value of the `title` property of a block.
   - Removed classes:
     - `IContentBlockRenderer` + `ContentBlockRenderer`
       - Does not support `IContentBlockDefinition<TViewComponent>`
@@ -31,10 +28,12 @@ Summary of changes in each release. For a full changelog see [the commit history
       - Alternatives:
         - `<perplex-content-blocks>` tag helper (see v3 release notes)
         - `IContentBlocksRenderer`
+  - Removed features:
+    - Block variants
+      - We no longer support block variants, a feature primarly added for the benefit of uMarketingSuite in the past. Since uMarketingSuite has become Umbraco Engage we no longer support this.
+      - All `ContentBlockVariant*` or similar classes have been removed.
   - Class renames:
     - `ContentBlocksModelValue...` -> `ContentBlocksValue...`
-    - This impacts the following public interface methods:
-      - `IContentBlockVariantSelector.SelectVariant`
   - Namespace renames:
     - `Perplex.ContentBlocks.PropertyEditor.ModelValue` -> `Perplex.ContentBlocks.PropertyEditor.Value`
 
@@ -132,12 +131,10 @@ Summary of changes in each release. For a full changelog see [the commit history
 ## v2.1.0 - <sub><sup>2021-11-25</sup></sub>
 
 - Improved complex validation support
-
   - We now implement `ComplexEditorValidator` directly to achieve this
   - Umbraco dependency was increased to 8.7.0 to make this possible
 
 - Added support to customize some parts of the ContentBlocks editor UI
-
   - The body of the content block editor can be replaced with a custom AngularJS component
   - Buttons can be added to the top bar of each content block, next to the settings button
   - An example of an addon that replaces the body and adds a button is [available here](src/DemoWebsite.v9/App_Plugins/MyContentBlocksAddon)
@@ -169,6 +166,7 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 - Presets can now contain initial values for properties.
   - Example code to set initial values:
+
   ```csharp
   new ContentBlockPreset
   {
@@ -184,6 +182,7 @@ Summary of changes in each release. For a full changelog see [the commit history
       },
   },
   ```
+
   - This is a breaking change to `Perplex.ContentBlocks.Presets.IContentBlockPreset` since we add a property to it (`IDictionary<string, object> Values`) but this will only actually break if you use a custom implementation of this interface. If you simply use the built-in `Perplex.ContentBlocks.Presets.ContentBlockPreset` existing code will not be affected.
 
 ## v1.7.0 - <sub><sup>2021-02-18</sup></sub>
@@ -199,7 +198,6 @@ Summary of changes in each release. For a full changelog see [the commit history
 ## v1.6.3 - <sub><sup>2020-12-30</sup></sub>
 
 - Fixed Content Block `id` + Nested Content `key` properties not getting new values when a content node is copied (#45).
-
   - These properties are supposed to be unique. NestedContent uses the `key` property as a cache key so having multiple Content Blocks on different pages share the same `key` can lead to issues. These properties will now be recursively updated to new unique keys when a node is copied.
   - Note this was only an issue when copying an entire content node. Copying blocks using the ContentBlocks UI already updated these properties correctly.
 
