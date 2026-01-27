@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "watch": "concurrently \"tsc --noEmit --watch\" \"vite build --watch\""
+    "watch": "concurrently \"tsc --noEmit --watch\" \"vite build --watch\"",
+    "prettier": "prettier --write \"./src/**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
   "dependencies": {
     "@lit-labs/motion": "^1.0.7",
