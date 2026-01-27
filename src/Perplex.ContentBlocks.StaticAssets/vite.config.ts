@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import addContentBlocksVersion from './add-content-blocks-version.ts';
 
 export default defineConfig({
     build: {
@@ -17,5 +16,4 @@ export default defineConfig({
     define: {
         'process.env': {},
     },
-    plugins: [addContentBlocksVersion()],
 });

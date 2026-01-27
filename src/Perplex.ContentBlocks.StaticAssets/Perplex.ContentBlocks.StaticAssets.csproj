@@ -7,6 +7,14 @@
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="16.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="17.0.0" />
+  </ItemGroup>
+
   <Import Project="build\*" />
 
   <ItemGroup Label="Exclude from NuGet Package">
