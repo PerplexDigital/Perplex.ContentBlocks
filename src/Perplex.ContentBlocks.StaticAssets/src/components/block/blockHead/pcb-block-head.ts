@@ -24,6 +24,8 @@ import { store } from '../../../state/store.ts';
 import { connect } from 'pwa-helpers';
 import { getCategoriesForDefinition } from '../../../utils/block.ts';
 
+const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
+
 @customElement('pcb-block-head')
 export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @property()
@@ -33,7 +35,24 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     blockDefinitionName!: string;
 
     @property({ attribute: false })
-    blockTemplateName?: string;
+    get blockNameTemplate(): string | undefined {
+        return this._blockNameTemplate;
+    }
+
+    set blockNameTemplate(value: string | undefined) {
+        if (value != null) {
+            const match = value.match(OLD_SYNTAX_SINGLE_VALUE);
+            if (match) {
+                // For backwards compatibility we will transform the old {{ALIAS}} syntax to the new {umbValue: ALIAS} syntax
+                // but only when the entire template was just a single value, e.g. "{{title}}".
+                value = `{umbValue: ${match[1]}}`;
+            }
+        }
+
+        this._blockNameTemplate = value;
+    }
+
+    private _blockNameTemplate?: string;
 
     @property({ attribute: false })
     collapsed: boolean = false;
@@ -43,6 +62,9 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     @property({ attribute: false })
     block!: PerplexContentBlocksBlock;
+
+    @state()
+    private blockValuesByAlias: Record<string, any> = {};
 
     @property({ attribute: false })
     section: Section = Section.CONTENT;
@@ -112,9 +134,19 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
         );
     };
 
-    protected willUpdate(_changedProperties: PropertyValues) {
+    protected willUpdate(_changedProperties: PropertyValues<this>) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
             this.selectedLayoutIndex = this.definition?.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
+        }
+
+        if (_changedProperties.has('block')) {
+            this.blockValuesByAlias = {};
+
+            if (Array.isArray(this.block?.content?.values)) {
+                for (const value of this.block.content.values) {
+                    this.blockValuesByAlias[value.alias] = value.value;
+                }
+            }
         }
     }
 
@@ -150,7 +182,13 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                           `
                         : nothing}
                     <div class="block-head__title">
-                        ${this.blockTemplateName ? html`<strong>${this.blockTemplateName}</strong>` : nothing}
+                        <strong>
+                            <umb-ufm-render
+                                inline
+                                .markdown=${this.blockNameTemplate}
+                                .value=${this.blockValuesByAlias}
+                            ></umb-ufm-render
+                        ></strong>
                         <div>${this.blockDefinitionName}</div>
                     </div>
 

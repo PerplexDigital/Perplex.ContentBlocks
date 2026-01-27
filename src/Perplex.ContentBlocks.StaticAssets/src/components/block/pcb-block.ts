@@ -16,7 +16,6 @@ import { PerplexContentBlocksPropertyDatasetContext } from '../../editor/perplex
 import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
 import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@umbraco-cms/backoffice/document-type';
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
-import contentBlockName from '../../utils/contentBlockName.ts';
 import { Group, PerplexBlockDefinition, PerplexContentBlocksBlock, Section, Tab } from '../../types.ts';
 import { PcbBlockLayoutChangeEvent, PcbBlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../events/block.ts';
 import { connect } from 'pwa-helpers';
@@ -469,8 +468,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     .block=${this.block}
                     .id=${this.block.id}
                     .blockDefinitionName=${this.definition?.name}
+                    .blockNameTemplate=${this.definition?.blockNameTemplate ?? ''}
                     .collapsed="${this.collapsed}"
-                    .blockTemplateName="${contentBlockName(this.definition?.blockNameTemplate ?? '', this.block)}"
                     .definition=${this.definition}
                     .section=${this.section}
                     .isDraggingBlock=${this.isDraggingBlock}
