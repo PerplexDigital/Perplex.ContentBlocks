@@ -49,7 +49,8 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
     }
 
     getName() {
-        return 'TODO: Block';
+        // Not sure where this is used, let's at least return something unique per block.
+        return `Block ${this.getUnique()}`;
     }
 
     getProperties(): Promise<Array<UmbPropertyValueData> | undefined> {
