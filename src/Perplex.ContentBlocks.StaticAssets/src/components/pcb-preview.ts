@@ -271,6 +271,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             justify-content: space-between;
             padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
             background-color: var(--c-mystic, #fcfcfc);
+            gap: calc(var(--s, 4px) * 2);
         }
 
         .preview-title {
