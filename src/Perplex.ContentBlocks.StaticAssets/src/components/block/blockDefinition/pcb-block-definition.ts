@@ -2,7 +2,6 @@ import {
     html,
     customElement,
     property,
-    nothing,
     state,
     LitElement,
     PropertyValues,
