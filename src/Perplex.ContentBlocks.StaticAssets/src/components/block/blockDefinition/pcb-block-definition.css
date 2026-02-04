@@ -4,8 +4,22 @@
     background: white;
 }
 
+:host(:focus-within) {
+    outline: 3px solid var(--uui-color-focus);
+    outline-offset: 2px;
+    border-radius: var(--uui-border-radius);
+}
+
 :host(:hover) #info {
     color: var(--uui-color-interactive-emphasis);
+}
+
+swiper-container {
+    overflow: visible;
+}
+
+swiper-slide {
+    overflow: visible;
 }
 
 .blockDefinition {
@@ -14,6 +28,25 @@
     .blockDefinition__inner {
         width: 100%;
         display: block;
+        border-radius: var(--uui-border-radius);
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .blockDefinition__inner:focus {
+        outline: none;
+    }
+
+    .blockDefinition__inner:focus-visible {
+        outline: 3px solid var(--uui-color-focus);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 6px rgba(0, 123, 255, 0.15);
+        position: relative;
+        z-index: 10;
     }
 
     &:hover {

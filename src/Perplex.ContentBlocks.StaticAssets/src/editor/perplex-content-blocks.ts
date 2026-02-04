@@ -39,6 +39,7 @@ import { PcbValueCopiedEvent, PcbValuePastedEvent } from '../events/copyPaste.ts
 import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';
 import { setPresets } from '../state/slices/presets.ts';
 import { getBlocksFromPreset } from '../utils/preset.ts';
+import { differentiateBlocks } from '../utils/copyPaste.ts';
 import { provide } from '@lit/context';
 import { editorContext } from '../context/index.ts';
 import { animate } from '@lit-labs/motion';
@@ -322,14 +323,18 @@ export default class PerplexContentBlocksElement
         const warnings: string[] = [];
         let headerPasted = false;
 
-        if (pastedValue.header) {
+        // Create fresh copies with new IDs for each paste operation to avoid shared references
+        const freshHeader = pastedValue.header ? differentiateBlocks([pastedValue.header])[0] : null;
+        const freshBlocks = differentiateBlocks(pastedValue.blocks);
+
+        if (freshHeader) {
             if (this._value.header) {
                 warnings.push('Header was ignored because one already exists');
             } else {
-                const headerDef = this.findDefinitionById(pastedValue.header.definitionId);
+                const headerDef = this.findDefinitionById(freshHeader.definitionId);
                 if (headerDef) {
-                    this._value = { ...this._value, header: pastedValue.header };
-                    this.openedBlocks = [...this.openedBlocks, pastedValue.header.id];
+                    this._value = { ...this._value, header: freshHeader };
+                    this.openedBlocks = [...this.openedBlocks, freshHeader.id];
                     headerPasted = true;
                 } else {
                     warnings.push('Header block is not allowed on this page and was ignored');
@@ -337,8 +342,8 @@ export default class PerplexContentBlocksElement
             }
         }
 
-        if (pastedValue.blocks.length > 0) {
-            this.addBlocks(pastedValue.blocks, section, desiredIndex ?? null);
+        if (freshBlocks.length > 0) {
+            this.addBlocks(freshBlocks, section, desiredIndex ?? null);
         }
 
         if (warnings.length > 0) {

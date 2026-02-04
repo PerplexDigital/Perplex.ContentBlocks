@@ -94,6 +94,12 @@ export class PcbBlockDefinition extends LitElement {
                 const index = Math.round(rawIndex);
                 this.selectedLayoutIndex = index;
             }) as EventListener);
+
+            // Update selectedLayoutIndex when pagination dots are clicked
+            swiperEl.addEventListener('slidechange', ((event: CustomEvent<[Swiper]>) => {
+                const [swiper] = event.detail;
+                this.selectedLayoutIndex = swiper.activeIndex;
+            }) as EventListener);
         }
     }
 
@@ -116,6 +122,7 @@ export class PcbBlockDefinition extends LitElement {
                             <button
                                 class="blockDefinition__inner"
                                 @click=${this.onSelected}
+                                ?disabled=${this.disabled}
                             >
                                 <div id="portrait">
                                     <img
@@ -126,7 +133,6 @@ export class PcbBlockDefinition extends LitElement {
 
                                 <div
                                     id="open-part"
-                                    tabindex=${this.disabled ? (nothing as any) : '0'}
                                 >
                                     <strong
                                         >${layout.name === 'Default'

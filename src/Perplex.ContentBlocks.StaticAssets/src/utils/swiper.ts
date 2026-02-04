@@ -11,6 +11,9 @@ export function initSwiper(swiperEl: HTMLElement) {
     if (!swiperEl) return;
     const params = {
         injectStyles: [swiperCss],
+        pagination: {
+            clickable: true,
+        },
     };
 
     Object.assign(swiperEl, params);
