@@ -609,7 +609,11 @@ export default class PerplexContentBlocksElement
                                   label="raw value"
                                   @click=${() => (this.showDebug = !this.showDebug)}
                               ></uui-button>
-                              ${this.showDebug ? html` <pre>${JSON.stringify(this.value, null, 4)}</pre>` : nothing}
+                              ${this.showDebug
+                                  ? html` <pre style="white-space:pre-wrap;font-size:90%">
+${JSON.stringify(this.value, null, 4)}</pre
+                                    >`
+                                  : nothing}
                           </div>
                       `
                     : nothing}
