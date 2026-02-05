@@ -618,34 +618,39 @@ ${JSON.stringify(this.value, null, 4)}</pre
                       `
                     : nothing}
             </div>
-            ${this.pageId
+            ${this.config?.getValueByAlias('hideControls') !== true ||
+            (this.pageId && this.config?.getValueByAlias('hidePreview') !== true)
                 ? html`
                       <div class="sidebar">
-                          <div class="sidebar__section">
-                              <pcb-preview
-                                  .culture=${this.culture}
-                                  .focusedBlockId=${this.focusedBlockId}
-                                  .pageId=${this.pageId}
-                              ></pcb-preview>
-                          </div>
-                          <div class="sidebar__section sidebar__controls">
-                              <button
-                                  class="sidebar__btn"
-                                  @click=${this.toggleAllBlocks}
-                              >
-                                  <uui-icon
-                                      name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}
-                                  ></uui-icon>
-                                  ${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}
-                              </button>
-                              <button
-                                  class="sidebar__btn"
-                                  @click=${this.copyAllBlocks}
-                              >
-                                  <uui-icon name="icon-documents"></uui-icon>
-                                  Copy all blocks
-                              </button>
-                          </div>
+                          ${this.pageId && this.config?.getValueByAlias('hidePreview') !== true
+                              ? html`<div class="sidebar__section">
+                                    <pcb-preview
+                                        .culture=${this.culture}
+                                        .focusedBlockId=${this.focusedBlockId}
+                                        .pageId=${this.pageId}
+                                    ></pcb-preview>
+                                </div>`
+                              : nothing}
+                          ${this.config?.getValueByAlias('hideControls') !== true
+                              ? html`<div class="sidebar__section sidebar__controls">
+                                    <button
+                                        class="sidebar__btn"
+                                        @click=${this.toggleAllBlocks}
+                                    >
+                                        <uui-icon
+                                            name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}
+                                        ></uui-icon>
+                                        ${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}
+                                    </button>
+                                    <button
+                                        class="sidebar__btn"
+                                        @click=${this.copyAllBlocks}
+                                    >
+                                        <uui-icon name="icon-documents"></uui-icon>
+                                        Copy all blocks
+                                    </button>
+                                </div>`
+                              : nothing}
                       </div>
                   `
                 : nothing}

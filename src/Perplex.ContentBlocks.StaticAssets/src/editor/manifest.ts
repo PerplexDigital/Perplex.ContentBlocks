@@ -21,6 +21,18 @@ const manifest: ManifestPropertyEditorUi = {
                     propertyEditorUiAlias: 'Perplex.ContentBlocks.Structure',
                 },
                 {
+                    alias: 'hidePreview',
+                    label: 'Hide Preview',
+                    description: 'Hides the preview window',
+                    propertyEditorUiAlias: 'Umb.PropertyEditorUi.Toggle',
+                },
+                {
+                    alias: 'hideControls',
+                    label: 'Hide Controls',
+                    description: 'Hides the block controls ("Open all blocks" and "Copy all blocks")',
+                    propertyEditorUiAlias: 'Umb.PropertyEditorUi.Toggle',
+                },
+                {
                     alias: 'debug',
                     label: 'Debug',
                     description: 'Shows debug information in the backoffice',
