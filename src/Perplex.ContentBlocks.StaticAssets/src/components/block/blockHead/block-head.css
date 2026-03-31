@@ -5,6 +5,7 @@
     cursor: pointer;
     transition: 250ms border ease;
     background-color: var(--c-white);
+    overflow: hidden;
 
     &.block-head--disabled {
         background: var(--c-alabaster);
@@ -26,7 +27,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 0 calc(var(--s) * 3);
+        padding: 0 calc(var(--s) * 4);
 
         .block-head--disabled & {
             cursor: default;
@@ -80,6 +81,7 @@
         display: flex;
         align-items: start;
         justify-content: center;
+        justify-items: flex-start;
         padding-block: calc(var(--s, 4px) * 2);
         padding-inline: calc(var(--s, 4px) * 3) calc(var(--s, 4px) * 4);
         flex-direction: column;
@@ -89,11 +91,8 @@
         line-height: 1.5;
 
         .block-head--disabled & {
-            opacity: 0.5;
-        }
-
-        div {
-            font-size: var(--fs-xs);
+            display: grid;
+            grid-template-columns: 2fr 1fr;
         }
 
         strong {
@@ -110,6 +109,32 @@
 
             .block-head--disabled & {
                 text-decoration: line-through;
+                opacity: 0.5;
+            }
+        }
+
+        uui-tag {
+            grid-row: span 2;
+            justify-self: flex-end;
+            align-self: center;
+
+            svg {
+                width: calc(var(--s) * 4);
+                height: calc(var(--s) * 4);
+                vertical-align: middle;
+            }
+
+            span {
+                margin-left: calc(var(--s) * 2);
+                vertical-align: middle;
+            }
+        }
+
+        div {
+            font-size: var(--fs-xs);
+
+            .block-head--disabled & {
+                opacity: 0.5;
             }
         }
     }

@@ -94,6 +94,16 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
         return 'icon-block-default';
     }
 
+    @state()
+    private crossedEyeIcon = html`
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
+            <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+            <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+            <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+            <path d="m2 2 20 20"/>
+        </svg>
+    `;
+
     #tooltipOnMouseEnter() {
         if (!this.collapsed) {
             this._tooltipPopover.showPopover();
@@ -195,6 +205,15 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                                 .value=${this.blockValuesByAlias}
                             ></umb-ufm-render>
                         </strong>
+                        ${this.block.isDisabled
+                            ? html`
+                                <uui-tag style="--uui-tag-border-radius: 30px;">
+                                    ${this.crossedEyeIcon}
+                                    <span>Hidden</span>
+                                </uui-tag>
+                            `
+                            : nothing
+                        }
                         <div>${this.blockDefinitionName}</div>
                     </div>
                 </button>
@@ -214,14 +233,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         @click=${this.onToggleVisibilityClicked}
                     >
                         ${this.block.isDisabled
-                            ? html`
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
-                                    <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
-                                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
-                                    <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
-                                    <path d="m2 2 20 20"/>
-                                </svg>
-                            `
+                            ? this.crossedEyeIcon
                             : html`
                                 <uui-icon
                                     style="font-size: 20px;"

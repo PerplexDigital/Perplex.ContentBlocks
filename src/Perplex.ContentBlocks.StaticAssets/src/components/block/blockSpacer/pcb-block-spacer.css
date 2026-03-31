@@ -1,5 +1,5 @@
 .pcb-block-spacer {
-    padding: calc(var(--s) * 3) 0;
+    padding: calc(var(--s) * 2) 0;
     margin: 0 calc(var(--s) * 12);
 
     display: grid;
@@ -10,8 +10,7 @@
 
     &.pcb-block-spacer > div {
         overflow: hidden;
-        background-color: var(--c-mystic);
-        padding: calc(var(--s) * 1) calc(var(--s) * 3);
+        border-top: 1px solid var(--c-border);
         transition: 250ms padding ease;
 
         > * {
