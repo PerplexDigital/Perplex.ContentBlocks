@@ -1,6 +1,6 @@
 .pcb-block-spacer {
     padding: calc(var(--s) * 2) 0;
-    margin: 0 calc(var(--s) * 12);
+    margin: 0 calc(var(--s) * 4);
 
     display: grid;
     grid-template-rows: 0fr;

@@ -668,7 +668,7 @@ ${JSON.stringify(this.value, null, 4)}</pre
         css`
             :host {
                 display: grid;
-                gap: 1rem;
+                gap: 0.8rem;
                 align-items: start;
 
                 @media only screen and (min-width: 1800px) {
@@ -703,7 +703,7 @@ ${JSON.stringify(this.value, null, 4)}</pre
 
             .main,
             .sidebar {
-                padding: 1rem 1.5rem;
+                padding: 0.5rem 0.9rem;
             }
 
             .sidebar {
@@ -775,8 +775,6 @@ ${JSON.stringify(this.value, null, 4)}</pre
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    padding: calc(var(--s) * 3);
-                    background-color: var(--c-mystic);
                     gap: calc(var(--s) * 3);
 
                     &.pcb__block-add--header {
