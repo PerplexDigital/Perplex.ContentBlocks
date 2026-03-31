@@ -2,11 +2,12 @@
     .swiper-button-next,
     .swiper-button-prev {
         color: white;
-        background-color: var(--uui-palette-mine-grey);
+        background: var(--c-black);
         border-radius: 100%;
-        height: 1.5rem;
-        width: 1.5rem;
-        --swiper-navigation-size: 1.5rem;
+        height: 1.2rem;
+        width: 1.2rem;
+        --swiper-navigation-size: 1.2rem;
+        --swiper-navigation-sides-offset: 1rem;
 
         svg {
             width: 0.35rem;
@@ -22,13 +23,13 @@
 }
 
 .swiper-pagination-bullet-active {
-    background-color: var(--uui-palette-mine-grey);
+    background: var(--c-black);
 }
 
 .swiper-button-next,
 .swiper-button-prev {
     color: white;
-    background-color: var(--uui-palette-mine-grey);
+    background: var(--c-black);
     border-radius: 100%;
     height: 2rem;
     width: 2rem;
@@ -36,5 +37,9 @@
 
     svg {
         width: 0.5rem;
+    }
+
+    &.swiper-button-disabled {
+        opacity: 0.6;
     }
 }

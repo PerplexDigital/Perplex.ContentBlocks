@@ -521,8 +521,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             }
 
             .block {
-                box-shadow: var(--bs-base);
-
                 &.block__removing {
                     opacity: 0;
                     transform: scaleY(0);

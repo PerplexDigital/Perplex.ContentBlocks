@@ -152,70 +152,84 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     render() {
         return html`
-            <div class="block-head">
+            <div class="block-head ${this.block.isDisabled ? 'block-head--disabled' : ''}">
                 <button
                     type="button"
                     @click=${this.onHeadClicked}
-                    class=${`block-head__toggle ${this.block.isDisabled ? 'block-head__toggle--disabled' : ''} ${this.collapsed ? '' : 'block-head--open'}`}
+                    class=${`block-head__toggle ${this.collapsed ? '' : 'block-head--open'}`}
                 >
-                    ${this.section === Section.CONTENT && !this.isTouchDevice
+                    ${!this.isTouchDevice
                         ? html`
-                              <b
-                                  id="tooltip-toggle"
-                                  popovertarget="tooltip-popover"
-                                  @mouseenter=${this.#tooltipOnMouseEnter}
-                                  @mouseleave=${this.#tooltipOnMouseLeave}
-                              >
-                                  <uui-icon
-                                      class="block-head__handle icon icon--base"
-                                      name="icon-grip"
-                                  >
-                                  </uui-icon
-                              ></b>
-                              <uui-popover-container id="tooltip-popover">
-                                  <div
-                                      style="background-color: var(--uui-color-surface); max-width: 150px; box-shadow: var(--uui-shadow-depth-4); padding: var(--uui-size-space-4); border-radius: var(--uui-border-radius); font-size: 0.9rem;"
-                                  >
-                                      An expanded block cannot be dragged. Collapse the block to drag it.
-                                  </div>
-                              </uui-popover-container>
-                          `
-                        : nothing}
+                            <div
+                                id="tooltip-toggle"
+                                class="block-head__handle-wrapper"
+                                popovertarget="tooltip-popover"
+                                @mouseenter=${this.#tooltipOnMouseEnter}
+                                @mouseleave=${this.#tooltipOnMouseLeave}
+                            >
+                                ${this.section === Section.CONTENT
+                                    ? html`
+                                        <uui-icon
+                                            class="block-head__handle icon icon--base"
+                                            name="icon-grip"
+                                        ></uui-icon>
+                                    `
+                                    : nothing
+                                }
+                            </div>
+                            <uui-popover-container id="tooltip-popover">
+                                <div
+                                    style="background-color: var(--uui-color-surface); max-width: 150px; box-shadow: var(--uui-shadow-depth-4); padding: var(--uui-size-space-4); border-radius: var(--uui-border-radius); font-size: 0.9rem;"
+                                >
+                                    An expanded block cannot be dragged. Collapse the block to drag it.
+                                </div>
+                            </uui-popover-container>
+                        `
+                        : nothing
+                    }
                     <div class="block-head__title">
                         <strong>
                             <umb-ufm-render
                                 inline
                                 .markdown=${this.blockNameTemplate}
                                 .value=${this.blockValuesByAlias}
-                            ></umb-ufm-render
-                        ></strong>
+                            ></umb-ufm-render>
+                        </strong>
                         <div>${this.blockDefinitionName}</div>
                     </div>
-
-                    <svg class="block-head__icon icon icon--base">
-                        <use href="${this.getIcon()}"></use>
-                    </svg>
                 </button>
                 ${this.isDraggingBlock
                     ? nothing
                     : html`
-                          <pcb-inline-layout-switch
-                              .definition=${this.definition}
-                              .initialSlideIndex=${this.selectedLayoutIndex}
-                          ></pcb-inline-layout-switch>
-                      `}
-
+                        <pcb-inline-layout-switch
+                            .definition=${this.definition}
+                            .initialSlideIndex=${this.selectedLayoutIndex}
+                        ></pcb-inline-layout-switch>
+                    `
+                }
                 <div class="block-head__controls">
                     <button
-                        class="block-head__control ${this.block.isDisabled ? 'block-head__control--disabled' : ''}"
+                        class="block-head__control"
                         type="button"
                         @click=${this.onToggleVisibilityClicked}
                     >
-                        <uui-icon
-                            style="font-size: 20px; color: var(--c-submarine);"
-                            name="icon-eye"
-                        >
-                        </uui-icon>
+                        ${this.block.isDisabled
+                            ? html`
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
+                                    <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                                    <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+                                    <path d="m2 2 20 20"/>
+                                </svg>
+                            `
+                            : html`
+                                <uui-icon
+                                    style="font-size: 20px;"
+                                    name="icon-eye"
+                                >
+                                </uui-icon>
+                            `
+                        }
                     </button>
 
                     <button
@@ -230,7 +244,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         </uui-icon>
                     </button>
                     <button
-                        class="block-head__control ${this.isMandatory ? 'block-head__control--disabled' : ''}"
+                        class="block-head__control"
                         type="button"
                         @click=${this.onRemoveClicked}
                         ?disabled=${this.isMandatory}
