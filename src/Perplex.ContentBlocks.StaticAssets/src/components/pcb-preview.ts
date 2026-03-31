@@ -229,13 +229,16 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                     </div>
                 </div>
 
-                <div class="iframe-frame ${this.previewMode}">
-                    <iframe
-                        class="preview-frame"
-                        frameborder="0"
-                        scrolling="yes"
-                    ></iframe>
+                <div class="iframe-wrapper">
+                    <div class="iframe-frame ${this.previewMode}">
+                        <iframe
+                            class="preview-frame"
+                            frameborder="0"
+                            scrolling="yes"
+                        ></iframe>
+                    </div>
                 </div>
+                    
 
                 ${this.lastUpdate
                     ? html`
@@ -270,7 +273,6 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             align-items: center;
             justify-content: space-between;
             padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
-            background-color: var(--c-mystic, #fcfcfc);
             gap: calc(var(--s, 4px) * 2);
         }
 
@@ -308,11 +310,19 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             border-color: var(--c-black, #212121);
         }
 
+        .iframe-wrapper {
+            margin: calc(var(--s) * 4);
+            padding: calc(var(--s) * 2);
+            border-radius: var(--r-lg);
+            background: var(--uui-color-background);
+        }
+
         .iframe-frame {
             position: relative;
             overflow: hidden;
             background-color: var(--c-mystic, #fcfcfc);
             margin: 0 auto;
+            
             transition: width 250ms ease;
         }
 
@@ -336,7 +346,6 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             display: flex;
             justify-content: center;
             padding: calc(var(--s, 4px) * 1) calc(var(--s, 4px) * 2);
-            background-color: var(--c-mystic, #fcfcfc);
         }
 
         .last-update {

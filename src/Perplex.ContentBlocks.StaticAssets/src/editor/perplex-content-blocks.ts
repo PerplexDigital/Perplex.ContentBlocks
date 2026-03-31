@@ -719,7 +719,7 @@ ${JSON.stringify(this.value, null, 4)}</pre
             }
 
             .sidebar__section {
-                background-color: var(--c-mystic, #fcfcfc);
+                background-color: var(--c-white);
                 border: 1px solid rgba(var(--c-submarine, 190, 190, 190), 0.5);
                 border-radius: var(--r-lg, 4px);
             }
