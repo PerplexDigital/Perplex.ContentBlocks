@@ -22,7 +22,6 @@ import { PcbValueCopiedEvent } from '../../../events/copyPaste.ts';
 import { PcbToastEvent } from '../../../events/toast.ts';
 import { store } from '../../../state/store.ts';
 import { connect } from 'pwa-helpers';
-import { getCategoriesForDefinition } from '../../../utils/block.ts';
 
 const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
 
