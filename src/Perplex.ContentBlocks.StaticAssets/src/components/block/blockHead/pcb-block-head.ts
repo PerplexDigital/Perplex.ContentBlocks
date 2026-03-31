@@ -87,13 +87,6 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @query('#tooltip-popover')
     private _tooltipPopover!: HTMLElement;
 
-    private getIcon() {
-        const categories = getCategoriesForDefinition(this.definition?.id ?? '', this.categoryWithDefinitions);
-        if (this.definition?.icon) return this.definition.icon;
-        if (categories.length > 0) return categories[0].icon;
-        return 'icon-block-default';
-    }
-
     @state()
     private crossedEyeIcon = html`
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
