@@ -27,8 +27,8 @@ const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
 
 @customElement('pcb-block-head')
 export default class PcbBlockHead extends connect(store)(UmbLitElement) {
-    @property()
-    definition?: PerplexBlockDefinition;
+    @property({ attribute: false })
+    definition!: PerplexBlockDefinition;
 
     @property({ attribute: false })
     blockDefinitionName!: string;
@@ -132,9 +132,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     onToggleVisibilityClicked = () => {
         const updatedBlock = { ...this.block, isDisabled: !this.block.isDisabled };
-        if (this.definition) {
-            this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section));
-        }
+        this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section));
     };
 
     onCopyClicked = () => {
@@ -142,14 +140,14 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
         this.dispatchEvent(
             new PcbToastEvent('positive', {
                 headline: 'Copied!',
-                message: `${this.definition?.name} copied to clipboard`,
+                message: `${this.definition.name} copied to clipboard`,
             }),
         );
     };
 
     protected willUpdate(_changedProperties: PropertyValues<this>) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
-            this.selectedLayoutIndex = this.definition?.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
+            this.selectedLayoutIndex = this.definition.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
         }
 
         if (_changedProperties.has('block')) {

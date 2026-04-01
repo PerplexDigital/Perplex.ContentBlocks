@@ -17,6 +17,7 @@ import { propertyAliasPrefix } from '../utils/block.js';
 
 export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBase implements UmbPropertyDatasetContext {
     #block: PerplexContentBlocksBlock;
+    #name: UmbStringState<string>;
     #properties: UmbArrayState<UmbBlockDataValueModel>;
     #variantId: UmbClassState<UmbVariantId>;
     #PROPERTY_ALIAS_PREFIX_LENGTH: number;
@@ -24,6 +25,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
 
     constructor(
         host: UmbControllerHost,
+        name: string,
         block: PerplexContentBlocksBlock,
         onChange: PerplexContentBlocksBlockOnChangeFn,
     ) {
@@ -32,12 +34,13 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
         this.#block = block;
         this.#onChange = onChange;
 
+        this.#name = new UmbStringState(name);
         this.#properties = new UmbArrayState(block.content.values, p => p.alias + '#' + p.culture + '#' + p.segment);
         this.#variantId = new UmbClassState(UmbVariantId.CreateInvariant());
 
         this.#PROPERTY_ALIAS_PREFIX_LENGTH = propertyAliasPrefix(this.#block).length;
 
-        this.name = new UmbStringState(this.getName()).asObservable();
+        this.name = this.#name.asObservable();
         this.properties = this.#properties.asObservable();
         this.readOnly = new UmbBooleanState(this.getReadOnly()).asObservable();
 
@@ -49,8 +52,7 @@ export class PerplexContentBlocksPropertyDatasetContext extends UmbControllerBas
     }
 
     getName() {
-        // Not sure where this is used, let's at least return something unique per block.
-        return `Block ${this.getUnique()}`;
+        return this.#name.getValue();
     }
 
     getProperties(): Promise<Array<UmbPropertyValueData> | undefined> {

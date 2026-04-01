@@ -17,8 +17,8 @@ import { Swiper } from 'swiper/types';
 
 @customElement('pcb-block-definition')
 export class PcbBlockDefinition extends LitElement {
-    @property()
-    definition?: PerplexBlockDefinition;
+    @property({ attribute: false })
+    definition!: PerplexBlockDefinition;
 
     @property()
     disabled?: boolean;
@@ -49,10 +49,6 @@ export class PcbBlockDefinition extends LitElement {
             changedProperties.has('definition') ||
             changedProperties.has('selectedLayoutIndex')
         ) {
-            if (!this.definition) {
-                return;
-            }
-
             this.selected =
                 this.definition.id === this.selectedDefinition &&
                 this.definition.layouts[this.selectedLayoutIndex].id === this.selectedLayout;
@@ -60,15 +56,13 @@ export class PcbBlockDefinition extends LitElement {
     }
 
     onSelected() {
-        if (!this.definition) return;
-
         this.dispatchEvent(
             new CustomEvent(ON_BLOCK_SELECTED, {
                 bubbles: true,
                 detail: {
                     id: UmbId.new(),
                     definitionId: this.definition.id,
-                    layoutId: this.definition?.layouts[this.selectedLayoutIndex].id,
+                    layoutId: this.definition.layouts[this.selectedLayoutIndex].id,
                     isDisabled: false,
                     content: {
                         key: UmbId.new(),
@@ -103,8 +97,6 @@ export class PcbBlockDefinition extends LitElement {
     }
 
     render() {
-        if (!this.definition) return html``;
-
         return html`
             <swiper-container
                 slides-per-view="1"
@@ -115,7 +107,7 @@ export class PcbBlockDefinition extends LitElement {
                 init="false"
                 pagination="true"
             >
-                ${this.definition!.layouts.map(
+                ${this.definition.layouts.map(
                     layout => html`
                         <swiper-slide>
                             <button
@@ -126,19 +118,19 @@ export class PcbBlockDefinition extends LitElement {
                                 <div id="portrait">
                                     <img
                                         src=${layout.previewImage}
-                                        alt="Preview image for ${this.definition!.name}"
+                                        alt="Preview image for ${this.definition.name}"
+                                        loading="lazy"
+                                        decoding="async"
                                     />
                                 </div>
 
-                                <div
-                                    id="open-part"
-                                >
+                                <div id="open-part">
                                     <strong
                                         >${layout.name === 'Default'
-                                            ? this.definition!.name
-                                            : `${this.definition!.name} | ${layout.name}`}</strong
+                                            ? this.definition.name
+                                            : `${this.definition.name} | ${layout.name}`}</strong
                                     >
-                                    <span>${this.definition!.description}</span>
+                                    <span>${this.definition.description}</span>
                                 </div>
 
                                 <div class="blockDefinition__controls"></div>

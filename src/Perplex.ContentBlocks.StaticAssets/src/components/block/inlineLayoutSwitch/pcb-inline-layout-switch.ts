@@ -1,5 +1,13 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { html, customElement, property, PropertyValues, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
+import {
+    html,
+    customElement,
+    property,
+    PropertyValues,
+    state,
+    unsafeCSS,
+    nothing,
+} from '@umbraco-cms/backoffice/external/lit';
 import styles from './pcb-inline-layout-switch.css?inline';
 import { PerplexBlockDefinition } from '../../../types.ts';
 import { initSwiper } from '../../../utils/swiper.ts';
@@ -14,11 +22,20 @@ type SwiperContainerEl = HTMLElement & { swiper: Swiper };
  */
 @customElement('pcb-inline-layout-switch')
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
-    @property()
-    definition?: PerplexBlockDefinition;
+    @property({ attribute: false })
+    definition!: PerplexBlockDefinition;
 
     @property({ attribute: false })
     initialSlideIndex: number = 0;
+
+    @state()
+    private previewLoaded: boolean = false;
+
+    private _loadPreviewImages = () => {
+        if (!this.previewLoaded) {
+            this.previewLoaded = true;
+        }
+    };
 
     protected firstUpdated(_changedProperties: PropertyValues) {
         const swiperEl = this.shadowRoot?.querySelector<SwiperContainerEl>('swiper-container');
@@ -38,15 +55,19 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
                 swiperPreviewEl.swiper.slideTo(index, 500, true);
 
-                const selectedLayout = this.definition!.layouts[index];
+                const selectedLayout = this.definition.layouts[index];
                 this.dispatchEvent(new PcbBlockLayoutChangeEvent(selectedLayout));
             }) as EventListener);
         }
     }
 
     render() {
-        if (!this.definition?.layouts) return;
-        return html`<div class="inline-layout-switch">
+        return html`<div
+            class="inline-layout-switch"
+            @mouseenter=${this._loadPreviewImages}
+            @focusin=${this._loadPreviewImages}
+            @touchstart=${this._loadPreviewImages}
+        >
             <swiper-container
                 slides-per-view="1"
                 speed="500"
@@ -77,14 +98,18 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     pagination="false"
                     id="swiper-preview"
                 >
-                    ${this.definition!.layouts.map(
+                    ${this.definition.layouts.map(
                         layout => html`
                             <swiper-slide>
                                 <div class="inline-layout-switch__layout">
-                                    <img
-                                        src=${layout.previewImage}
-                                        alt="Preview image for ${this.definition!.name}"
-                                    />
+                                    ${this.previewLoaded
+                                        ? html`<img
+                                              src=${layout.previewImage}
+                                              alt="Preview image for ${this.definition.name}"
+                                              loading="lazy"
+                                              decoding="async"
+                                          />`
+                                        : nothing}
                                 </div>
                             </swiper-slide>
                         `,
