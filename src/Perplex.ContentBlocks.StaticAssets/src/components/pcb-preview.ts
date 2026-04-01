@@ -210,22 +210,44 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                 <div class="preview-header">
                     <strong class="preview-title">Smart Preview</strong>
                     <div class="preview-controls">
-                        <button
-                            class="preview-btn ${this.previewMode === 'desktop' ? 'active' : ''}"
+                        <uui-button
+                            look="primary"
+                            label="Desktop preview"
                             @click=${this.switchToDesktop}
-                            title="Desktop preview"
+                            class="${this.previewMode === 'desktop' ? 'active' : ''}"
+                            style="${this.previewMode !== 'desktop' ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);' : ''}"
                         >
-                            <uui-icon name="icon-display"></uui-icon>
-                            Desktop
-                        </button>
-                        <button
-                            class="preview-btn ${this.previewMode === 'mobile' ? 'active' : ''}"
+                            <slot name="extra">
+                                <uui-icon>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" class="lucide lucide-monitor" viewBox="0 0 24 24">
+                                        <g vector-effect="non-scaling-stroke">
+                                            <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+                                            <path d="M8 21h8M12 17v4"></path>
+                                        </g>
+                                    </svg>
+                                </uui-icon>
+                            </slot>
+                            <slot name="label">Desktop</slot>
+                        </uui-button>
+                        <uui-button
+                            look="primary"
+                            label="Mobile preview"
                             @click=${this.switchToMobile}
-                            title="Mobile preview"
+                            class="${this.previewMode === 'mobile' ? 'active' : ''}"
+                            style="${this.previewMode !== 'mobile' ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);' : ''}"
                         >
-                            <uui-icon name="icon-iphone"></uui-icon>
-                            Mobile
-                        </button>
+                            <slot name="extra">
+                                <uui-icon>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" class="lucide lucide-smartphone" viewBox="0 0 24 24">
+                                        <g vector-effect="non-scaling-stroke">
+                                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                                            <path d="M12 18h.01"></path>
+                                        </g>
+                                    </svg>
+                                </uui-icon>
+                            </slot>
+                            <slot name="label">Mobile</slot>
+                        </uui-button>
                     </div>
                 </div>
 
@@ -242,10 +264,10 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
 
                 ${this.lastUpdate
                     ? html`
-                          <div class="preview-footer">
-                              <span class="last-update"> Last updated: ${this.formattedLastUpdate} </span>
-                          </div>
-                      `
+                        <div class="preview-footer">
+                            <span class="last-update">Last updated: ${this.formattedLastUpdate}</span>
+                        </div>
+                    `
                     : nothing}
             </div>
         `;
@@ -272,13 +294,14 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
+            padding: calc(var(--s, 4px) * 2.5) calc(var(--s, 4px) * 4);
             gap: calc(var(--s, 4px) * 2);
+            border-bottom: 1px solid var(--c-border, #d8d7d9);
         }
 
         .preview-title {
             font-size: var(--fs-base, 16px);
-            color: var(--c-black, #212121);
+            color: var(--c-black, #333333);
         }
 
         .preview-controls {
@@ -286,52 +309,20 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             gap: calc(var(--s, 4px) * 1);
         }
 
-        .preview-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: calc(var(--s, 4px) * 1);
-            padding: calc(var(--s, 4px) * 1.5) calc(var(--s, 4px) * 3);
-            border: 1px solid rgba(var(--c-submarine, 190, 190, 190), 0.5);
-            border-radius: var(--r-base, 2px);
-            background-color: transparent;
-            color: var(--c-black, #212121);
-            cursor: pointer;
-            font-size: var(--fs-sm, 14px);
-            transition: all 150ms ease;
-        }
-
-        .preview-btn:hover {
-            background-color: rgba(var(--c-submarine, 190, 190, 190), 0.2);
-        }
-
-        .preview-btn.active {
-            background-color: var(--c-black, #212121);
-            color: var(--c-mystic, #fcfcfc);
-            border-color: var(--c-black, #212121);
-        }
-
         .iframe-wrapper {
-            margin: calc(var(--s) * 4);
-            padding: calc(var(--s) * 2);
-            border-radius: var(--r-lg);
-            background: var(--uui-color-background);
+            margin: calc(var(--s, 4px) * 4);
+            padding: calc(var(--s, 4px) * 2);
+            border-radius: var(--r-lg, 4px);
+            background-color: var(--uui-color-background, #f3f3f5);
         }
 
         .iframe-frame {
             position: relative;
             overflow: hidden;
-            background-color: var(--c-mystic, #fcfcfc);
+            width: 100%;
+            background-color: var(--uui-color-background, #f3f3f5);
             margin: 0 auto;
-            
             transition: width 250ms ease;
-        }
-
-        .iframe-frame.desktop {
-            width: 100%;
-        }
-
-        .iframe-frame.mobile {
-            width: 100%;
         }
 
         .preview-frame {
@@ -339,18 +330,19 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             top: 0;
             left: 0;
             border: none;
-            background-color: #fff;
+            background-color: var(--c-white, #f3f3f5);
         }
 
         .preview-footer {
             display: flex;
             justify-content: center;
-            padding: calc(var(--s, 4px) * 1) calc(var(--s, 4px) * 2);
+            padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
+            border-top: 1px solid var(--c-border, #d8d7d9);
         }
 
         .last-update {
             font-size: var(--fs-xs, 12px);
-            color: var(--c-black, #212121);
+            color: var(--c-black, #333333);
         }
     `;
 }

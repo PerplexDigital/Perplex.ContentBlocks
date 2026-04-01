@@ -1,14 +1,14 @@
 .block-head {
-    border-radius: var(--r-lg);
+    border-radius: var(--r-lg, 4px);
     display: flex;
-    border: 1px solid var(--c-border);
+    border: 1px solid var(--c-border, #d8d7d9);
     cursor: pointer;
     transition: 250ms border ease;
-    background-color: var(--c-white);
+    background-color: var(--c-white, #ffffff);
     overflow: hidden;
 
     &.block-head--disabled {
-        background: var(--c-alabaster);
+        background-color: var(--c-alabaster, #fafafa);
         cursor: default;
     }
 
@@ -21,13 +21,13 @@
         border: none;
         cursor: pointer;
         background-color: transparent;
-        border-right: 1px solid var(--c-border);
+        border-right: 1px solid var(--c-border, #d8d7d9);
         height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 0 calc(var(--s) * 4);
+        padding: 0 calc(var(--s, 4px) * 4);
 
         .block-head--disabled & {
             cursor: default;
@@ -51,26 +51,26 @@
     }
 
     &.block-head--open {
-        border-radius: var(--r-lg) 0;
-        border-bottom: 1px solid rgba(var(--c-submarine), 1);
+        border-radius: var(--r-lg, 4px) 0;
+        border-bottom: 1px solid var(--c-border, #d8d7d9);
     }
 
     .block-head__icon {
-        padding: calc(var(--s) * 4) calc(var(--s) * 4);
+        padding: calc(var(--s, 4px) * 4) calc(var(--s, 4px) * 4);
     }
 
     .block-head__handle-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: calc(var(--s) * 9);
-        border-right: 1px solid var(--c-border);
-        background: var(--c-alabaster);
+        width: calc(var(--s, 4px) * 9);
+        border-right: 1px solid var(--c-border, #d8d7d9);
+        background-color: var(--c-alabaster, #fafafa);
     }
 
     .block-head__handle {
         display: none;
-        color: var(--c-silver);
+        color: var(--c-silver, #c4c4c4);
 
         @media only screen and (min-width: 1000px) {
             display: block;
@@ -87,7 +87,7 @@
         flex-direction: column;
         flex: 1 1 0;
         min-width: 0;
-        min-height: calc(var(--s) * 10);
+        min-height: calc(var(--s, 4px) * 10);
         line-height: 1.5;
 
         .block-head--disabled & {
@@ -101,7 +101,7 @@
             width: 100%;
             min-width: 0;
             text-align: left;
-            font-size: var(--fs-sm);
+            font-size: var(--fs-sm, 14px);
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
@@ -119,19 +119,19 @@
             align-self: center;
 
             svg {
-                width: calc(var(--s) * 4);
-                height: calc(var(--s) * 4);
+                width: calc(var(--s, 4px) * 4);
+                height: calc(var(--s, 4px) * 4);
                 vertical-align: middle;
             }
 
             span {
-                margin-left: calc(var(--s) * 2);
+                margin-left: calc(var(--s, 4px) * 2);
                 vertical-align: middle;
             }
         }
 
         div {
-            font-size: var(--fs-xs);
+            font-size: var(--fs-xs, 12px);
 
             .block-head--disabled & {
                 opacity: 0.5;

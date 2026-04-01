@@ -87,7 +87,7 @@ export default class PerplexContentBlocksStructurePropertyEditorUiElement
         }
 
         option:checked {
-            background: var(--uui-select-selected-option-background-color, var(--uui-color-selected));
+            background-color: var(--uui-select-selected-option-background-color, var(--uui-color-selected));
             color: var(--uui-select-selected-option-color, var(--uui-color-selected-contrast));
         }
 

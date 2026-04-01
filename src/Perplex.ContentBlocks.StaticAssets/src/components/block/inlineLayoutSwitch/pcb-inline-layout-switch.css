@@ -28,7 +28,7 @@
         position: absolute;
         z-index: 50;
         visibility: hidden;
-        bottom: calc(-1 * (var(--preview-height) + (var(--s) * 2)));
+        bottom: calc(-1 * (var(--preview-height) + (var(--s, 4px) * 2)));
         height: var(--preview-height);
         left: 0;
         right: 0;

@@ -2,7 +2,7 @@
     .swiper-button-next,
     .swiper-button-prev {
         color: white;
-        background: var(--c-black);
+        background-color: var(--c-black, #333333);
         border-radius: 100%;
         height: 1.2rem;
         width: 1.2rem;
@@ -23,13 +23,13 @@
 }
 
 .swiper-pagination-bullet-active {
-    background: var(--c-black);
+    background-color: var(--c-black, #333333);
 }
 
 .swiper-button-next,
 .swiper-button-prev {
     color: white;
-    background: var(--c-black);
+    background-color: var(--c-black, #333333);
     border-radius: 100%;
     height: 2rem;
     width: 2rem;

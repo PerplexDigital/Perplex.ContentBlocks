@@ -633,22 +633,26 @@ ${JSON.stringify(this.value, null, 4)}</pre
                               : nothing}
                           ${this.config?.getValueByAlias('hideControls') !== true
                               ? html`<div class="sidebar__section sidebar__controls">
-                                    <button
-                                        class="sidebar__btn"
+                                    <uui-button
+                                        look="secondary"
                                         @click=${this.toggleAllBlocks}
                                     >
-                                        <uui-icon
-                                            name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}
-                                        ></uui-icon>
-                                        ${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}
-                                    </button>
-                                    <button
-                                        class="sidebar__btn"
+                                        <slot name="extra">
+                                            <uui-icon
+                                                name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}
+                                            ></uui-icon>
+                                        </slot>
+                                        <slot name="label">${this.areAllBlocksOpen ? 'Close all blocks' : 'Open all blocks'}</slot>
+                                    </uui-button>
+                                    <uui-button
+                                        look="secondary"
                                         @click=${this.copyAllBlocks}
                                     >
-                                        <uui-icon name="icon-documents"></uui-icon>
-                                        Copy all blocks
-                                    </button>
+                                        <slot name="extra">
+                                            <uui-icon name="icon-documents"></uui-icon>
+                                        </slot>
+                                        <slot name="label">Copy all blocks</slot>
+                                    </uui-button>
                                 </div>`
                               : nothing}
                       </div>
@@ -691,7 +695,7 @@ ${JSON.stringify(this.value, null, 4)}</pre
 
                 position: fixed;
                 width: 100vw;
-                background: 0;
+                background: none;
                 outline: 0;
                 border: 0;
                 margin: 0;
@@ -729,27 +733,6 @@ ${JSON.stringify(this.value, null, 4)}</pre
                 flex-direction: column;
                 gap: calc(var(--s, 4px) * 2);
                 padding: calc(var(--s, 4px) * 3);
-            }
-
-            .sidebar__btn {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: calc(var(--s, 4px) * 2);
-                padding: calc(var(--s, 4px) * 2.5) calc(var(--s, 4px) * 4);
-                border: 1px solid rgba(var(--c-submarine, 190, 190, 190), 0.7);
-                border-radius: var(--r-base, 2px);
-                background-color: var(--c-wild-sand, #f5f5f5);
-                color: var(--c-black, #212121);
-                cursor: pointer;
-                font-size: var(--fs-sm, 14px);
-                font-weight: 500;
-                transition: all 150ms ease;
-            }
-
-            .sidebar__btn:hover {
-                background-color: rgba(var(--c-submarine, 190, 190, 190), 0.3);
-                border-color: rgba(var(--c-submarine, 190, 190, 190), 1);
             }
 
             .pcb__wrapper {

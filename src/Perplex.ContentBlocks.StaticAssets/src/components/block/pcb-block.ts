@@ -543,12 +543,12 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
                     &.block__body--hidden {
                         grid-template-rows: 0fr;
-                        padding: 0 calc(var(--s) * 8);
+                        padding: 0 calc(var(--s, 4px) * 8);
                     }
 
                     &.block__body--open {
                         grid-template-rows: 1fr;
-                        padding: calc(var(--s) * 6) calc(var(--s) * 8);
+                        padding: calc(var(--s, 4px) * 6) calc(var(--s, 4px) * 8);
                     }
 
                     &.block__body--dragging {

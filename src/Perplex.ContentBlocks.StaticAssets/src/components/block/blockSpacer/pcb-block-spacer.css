@@ -1,6 +1,6 @@
 .pcb-block-spacer {
-    padding: calc(var(--s) * 2) 0;
-    margin: 0 calc(var(--s) * 4);
+    padding: calc(var(--s, 4px) * 2) 0;
+    margin: 0 calc(var(--s, 4px) * 4);
 
     display: grid;
     grid-template-rows: 0fr;
@@ -23,7 +23,7 @@
         grid-template-rows: 1fr;
 
         > div {
-            padding: calc(var(--s) * 3);
+            padding: calc(var(--s, 4px) * 3);
 
             > * {
                 opacity: 1;
@@ -35,6 +35,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: calc(var(--s) * 3);
+        gap: calc(var(--s, 4px) * 3);
     }
 }

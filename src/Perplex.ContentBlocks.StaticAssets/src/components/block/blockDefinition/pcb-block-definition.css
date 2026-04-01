@@ -1,7 +1,7 @@
 :host {
     flex-direction: column;
     justify-content: flex-start;
-    background: white;
+    background-color: var(--c-white, #ffffff);
 }
 
 :host(:focus-within) {
@@ -119,7 +119,7 @@ swiper-slide {
 
 :host([disabled]) #open-part {
     pointer-events: none;
-    background: var(--uui-color-disabled);
+    background-color: var(--uui-color-disabled);
     color: var(--uui-color-contrast-disabled);
 }
 
