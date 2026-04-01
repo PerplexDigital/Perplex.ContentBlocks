@@ -184,7 +184,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                             </div>
                             <uui-popover-container id="tooltip-popover">
                                 <div
-                                    style="background-color: var(--uui-color-surface); max-width: 150px; box-shadow: var(--uui-shadow-depth-4); padding: var(--uui-size-space-4); border-radius: var(--uui-border-radius); font-size: 0.9rem;"
+                                    style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
                                 >
                                     An expanded block cannot be dragged. Collapse the block to drag it.
                                 </div>

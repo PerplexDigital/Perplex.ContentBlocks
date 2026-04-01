@@ -15,19 +15,19 @@
     /* Spacing */
     --s: 4px;
     /* Font sizes */
-    --fs-xs: calc(var(--s) * 3);
-    --fs-sm: calc(var(--s) * 3.5);
-    --fs-base: calc(var(--s) * 4);
-    --fs-lg: calc(var(--s) * 4.5);
-    --fs-xl: calc(var(--s) * 5);
-    --fs-2xl: calc(var(--s) * 6);
-    --fs-3xl: calc(var(--s) * 7.5);
-    --fs-4xl: calc(var(--s) * 9);
-    --fs-5xl: calc(var(--s) * 12);
-    --fs-6xl: calc(var(--s) * 15);
-    --fs-7xl: calc(var(--s) * 18);
-    --fs-8xl: calc(var(--s) * 24);
-    --fs-9xl: calc(var(--s) * 32);
+    --fs-xs: calc(var(--s) * 3); /* 12px */
+    --fs-sm: calc(var(--s) * 3.5); /* 14px */
+    --fs-base: calc(var(--s) * 4); /* 16px */
+    --fs-lg: calc(var(--s) * 4.5); /* 18px */
+    --fs-xl: calc(var(--s) * 5); /* 20px */
+    --fs-2xl: calc(var(--s) * 6); /* 24px */
+    --fs-3xl: calc(var(--s) * 7.5); /* 30px */
+    --fs-4xl: calc(var(--s) * 9); /* 36px */
+    --fs-5xl: calc(var(--s) * 12); /* 48px */
+    --fs-6xl: calc(var(--s) * 15); /* 60px */
+    --fs-7xl: calc(var(--s) * 18); /* 72px */
+    --fs-8xl: calc(var(--s) * 24); /* 96px */
+    --fs-9xl: calc(var(--s) * 32); /* 128px */
     /* Border radius */
     --r-base: 2px;
     --r-lg: 4px;
