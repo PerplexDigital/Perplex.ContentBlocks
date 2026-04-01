@@ -255,7 +255,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         const elementType = elementTypeResponse.data;
         this.properties = await this.#getOrderedProperties(elementType);
 
-        new PerplexContentBlocksPropertyDatasetContext(this, this.block, this.onBlockUpdate);
+        const name = this.definition?.name ?? '';
+        new PerplexContentBlocksPropertyDatasetContext(this, name, this.block, this.onBlockUpdate);
 
         const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
 

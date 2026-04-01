@@ -486,20 +486,26 @@ export default class PerplexContentBlocksElement
     }
 
     render() {
+        const header = this._value.header;
+        const headerDefinition = header ? this.findDefinitionById(header.definitionId) : null;
+        const blocks = this._value.blocks
+            .map(block => ({ block, definition: this.findDefinitionById(block.definitionId) }))
+            .filter(item => item.definition !== null);
+
         return html`
             <div class="main">
                 <div class="pcb__wrapper">
                     <div class="pcb__content">
                         <div class="pcb__blocks">
-                            ${this._value.header && this.structure !== Structure.Blocks
+                            ${header && headerDefinition && this.structure !== Structure.Blocks
                                 ? html`
                                       <pcb-block
                                           .draggable=${false}
-                                          .block=${this._value.header}
-                                          .collapsed=${!this.openedBlocks.includes(this._value.header.id)}
+                                          .block=${header}
+                                          .collapsed=${!this.openedBlocks.includes(header.id)}
                                           .removeBlock=${this.removeHeader.bind(this)}
                                           .dataPath=${this.dataPath}
-                                          .definition=${this.findDefinitionById(this._value.header.definitionId)}
+                                          .definition=${headerDefinition}
                                           .section=${Section.HEADER}
                                           .openModal=${this._openModal}
                                       ></pcb-block>
@@ -540,9 +546,9 @@ export default class PerplexContentBlocksElement
                                 ? html`
                                       <pcb-drag-and-drop .blocks="${this._value.blocks}">
                                           ${repeat(
-                                              this._value.blocks,
-                                              block => block.id,
-                                              (block, index) => html`
+                                              blocks,
+                                              ({ block }) => block.id,
+                                              ({ block, definition }, index) => html`
                                                   <pcb-drag-item
                                                       .canDrag=${!this.openedBlocks.includes(block.id)}
                                                       .blockId=${block.id}
@@ -553,7 +559,7 @@ export default class PerplexContentBlocksElement
                                                           .collapsed=${!this.openedBlocks.includes(block.id)}
                                                           .removeBlock=${this.#boundRemoveBlock}
                                                           .dataPath=${this.dataPath}
-                                                          .definition=${this.findDefinitionById(block.definitionId)}
+                                                          .definition=${definition}
                                                           .section=${Section.CONTENT}
                                                           .index=${index}
                                                           ${animate({ id: block.id })}
