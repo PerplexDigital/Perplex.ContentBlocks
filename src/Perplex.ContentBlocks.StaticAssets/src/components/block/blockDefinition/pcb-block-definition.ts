@@ -119,6 +119,8 @@ export class PcbBlockDefinition extends LitElement {
                                     <img
                                         src=${layout.previewImage}
                                         alt="Preview image for ${this.definition.name}"
+                                        loading="lazy"
+                                        decoding="async"
                                     />
                                 </div>
 
