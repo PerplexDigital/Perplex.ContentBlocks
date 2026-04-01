@@ -71,13 +71,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id));
             }
 
-            if (!this.collapsed) {
-                this.updateComplete.then(() => {
-                    Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
-                        const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
-                        if (layout) layout.orientation = 'vertical';
-                    });
-                });
+            if (!this.collapsed && this.ok) {
+                void this.#loadBodyAndApplyPropertyLayout();
             }
         }
     }
@@ -104,7 +99,13 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     private ok: boolean = false;
 
     @state()
-    properties!: UmbPropertyTypeModel[];
+    properties: UmbPropertyTypeModel[] = [];
+
+    @state()
+    private bodyLoaded: boolean = false;
+
+    @state()
+    private bodyLoading: boolean = false;
 
     @state()
     isMandatory: boolean = false;
@@ -122,6 +123,10 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     #dataTypes: {
         [key: string]: UmbDataTypeDetailModel;
     } = {};
+
+    #bodyLoadPromise?: Promise<void>;
+
+    #propertyDatasetContext?: PerplexContentBlocksPropertyDatasetContext;
 
     #validationContext!: UmbValidationController;
 
@@ -251,20 +256,69 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         const elementType = elementTypeResponse.data;
         this.properties = await this.#getOrderedProperties(elementType);
 
-        new PerplexContentBlocksPropertyDatasetContext(this, this.definition.name, this.block, this.onBlockUpdate);
+        this.ok = true;
 
-        const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
+        if (!this.collapsed) {
+            await this.#loadBodyAndApplyPropertyLayout();
+        }
+    }
 
-        for (const dataTypeUnique of dataTypeUniques) {
-            const dataTypeResponse = await this.#dataTypeRepository.requestByUnique(dataTypeUnique);
-            if (dataTypeResponse.data == null) {
-                throw new Error(`Cannot retrieve data type ${dataTypeUnique}`);
-            }
+    async #loadBodyAndApplyPropertyLayout() {
+        await this.#ensureBodyLoaded();
+        await this.updateComplete;
 
-            this.#dataTypes[dataTypeUnique] = dataTypeResponse.data;
+        Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
+            const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
+            if (layout) layout.orientation = 'vertical';
+        });
+    }
+
+    async #ensureBodyLoaded() {
+        if (this.bodyLoaded) {
+            return;
         }
 
-        this.ok = true;
+        if (this.#bodyLoadPromise) {
+            await this.#bodyLoadPromise;
+            return;
+        }
+
+        this.#bodyLoadPromise = (async () => {
+            this.bodyLoading = true;
+
+            if (!this.#propertyDatasetContext) {
+                this.#propertyDatasetContext = new PerplexContentBlocksPropertyDatasetContext(
+                    this,
+                    this.definition.name,
+                    this.block,
+                    this.onBlockUpdate,
+                );
+            }
+
+            const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
+
+            for (const dataTypeUnique of dataTypeUniques) {
+                if (this.#dataTypes[dataTypeUnique] != null) {
+                    continue;
+                }
+
+                const dataTypeResponse = await this.#dataTypeRepository.requestByUnique(dataTypeUnique);
+                if (dataTypeResponse.data == null) {
+                    throw new Error(`Cannot retrieve data type ${dataTypeUnique}`);
+                }
+
+                this.#dataTypes[dataTypeUnique] = dataTypeResponse.data;
+            }
+
+            this.bodyLoaded = true;
+        })();
+
+        try {
+            await this.#bodyLoadPromise;
+        } finally {
+            this.bodyLoading = false;
+            this.#bodyLoadPromise = undefined;
+        }
     }
 
     async #getOrderedProperties(elementType: UmbDocumentTypeDetailModel) {
@@ -482,27 +536,31 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     })}"
                 >
                     <div>
-                        ${repeat(
-                            this.properties,
-                            property => property.unique,
-                            property => {
-                                const dataType = this.#dataTypes[property.dataType.unique];
-                                if (dataType == null) throw new Error('missing data type');
+                        ${this.bodyLoaded
+                            ? repeat(
+                                  this.properties,
+                                  property => property.unique,
+                                  property => {
+                                      const dataType = this.#dataTypes[property.dataType.unique];
+                                      if (dataType == null) throw new Error('missing data type');
 
-                                return html` <umb-property
-                                    .dataPath=${`${this.dataPath}.${this.block.id}.${property.alias}`}
-                                    .alias=${propertyAliasPrefix(this.block) + property.alias}
-                                    .label=${property.name}
-                                    .description=${property.description}
-                                    .appearance=${property.appearance}
-                                    property-editor-ui-alias=${dataType.editorUiAlias}
-                                    orientation="vertical"
-                                    .config=${dataType.values}
-                                    .validation=${property.validation}
-                                >
-                                </umb-property>`;
-                            },
-                        )}
+                                      return html` <umb-property
+                                          .dataPath=${`${this.dataPath}.${this.block.id}.${property.alias}`}
+                                          .alias=${propertyAliasPrefix(this.block) + property.alias}
+                                          .label=${property.name}
+                                          .description=${property.description}
+                                          .appearance=${property.appearance}
+                                          property-editor-ui-alias=${dataType.editorUiAlias}
+                                          orientation="vertical"
+                                          .config=${dataType.values}
+                                          .validation=${property.validation}
+                                      >
+                                      </umb-property>`;
+                                  },
+                              )
+                            : this.bodyLoading
+                              ? html`<div class="block__body-loading">Loading ...</div>`
+                              : nothing}
                     </div>
                 </div>
             </div>`;
@@ -555,6 +613,11 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
                     > div {
                         overflow: hidden;
+                    }
+
+                    .block__body-loading {
+                        color: var(--c-submarine);
+                        padding: calc(var(--s) * 2) 0;
                     }
                 }
             }
