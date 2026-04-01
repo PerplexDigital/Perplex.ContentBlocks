@@ -86,6 +86,9 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @query('#tooltip-popover')
     private _tooltipPopover!: HTMLElement;
 
+    @query('#tooltip-header-block')
+    private _tooltipHeaderBlock!: HTMLElement;
+
     private crossedEyeIcon(fontSize = '20px') {
         return html`
             <uui-icon style="font-size: ${fontSize};">
@@ -103,10 +106,15 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
         if (!this.collapsed) {
             this._tooltipPopover.showPopover();
         }
+
+        if (this.collapsed && this.section === Section.HEADER) {
+            this._tooltipHeaderBlock.showPopover();
+        }
     }
 
     #tooltipOnMouseLeave() {
         this._tooltipPopover.hidePopover();
+        this._tooltipHeaderBlock.hidePopover();
     }
 
     stateChanged(state: any) {
@@ -168,7 +176,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                             <div
                                 id="tooltip-toggle"
                                 class="block-head__handle-wrapper"
-                                popovertarget="tooltip-popover"
+                                popovertarget=${this.collapsed && this.section === Section.HEADER ? 'tooltip-header-block' : 'tooltip-popover'}
                                 @mouseenter=${this.#tooltipOnMouseEnter}
                                 @mouseleave=${this.#tooltipOnMouseLeave}
                             >
@@ -189,6 +197,18 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                                     An expanded block cannot be dragged. Collapse the block to drag it.
                                 </div>
                             </uui-popover-container>
+                            ${this.section === Section.HEADER
+                                ? html`
+                                    <uui-popover-container id="tooltip-header-block">
+                                        <div
+                                            style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
+                                        >
+                                            A header block cannot be dragged because it should always be positioned at the top op the page.
+                                        </div>
+                                    </uui-popover-container>
+                                `
+                                : nothing
+                            }
                         `
                         : nothing
                     }
