@@ -215,13 +215,30 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                             label="Desktop preview"
                             @click=${this.switchToDesktop}
                             class="${this.previewMode === 'desktop' ? 'active' : ''}"
-                            style="${this.previewMode !== 'desktop' ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);' : ''}"
+                            style="${this.previewMode !== 'desktop'
+                                ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);'
+                                : ''}"
                         >
                             <slot name="extra">
                                 <uui-icon>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" class="lucide lucide-monitor" viewBox="0 0 24 24">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.75"
+                                        class="lucide lucide-monitor"
+                                        viewBox="0 0 24 24"
+                                    >
                                         <g vector-effect="non-scaling-stroke">
-                                            <rect width="20" height="14" x="2" y="3" rx="2"></rect>
+                                            <rect
+                                                width="20"
+                                                height="14"
+                                                x="2"
+                                                y="3"
+                                                rx="2"
+                                            ></rect>
                                             <path d="M8 21h8M12 17v4"></path>
                                         </g>
                                     </svg>
@@ -234,13 +251,31 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                             label="Mobile preview"
                             @click=${this.switchToMobile}
                             class="${this.previewMode === 'mobile' ? 'active' : ''}"
-                            style="${this.previewMode !== 'mobile' ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);' : ''}"
+                            style="${this.previewMode !== 'mobile'
+                                ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);'
+                                : ''}"
                         >
                             <slot name="extra">
                                 <uui-icon>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" class="lucide lucide-smartphone" viewBox="0 0 24 24">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.75"
+                                        class="lucide lucide-smartphone"
+                                        viewBox="0 0 24 24"
+                                    >
                                         <g vector-effect="non-scaling-stroke">
-                                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                                            <rect
+                                                width="14"
+                                                height="20"
+                                                x="5"
+                                                y="2"
+                                                rx="2"
+                                                ry="2"
+                                            ></rect>
                                             <path d="M12 18h.01"></path>
                                         </g>
                                     </svg>
@@ -260,14 +295,13 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                         ></iframe>
                     </div>
                 </div>
-                    
 
                 ${this.lastUpdate
                     ? html`
-                        <div class="preview-footer">
-                            <span class="last-update">Last updated: ${this.formattedLastUpdate}</span>
-                        </div>
-                    `
+                          <div class="preview-footer">
+                              <span class="last-update">Last updated: ${this.formattedLastUpdate}</span>
+                          </div>
+                      `
                     : nothing}
             </div>
         `;

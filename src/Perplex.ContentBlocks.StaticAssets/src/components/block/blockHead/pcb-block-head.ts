@@ -92,11 +92,26 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     private crossedEyeIcon(fontSize = '20px') {
         return html`
             <uui-icon style="font-size: ${fontSize};">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
-                    <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
-                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
-                    <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
-                    <path d="m2 2 20 20"/>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-eye-off-icon lucide-eye-off"
+                >
+                    <path
+                        d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                    />
+                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                    <path
+                        d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                    />
+                    <path d="m2 2 20 20" />
                 </svg>
             </uui-icon>
         `;
@@ -171,45 +186,45 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                 >
                     ${!this.isTouchDevice
                         ? html`
-                            <div
-                                id="tooltip-toggle"
-                                class="block-head__handle-wrapper"
-                                popovertarget=${this.collapsed && this.section === Section.HEADER ? 'tooltip-header-block' : 'tooltip-popover'}
-                                @mouseenter=${this.#tooltipOnMouseEnter}
-                                @mouseleave=${this.#tooltipOnMouseLeave}
-                            >
-                                ${this.section === Section.CONTENT
-                                    ? html`
-                                        <uui-icon
-                                            class="block-head__handle icon icon--base"
-                                            name="icon-grip"
-                                        ></uui-icon>
+                              <div
+                                  id="tooltip-toggle"
+                                  class="block-head__handle-wrapper"
+                                  popovertarget=${this.collapsed && this.section === Section.HEADER
+                                      ? 'tooltip-header-block'
+                                      : 'tooltip-popover'}
+                                  @mouseenter=${this.#tooltipOnMouseEnter}
+                                  @mouseleave=${this.#tooltipOnMouseLeave}
+                              >
+                                  ${this.section === Section.CONTENT
+                                      ? html`
+                                            <uui-icon
+                                                class="block-head__handle icon icon--base"
+                                                name="icon-grip"
+                                            ></uui-icon>
+                                        `
+                                      : nothing}
+                              </div>
+                              <uui-popover-container id="tooltip-popover">
+                                  <div
+                                      style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
+                                  >
+                                      An expanded block cannot be dragged. Collapse the block to drag it.
+                                  </div>
+                              </uui-popover-container>
+                              ${this.section === Section.HEADER
+                                  ? html`
+                                        <uui-popover-container id="tooltip-header-block">
+                                            <div
+                                                style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
+                                            >
+                                                A header block cannot be dragged because it should always be positioned
+                                                at the top op the page.
+                                            </div>
+                                        </uui-popover-container>
                                     `
-                                    : nothing
-                                }
-                            </div>
-                            <uui-popover-container id="tooltip-popover">
-                                <div
-                                    style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
-                                >
-                                    An expanded block cannot be dragged. Collapse the block to drag it.
-                                </div>
-                            </uui-popover-container>
-                            ${this.section === Section.HEADER
-                                ? html`
-                                    <uui-popover-container id="tooltip-header-block">
-                                        <div
-                                            style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
-                                        >
-                                            A header block cannot be dragged because it should always be positioned at the top op the page.
-                                        </div>
-                                    </uui-popover-container>
-                                `
-                                : nothing
-                            }
-                        `
-                        : nothing
-                    }
+                                  : nothing}
+                          `
+                        : nothing}
                     <div class="block-head__title">
                         <strong>
                             <umb-ufm-render
@@ -220,25 +235,23 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         </strong>
                         ${this.block.isDisabled
                             ? html`
-                                <uui-tag style="--uui-tag-border-radius: 30px;">
-                                    ${this.crossedEyeIcon('12px')}
-                                    <span>Hidden</span>
-                                </uui-tag>
-                            `
-                            : nothing
-                        }
+                                  <uui-tag style="--uui-tag-border-radius: 30px;">
+                                      ${this.crossedEyeIcon('12px')}
+                                      <span>Hidden</span>
+                                  </uui-tag>
+                              `
+                            : nothing}
                         <div>${this.blockDefinitionName}</div>
                     </div>
                 </button>
                 ${this.isDraggingBlock
                     ? nothing
                     : html`
-                        <pcb-inline-layout-switch
-                            .definition=${this.definition}
-                            .initialSlideIndex=${this.selectedLayoutIndex}
-                        ></pcb-inline-layout-switch>
-                    `
-                }
+                          <pcb-inline-layout-switch
+                              .definition=${this.definition}
+                              .initialSlideIndex=${this.selectedLayoutIndex}
+                          ></pcb-inline-layout-switch>
+                      `}
                 <div class="block-head__controls">
                     <button
                         class="block-head__control"
@@ -248,13 +261,12 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         ${this.block.isDisabled
                             ? this.crossedEyeIcon()
                             : html`
-                                <uui-icon
-                                    style="font-size: 20px;"
-                                    name="icon-eye"
-                                >
-                                </uui-icon>
-                            `
-                        }
+                                  <uui-icon
+                                      style="font-size: 20px;"
+                                      name="icon-eye"
+                                  >
+                                  </uui-icon>
+                              `}
                     </button>
 
                     <button
