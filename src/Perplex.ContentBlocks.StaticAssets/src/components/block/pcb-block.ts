@@ -570,8 +570,16 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         unsafeCSS(baseStyles),
         css`
             :host {
+                display: block;
+                position: relative;
+                z-index: 0;
                 width: 100%;
-                overflow: hidden;
+                overflow: visible;
+            }
+
+            :host(:hover),
+            :host(:focus-within) {
+                z-index: 2;
             }
 
             .block {
