@@ -85,8 +85,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     @property({ attribute: false })
     collapsed: boolean = true;
 
-    @property()
-    definition?: PerplexBlockDefinition;
+    @property({ attribute: false })
+    definition!: PerplexBlockDefinition;
 
     @property({ attribute: false })
     block!: PerplexContentBlocksBlock;
@@ -204,9 +204,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             layoutId: event.selectedLayout.id,
         };
 
-        if (this.definition) {
-            this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.editorId));
-        }
+        this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.editorId));
     };
 
     constructor() {
@@ -238,9 +236,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     };
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
-        if (this.definition) {
-            this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.editorId));
-        }
+        this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.editorId));
     };
 
     async firstUpdated() {
@@ -255,8 +251,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         const elementType = elementTypeResponse.data;
         this.properties = await this.#getOrderedProperties(elementType);
 
-        const name = this.definition?.name ?? '';
-        new PerplexContentBlocksPropertyDatasetContext(this, name, this.block, this.onBlockUpdate);
+        new PerplexContentBlocksPropertyDatasetContext(this, this.definition.name, this.block, this.onBlockUpdate);
 
         const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
 
@@ -448,7 +443,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     }
 
     render() {
-        if (!this.ok || this.definition == null) {
+        if (!this.ok) {
             return nothing;
         }
 
@@ -468,8 +463,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 <pcb-block-head
                     .block=${this.block}
                     .id=${this.block.id}
-                    .blockDefinitionName=${this.definition?.name}
-                    .blockNameTemplate=${this.definition?.blockNameTemplate ?? ''}
+                    .blockDefinitionName=${this.definition.name}
+                    .blockNameTemplate=${this.definition.blockNameTemplate ?? ''}
                     .collapsed="${this.collapsed}"
                     .definition=${this.definition}
                     .section=${this.section}

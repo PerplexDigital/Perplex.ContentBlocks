@@ -14,8 +14,8 @@ type SwiperContainerEl = HTMLElement & { swiper: Swiper };
  */
 @customElement('pcb-inline-layout-switch')
 export default class PerplexContentBlocksBlockElement extends UmbLitElement {
-    @property()
-    definition?: PerplexBlockDefinition;
+    @property({ attribute: false })
+    definition!: PerplexBlockDefinition;
 
     @property({ attribute: false })
     initialSlideIndex: number = 0;
@@ -38,14 +38,13 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
                 swiperPreviewEl.swiper.slideTo(index, 500, true);
 
-                const selectedLayout = this.definition!.layouts[index];
+                const selectedLayout = this.definition.layouts[index];
                 this.dispatchEvent(new PcbBlockLayoutChangeEvent(selectedLayout));
             }) as EventListener);
         }
     }
 
     render() {
-        if (!this.definition?.layouts) return;
         return html`<div class="inline-layout-switch">
             <swiper-container
                 slides-per-view="1"
@@ -77,13 +76,13 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     pagination="false"
                     id="swiper-preview"
                 >
-                    ${this.definition!.layouts.map(
+                    ${this.definition.layouts.map(
                         layout => html`
                             <swiper-slide>
                                 <div class="inline-layout-switch__layout">
                                     <img
                                         src=${layout.previewImage}
-                                        alt="Preview image for ${this.definition!.name}"
+                                        alt="Preview image for ${this.definition.name}"
                                     />
                                 </div>
                             </swiper-slide>
