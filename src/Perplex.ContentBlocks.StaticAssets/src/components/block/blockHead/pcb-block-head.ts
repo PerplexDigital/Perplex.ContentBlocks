@@ -265,7 +265,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         @click=${this.onCopyClicked}
                     >
                         <uui-icon
-                            style="font-size: 20px; color: var(--c-submarine);"
+                            style="font-size: 20px;"
                             name="icon-documents"
                         >
                         </uui-icon>
@@ -277,7 +277,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                         ?disabled=${this.isMandatory}
                     >
                         <uui-icon
-                            style="font-size: 20px; color: var(--c-submarine);"
+                            style="font-size: 20px;"
                             name="icon-trash"
                         >
                         </uui-icon>
