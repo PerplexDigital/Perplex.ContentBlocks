@@ -549,6 +549,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     &.block__body--open {
                         grid-template-rows: 1fr;
                         padding: calc(var(--s, 4px) * 6) calc(var(--s, 4px) * 8);
+                        border-bottom-left-radius: var(--r-lg, 4px);
+                        border-bottom-right-radius: var(--r-lg, 4px);
                     }
 
                     &.block__body--dragging {

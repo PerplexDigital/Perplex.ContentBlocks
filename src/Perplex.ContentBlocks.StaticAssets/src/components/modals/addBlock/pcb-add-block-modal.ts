@@ -124,15 +124,8 @@ export default class PerplexContentBlocksAddBlockModalElement
                             @input=${this.onSearchTermChanged}
                             placeholder="Search blocks..."
                             .value=${this.searchTerm || ''}
+                            style="--uui-input-background-color: var(--c-alabaster);"
                         ></uui-input>
-                        <uui-button
-                            label="reset filters"
-                            look="primary"
-                            ?disabled=${!this.searchTerm && !this.selectedCategories}
-                            @click=${this.onResetFilters}
-                        >
-                            Reset <uui-icon name="icon-trash"></uui-icon>
-                        </uui-button>
                     </div>
                     <div class="addBlockModal__filters">
                         ${categories.map(category => {
@@ -157,6 +150,14 @@ export default class PerplexContentBlocksAddBlockModalElement
                             `;
                         })}
                     </div>
+                    <uui-button
+                        label="reset filters"
+                        look="primary"
+                        ?disabled=${!this.searchTerm && !this.selectedCategories}
+                        @click=${this.onResetFilters}
+                    >
+                        Reset <uui-icon name="icon-axis-rotation"></uui-icon>
+                    </uui-button>
                 </div>
 
                 ${filteredCategories.length === 0

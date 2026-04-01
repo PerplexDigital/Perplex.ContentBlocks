@@ -9,12 +9,18 @@
     height: 100%;
 
     .addBlockModal__filterBar {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr max-content;
         grid-column: 1 / -1;
-        gap: calc(var(--s, 4px) * 3);
+        gap: calc(var(--s, 4px) * 2);
+        margin-block: calc(var(--s, 4px) * -8) calc(var(--s, 4px) * 2);
+        margin-inline: calc(var(--s, 4px) * -12);
+        padding: calc(var(--s, 4px) * 4);
+        border-bottom: 1px solid var(--c-border, #d8d7d9);
+        background: var(--c-white);
 
         .addBlockModal__searchBar {
+            grid-column: span 2;
             display: flex;
             gap: calc(var(--s, 4px) * 3);
 
@@ -65,8 +71,9 @@
     .addBlockModal__blockList {
         display: grid;
         grid-template-columns: repeat(1, minmax(0, 1fr));
-        gap: 20px;
-        padding: calc(var(--s, 4px) * 10);
+        gap: calc(var(--s, 4px) * 6);
+        margin-block: 0;
+        padding: calc(var(--s, 4px) * 8) calc(var(--s, 4px) * 12);
         overflow-y: scroll;
 
         @media only screen and (min-width: 500px) {
