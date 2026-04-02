@@ -574,6 +574,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 position: relative;
                 width: 100%;
                 overflow: visible;
+                min-width: 0;
             }
 
             :host(:hover),

@@ -118,6 +118,7 @@ export class PcbDragAndDrop extends LitElement {
             padding: 1rem 0 0 0;
             width: 100%;
             overflow: visible;
+            min-width: 0;
         }
         .placeholder {
             border: 2px dashed #aaa;
