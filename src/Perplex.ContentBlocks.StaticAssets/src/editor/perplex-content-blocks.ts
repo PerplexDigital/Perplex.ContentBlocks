@@ -42,7 +42,6 @@ import { getBlocksFromPreset } from '../utils/preset.ts';
 import { differentiateBlocks } from '../utils/copyPaste.ts';
 import { provide } from '@lit/context';
 import { editorContext } from '../context/index.ts';
-import { animate } from '@lit-labs/motion';
 import { umbOpenModal } from '@umbraco-cms/backoffice/modal';
 import { PCB_ADD_BLOCK_MODAL_TOKEN } from '../components/modals/addBlock/modal-token.ts';
 import { firstValueFrom } from '@umbraco-cms/backoffice/external/rxjs';
@@ -591,7 +590,6 @@ export default class PerplexContentBlocksElement
                                                               .definition=${definition}
                                                               .section=${Section.CONTENT}
                                                               .index=${index}
-                                                              ${animate({ id: block.id })}
                                                               .openModal=${this._openModal}
                                                           ></pcb-block>
                                                       </pcb-drag-item>

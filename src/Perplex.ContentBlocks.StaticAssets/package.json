@@ -11,7 +11,6 @@
     "prettier": "prettier --write \"./src/**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
   "dependencies": {
-    "@lit-labs/motion": "^1.0.7",
     "@lit/context": "^1.1.6",
     "@reduxjs/toolkit": "^2.2.6",
     "mutative": "^1.0.5",
