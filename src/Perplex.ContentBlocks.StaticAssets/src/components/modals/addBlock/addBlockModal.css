@@ -13,7 +13,6 @@
         grid-template-columns: 1fr max-content;
         grid-column: 1 / -1;
         gap: calc(var(--s, 4px) * 2);
-        margin-bottom: calc(var(--s, 4px) * 2);
         padding: calc(var(--s, 4px) * 4);
         border-bottom: 1px solid var(--c-border, #d8d7d9);
         background: var(--c-white);
@@ -72,6 +71,7 @@
         gap: calc(var(--s, 4px) * 6);
         margin: 0 1px 0 0;
         padding: calc(var(--s, 4px) * 8) calc(var(--s, 4px) * 12);
+        overflow-y: scroll;
         background-color: var(--uui-color-background, #f3f3f5);
 
         @media only screen and (min-width: 500px) {
@@ -92,5 +92,6 @@
         padding: 1rem 2rem;
         background-color: var(--uui-color-surface);
         box-shadow: var(--uui-shadow-depth-4);
+        border-top: 1px solid var(--c-border, #d8d7d9);
     }
 }
