@@ -30,7 +30,8 @@ swiper-slide {
     .blockDefinition__inner {
         width: 100%;
         height: 100%;
-        display: block;
+        display: grid;
+        grid-template-rows: calc(var(--s, 4px) * 71) 1fr max-content;
         overflow: hidden;
         margin-bottom: 0;
         border: 1px solid var(--c-border, #d8d7d9);
@@ -87,7 +88,6 @@ swiper-slide {
     background-color: var(--c-white, #ffffff);
     display: flex;
     justify-content: center;
-    height: calc(var(--s, 4px) * 71);
     padding: calc(var(--s, 4px) * 4);
 
     .portrait__placeholder {
@@ -127,7 +127,6 @@ swiper-slide {
     flex-direction: column;
     justify-content: center;
     line-height: var(--uui-size-6);
-    min-height: calc((var(--s, 4px) * 13));
 
     strong {
         font-size: var(--fs-sm, 14px);
