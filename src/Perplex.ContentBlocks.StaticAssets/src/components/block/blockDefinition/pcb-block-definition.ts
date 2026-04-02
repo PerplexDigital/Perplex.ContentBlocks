@@ -102,10 +102,11 @@ export class PcbBlockDefinition extends LitElement {
                 slides-per-view="1"
                 speed="500"
                 allow-touch-move="false"
+                watch-overflow="false"
                 class="blockDefinition ${this.selected ? 'blockDefinition--selected' : ''}"
                 navigation="true"
                 init="false"
-                pagination="true"
+                pagination="false"
             >
                 ${this.definition.layouts.map(
                     layout => html`
@@ -116,12 +117,14 @@ export class PcbBlockDefinition extends LitElement {
                                 ?disabled=${this.disabled}
                             >
                                 <div id="portrait">
-                                    <img
-                                        src=${layout.previewImage}
-                                        alt="Preview image for ${this.definition.name}"
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
+                                    <div class="portrait__placeholder">
+                                        <img
+                                            src=${layout.previewImage}
+                                            alt="Preview image for ${this.definition.name}"
+                                            loading="lazy"
+                                            decoding="async"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div id="open-part">
@@ -133,7 +136,9 @@ export class PcbBlockDefinition extends LitElement {
                                     <span>${this.definition.description}</span>
                                 </div>
 
-                                <div class="blockDefinition__controls"></div>
+                                <div class="blockDefinition__controls">
+                                    <strong>${layout.name}</strong>
+                                </div>
                             </button>
                         </swiper-slide>
                     `,

@@ -38,10 +38,11 @@
                 display: flex;
                 align-items: center;
                 gap: calc(var(--s, 4px) * 2);
+                line-height: 1.2;
                 background-color: var(--uui-color-surface);
                 border: 1px solid var(--uui-color-border);
                 border-radius: var(--uui-border-radius);
-                padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
+                padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 3);
                 cursor: pointer;
                 transition:
                     background-color 0.2s ease-in-out,
