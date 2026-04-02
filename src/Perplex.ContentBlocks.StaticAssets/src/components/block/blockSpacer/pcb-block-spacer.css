@@ -1,16 +1,17 @@
 .pcb-block-spacer {
-    padding: calc(var(--s, 4px) * 2) 0;
-    margin: 0 calc(var(--s, 4px) * 4);
-
     display: grid;
     grid-template-rows: 0fr;
+    padding: calc(var(--s, 4px) * 3) calc(var(--s, 4px) * 4);
+    border-radius: calc(var(--s, 4px) * 5);
     transition:
         250ms grid-template-rows ease,
         250ms padding ease;
 
     &.pcb-block-spacer > div {
         overflow: hidden;
-        border-top: 1px solid var(--c-border);
+        background-color: var(--uui-color-background, #f3f3f5);
+        border-top: 2px solid var(--uui-color-background, #f3f3f5);
+        border-radius: var(--s, 4px);
         transition: 250ms padding ease;
 
         > * {
@@ -23,7 +24,7 @@
         grid-template-rows: 1fr;
 
         > div {
-            padding: calc(var(--s, 4px) * 3);
+            padding: calc(var(--s, 4px) * 5);
 
             > * {
                 opacity: 1;
