@@ -105,7 +105,7 @@ swiper-slide {
         height: 100%;
         object-fit: contain;
         border: 1px solid var(--c-border, #d8d7d9);
-        border-radius: calc(var(--r-lg, 4px) * 2);
+        border-radius: var(--r-lg, 4px);
     }
 }
 
@@ -113,14 +113,14 @@ swiper-slide {
     text-align: left;
     background-color: var(--uui-color-surface);
     cursor: pointer;
-    color: var(--uui-color-interactive);
+    color: var(--c-black, #333333);
     border: none;
     border-top: 1px solid var(--c-border, #d8d7d9);
     border-radius: 0 0 var(--uui-border-radius) var(--uui-border-radius);
     font-family: inherit;
     font-size: var(--uui-type-small-size);
     box-sizing: border-box;
-    padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
+    padding: calc(var(--s, 4px) * 3) calc(var(--s, 4px) * 4);
     display: flex;
     flex-direction: column;
     justify-content: center;

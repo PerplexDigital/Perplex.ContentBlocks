@@ -36,6 +36,7 @@
     height: calc(var(--s, 4px) * 4.5);
     width: calc(var(--s, 4px) * 4.5);
     --swiper-navigation-size: calc(var(--s, 4px) * 4.5);
+    --swiper-navigation-sides-offset: calc(var(--s, 4px) * 4);
     z-index: 11;
 
     svg {

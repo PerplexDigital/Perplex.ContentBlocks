@@ -23,15 +23,11 @@
             grid-column: span 2;
             display: flex;
             gap: calc(var(--s, 4px) * 3);
-
-            uui-input {
-                width: 100%;
-            }
         }
 
         .addBlockModal__filters {
             display: flex;
-            gap: calc(var(--s, 4px) * 2);
+            gap: calc(var(--s, 4px) * 1.5);
             flex-wrap: wrap;
 
             .addBlockModal__filter {
@@ -49,7 +45,9 @@
                     border-color 0.2s ease-in-out;
 
                 input {
-                    margin: 0;
+                    margin: 0 0 0 calc(var(--s, 4px) * 2.5);
+                    width: calc(var(--s, 4px) * 4.5);
+                    height: calc(var(--s, 4px) * 4.5);
                 }
 
                 &:hover {
