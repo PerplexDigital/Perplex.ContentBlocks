@@ -14,14 +14,6 @@
     color: var(--uui-color-interactive-emphasis);
 }
 
-swiper-container {
-    overflow: visible;
-}
-
-swiper-slide {
-    overflow: visible;
-}
-
 .blockDefinition {
     width: 100%;
 

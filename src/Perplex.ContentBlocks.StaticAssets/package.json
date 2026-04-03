@@ -11,13 +11,8 @@
     "prettier": "prettier --write \"./src/**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
   "dependencies": {
-    "@lit-labs/motion": "^1.0.7",
     "@lit/context": "^1.1.6",
-    "@reduxjs/toolkit": "^2.2.6",
-    "mutative": "^1.0.5",
-    "pwa-helpers": "^0.9.1",
-    "redux-persist": "^6.0.0",
-    "swiper": "^11.2.10"
+    "mutative": "^1.0.5"
   },
   "devDependencies": {
     "@umbraco-cms/backoffice": "16.2.0",

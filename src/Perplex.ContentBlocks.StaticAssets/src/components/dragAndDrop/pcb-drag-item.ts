@@ -1,5 +1,5 @@
 // pcb-drag-item.ts
-import { LitElement, customElement, html, property, PropertyValues } from '@umbraco-cms/backoffice/external/lit';
+import { LitElement, customElement, html, property } from '@umbraco-cms/backoffice/external/lit';
 import { PcbDragAndDrop } from './pcb-drag-and-drop';
 
 @customElement('pcb-drag-item')
@@ -13,21 +13,20 @@ export class PcbDragItem extends LitElement {
     @property({ type: Boolean })
     canDrag = true;
 
-    updated(changedProps: PropertyValues) {
-        super.updated(changedProps);
+    connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('dragstart', this.onDragStart);
+        this.addEventListener('dragend', this.onDragEnd);
+    }
 
-        if (changedProps.has('canDrag')) {
-            if (this.canDrag) {
-                this.addEventListener('dragstart', this.onDragStart);
-                this.addEventListener('dragend', this.onDragEnd);
-            } else {
-                this.removeEventListener('dragstart', this.onDragStart);
-                this.removeEventListener('dragend', this.onDragEnd);
-            }
-        }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeEventListener('dragstart', this.onDragStart);
+        this.removeEventListener('dragend', this.onDragEnd);
     }
 
     onDragStart = (event: DragEvent) => {
+        if (!this.canDrag) return;
         this.dragging = true;
         const rect = this.getBoundingClientRect();
         PcbDragAndDrop.activeDrag = { element: this, height: rect.height };
@@ -36,6 +35,7 @@ export class PcbDragItem extends LitElement {
     };
 
     onDragEnd = () => {
+        if (!this.canDrag) return;
         this.dragging = null;
         PcbDragAndDrop.activeDrag = null;
     };

@@ -1,3 +1,5 @@
 import { createContext } from '@lit/context';
+import type { PcbEditorContext } from './pcb-editor-context.ts';
 
-export const editorContext = createContext<string>('editorContext');
+/** Rich editor context carrying definitions, caches, and shared state. */
+export const pcbEditorContext = createContext<PcbEditorContext>('pcbEditorContext');
