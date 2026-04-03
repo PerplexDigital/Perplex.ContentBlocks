@@ -168,7 +168,7 @@ export default class PcbBlockHead extends UmbLitElement {
                                   </div>
                               </uui-popover-container>
                           `
-                        : nothing}
+                        : html`<div class="block-head__handle-placeholder"></div>`}
                     <div class="block-head__title">
                         <strong>
                             <umb-ufm-render
