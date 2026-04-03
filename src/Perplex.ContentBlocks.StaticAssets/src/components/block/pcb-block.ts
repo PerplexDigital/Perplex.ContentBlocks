@@ -538,8 +538,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 overflow: visible;
             }
 
-            :host(:hover),
-            :host(:focus-within) {
+            :host(:hover) {
                 z-index: 2;
             }
 
