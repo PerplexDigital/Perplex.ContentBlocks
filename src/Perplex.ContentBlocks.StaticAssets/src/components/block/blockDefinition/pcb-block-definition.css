@@ -67,6 +67,7 @@
 }
 
 #portrait {
+    position: relative;
     background-color: var(--uui-color-surface-alt);
     display: flex;
     justify-content: center;

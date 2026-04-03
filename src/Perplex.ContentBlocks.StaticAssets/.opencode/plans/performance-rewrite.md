@@ -14,17 +14,17 @@ The Perplex.ContentBlocks property editor exhibits sluggish performance in the U
 
 ## Architectural Changes
 
-| Area | Current | New |
-|---|---|---|
-| State management | Redux + pwa-helpers connect (60+ re-renders per dispatch) | `@lit/context` + Lit ReactiveControllers |
-| Dependencies removed | `@reduxjs/toolkit`, `pwa-helpers`, `redux-persist`, `swiper`, `@lit-labs/motion` | Only `mutative` + `@lit/context` remain |
-| Layout switcher | Swiper (40+ instances) | Lightweight custom CSS/button-based switcher |
-| Content type fetching | Each block fetches independently | Shared `ContentTypeCache` at editor level |
-| Data type fetching | Each block fetches independently | Shared `DataTypeCache` at editor level |
-| API calls | 3 sequential calls | `Promise.all()` (parallel) |
-| Copy/paste storage | Redux slice + redux-persist to sessionStorage | Direct sessionStorage read/write |
-| Animations | `@lit-labs/motion` animate on every block | CSS transitions only (expand/collapse) |
-| Event listeners | Added/removed in `updated()` lifecycle | Added once in `connectedCallback`, removed in `disconnectedCallback` |
+| Area                  | Current                                                                          | New                                                                   |
+| --------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| State management      | Redux + pwa-helpers connect (60+ re-renders per dispatch)                        | `@lit/context` + Lit ReactiveControllers                              |
+| Dependencies removed  | `@reduxjs/toolkit`, `pwa-helpers`, `redux-persist`, `swiper`, `@lit-labs/motion` | Only `mutative` + `@lit/context` remain                               |
+| Layout switcher       | Swiper (40+ instances)                                                           | Lightweight custom button-based switcher with Swiper-style arrow SVGs |
+| Content type fetching | Each block fetches independently                                                 | Shared `ContentTypeCache` at editor level                             |
+| Data type fetching    | Each block fetches independently                                                 | Shared `DataTypeCache` at editor level                                |
+| API calls             | 3 sequential calls                                                               | `Promise.all()` (parallel)                                            |
+| Copy/paste storage    | Redux slice + redux-persist to sessionStorage                                    | Direct sessionStorage read/write                                      |
+| Animations            | `@lit-labs/motion` animate on every block                                        | CSS transitions only (expand/collapse)                                |
+| Event listeners       | Added/removed in `updated()` lifecycle                                           | Added once in `connectedCallback`, removed in `disconnectedCallback`  |
 
 ---
 
@@ -33,6 +33,7 @@ The Perplex.ContentBlocks property editor exhibits sluggish performance in the U
 ### 1. `package.json` — Remove Dependencies
 
 **Remove:**
+
 - `@reduxjs/toolkit` (Redux)
 - `pwa-helpers` (Redux-Lit bridge)
 - `redux-persist` (sessionStorage persistence)
@@ -40,12 +41,14 @@ The Perplex.ContentBlocks property editor exhibits sluggish performance in the U
 - `@lit-labs/motion` (animation)
 
 **Keep:**
+
 - `mutative` (immutable updates in dataset context)
 - `@lit/context` (Lit context protocol)
 
 ### 2. Delete `state/` Directory (Entire)
 
 Delete all files:
+
 - `state/store.ts`
 - `state/slices/definitions.ts`
 - `state/slices/copyPaste.ts`
@@ -57,6 +60,7 @@ Delete all files:
 Replaces ALL Redux state. Single context provided by main editor, consumed by children via `@consume`.
 
 **Data provided:**
+
 - `editorId: string`
 - `definitions: PCBCategoryWithDefinitions[]`
 - `definitionsMap: Map<string, PerplexBlockDefinition>` (precomputed lookup)
@@ -67,10 +71,12 @@ Replaces ALL Redux state. Single context provided by main editor, consumed by ch
 - `isTouchDevice: boolean`
 
 **Shared caches provided:**
+
 - `contentTypeCache: Map<string, Promise<UmbDocumentTypeDetailModel>>` — deduplicates content type requests
 - `dataTypeCache: Map<string, Promise<UmbDataTypeDetailModel>>` — deduplicates data type requests
 
 **Methods:**
+
 - `setCopied(data: CopiedData)` — writes to sessionStorage + notifies consumers
 - `getCopied(): CopiedData | null` — reads from sessionStorage
 - `getContentType(key: string): Promise<UmbDocumentTypeDetailModel>` — returns cached or fetches
@@ -83,11 +89,13 @@ Replace the simple `editorContext` string key with the new `PcbEditorContext` ob
 ### 5. `editor/perplex-content-blocks.ts` — Main Editor (Full Rewrite)
 
 **Remove:**
+
 - `connect(store)(UmbLitElement)` mixin
 - All Redux imports, dispatches, and `stateChanged()` method
 - `@lit-labs/motion` `animate()` directive usage
 
 **Add:**
+
 - Extend plain `UmbLitElement`
 - Create and `@provide` the new `PcbEditorContext` instance
 - Fetch definitions + categories + presets in `Promise.all()` (parallel)
@@ -96,6 +104,7 @@ Replace the simple `editorContext` string key with the new `PcbEditorContext` ob
 - Pass `isDraggingBlock`, `hasCopiedValue` as props to children (not global state)
 
 **Keep:**
+
 - All event handling logic (add, remove, update, copy, paste, reorder)
 - All CSS/styling
 - Preview integration
@@ -104,17 +113,20 @@ Replace the simple `editorContext` string key with the new `PcbEditorContext` ob
 ### 6. `components/block/pcb-block.ts` — Block Component (Full Rewrite)
 
 **Remove:**
+
 - `connect(store)` mixin and `stateChanged()`
 - `@lit-labs/motion` `animate({ id: block.id })`
 - Independent `UmbDocumentTypeDetailRepository` and `UmbDataTypeDetailRepository` instances
 - Adding/removing drag listeners in `updated()` (move to `connectedCallback`/`disconnectedCallback`)
 
 **Add:**
+
 - `@consume` the editor context for shared caches
 - Use `context.getContentType(key)` and `context.getDataType(key)` for deduplicated lookups
 - Receive `isDraggingBlock` and `isMandatory` as `@property` from parent
 
 **Keep:**
+
 - Validation logic
 - Lazy-loading body (only when expanded)
 - All CSS/styling
@@ -123,14 +135,17 @@ Replace the simple `editorContext` string key with the new `PcbEditorContext` ob
 ### 7. `components/block/blockHead/pcb-block-head.ts` — Block Head (Full Rewrite)
 
 **Remove:**
+
 - `connect(store)` mixin and `stateChanged()`
 - Redux state subscriptions for `isTouchDevice` and `categoryWithDefinitions`
 
 **Add:**
+
 - Receive `isTouchDevice` and `categoryWithDefinitions` as `@property` from parent
 - (Alternative: `@consume` context if needed, but props are simpler and more explicit)
 
 **Keep:**
+
 - All render logic, UFM rendering, icon lookup
 - All CSS/styling (block-head.css)
 - Copy, remove, visibility controls
@@ -138,56 +153,68 @@ Replace the simple `editorContext` string key with the new `PcbEditorContext` ob
 ### 8. `components/block/blockSpacer/pcb-block-spacer.ts` — Block Spacer (Full Rewrite)
 
 **Remove:**
+
 - `connect(store)` mixin and `stateChanged()`
 - Redux subscription for `copiedValue`
 
 **Add:**
+
 - Receive `hasCopiedValue: boolean` as `@property` from parent
 - Receive paste handler as callback prop
 
 **Keep:**
+
 - All CSS/styling (pcb-block-spacer.css)
 - Add block and paste block functionality
 
 ### 9. `components/block/inlineLayoutSwitch/pcb-inline-layout-switch.ts` — Layout Switcher (Full Rewrite)
 
 **Remove:**
+
 - Swiper entirely (2 swiper-container instances per block)
 - `initSwiper()` calls
 
 **Replace with:**
-- Simple button/dropdown-based layout picker
-- Previous/next buttons wrapping the layout name
+
+- Previous/next buttons using exact Swiper chevron SVG icons (visually identical to Swiper navigation)
+- Layout name displayed between prev/next buttons
 - Hover preview using pure CSS (show preview image on hover)
 - Same visual footprint, vastly less DOM and JS overhead
 
 **Keep:**
-- CSS styling structure (pcb-inline-layout-switch.css will be updated)
+
+- CSS styling structure (pcb-inline-layout-switch.css updated for button-based nav)
 - `PcbBlockLayoutChangeEvent` dispatch on layout change
 - Lazy preview image loading
 
 ### 10. `components/block/blockDefinition/pcb-block-definition.ts` — Block Definition Card (Rewrite)
 
 **Remove:**
+
 - Swiper carousel for layout navigation
 - `initSwiper()` calls
 
 **Replace with:**
-- Simple prev/next buttons or dot indicators for multiple layouts
-- Pure CSS transitions between layout slides
+
+- Prev/next arrow buttons overlaid on left/right of portrait image (matching Swiper navigation position)
+- Uses exact Swiper chevron SVG icons for visual parity
+- Pagination dots in the controls area below the card
 - Keep the same visual card structure (image + name + description)
 
 **Keep:**
-- CSS styling (pcb-block-definition.css)
+
+- CSS styling (pcb-block-definition.css with `position: relative` added to `#portrait`)
 - `ON_BLOCK_SELECTED` event dispatch
 - Layout selection state
 
 ### 11. `components/dragAndDrop/` — Minor Cleanup
 
 **pcb-drag-and-drop.ts:**
+
 - Keep as-is (already uses RAF throttling efficiently)
 
 **pcb-drag-item.ts:**
+
 - Move event listener add/remove from `updated()` to `connectedCallback`/`disconnectedCallback`
 - Use a simple `if (this.canDrag)` check in handlers instead
 
@@ -200,9 +227,11 @@ Replace the simple `editorContext` string key with the new `PcbEditorContext` ob
 ### 13. `queries/definitions.ts` — API Optimization
 
 **Change:**
+
 - `fetchDefinitionsPerCategory()`: call `fetchAllDefinitions()` and `fetchAllCategories()` with `Promise.all()` instead of sequential `await`
 
 **Keep:**
+
 - All endpoint paths and response types
 - Error handling pattern
 
@@ -217,10 +246,12 @@ No longer needed.
 ### 16. `utils/copyPaste.ts` — Add sessionStorage Helpers
 
 **Add:**
+
 - `saveCopiedToSession(data: CopiedData)` — `sessionStorage.setItem('pcb-copy-paste', JSON.stringify(data))`
 - `loadCopiedFromSession(): CopiedData | null` — `JSON.parse(sessionStorage.getItem('pcb-copy-paste'))`
 
 **Keep:**
+
 - `differentiateBlocks()` and `regenerateBlockListKeys()` — these are correct and efficient
 
 ### 17. Other Utils — No Changes
@@ -232,6 +263,7 @@ No longer needed.
 ### 18. `events/` — No Changes
 
 All 9 event classes are lightweight and necessary. Keep as-is:
+
 - `events/block.ts`
 - `events/copyPaste.ts`
 - `events/generic.ts`
@@ -282,11 +314,11 @@ As agreed, the preview iframe component stays untouched.
 
 ## Expected Performance Improvements
 
-| Metric | Before | After | Improvement |
-|---|---|---|---|
-| Component re-renders per state change | 60+ | 1-3 (targeted) | ~95% fewer |
-| HTTP requests (20 same-type blocks) | ~83 (3 API + 20 CT + 60 DT) | ~8 (3 API + 1 CT + ~5 DT) | ~90% fewer |
-| Bundle size (dependencies) | ~120KB | ~15KB | ~88% smaller |
-| Swiper instances per page | 40+ | 0 | 100% eliminated |
-| DOM nodes per block | ~50+ | ~15 | ~70% fewer |
-| Initial API load time | Sequential | Parallel | ~50% faster |
+| Metric                                | Before                      | After                     | Improvement     |
+| ------------------------------------- | --------------------------- | ------------------------- | --------------- |
+| Component re-renders per state change | 60+                         | 1-3 (targeted)            | ~95% fewer      |
+| HTTP requests (20 same-type blocks)   | ~83 (3 API + 20 CT + 60 DT) | ~8 (3 API + 1 CT + ~5 DT) | ~90% fewer      |
+| Bundle size (dependencies)            | ~120KB                      | ~15KB                     | ~88% smaller    |
+| Swiper instances per page             | 40+                         | 0                         | 100% eliminated |
+| DOM nodes per block                   | ~50+                        | ~15                       | ~70% fewer      |
+| Initial API load time                 | Sequential                  | Parallel                  | ~50% faster     |

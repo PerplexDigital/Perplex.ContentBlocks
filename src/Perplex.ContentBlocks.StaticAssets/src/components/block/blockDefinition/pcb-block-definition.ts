@@ -15,6 +15,20 @@ import { UmbId } from '@umbraco-cms/backoffice/id';
 import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
 import styles from './pcb-block-definition.css?inline';
 
+// Swiper-style chevron SVG (pointing right). Mirrored via CSS transform for "prev".
+const chevronSvg = html`<svg
+    width="11"
+    height="20"
+    viewBox="0 0 11 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <path
+        d="M0.38296 20.0762C0.111788 19.805 0.111788 19.3654 0.38296 19.0942L9.19758 10.2796L0.38296 1.46497C0.111788 1.19379 0.111788 0.754138 0.38296 0.482966C0.654131 0.211794 1.09379 0.211794 1.36496 0.482966L10.4341 9.55214C10.8359 9.9539 10.8359 10.6053 10.4341 11.007L1.36496 20.0762C1.09379 20.3474 0.654131 20.3474 0.38296 20.0762Z"
+        fill="currentColor"
+    ></path>
+</svg>`;
+
 @customElement('pcb-block-definition')
 export class PcbBlockDefinition extends LitElement {
     @property({ attribute: false })
@@ -110,6 +124,29 @@ export class PcbBlockDefinition extends LitElement {
                             loading="lazy"
                             decoding="async"
                         />
+
+                        ${hasMultiple
+                            ? html`
+                                  <button
+                                      type="button"
+                                      class="blockDefinition__nav-btn blockDefinition__nav-btn--prev"
+                                      ?disabled=${!hasPrev}
+                                      @click=${this._prev}
+                                      aria-label="Previous layout"
+                                  >
+                                      ${chevronSvg}
+                                  </button>
+                                  <button
+                                      type="button"
+                                      class="blockDefinition__nav-btn blockDefinition__nav-btn--next"
+                                      ?disabled=${!hasNext}
+                                      @click=${this._next}
+                                      aria-label="Next layout"
+                                  >
+                                      ${chevronSvg}
+                                  </button>
+                              `
+                            : nothing}
                     </div>
 
                     <div id="open-part">
@@ -124,45 +161,19 @@ export class PcbBlockDefinition extends LitElement {
                     <div class="blockDefinition__controls">
                         ${hasMultiple
                             ? html`
-                                  <div class="blockDefinition__nav">
-                                      <button
-                                          type="button"
-                                          class="blockDefinition__nav-btn"
-                                          ?disabled=${!hasPrev}
-                                          @click=${this._prev}
-                                          aria-label="Previous layout"
-                                      >
-                                          <uui-icon
-                                              name="icon-arrow-left"
-                                              style="font-size:12px;"
-                                          ></uui-icon>
-                                      </button>
-                                      <div class="blockDefinition__dots">
-                                          ${layouts.map(
-                                              (_, i) => html`
-                                                  <button
-                                                      type="button"
-                                                      class="blockDefinition__dot ${i === this.selectedLayoutIndex
-                                                          ? 'blockDefinition__dot--active'
-                                                          : ''}"
-                                                      @click=${(e: Event) => this._goToSlide(i, e)}
-                                                      aria-label="Layout ${i + 1}"
-                                                  ></button>
-                                              `,
-                                          )}
-                                      </div>
-                                      <button
-                                          type="button"
-                                          class="blockDefinition__nav-btn"
-                                          ?disabled=${!hasNext}
-                                          @click=${this._next}
-                                          aria-label="Next layout"
-                                      >
-                                          <uui-icon
-                                              name="icon-arrow-right"
-                                              style="font-size:12px;"
-                                          ></uui-icon>
-                                      </button>
+                                  <div class="blockDefinition__pagination">
+                                      ${layouts.map(
+                                          (_, i) => html`
+                                              <button
+                                                  type="button"
+                                                  class="blockDefinition__dot ${i === this.selectedLayoutIndex
+                                                      ? 'blockDefinition__dot--active'
+                                                      : ''}"
+                                                  @click=${(e: Event) => this._goToSlide(i, e)}
+                                                  aria-label="Layout ${i + 1}"
+                                              ></button>
+                                          `,
+                                      )}
                                   </div>
                               `
                             : nothing}
@@ -176,41 +187,57 @@ export class PcbBlockDefinition extends LitElement {
         ...UUICardElement.styles,
         unsafeCSS(styles),
         css`
-            .blockDefinition__nav {
+            /* Prev/next arrow buttons overlaid on the portrait area */
+            .blockDefinition__nav-btn {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 4px;
-                padding: 2px 0;
+                width: 2rem;
+                height: 2rem;
+                border: none;
+                border-radius: 100%;
+                background-color: var(--uui-palette-mine-grey);
+                cursor: pointer;
+                color: white;
+                padding: 0;
             }
 
-            .blockDefinition__nav-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 24px;
-                height: 24px;
-                border: none;
-                background: transparent;
-                cursor: pointer;
-                color: inherit;
-                padding: 0;
-                border-radius: var(--uui-border-radius);
+            .blockDefinition__nav-btn svg {
+                width: 0.5rem;
+            }
+
+            .blockDefinition__nav-btn--prev {
+                left: 10px;
+            }
+
+            .blockDefinition__nav-btn--prev svg {
+                transform: rotate(180deg);
+            }
+
+            .blockDefinition__nav-btn--next {
+                right: 10px;
             }
 
             .blockDefinition__nav-btn:hover:not(:disabled) {
-                background-color: var(--uui-color-surface-alt);
+                opacity: 0.8;
             }
 
             .blockDefinition__nav-btn:disabled {
-                opacity: 0.3;
+                opacity: 0.35;
                 cursor: default;
             }
 
-            .blockDefinition__dots {
+            /* Pagination dots in the controls area */
+            .blockDefinition__pagination {
                 display: flex;
                 align-items: center;
+                justify-content: center;
                 gap: 4px;
+                height: 100%;
             }
 
             .blockDefinition__dot {
