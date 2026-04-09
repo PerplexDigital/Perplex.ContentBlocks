@@ -160,6 +160,26 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
         );
     };
 
+    private get hasBlockNameValue(): boolean {
+        if (!this.blockNameTemplate) return false;
+
+        // Matches: {prefix: alias}  {=alias}  ${ alias }
+        const aliasPattern = /\{(?:[^:}]+:\s*(\w+)|=(\w+))|\$\{\s*(\w+)/g;
+        let match;
+        let hasAnyAlias = false;
+
+        while ((match = aliasPattern.exec(this.blockNameTemplate)) !== null) {
+            hasAnyAlias = true;
+            const alias = match[1] ?? match[2] ?? match[3];
+            if (alias && this.blockValuesByAlias[alias]) {
+                return true;
+            }
+        }
+
+        // No UFM aliases found — plain text template, always show
+        return !hasAnyAlias;
+    }
+
     protected willUpdate(_changedProperties: PropertyValues<this>) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
             this.selectedLayoutIndex = this.definition.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
@@ -226,13 +246,15 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                           `
                         : nothing}
                     <div class="block-head__title">
-                        <strong>
-                            <umb-ufm-render
-                                inline
-                                .markdown=${this.blockNameTemplate}
-                                .value=${this.blockValuesByAlias}
-                            ></umb-ufm-render>
-                        </strong>
+                        ${this.hasBlockNameValue
+                            ? html`<strong>
+                                  <umb-ufm-render
+                                      inline
+                                      .markdown=${this.blockNameTemplate}
+                                      .value=${this.blockValuesByAlias}
+                                  ></umb-ufm-render>
+                              </strong>`
+                            : nothing}
                         ${this.block.isDisabled
                             ? html`
                                   <uui-tag style="--uui-tag-border-radius: 30px;">
