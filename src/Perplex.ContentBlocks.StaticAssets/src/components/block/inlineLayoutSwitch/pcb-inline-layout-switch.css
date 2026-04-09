@@ -19,6 +19,8 @@
     }
 
     &:hover {
+        background-color: var(--c-alabaster, #fafafa);
+
         .inline-layout-switch__preview {
             visibility: visible;
         }

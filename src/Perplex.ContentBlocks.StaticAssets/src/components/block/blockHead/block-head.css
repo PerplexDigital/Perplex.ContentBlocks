@@ -30,6 +30,10 @@
         &:last-child {
             border-right: none;
         }
+
+        &:hover {
+            background-color: var(--c-alabaster, #fafafa);
+        }
     }
 
     .block-head__toggle {
@@ -87,6 +91,11 @@
         min-width: 0;
         min-height: calc(var(--s, 4px) * 10);
         line-height: 1.5;
+        color: var(--uui-color-text);
+
+        &:hover {
+            background-color: var(--c-alabaster, #fafafa);
+        }
 
         .block-head--disabled & {
             display: grid;
@@ -133,6 +142,11 @@
 
             .block-head--disabled & {
                 opacity: 0.5;
+            }
+
+            &:only-child {
+                font-size: var(--fs-sm, 14px);
+                font-weight: 700;
             }
         }
     }

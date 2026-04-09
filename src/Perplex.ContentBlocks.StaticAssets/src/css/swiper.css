@@ -33,12 +33,17 @@
     margin-top: calc(var(--s, 4px) * -8.5);
     color: white;
     background-color: var(--c-black, #333333);
+    opacity: 0.6;
     border-radius: 100%;
     height: calc(var(--s, 4px) * 4.5);
     width: calc(var(--s, 4px) * 4.5);
     --swiper-navigation-size: calc(var(--s, 4px) * 4.5);
     --swiper-navigation-sides-offset: calc(var(--s, 4px) * 4);
     z-index: 11;
+
+    &:hover {
+        opacity: 1;
+    }
 
     svg {
         height: calc(var(--s, 4px) * 2);
@@ -50,6 +55,6 @@
     }
 
     &.swiper-button-disabled {
-        opacity: 0.6;
+        opacity: 0.25;
     }
 }
