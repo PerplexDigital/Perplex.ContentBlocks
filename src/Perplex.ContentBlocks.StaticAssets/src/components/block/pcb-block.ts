@@ -571,7 +571,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         css`
             :host {
                 display: block;
-                position: relative;
                 width: 100%;
                 overflow: visible;
                 min-width: 0;
