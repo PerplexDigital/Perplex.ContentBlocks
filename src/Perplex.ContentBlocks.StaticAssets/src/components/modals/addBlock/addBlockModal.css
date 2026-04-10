@@ -1,6 +1,5 @@
 .addBlockModal {
-    background-color: var(--uui-color-background, #f3f3f5);
-    width: 100%;
+    background-color: var(--uui-color-background);
     right: calc(var(--slider-width) * -1);
     transition: right var(--uui-modal-transition-duration, 250ms);
     display: flex;
@@ -12,40 +11,37 @@
         display: grid;
         grid-template-columns: 1fr max-content;
         grid-column: 1 / -1;
-        gap: calc(var(--s, 4px) * 2);
-        padding: calc(var(--s, 4px) * 4);
-        border-bottom: 1px solid var(--c-border, #d8d7d9);
-        background: var(--c-white);
+        gap: var(--uui-size-3);
+        padding: var(--uui-size-5);
+        border-bottom: 1px solid var(--uui-color-border);
+        background: var(--uui-color-surface);
 
         .addBlockModal__searchBar {
             grid-column: span 2;
             display: flex;
-            gap: calc(var(--s, 4px) * 3);
-        }
-
-        .addBlockModal__filters {
+            gap: var(--uui-size-4);
             display: flex;
-            gap: calc(var(--s, 4px) * 1.5);
+            gap: var(--uui-size-2);
             flex-wrap: wrap;
 
             .addBlockModal__filter {
                 display: flex;
                 align-items: center;
-                gap: calc(var(--s, 4px) * 2);
+                gap: var(--uui-size-3);
                 line-height: 1.2;
                 background-color: var(--uui-color-surface);
                 border: 1px solid var(--uui-color-border);
                 border-radius: var(--uui-border-radius);
-                padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 3);
+                padding: var(--uui-size-3) var(--uui-size-4);
                 cursor: pointer;
                 transition:
                     background-color 0.2s ease-in-out,
                     border-color 0.2s ease-in-out;
 
                 input {
-                    margin: 0 0 0 calc(var(--s, 4px) * 2.5);
-                    width: calc(var(--s, 4px) * 4.5);
-                    height: calc(var(--s, 4px) * 4.5);
+                    margin: 0 0 0 var(--uui-size-3);
+                    width: var(--uui-size-6);
+                    height: var(--uui-size-6);
                 }
 
                 &:hover {
@@ -68,18 +64,18 @@
     .addBlockModal__blockList {
         display: grid;
         grid-template-columns: repeat(1, minmax(0, 1fr));
-        gap: calc(var(--s, 4px) * 6);
+        gap: var(--uui-size-8);
         margin: 0 1px 0 0;
-        padding: calc(var(--s, 4px) * 8) calc(var(--s, 4px) * 12);
+        padding: var(--uui-size-8) var(--uui-size-12);
         overflow-y: scroll;
-        background-color: var(--uui-color-background, #f3f3f5);
+        background-color: var(--uui-color-background);
 
         @media only screen and (min-width: 500px) {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         @media only screen and (min-width: 2000px) {
-            padding: calc(var(--s, 4px) * 20);
+            padding: var(--uui-size-20);
         }
     }
 
@@ -92,6 +88,6 @@
         padding: 1rem 2rem;
         background-color: var(--uui-color-surface);
         box-shadow: var(--uui-shadow-depth-4);
-        border-top: 1px solid var(--c-border, #d8d7d9);
+        border-top: 1px solid var(--uui-color-border);
     }
 }

@@ -4,7 +4,7 @@
         --swiper-navigation-size: 1.2rem;
         --swiper-navigation-sides-offset: 1rem;
         color: white;
-        background-color: var(--c-black, #333333);
+        background-color: var(--uui-color-text);
         border-radius: 100%;
         height: 1.2rem;
         width: 1.2rem;
@@ -24,21 +24,21 @@
 }
 
 .swiper-pagination-bullet-active {
-    background-color: var(--c-black, #333333);
+    background-color: var(--uui-color-text);
 }
 
 .swiper-button-next,
 .swiper-button-prev {
     top: 100%;
-    margin-top: calc(var(--s, 4px) * -8.5);
+    margin-top: calc(var(--uui-size-11) * -1);
     color: white;
-    background-color: var(--c-black, #333333);
+    background-color: var(--uui-color-text);
     opacity: 0.6;
     border-radius: 100%;
-    height: calc(var(--s, 4px) * 4.5);
-    width: calc(var(--s, 4px) * 4.5);
-    --swiper-navigation-size: calc(var(--s, 4px) * 4.5);
-    --swiper-navigation-sides-offset: calc(var(--s, 4px) * 4);
+    height: var(--uui-size-6);
+    width: var(--uui-size-6);
+    --swiper-navigation-size: var(--uui-size-6);
+    --swiper-navigation-sides-offset: var(--uui-size-5);
     z-index: 11;
 
     &:hover {
@@ -46,7 +46,7 @@
     }
 
     svg {
-        height: calc(var(--s, 4px) * 2);
+        height: var(--uui-size-3);
 
         path {
             vector-effect: non-scaling-stroke;

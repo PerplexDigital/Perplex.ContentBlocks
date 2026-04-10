@@ -1,5 +1,5 @@
 .icon {
-    width: calc(var(--s, 4px) * 5);
-    height: calc(var(--s, 4px) * 5);
-    color: var(--c-black);
+    width: var(--uui-size-5);
+    height: var(--uui-size-5);
+    color: var(--uui-color-text);
 }

@@ -1,34 +1,18 @@
 :root {
     /** Colors **/
-    --c-boat: #a8a8a8;
     --c-mystic: #fcfcfc;
     --c-wild-sand: #f5f5f5;
     --c-alabaster: #fafafa;
-    --c-silver: #c4c4c4;
     --c-black: #333333;
     --c-white: #ffffff;
-    /* System */
-    --c-danger: #e33434;
     /* Border */
     --c-border: #d8d7d9;
     /* Spacing */
     --s: 4px;
     /* Font sizes */
     --fs-xs: calc(var(--s) * 3); /* 12px */
-    --fs-sm: calc(var(--s) * 3.5); /* 14px */
     --fs-base: calc(var(--s) * 4); /* 16px */
-    --fs-lg: calc(var(--s) * 4.5); /* 18px */
-    --fs-xl: calc(var(--s) * 5); /* 20px */
-    --fs-2xl: calc(var(--s) * 6); /* 24px */
-    --fs-3xl: calc(var(--s) * 7.5); /* 30px */
-    --fs-4xl: calc(var(--s) * 9); /* 36px */
-    --fs-5xl: calc(var(--s) * 12); /* 48px */
-    --fs-6xl: calc(var(--s) * 15); /* 60px */
-    --fs-7xl: calc(var(--s) * 18); /* 72px */
-    --fs-8xl: calc(var(--s) * 24); /* 96px */
-    --fs-9xl: calc(var(--s) * 32); /* 128px */
     /* Border radius */
-    --r-base: 2px;
     --r-lg: 4px;
     /* Shadows */
     --bs-base: var(--uui-shadow-depth-1, 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24));

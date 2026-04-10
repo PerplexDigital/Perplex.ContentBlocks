@@ -2,7 +2,7 @@
     position: relative;
     width: 280px;
     height: 100%;
-    border-block: 1px solid var(--c-border);
+    border-block: 1px solid var(--uui-color-border);
     box-sizing: border-box;
 
     swiper-container {
@@ -19,7 +19,7 @@
     }
 
     &:hover {
-        background-color: var(--c-alabaster, #fafafa);
+        background-color: var(--uui-color-surface-emphasis);
 
         .inline-layout-switch__preview {
             visibility: visible;
@@ -31,21 +31,21 @@
         position: absolute;
         z-index: 50;
         visibility: hidden;
-        bottom: calc(-1 * (var(--preview-height) + (var(--s, 4px) * 5.5)));
+        bottom: calc(-1 * (var(--preview-height) + var(--uui-size-5)));
         height: var(--preview-height);
         left: 0;
         right: 0;
-        padding: calc(var(--s, 4px) * 2);
-        border: 1px solid var(--c-border, #d8d7d9);
-        border-radius: calc(var(--r-lg, 4px) * 2);
-        background-color: var(--uui-color-background, #f3f3f5);
+        padding: var(--uui-size-3);
+        border: 1px solid var(--uui-color-border);
+        border-radius: calc(var(--uui-border-radius) * 2);
+        background-color: var(--uui-color-background);
         box-shadow: var(--bs-base);
-        border-radius: var(--r-lg);
+        border-radius: var(--uui-border-radius);
 
         .inline-layout-switch__layout {
             padding: 0;
-            border: 1px solid var(--c-border, #d8d7d9);
-            border-radius: var(--r-lg, 4px);
+            border: 1px solid var(--uui-color-border);
+            border-radius: var(--uui-border-radius);
             overflow: hidden;
             box-sizing: border-box;
         }

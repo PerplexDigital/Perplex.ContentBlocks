@@ -1,7 +1,7 @@
 :host {
     flex-direction: column;
     justify-content: flex-start;
-    background-color: var(--c-white, #ffffff);
+    background-color: var(--uui-color-surface);
     box-shadow: none;
 }
 
@@ -31,11 +31,11 @@ swiper-slide {
         width: 100%;
         height: 100%;
         display: grid;
-        grid-template-rows: calc(var(--s, 4px) * 71) 1fr max-content;
+        grid-template-rows: 18rem 1fr max-content;
         overflow: hidden;
         margin-bottom: 0;
-        border: 1px solid var(--c-border, #d8d7d9);
-        border-radius: var(--r-lg, 4px);
+        border: 1px solid var(--uui-color-border);
+        border-radius: var(--uui-border-radius);
         background: none;
         padding: 0;
         font: inherit;
@@ -69,12 +69,12 @@ swiper-slide {
         align-items: center;
         justify-content: center;
         height: 2rem;
-        padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
-        border-top: 1px solid var(--c-border, #d8d7d9);
+        padding: var(--uui-size-3) var(--uui-size-5);
+        border-top: 1px solid var(--uui-color-border);
         min-width: 0;
 
         .blockDefinition__control-wrapper {
-            margin-inline: calc(var(--s, 4px) * 8);
+            margin-inline: var(--uui-size-11);
             min-width: 0;
             display: flex;
             align-items: center;
@@ -89,7 +89,7 @@ swiper-slide {
         }
 
         uui-tag {
-            margin-left: calc(var(--s, 4px) * 2);
+            margin-left: var(--uui-size-3);
         }
     }
 
@@ -105,18 +105,17 @@ swiper-slide {
 }
 
 #portrait {
-    background-color: var(--c-white, #ffffff);
+    background-color: var(--uui-color-surface);
     display: flex;
     justify-content: center;
-    padding: calc(var(--s, 4px) * 4);
+    padding: var(--uui-size-5);
 
     .portrait__placeholder {
         width: 100%;
         height: 100%;
-        padding: calc(var(--s, 4px) * 2);
-        border: 1px solid var(--c-border, #d8d7d9);
-        border-radius: calc(var(--r-lg, 4px) * 2);
-        background-color: var(--uui-color-background, #f3f3f5);
+        padding: var(--uui-size-3);
+        border-radius: calc(var(--uui-border-radius) * 2);
+        background-color: var(--uui-color-background);
         box-sizing: border-box;
     }
 
@@ -126,8 +125,8 @@ swiper-slide {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        border: 1px solid var(--c-border, #d8d7d9);
-        border-radius: var(--r-lg, 4px);
+        border: 1px solid var(--uui-color-border);
+        border-radius: var(--uui-border-radius);
     }
 }
 
@@ -135,25 +134,25 @@ swiper-slide {
     text-align: left;
     background-color: var(--uui-color-surface);
     cursor: pointer;
-    color: var(--c-black, #333333);
+    color: var(--uui-color-text);
     border: none;
-    border-top: 1px solid var(--c-border, #d8d7d9);
+    border-top: 1px solid var(--uui-color-border);
     border-radius: 0 0 var(--uui-border-radius) var(--uui-border-radius);
     font-family: inherit;
     font-size: var(--uui-type-small-size);
     box-sizing: border-box;
-    padding: calc(var(--s, 4px) * 3) calc(var(--s, 4px) * 4);
+    padding: var(--uui-size-4) var(--uui-size-5);
     display: flex;
     flex-direction: column;
     justify-content: center;
     line-height: var(--uui-size-6);
 
     strong {
-        font-size: var(--fs-sm, 14px);
+        font-size: var(--uui-type-default-size);
     }
 
     span {
-        font-size: var(--uui-size-4);
+        font-size: var(--uui-type-small-size);
     }
 }
 
