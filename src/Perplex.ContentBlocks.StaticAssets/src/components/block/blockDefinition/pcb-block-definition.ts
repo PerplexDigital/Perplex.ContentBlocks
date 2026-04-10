@@ -6,6 +6,7 @@ import {
     LitElement,
     PropertyValues,
     unsafeCSS,
+    nothing,
 } from '@umbraco-cms/backoffice/external/lit';
 import { PerplexBlockDefinition, PerplexContentBlocksBlock } from '../../../types.ts';
 import { UUICardElement } from '@umbraco-cms/backoffice/external/uui';
@@ -109,7 +110,7 @@ export class PcbBlockDefinition extends LitElement {
                 pagination="false"
             >
                 ${this.definition.layouts.map(
-                    layout => html`
+                    (layout, index) => html`
                         <swiper-slide>
                             <button
                                 class="blockDefinition__inner"
@@ -128,16 +129,19 @@ export class PcbBlockDefinition extends LitElement {
                                 </div>
 
                                 <div id="open-part">
-                                    <strong
-                                        >${layout.name === 'Default'
+                                    <strong>
+                                        ${layout.name === 'Default'
                                             ? this.definition.name
-                                            : `${this.definition.name} | ${layout.name}`}</strong
-                                    >
+                                            : `${this.definition.name} | ${layout.name}`}
+                                    </strong>
                                     <span>${this.definition.description}</span>
                                 </div>
 
                                 <div class="blockDefinition__controls">
                                     <strong>${layout.name}</strong>
+                                    ${this.definition.layouts.length > 1
+                                        ? html` <uui-tag>${index + 1}/${this.definition.layouts.length}</uui-tag> `
+                                        : nothing}
                                 </div>
                             </button>
                         </swiper-slide>

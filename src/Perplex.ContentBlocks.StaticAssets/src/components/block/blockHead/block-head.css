@@ -137,16 +137,20 @@
             }
         }
 
-        div {
+        .block-head__description {
             font-size: var(--fs-xs, 12px);
 
             .block-head--disabled & {
                 opacity: 0.5;
             }
 
-            &:only-child {
+            &.block-head__description--no-title {
                 font-size: var(--fs-sm, 14px);
                 font-weight: 700;
+
+                .block-head--disabled & {
+                    text-decoration: line-through;
+                }
             }
         }
     }
