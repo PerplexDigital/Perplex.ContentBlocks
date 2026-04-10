@@ -246,15 +246,15 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                           `
                         : nothing}
                     <div class="block-head__title">
-                        ${this.hasBlockNameValue
-                            ? html`<strong>
-                                  <umb-ufm-render
+                        <strong>
+                            ${this.hasBlockNameValue
+                                ? html`<umb-ufm-render
                                       inline
                                       .markdown=${this.blockNameTemplate}
                                       .value=${this.blockValuesByAlias}
-                                  ></umb-ufm-render>
-                              </strong>`
-                            : nothing}
+                                  ></umb-ufm-render>`
+                                : nothing}
+                        </strong>
                         ${this.block.isDisabled
                             ? html`
                                   <uui-tag style="--uui-tag-border-radius: 30px;">
@@ -263,7 +263,11 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                                   </uui-tag>
                               `
                             : nothing}
-                        <div>${this.blockDefinitionName}</div>
+                        <div
+                            class="${`block-head__description ${this.hasBlockNameValue ? '' : 'block-head__description--no-title'}`}"
+                        >
+                            ${this.blockDefinitionName}
+                        </div>
                     </div>
                 </button>
                 ${this.isDraggingBlock
