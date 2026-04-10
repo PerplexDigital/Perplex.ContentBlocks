@@ -31,16 +31,27 @@
         position: absolute;
         z-index: 50;
         visibility: hidden;
-        bottom: calc(-1 * (var(--preview-height) + (var(--s, 4px) * 2)));
+        bottom: calc(-1 * (var(--preview-height) + (var(--s, 4px) * 5.5)));
         height: var(--preview-height);
         left: 0;
         right: 0;
-        background-color: var(--uui-color-surface-emphasis);
+        padding: calc(var(--s, 4px) * 2);
+        border: 1px solid var(--c-border, #d8d7d9);
+        border-radius: calc(var(--r-lg, 4px) * 2);
+        background-color: var(--uui-color-background, #f3f3f5);
         box-shadow: var(--bs-base);
         border-radius: var(--r-lg);
-        overflow: hidden;
+
+        .inline-layout-switch__layout {
+            padding: 0;
+            border: 1px solid var(--c-border, #d8d7d9);
+            border-radius: var(--r-lg, 4px);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
 
         img {
+            display: block;
             width: 100%;
             height: 100%;
             object-fit: cover;
