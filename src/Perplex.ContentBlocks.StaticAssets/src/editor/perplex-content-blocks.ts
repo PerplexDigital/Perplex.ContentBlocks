@@ -501,7 +501,7 @@ export default class PerplexContentBlocksElement
                           >
                               <slot name="extra">
                                   <uui-icon
-                                      name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-browser-window'}
+                                      name=${this.areAllBlocksOpen ? 'icon-defrag' : 'icon-fullscreen-alt'}
                                   ></uui-icon>
                               </slot>
                               <slot name="label"

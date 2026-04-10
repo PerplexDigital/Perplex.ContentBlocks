@@ -355,6 +355,8 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             overflow: hidden;
             width: 100%;
             background-color: var(--uui-color-background, #f3f3f5);
+            border: 1px solid var(--uui-color-border);
+            border-radius: var(--uui-border-radius);
             margin: 0 auto;
             transition: width 250ms ease;
         }

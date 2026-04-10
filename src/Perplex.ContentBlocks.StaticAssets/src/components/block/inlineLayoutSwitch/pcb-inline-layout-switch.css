@@ -31,7 +31,7 @@
         position: absolute;
         z-index: 50;
         visibility: hidden;
-        bottom: calc(-1 * (var(--preview-height) + var(--uui-size-5)));
+        bottom: calc(-1 * (var(--preview-height) + var(--uui-size-8)));
         height: var(--preview-height);
         left: 0;
         right: 0;
