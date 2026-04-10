@@ -71,6 +71,22 @@ swiper-slide {
         height: 2rem;
         padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
         border-top: 1px solid var(--c-border, #d8d7d9);
+        min-width: 0;
+
+        .blockDefinition__control-wrapper {
+            margin-inline: calc(var(--s, 4px) * 8);
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        strong {
+            min-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
 
         uui-tag {
             margin-left: calc(var(--s, 4px) * 2);

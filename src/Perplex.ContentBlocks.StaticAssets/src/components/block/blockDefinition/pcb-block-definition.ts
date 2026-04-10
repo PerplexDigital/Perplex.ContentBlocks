@@ -138,10 +138,12 @@ export class PcbBlockDefinition extends LitElement {
                                 </div>
 
                                 <div class="blockDefinition__controls">
-                                    <strong>${layout.name}</strong>
-                                    ${this.definition.layouts.length > 1
-                                        ? html` <uui-tag>${index + 1}/${this.definition.layouts.length}</uui-tag> `
-                                        : nothing}
+                                    <div class="blockDefinition__control-wrapper">
+                                        <strong>${layout.name}</strong>
+                                        ${this.definition.layouts.length > 1
+                                            ? html` <uui-tag>${index + 1}/${this.definition.layouts.length}</uui-tag> `
+                                            : nothing}
+                                    </div>
                                 </div>
                             </button>
                         </swiper-slide>
