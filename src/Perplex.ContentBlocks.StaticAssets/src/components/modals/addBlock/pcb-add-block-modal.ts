@@ -123,7 +123,7 @@ export default class PerplexContentBlocksAddBlockModalElement
                         @input=${this.onSearchTermChanged}
                         placeholder="Search blocks..."
                         .value=${this.searchTerm || ''}
-                        style="--uui-input-background-color: var(--c-alabaster); width: 100%"
+                        style="--uui-input-background-color: var(--uui-color-surface-emphasis); width: 100%"
                     ></uui-input>
                 </div>
                 <div class="addBlockModal__filters">

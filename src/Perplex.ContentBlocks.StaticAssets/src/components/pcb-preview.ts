@@ -216,7 +216,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                             @click=${this.switchToDesktop}
                             class="${this.previewMode === 'desktop' ? 'active' : ''}"
                             style="${this.previewMode !== 'desktop'
-                                ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);'
+                                ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--uui-color-text);'
                                 : ''}"
                         >
                             <slot name="extra">
@@ -252,7 +252,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                             @click=${this.switchToMobile}
                             class="${this.previewMode === 'mobile' ? 'active' : ''}"
                             style="${this.previewMode !== 'mobile'
-                                ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--c-black, #333333);'
+                                ? '--uui-button-background-color: transparent; --uui-button-contrast: var(--uui-color-text);'
                                 : ''}"
                         >
                             <slot name="extra">
@@ -328,25 +328,25 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: calc(var(--s, 4px) * 2.5) calc(var(--s, 4px) * 4);
-            gap: calc(var(--s, 4px) * 2);
-            border-bottom: 1px solid var(--c-border, #d8d7d9);
+            padding: var(--uui-size-3) var(--uui-size-5);
+            gap: var(--uui-size-3);
+            border-bottom: 1px solid var(--uui-color-border);
         }
 
         .preview-title {
-            font-size: var(--fs-base, 16px);
-            color: var(--c-black, #333333);
+            font-size: var(--uui-type-default-size);
+            color: var(--uui-color-text);
         }
 
         .preview-controls {
             display: flex;
-            gap: calc(var(--s, 4px) * 1);
+            gap: var(--uui-size-1);
         }
 
         .iframe-wrapper {
-            margin: calc(var(--s, 4px) * 4);
-            padding: calc(var(--s, 4px) * 2);
-            border-radius: var(--r-lg, 4px);
+            margin: var(--uui-size-5);
+            padding: var(--uui-size-3);
+            border-radius: var(--uui-border-radius);
             background-color: var(--uui-color-background, #f3f3f5);
         }
 
@@ -364,19 +364,19 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
             top: 0;
             left: 0;
             border: none;
-            background-color: var(--c-white, #f3f3f5);
+            background-color: var(--uui-color-surface);
         }
 
         .preview-footer {
             display: flex;
             justify-content: center;
-            padding: calc(var(--s, 4px) * 2) calc(var(--s, 4px) * 4);
-            border-top: 1px solid var(--c-border, #d8d7d9);
+            padding: var(--uui-size-3) var(--uui-size-5);
+            border-top: 1px solid var(--uui-color-border);
         }
 
         .last-update {
-            font-size: var(--fs-xs, 12px);
-            color: var(--c-black, #333333);
+            font-size: var(--uui-type-small-size);
+            color: var(--uui-color-text);
         }
     `;
 }

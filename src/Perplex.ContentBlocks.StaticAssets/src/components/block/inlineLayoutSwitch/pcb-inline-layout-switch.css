@@ -39,7 +39,7 @@
         border: 1px solid var(--uui-color-border);
         border-radius: calc(var(--uui-border-radius) * 2);
         background-color: var(--uui-color-background);
-        box-shadow: var(--bs-base);
+        box-shadow: var(--uui-shadow-depth-1);
         border-radius: var(--uui-border-radius);
 
         .inline-layout-switch__layout {

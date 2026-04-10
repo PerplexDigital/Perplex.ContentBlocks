@@ -226,7 +226,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                               </div>
                               <uui-popover-container id="tooltip-popover">
                                   <div
-                                      style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
+                                      style="font-size: var(--uui-type-small-size); color: var(--uui-color-surface); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--uui-color-text); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
                                   >
                                       An expanded block cannot be dragged. Collapse the block to drag it.
                                   </div>
@@ -235,7 +235,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                                   ? html`
                                         <uui-popover-container id="tooltip-header-block">
                                             <div
-                                                style="font-size: var(--fs-xs); color: var(--c-white); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--c-black); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
+                                                style="font-size: var(--uui-type-small-size); color: var(--uui-color-surface); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--uui-color-text); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
                                             >
                                                 A header block cannot be dragged because it should always be positioned
                                                 at the top op the page.

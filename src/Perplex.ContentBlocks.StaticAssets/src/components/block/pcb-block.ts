@@ -596,7 +596,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 }
 
                 .block__body {
-                    background-color: var(--c-mystic);
+                    background-color: var(--uui-color-surface-emphasis);
                     display: grid;
 
                     transition:
@@ -605,14 +605,14 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
                     &.block__body--hidden {
                         grid-template-rows: 0fr;
-                        padding: 0 calc(var(--s, 4px) * 8);
+                        padding: 0 var(--uui-size-8);
                     }
 
                     &.block__body--open {
                         grid-template-rows: 1fr;
-                        padding: calc(var(--s, 4px) * 6) calc(var(--s, 4px) * 8);
-                        border-bottom-left-radius: var(--r-lg, 4px);
-                        border-bottom-right-radius: var(--r-lg, 4px);
+                        padding: var(--uui-size-6) var(--uui-size-8);
+                        border-bottom-left-radius: var(--uui-border-radius);
+                        border-bottom-right-radius: var(--uui-border-radius);
                     }
 
                     &.block__body--dragging {
@@ -624,8 +624,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                     }
 
                     .block__body-loading {
-                        color: var(--c-submarine);
-                        padding: calc(var(--s) * 2) 0;
+                        color: var(--uui-color-text-alt);
+                        padding: var(--uui-size-3) 0;
                     }
                 }
             }

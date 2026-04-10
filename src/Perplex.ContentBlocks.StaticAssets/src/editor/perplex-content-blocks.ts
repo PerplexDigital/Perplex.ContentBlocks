@@ -732,7 +732,7 @@ export default class PerplexContentBlocksElement
             .sidebar {
                 display: none;
                 flex-direction: column;
-                gap: calc(var(--s, 4px) * 3);
+                gap: var(--uui-size-4);
                 position: sticky;
                 top: 0;
 
@@ -742,14 +742,14 @@ export default class PerplexContentBlocksElement
             }
 
             .sidebar__section {
-                background-color: var(--c-white);
-                border: 1px solid var(--c-border, #d8d7d9);
-                border-radius: var(--r-lg, 4px);
+                background-color: var(--uui-color-surface);
+                border: 1px solid var(--uui-color-border);
+                border-radius: var(--uui-border-radius);
             }
 
             .controls-bar {
                 display: flex;
-                gap: calc(var(--s, 4px) * 2);
+                gap: var(--uui-size-3);
                 padding-top: 0;
             }
 
@@ -758,7 +758,7 @@ export default class PerplexContentBlocksElement
             }
 
             .pcb__region {
-                background-color: var(--c-wild-sand);
+                background-color: var(--uui-color-background);
             }
 
             .pcb__blocks {
@@ -776,7 +776,7 @@ export default class PerplexContentBlocksElement
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    gap: calc(var(--s) * 3);
+                    gap: var(--uui-size-4);
 
                     &.pcb__block-add--header {
                         margin-block-end: 1rem;
