@@ -12,22 +12,18 @@ import {
 import { PcbBlockToggleEvent, PcbBlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../../events/block.ts';
 import blockHeadStyles from './block-head.css?inline';
 import baseStyles from './../../../css/base.css?inline';
-import {
-    PCBCategoryWithDefinitions,
-    PerplexBlockDefinition,
-    PerplexContentBlocksBlock,
-    Section,
-} from '../../../types.ts';
+import { PerplexBlockDefinition, PerplexContentBlocksBlock, Section } from '../../../types.ts';
 import { PcbValueCopiedEvent } from '../../../events/copyPaste.ts';
 import { PcbToastEvent } from '../../../events/toast.ts';
-import { store } from '../../../state/store.ts';
-import { connect } from 'pwa-helpers';
+import { consume } from '@lit/context';
+import { pcbEditorContext } from '../../../context';
+import { PcbEditorContext } from '../../../context/pcb-editor-context.ts';
 import { getCategoriesForDefinition } from '../../../utils/block.ts';
 
 const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
 
 @customElement('pcb-block-head')
-export default class PcbBlockHead extends connect(store)(UmbLitElement) {
+export default class PcbBlockHead extends UmbLitElement {
     @property({ attribute: false })
     definition!: PerplexBlockDefinition;
 
@@ -69,26 +65,23 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     @property({ attribute: false })
     section: Section = Section.CONTENT;
 
-    @property()
+    @property({ type: Boolean })
     isDraggingBlock: boolean = false;
 
-    @property()
+    @property({ type: Boolean })
     isMandatory!: boolean;
 
     @state()
     selectedLayoutIndex: number = 0;
 
-    @state()
-    isTouchDevice: boolean = false;
-
-    @state()
-    categoryWithDefinitions: PCBCategoryWithDefinitions[] = [];
-
     @query('#tooltip-popover')
     private _tooltipPopover!: HTMLElement;
 
+    @consume({ context: pcbEditorContext })
+    ctx!: PcbEditorContext;
+
     private getIcon() {
-        const categories = getCategoriesForDefinition(this.definition?.id ?? '', this.categoryWithDefinitions);
+        const categories = getCategoriesForDefinition(this.definition?.id ?? '', this.ctx.definitions);
         if (this.definition?.icon) return this.definition.icon;
         if (categories.length > 0) return categories[0].icon;
         return 'icon-block-default';
@@ -102,11 +95,6 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
 
     #tooltipOnMouseLeave() {
         this._tooltipPopover.hidePopover();
-    }
-
-    stateChanged(state: any) {
-        this.isTouchDevice = state.isTouchDevice;
-        this.categoryWithDefinitions = state.definitions.value;
     }
 
     onHeadClicked = () => {
@@ -149,6 +137,8 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
     }
 
     render() {
+        const isTouchDevice = this.ctx?.isTouchDevice ?? false;
+
         return html`
             <div class="block-head">
                 <button
@@ -156,7 +146,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                     @click=${this.onHeadClicked}
                     class=${`block-head__toggle ${this.block.isDisabled ? 'block-head__toggle--disabled' : ''} ${this.collapsed ? '' : 'block-head--open'}`}
                 >
-                    ${this.section === Section.CONTENT && !this.isTouchDevice
+                    ${this.section === Section.CONTENT && !isTouchDevice
                         ? html`
                               <b
                                   id="tooltip-toggle"
@@ -178,7 +168,7 @@ export default class PcbBlockHead extends connect(store)(UmbLitElement) {
                                   </div>
                               </uui-popover-container>
                           `
-                        : nothing}
+                        : html`<div class="block-head__handle-placeholder"></div>`}
                     <div class="block-head__title">
                         <strong>
                             <umb-ufm-render

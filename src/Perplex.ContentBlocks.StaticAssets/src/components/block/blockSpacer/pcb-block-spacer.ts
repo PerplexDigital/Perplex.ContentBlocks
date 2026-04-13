@@ -1,35 +1,35 @@
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { customElement, html, nothing, property, state, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
+import { customElement, html, nothing, property, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
 
 import blockSpacerStyles from './pcb-block-spacer.css?inline';
-import { connect } from 'pwa-helpers';
-import { store } from '../../../state/store.ts';
 import { Section } from '../../../types.ts';
 import { PcbValuePastedEvent } from '../../../events/copyPaste.ts';
-import { CopyPasteState } from '../../../state/slices/copyPaste.ts';
+import { consume } from '@lit/context';
+import { pcbEditorContext } from '../../../context';
+import { PcbEditorContext } from '../../../context/pcb-editor-context.ts';
 
 @customElement('pcb-block-spacer')
-export default class PerplexContentBlocksBlockSpacerElement extends connect(store)(UmbLitElement) {
+export default class PerplexContentBlocksBlockSpacerElement extends UmbLitElement {
     @property({ type: Number, attribute: 'index' })
     index: number = 0;
 
     @property({ attribute: false })
     openModal!: (section: Section, insertAtIndex: number) => any;
 
-    @state()
-    copiedValue?: CopyPasteState;
+    @property({ type: Boolean })
+    hasCopiedValue: boolean = false;
 
-    stateChanged(state: any) {
-        this.copiedValue = state.copyPaste;
-    }
+    @consume({ context: pcbEditorContext })
+    ctx!: PcbEditorContext;
 
     addBlock() {
         this.openModal(Section.CONTENT, this.index);
     }
 
     pasteBlock() {
-        if (this.copiedValue?.copied) {
-            this.dispatchEvent(new PcbValuePastedEvent(this.copiedValue.copied, Section.CONTENT, this.index));
+        const copied = this.ctx.getCopied();
+        if (copied) {
+            this.dispatchEvent(new PcbValuePastedEvent(copied, Section.CONTENT, this.index));
         }
     }
 
@@ -49,7 +49,7 @@ export default class PerplexContentBlocksBlockSpacerElement extends connect(stor
                         </slot>
                     </uui-button>
 
-                    ${this.copiedValue?.copied
+                    ${this.hasCopiedValue
                         ? html` <uui-button
                               label="paste content"
                               look="primary"

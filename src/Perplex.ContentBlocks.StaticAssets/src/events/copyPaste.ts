@@ -1,5 +1,5 @@
 import { PerplexContentBlocksBlock, Section } from '../types.ts';
-import { CopiedData } from '../state/slices/copyPaste.ts';
+import { CopiedData } from '../context/pcb-editor-context.ts';
 
 export class PcbValueCopiedEvent extends Event {
     public static readonly TYPE = 'PcbValueCopiedEvent';

@@ -13,23 +13,22 @@ import {
 } from '@umbraco-cms/backoffice/external/lit';
 import type { UmbPropertyTypeContainerModel, UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { PerplexContentBlocksPropertyDatasetContext } from '../../editor/perplex-content-blocks-dataset-context.ts';
-import { UmbDataTypeDetailModel, UmbDataTypeDetailRepository } from '@umbraco-cms/backoffice/data-type';
-import { UmbDocumentTypeDetailModel, UmbDocumentTypeDetailRepository } from '@umbraco-cms/backoffice/document-type';
+import { UmbDataTypeDetailModel } from '@umbraco-cms/backoffice/data-type';
+import { UmbDocumentTypeDetailModel } from '@umbraco-cms/backoffice/document-type';
 import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
 import { Group, PerplexBlockDefinition, PerplexContentBlocksBlock, Section, Tab } from '../../types.ts';
 import { PcbBlockLayoutChangeEvent, PcbBlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../events/block.ts';
-import { connect } from 'pwa-helpers';
 
 import baseStyles from './../../css/base.css?inline';
-import { AppState, store } from '../../state/store.ts';
 import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
 import { propertyAliasPrefix } from '../../utils/block.ts';
 import { consume } from '@lit/context';
-import { editorContext } from '../../context';
+import { pcbEditorContext } from '../../context';
+import { PcbEditorContext } from '../../context/pcb-editor-context.ts';
 import { PcbFocusBlockInPreviewEvent } from '../../events/preview.ts';
 
 @customElement('pcb-block')
-export default class PerplexContentBlocksBlockElement extends connect(store)(UmbLitElement) {
+export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     @property({ type: Boolean, reflect: true })
     dragging: boolean | null = null;
 
@@ -53,30 +52,6 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     @state()
     invalid: boolean = false;
 
-    updated(changedProps: PropertyValues) {
-        super.updated(changedProps);
-
-        if (changedProps.has('draggable')) {
-            if (this.draggable) {
-                this.addEventListener('dragstart', this.onDragStart);
-                this.addEventListener('dragend', this.onDragEnd);
-            } else {
-                this.removeEventListener('dragstart', this.onDragStart);
-                this.removeEventListener('dragend', this.onDragEnd);
-            }
-        }
-
-        if (changedProps.has('collapsed')) {
-            if (changedProps.get('collapsed') === true) {
-                this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id));
-            }
-
-            if (!this.collapsed && this.ok) {
-                void this.#loadBodyAndApplyPropertyLayout();
-            }
-        }
-    }
-
     @property({ attribute: false })
     collapsed: boolean = true;
 
@@ -95,6 +70,16 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     @property({ attribute: false })
     openModal!: (section: Section, insertAtIndex: number) => any;
 
+    // Props passed from parent (no more Redux)
+    @property({ type: Boolean })
+    isDraggingBlock: boolean = false;
+
+    @property({ type: Boolean })
+    isMandatory: boolean = false;
+
+    @property({ type: Boolean })
+    hasCopiedValue: boolean = false;
+
     @state()
     private ok: boolean = false;
 
@@ -108,17 +93,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     private bodyLoading: boolean = false;
 
     @state()
-    isMandatory: boolean = false;
-
-    @state()
     removing: boolean = false;
-
-    @state()
-    isDraggingBlock: boolean = false;
-
-    #contentTypeRepository = new UmbDocumentTypeDetailRepository(this);
-
-    #dataTypeRepository = new UmbDataTypeDetailRepository(this);
 
     #dataTypes: {
         [key: string]: UmbDataTypeDetailModel;
@@ -130,8 +105,8 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     #validationContext!: UmbValidationController;
 
-    @consume({ context: editorContext })
-    editorId!: string;
+    @consume({ context: pcbEditorContext })
+    ctx!: PcbEditorContext;
 
     connectedCallback() {
         super.connectedCallback();
@@ -145,14 +120,12 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             errors.push('removeBlock property is required');
         }
 
-        if (!this.removeBlock) {
-            errors.push('onChange property is required');
-        }
-
         if (errors.length > 0) {
             throw new Error(errors.join(' | '));
         }
 
+        this.addEventListener('dragstart', this.onDragStart);
+        this.addEventListener('dragend', this.onDragEnd);
         this.addEventListener(PcbBlockLayoutChangeEvent.TYPE, (e: Event) =>
             this.onLayoutChange(e as PcbBlockLayoutChangeEvent),
         );
@@ -161,42 +134,40 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
     disconnectedCallback() {
         super.disconnectedCallback();
+        this.removeEventListener('dragstart', this.onDragStart);
+        this.removeEventListener('dragend', this.onDragEnd);
         this.removeEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
         this.clearValidationMessages();
     }
 
+    updated(changedProps: PropertyValues) {
+        super.updated(changedProps);
+
+        if (changedProps.has('collapsed')) {
+            if (changedProps.get('collapsed') === true) {
+                this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id));
+            }
+
+            if (!this.collapsed && this.ok) {
+                void this.#loadBodyAndApplyPropertyLayout();
+            }
+        }
+    }
+
     onDragStart = (_: DragEvent) => {
+        if (!this.draggable) return;
         this.dragging = true;
-        this.isDraggingBlock = true;
     };
 
     onDragEnd = () => {
+        if (!this.draggable) return;
         const active = PcbDragAndDrop.activeDrag;
         if (active) {
             active.element.style.display = ''; // restore visibility
         }
         PcbDragAndDrop.activeDrag = null;
         this.dragging = null;
-        this.isDraggingBlock = false;
     };
-
-    stateChanged(state: AppState) {
-        this.isDraggingBlock = state.ui.isDraggingBlock;
-        if (state.presets.value && state.presets.value.blocks && state.presets.value.blocks.length > 0) {
-            const presetItem = state.presets.value.blocks.find(item => {
-                return item.id === this.block.presetId && item.definitionId === this.block.definitionId;
-            });
-            this.isMandatory = presetItem ? presetItem.isMandatory : false;
-        }
-
-        if (state.presets.value.header && this.section === Section.HEADER) {
-            const presetItem = state.presets.value.header;
-            this.isMandatory =
-                presetItem.id === this.block.presetId && presetItem.definitionId === this.block.definitionId
-                    ? presetItem.isMandatory
-                    : false;
-        }
-    }
 
     onLayoutChange = (event: PcbBlockLayoutChangeEvent) => {
         // do nothing if the layout didn't change
@@ -209,7 +180,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
             layoutId: event.selectedLayout.id,
         };
 
-        this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.editorId));
+        this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.ctx.editorId));
     };
 
     constructor() {
@@ -241,19 +212,12 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
     };
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
-        this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.editorId));
+        this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.ctx.editorId));
     };
 
     async firstUpdated() {
-        const elementTypeResponse = await this.#contentTypeRepository.requestByUnique(
-            this.block.content.contentTypeKey,
-        );
-
-        if (elementTypeResponse.data == null) {
-            throw new Error(`Cannot retrieve content type ${this.block.content.contentTypeKey}`);
-        }
-
-        const elementType = elementTypeResponse.data;
+        // Use shared cache from PcbEditorContext (deduplicates across blocks)
+        const elementType = await this.ctx.getContentType(this.block.content.contentTypeKey);
         this.properties = await this.#getOrderedProperties(elementType);
 
         this.ok = true;
@@ -297,17 +261,18 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
 
             const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
 
-            for (const dataTypeUnique of dataTypeUniques) {
-                if (this.#dataTypes[dataTypeUnique] != null) {
-                    continue;
-                }
+            // Use shared cache from PcbEditorContext — parallel fetch, deduplicated
+            const entries = await Promise.all(
+                [...dataTypeUniques]
+                    .filter(key => !this.#dataTypes[key])
+                    .map(async key => {
+                        const dt = await this.ctx.getDataType(key);
+                        return [key, dt] as const;
+                    }),
+            );
 
-                const dataTypeResponse = await this.#dataTypeRepository.requestByUnique(dataTypeUnique);
-                if (dataTypeResponse.data == null) {
-                    throw new Error(`Cannot retrieve data type ${dataTypeUnique}`);
-                }
-
-                this.#dataTypes[dataTypeUnique] = dataTypeResponse.data;
+            for (const [key, dt] of entries) {
+                this.#dataTypes[key] = dt;
             }
 
             this.bodyLoaded = true;
@@ -344,17 +309,13 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
         const contentTypes: UmbDocumentTypeDetailModel[] = [];
         contentTypes.push(elementType);
 
-        for (const composition of elementType.compositions) {
-            const compositionTypeResponse = await this.#contentTypeRepository.requestByUnique(
-                composition.contentType.unique,
-            );
+        // Use shared cache for compositions too
+        const compositionResults = await Promise.all(
+            elementType.compositions.map(c => this.ctx.getContentType(c.contentType.unique).catch(() => null)),
+        );
 
-            if (compositionTypeResponse.data == null) {
-                // Ignore
-                continue;
-            }
-
-            contentTypes.push(compositionTypeResponse.data);
+        for (const ct of compositionResults) {
+            if (ct) contentTypes.push(ct);
         }
 
         const tabs: Tab[] = [];
@@ -511,6 +472,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 ? html`<pcb-block-spacer
                       .openModal=${this.openModal}
                       .index=${this.index}
+                      .hasCopiedValue=${this.hasCopiedValue}
                   ></pcb-block-spacer>`
                 : nothing}
             <div class="${classMap(classes)}">
@@ -576,8 +538,7 @@ export default class PerplexContentBlocksBlockElement extends connect(store)(Umb
                 overflow: visible;
             }
 
-            :host(:hover),
-            :host(:focus-within) {
+            :host(:hover) {
                 z-index: 2;
             }
 

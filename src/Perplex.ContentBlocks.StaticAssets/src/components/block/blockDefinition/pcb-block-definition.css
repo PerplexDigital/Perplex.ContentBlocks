@@ -14,14 +14,6 @@
     color: var(--uui-color-interactive-emphasis);
 }
 
-swiper-container {
-    overflow: visible;
-}
-
-swiper-slide {
-    overflow: visible;
-}
-
 .blockDefinition {
     width: 100%;
 
@@ -75,6 +67,7 @@ swiper-slide {
 }
 
 #portrait {
+    position: relative;
     background-color: var(--uui-color-surface-alt);
     display: flex;
     justify-content: center;

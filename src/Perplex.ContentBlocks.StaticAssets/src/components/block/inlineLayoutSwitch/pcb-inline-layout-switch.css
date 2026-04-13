@@ -6,16 +6,74 @@
     border-left: 1px solid rgb(var(--c-submarine));
     border-right: 1px solid rgb(var(--c-submarine));
 
-    swiper-container {
-        height: 100%;
-    }
-
     .inline-layout-switch__layout {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100%;
         font-weight: bold;
+    }
+
+    .inline-layout-switch__single {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .inline-layout-switch__nav {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .inline-layout-switch__btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: none;
+        border-radius: 100%;
+        background-color: var(--uui-palette-mine-grey);
+        cursor: pointer;
+        color: white;
+        padding: 0;
+        flex-shrink: 0;
+        margin: 0 10px;
+
+        svg {
+            width: 6px;
+            height: 10px;
+        }
+
+        &:hover:not(:disabled) {
+            opacity: 0.8;
+        }
+
+        &:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+    }
+
+    /* Mirror the chevron for the "prev" button */
+    .inline-layout-switch__btn--prev svg {
+        transform: rotate(180deg);
+    }
+
+    .inline-layout-switch__nav .inline-layout-switch__layout {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     &:hover {
