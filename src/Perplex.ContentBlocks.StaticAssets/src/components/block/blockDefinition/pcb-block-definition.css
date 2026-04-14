@@ -96,6 +96,7 @@
 }
 
 #portrait {
+    position: relative;
     background-color: var(--uui-color-surface);
     display: flex;
     justify-content: center;

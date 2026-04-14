@@ -19,41 +19,11 @@
         .addBlockModal__searchBar {
             grid-column: span 2;
             display: flex;
-            gap: var(--uui-size-4);
+        }
+
+        .addBlockModal__filters {
             display: flex;
-            gap: var(--uui-size-2);
-            flex-wrap: wrap;
-
-            .addBlockModal__filter {
-                display: flex;
-                align-items: center;
-                gap: var(--uui-size-3);
-                line-height: 1.2;
-                background-color: var(--uui-color-surface);
-                border: 1px solid var(--uui-color-border);
-                border-radius: var(--uui-border-radius);
-                padding: var(--uui-size-3) var(--uui-size-4);
-                cursor: pointer;
-                transition:
-                    background-color 0.2s ease-in-out,
-                    border-color 0.2s ease-in-out;
-
-                input {
-                    margin: 0 0 0 var(--uui-size-3);
-                    width: var(--uui-size-6);
-                    height: var(--uui-size-6);
-                }
-
-                &:hover {
-                    background-color: var(--uui-color-surface-alt);
-                    border-color: var(--uui-color-border-emphasis);
-                }
-
-                &:has(input[type='radio']:checked) {
-                    border-color: var(--uui-color-focus);
-                    color: var(--uui-color-focus);
-                }
-            }
+            gap: var(--uui-size-3);
         }
     }
 

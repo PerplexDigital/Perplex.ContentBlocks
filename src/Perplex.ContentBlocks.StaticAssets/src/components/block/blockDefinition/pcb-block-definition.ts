@@ -108,6 +108,7 @@ export class PcbBlockDefinition extends LitElement {
         const current = layouts[this.selectedLayoutIndex];
         const hasPrev = this.selectedLayoutIndex > 0;
         const hasNext = this.selectedLayoutIndex < layouts.length - 1;
+        const currentNumber = this.selectedLayoutIndex + 1;
         const hasMultiple = layouts.length > 1;
 
         return html`
@@ -118,12 +119,14 @@ export class PcbBlockDefinition extends LitElement {
                     ?disabled=${this.disabled}
                 >
                     <div id="portrait">
-                        <img
-                            src=${current.previewImage}
-                            alt="Preview image for ${this.definition.name}"
-                            loading="lazy"
-                            decoding="async"
-                        />
+                        <div class="portrait__placeholder">
+                            <img
+                                src=${current.previewImage}
+                                alt="Preview image for ${this.definition.name}"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        </div>
 
                         ${hasMultiple
                             ? html`
@@ -159,24 +162,10 @@ export class PcbBlockDefinition extends LitElement {
                     </div>
 
                     <div class="blockDefinition__controls">
-                        ${hasMultiple
-                            ? html`
-                                  <div class="blockDefinition__pagination">
-                                      ${layouts.map(
-                                          (_, i) => html`
-                                              <button
-                                                  type="button"
-                                                  class="blockDefinition__dot ${i === this.selectedLayoutIndex
-                                                      ? 'blockDefinition__dot--active'
-                                                      : ''}"
-                                                  @click=${(e: Event) => this._goToSlide(i, e)}
-                                                  aria-label="Layout ${i + 1}"
-                                              ></button>
-                                          `,
-                                      )}
-                                  </div>
-                              `
-                            : nothing}
+                        <div class="blockDefinition__control-wrapper">
+                            <strong>${current.name}</strong>
+                            ${hasMultiple ? html` <uui-tag>${currentNumber}/${layouts.length}</uui-tag> ` : nothing}
+                        </div>
                     </div>
                 </button>
             </div>
@@ -204,6 +193,10 @@ export class PcbBlockDefinition extends LitElement {
                 cursor: pointer;
                 color: white;
                 padding: 0;
+            }
+
+            .blockDefinition__nav-btn:focus {
+                border-radius: 100%;
             }
 
             .blockDefinition__nav-btn svg {
