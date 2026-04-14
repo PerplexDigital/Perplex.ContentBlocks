@@ -13,50 +13,30 @@ import {
     type UmbPropertyEditorConfigCollection,
     UmbPropertyEditorUiElement,
 } from '@umbraco-cms/backoffice/property-editor';
-import type { UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
 import { UmbDataPathPropertyValueQuery } from '@umbraco-cms/backoffice/validation';
 import { UMB_PROPERTY_CONTEXT, UMB_PROPERTY_DATASET_CONTEXT } from '@umbraco-cms/backoffice/property';
 import { UMB_CONTENT_WORKSPACE_CONTEXT } from '@umbraco-cms/backoffice/content';
 import { fetchDefinitionsPerCategory, fetchPagePresets } from '../queries/definitions.ts';
-import { connect } from 'pwa-helpers';
-import { AppState, store } from '../state/store.ts';
-import { setDefinitions } from '../state/slices/definitions.ts';
-import {
-    PCBCategoryWithDefinitions,
-    PerplexBlockDefinition,
-    PerplexContentBlocksBlock,
-    PerplexContentBlocksValue,
-    Section,
-    Structure,
-} from '../types.ts';
-import { setIsTouchDevice } from '../state/slices/ui.ts';
+import { PerplexContentBlocksBlock, PerplexContentBlocksValue, Section, Structure } from '../types.ts';
 import { PcbToastEvent } from '../events/toast.ts';
 import { addToast } from '../utils/toast.ts';
 import { PcbBlockSavedEvent, PcbBlockToggleEvent, PcbBlockUpdatedEvent, PcbSetBlocksEvent } from '../events/block.ts';
-
 import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 import { PcbValueCopiedEvent, PcbValuePastedEvent } from '../events/copyPaste.ts';
-import { CopyPasteState, setCopiedValue } from '../state/slices/copyPaste.ts';
-import { setPresets } from '../state/slices/presets.ts';
 import { getBlocksFromPreset } from '../utils/preset.ts';
 import { differentiateBlocks } from '../utils/copyPaste.ts';
 import { provide } from '@lit/context';
-import { editorContext } from '../context/index.ts';
+import { pcbEditorContext } from '../context/index.ts';
+import { PcbEditorContext, CopiedData } from '../context/pcb-editor-context.ts';
 import { umbOpenModal } from '@umbraco-cms/backoffice/modal';
 import { PCB_ADD_BLOCK_MODAL_TOKEN } from '../components/modals/addBlock/modal-token.ts';
 import { firstValueFrom } from '@umbraco-cms/backoffice/external/rxjs';
 import { PcbFocusBlockInPreviewEvent } from '../events/preview.ts';
 
 @customElement('perplex-content-blocks')
-export default class PerplexContentBlocksElement
-    extends connect(store)(UmbLitElement)
-    implements UmbPropertyEditorUiElement
-{
+export default class PerplexContentBlocksElement extends UmbLitElement implements UmbPropertyEditorUiElement {
     @query('#notifications')
     private _notificationsElement?: HTMLElement;
-
-    @state()
-    properties: UmbPropertyTypeModel[] | undefined = undefined;
 
     @state()
     openedBlocks: string[] = [];
@@ -71,15 +51,11 @@ export default class PerplexContentBlocksElement
         blocks: [],
     };
 
-    private readonly eventHandlers = new Map<string, EventListener>([
-        [PcbBlockSavedEvent.TYPE, e => this.onBlockAdded(e as PcbBlockSavedEvent)],
-        [PcbBlockToggleEvent.TYPE, e => this.onBlockToggled(e as PcbBlockToggleEvent)],
-        [PcbBlockUpdatedEvent.TYPE, e => this.updateBlock(e as PcbBlockUpdatedEvent)],
-        [PcbValueCopiedEvent.TYPE, e => this.onValueCopied(e as PcbValueCopiedEvent)],
-        [PcbValuePastedEvent.TYPE, e => this.onValuePasted(e as PcbValuePastedEvent)],
-        [PcbSetBlocksEvent.TYPE, e => this.onSetBlocks(e as PcbSetBlocksEvent)],
-        [PcbFocusBlockInPreviewEvent.TYPE, e => this.onFocusBlock(e as PcbFocusBlockInPreviewEvent)],
-    ]);
+    @state()
+    private _copiedValue: CopiedData | null = null;
+
+    @state()
+    private _isDraggingBlock = false;
 
     @property({ attribute: false })
     config: UmbPropertyEditorConfigCollection | undefined;
@@ -94,24 +70,34 @@ export default class PerplexContentBlocksElement
     pageId!: string;
 
     @state()
-    definitions: PCBCategoryWithDefinitions[] = [];
-
-    @state()
-    copiedValue?: CopyPasteState;
+    private _definitions: import('../types.ts').PCBCategoryWithDefinitions[] = [];
 
     @state()
     private focusedBlockId?: string;
 
-    editorId: string = crypto.randomUUID();
+    // ── Context instances ─────────────────────────────────────────────
 
-    @provide({ context: editorContext })
-    providedEditorId = this.editorId;
+    /** Rich context shared to all descendants via @lit/context. */
+    @provide({ context: pcbEditorContext })
+    ctx!: PcbEditorContext;
 
-    headerCategories: string[] = [];
+    // ── Private fields ────────────────────────────────────────────────
 
     #documentTypeAlias: string = '';
-    #definitionsMap: Map<string, PerplexBlockDefinition> = new Map();
-    #boundRemoveBlock = this.removeBlock.bind(this);
+    readonly #boundRemoveBlock = this.removeBlock.bind(this);
+
+    // ── Event handler map (stable references for add/remove) ─────────
+
+    private readonly _eventHandlers = new Map<string, EventListener>([
+        [PcbBlockSavedEvent.TYPE, e => this.onBlockAdded(e as PcbBlockSavedEvent)],
+        [PcbBlockToggleEvent.TYPE, e => this.onBlockToggled(e as PcbBlockToggleEvent)],
+        [PcbBlockUpdatedEvent.TYPE, e => this.updateBlock(e as PcbBlockUpdatedEvent)],
+        [PcbValueCopiedEvent.TYPE, e => this.onValueCopied(e as PcbValueCopiedEvent)],
+        [PcbValuePastedEvent.TYPE, e => this.onValuePasted(e as PcbValuePastedEvent)],
+        [PcbSetBlocksEvent.TYPE, e => this.onSetBlocks(e as PcbSetBlocksEvent)],
+        [PcbFocusBlockInPreviewEvent.TYPE, e => this.onFocusBlock(e as PcbFocusBlockInPreviewEvent)],
+        [PcbToastEvent.TYPE, e => this._onToast(e as PcbToastEvent)],
+    ]);
 
     @property({ attribute: false })
     public set value(value: PerplexContentBlocksValue | undefined) {
@@ -135,8 +121,16 @@ export default class PerplexContentBlocksElement
         }
     }
 
+    // ── Lifecycle ─────────────────────────────────────────────────────
+
     async connectedCallback() {
         super.connectedCallback();
+
+        // Create the shared context (caches, definitions, etc.)
+        this.ctx = new PcbEditorContext(this);
+
+        // Load copied value from session storage
+        this._copiedValue = this.ctx.getCopied();
 
         const [propertyCtx, workspaceCtx, datasetCtx] = await Promise.all([
             this.getContext(UMB_PROPERTY_CONTEXT),
@@ -155,61 +149,76 @@ export default class PerplexContentBlocksElement
 
         this.#documentTypeAlias = (await firstValueFrom(workspaceCtx.structure.ownerContentTypeAlias)) ?? '';
 
-        await Promise.all([this.fetchDefinitionsPerCategory(), this.fetchPresets()]);
+        // Fetch definitions and presets in parallel
+        await this._fetchData();
 
-        this.addEventListener(PcbToastEvent.TYPE, (e: Event) => {
-            addToast(e as PcbToastEvent, this);
-            this._notificationsElement?.hidePopover?.();
-            this._notificationsElement?.showPopover?.();
-        });
-
-        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        store.dispatch(setIsTouchDevice(isTouch));
-
-        for (const [type, handler] of this.eventHandlers) {
+        // Register event listeners (stable references)
+        for (const [type, handler] of this._eventHandlers) {
             this.addEventListener(type, handler);
         }
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
-
-        this.removeEventListener(PcbToastEvent.TYPE, (e: Event) => {
-            addToast(e as PcbToastEvent, this);
-            this._notificationsElement?.hidePopover?.();
-            this._notificationsElement?.showPopover?.();
-        });
-
-        for (const [type, handler] of this.eventHandlers) {
+        for (const [type, handler] of this._eventHandlers) {
             this.removeEventListener(type, handler);
         }
     }
 
-    stateChanged(state: AppState) {
-        this.definitions = state.definitions.value;
-        this.copiedValue = state.copyPaste;
+    // ── Data fetching ─────────────────────────────────────────────────
 
-        this.#definitionsMap.clear();
-        for (const cat of this.definitions) {
-            for (const [id, def] of Object.entries(cat.definitions)) {
-                this.#definitionsMap.set(id, def);
+    private async _fetchData() {
+        const [definitions, presets] = await Promise.all([
+            fetchDefinitionsPerCategory(this.#documentTypeAlias, this.culture || undefined),
+            fetchPagePresets(this.#documentTypeAlias, this.culture || undefined),
+        ]);
+
+        if (definitions) {
+            this.ctx.setDefinitions(definitions);
+            this._definitions = definitions;
+        }
+
+        if (presets) {
+            this.ctx.presets = presets;
+
+            if (this._definitions.length > 0) {
+                const presetBlocks = getBlocksFromPreset(presets, this._definitions, this._value);
+
+                if (presetBlocks.header) {
+                    this.addBlocks([presetBlocks.header], Section.HEADER, 0);
+                }
+                if (presetBlocks.blocks.length > 0) {
+                    this.addBlocks(presetBlocks.blocks, Section.CONTENT, 0);
+                }
             }
         }
     }
 
-    valueChanged() {
+    // ── Toast handling ────────────────────────────────────────────────
+
+    private _onToast(e: PcbToastEvent) {
+        addToast(e, this);
+        this._notificationsElement?.hidePopover?.();
+        this._notificationsElement?.showPopover?.();
+    }
+
+    // ── Value change notification ─────────────────────────────────────
+
+    private _valueChanged() {
         this.dispatchEvent(new UmbChangeEvent());
     }
+
+    // ── Focus block in preview ────────────────────────────────────────
 
     private onFocusBlock(e: PcbFocusBlockInPreviewEvent) {
         this.focusedBlockId = e.blockId;
     }
 
+    // ── Block ID helpers ──────────────────────────────────────────────
+
     private get allBlockIds(): string[] {
         const ids: string[] = [];
-        if (this._value.header) {
-            ids.push(this._value.header.id);
-        }
+        if (this._value.header) ids.push(this._value.header.id);
         ids.push(...this._value.blocks.map(b => b.id));
         return ids;
     }
@@ -219,6 +228,32 @@ export default class PerplexContentBlocksElement
         if (allIds.length === 0) return false;
         return allIds.every(id => this.openedBlocks.includes(id));
     }
+
+    // ── Block mandatory check ─────────────────────────────────────────
+
+    private _isBlockMandatory(block: PerplexContentBlocksBlock, section: Section): boolean {
+        const presets = this.ctx.presets;
+        if (!presets) return false;
+
+        if (section === Section.HEADER && presets.header) {
+            return (
+                presets.header.id === block.presetId &&
+                presets.header.definitionId === block.definitionId &&
+                presets.header.isMandatory
+            );
+        }
+
+        if (presets.blocks?.length > 0) {
+            const presetItem = presets.blocks.find(
+                item => item.id === block.presetId && item.definitionId === block.definitionId,
+            );
+            return presetItem?.isMandatory ?? false;
+        }
+
+        return false;
+    }
+
+    // ── Toggle / Copy all ─────────────────────────────────────────────
 
     private toggleAllBlocks() {
         if (this.areAllBlocksOpen) {
@@ -234,21 +269,25 @@ export default class PerplexContentBlocksElement
         const totalCount = (header ? 1 : 0) + blocks.length;
 
         if (totalCount === 0) {
-            this.dispatchEvent(
-                new PcbToastEvent('warning', {
-                    headline: 'No blocks to copy',
-                }),
-            );
+            this.dispatchEvent(new PcbToastEvent('warning', { headline: 'No blocks to copy' }));
             return;
         }
 
-        store.dispatch(setCopiedValue({ header, blocks }));
+        const copied: CopiedData = {
+            header: header ? differentiateBlocks([header])[0] : null,
+            blocks: differentiateBlocks(blocks),
+        };
+
+        this.ctx.setCopied(copied);
+        this._copiedValue = copied;
         this.dispatchEvent(
             new PcbToastEvent('positive', {
                 headline: `Copied ${totalCount} block${totalCount > 1 ? 's' : ''} to clipboard`,
             }),
         );
     }
+
+    // ── Add header / block ────────────────────────────────────────────
 
     addHeader() {
         this._openModal(Section.HEADER);
@@ -258,15 +297,19 @@ export default class PerplexContentBlocksElement
         this._openModal(Section.CONTENT);
     }
 
-    updateHeader(header: PerplexContentBlocksBlock) {
+    // ── Header CRUD ───────────────────────────────────────────────────
+
+    private _updateHeader(header: PerplexContentBlocksBlock) {
         this._value = { ...this._value, header };
-        this.valueChanged();
+        this._valueChanged();
     }
 
-    removeHeader() {
+    private _removeHeader() {
         this._value = { ...this._value, header: null };
-        this.valueChanged();
+        this._valueChanged();
     }
+
+    // ── Block toggling ────────────────────────────────────────────────
 
     onBlockToggled(event: PcbBlockToggleEvent) {
         if (!this.openedBlocks.includes(event.id)) {
@@ -282,12 +325,13 @@ export default class PerplexContentBlocksElement
 
     onSetBlocks(event: PcbSetBlocksEvent) {
         this._value = { ...this._value, blocks: event.blocks };
-        this.valueChanged();
+        this._isDraggingBlock = false;
+        this._valueChanged();
     }
 
     updateBlock(event: PcbBlockUpdatedEvent) {
         if (event.section === Section.HEADER) {
-            this.updateHeader(event.block);
+            this._updateHeader(event.block);
             return;
         }
 
@@ -297,22 +341,27 @@ export default class PerplexContentBlocksElement
         const blocks = [...this._value.blocks];
         blocks.splice(idx, 1, event.block);
         this._value = { ...this._value, blocks };
-        this.valueChanged();
+        this._valueChanged();
     }
 
     removeBlock(id: string) {
         const blocks = this._value.blocks.filter(block => block.id !== id);
         this._value = { ...this._value, blocks };
-        this.valueChanged();
+        this._valueChanged();
     }
+
+    // ── Copy / Paste ──────────────────────────────────────────────────
 
     onValueCopied(event: PcbValueCopiedEvent) {
         const { blocks, section } = event;
+        let copied: CopiedData;
         if (section === Section.HEADER && blocks.length > 0) {
-            store.dispatch(setCopiedValue({ header: blocks[0], blocks: [] }));
+            copied = { header: differentiateBlocks([blocks[0]])[0], blocks: [] };
         } else {
-            store.dispatch(setCopiedValue({ header: null, blocks }));
+            copied = { header: null, blocks: differentiateBlocks(blocks) };
         }
+        this.ctx.setCopied(copied);
+        this._copiedValue = copied;
     }
 
     onValuePasted(event: PcbValuePastedEvent) {
@@ -322,7 +371,7 @@ export default class PerplexContentBlocksElement
         const warnings: string[] = [];
         let headerPasted = false;
 
-        // Create fresh copies with new IDs for each paste operation to avoid shared references
+        // Create fresh copies with new IDs for each paste operation
         const freshHeader = pastedValue.header ? differentiateBlocks([pastedValue.header])[0] : null;
         const freshBlocks = differentiateBlocks(pastedValue.blocks);
 
@@ -330,7 +379,7 @@ export default class PerplexContentBlocksElement
             if (this._value.header) {
                 warnings.push('Header was ignored because one already exists');
             } else {
-                const headerDef = this.findDefinitionById(freshHeader.definitionId);
+                const headerDef = this.ctx.findDefinitionById(freshHeader.definitionId);
                 if (headerDef) {
                     this._value = { ...this._value, header: freshHeader };
                     this.openedBlocks = [...this.openedBlocks, freshHeader.id];
@@ -346,88 +395,43 @@ export default class PerplexContentBlocksElement
         }
 
         if (warnings.length > 0) {
-            warnings.forEach(warning => {
-                this.dispatchEvent(
-                    new PcbToastEvent('warning', {
-                        headline: warning,
-                    }),
-                );
-            });
+            for (const warning of warnings) {
+                this.dispatchEvent(new PcbToastEvent('warning', { headline: warning }));
+            }
         }
 
         if (headerPasted && pastedValue.blocks.length === 0) {
-            this.valueChanged();
+            this._valueChanged();
         }
     }
 
     pasteBlock(section: Section) {
-        if (this.copiedValue?.copied) {
-            this.dispatchEvent(new PcbValuePastedEvent(this.copiedValue.copied, section));
+        const copied = this._copiedValue;
+        if (copied) {
+            this.dispatchEvent(new PcbValuePastedEvent(copied, section));
         }
     }
 
-    async fetchDefinitionsPerCategory() {
-        const result = await fetchDefinitionsPerCategory(this.#documentTypeAlias, this.culture || undefined);
-
-        if (result) {
-            this.headerCategories = result.reduce((acc: string[], currentValue) => {
-                if (currentValue.category.isEnabledForHeaders) {
-                    acc.push(currentValue.category.id);
-                }
-                return acc;
-            }, []);
-
-            store.dispatch(setDefinitions(result));
-            this.requestUpdate();
-        }
-    }
-
-    async fetchPresets() {
-        const result = await fetchPagePresets(this.#documentTypeAlias, this.culture || undefined);
-
-        if (result) {
-            store.dispatch(setPresets(result));
-
-            if (this.definitions?.length > 0) {
-                const presetBlocks = getBlocksFromPreset(result, this.definitions, this._value);
-
-                if (presetBlocks.header) {
-                    this.addBlocks([presetBlocks.header], Section.HEADER, 0);
-                }
-
-                if (presetBlocks.blocks.length > 0) {
-                    this.addBlocks(presetBlocks.blocks, Section.CONTENT, 0);
-                }
-            }
-
-            this.requestUpdate();
-        }
-    }
-
-    findDefinitionById(id: string) {
-        return this.#definitionsMap.get(id) || null;
-    }
+    // ── Open modal ────────────────────────────────────────────────────
 
     private _openModal = async (section: Section, insertAtIndex?: number) => {
         const returnedValue = await umbOpenModal(this, PCB_ADD_BLOCK_MODAL_TOKEN, {
             data: {
-                editorId: this.editorId,
-                groupedDefinitions: this.definitions,
+                editorId: this.ctx.editorId,
+                groupedDefinitions: this._definitions,
                 section,
                 insertAtIndex,
             },
         }).catch(() => undefined);
 
         if (!returnedValue) return;
-
         this.addBlocks(returnedValue.blocks, returnedValue.section, returnedValue.desiredIndex);
     };
 
+    // ── Add blocks logic ──────────────────────────────────────────────
+
     addBlocks(blocks: PerplexContentBlocksBlock[], section: Section, desiredIndex: number | null) {
-        const allowedBlocks = blocks.filter(b => {
-            const def = this.findDefinitionById(b.definitionId);
-            return def !== null;
-        });
+        const allowedBlocks = blocks.filter(b => this.ctx.findDefinitionById(b.definitionId) !== null);
 
         const skippedCount = blocks.length - allowedBlocks.length;
         if (skippedCount > 0) {
@@ -438,28 +442,24 @@ export default class PerplexContentBlocksElement
             );
         }
 
-        if (allowedBlocks.length === 0) {
-            return;
-        }
+        if (allowedBlocks.length === 0) return;
 
         this.openedBlocks = [...this.openedBlocks, ...allowedBlocks.map(b => b.id)];
 
         if (section === Section.HEADER && allowedBlocks.length > 0) {
-            const definition = this.findDefinitionById(allowedBlocks[0].definitionId);
-            if (definition?.categoryIds.some(id => this.headerCategories.includes(id))) {
+            const definition = this.ctx.findDefinitionById(allowedBlocks[0].definitionId);
+            if (definition?.categoryIds.some(id => this.ctx.headerCategories.includes(id))) {
                 this._value = { ...this._value, header: allowedBlocks[0] };
             } else {
                 this.dispatchEvent(
-                    new PcbToastEvent('warning', {
-                        headline: 'This block cannot be added as a header',
-                    }),
+                    new PcbToastEvent('warning', { headline: 'This block cannot be added as a header' }),
                 );
             }
         } else {
             const contentBlocks = allowedBlocks.filter(b => {
-                const def = this.findDefinitionById(b.definitionId);
+                const def = this.ctx.findDefinitionById(b.definitionId);
                 if (!def) return false;
-                return !def.categoryIds.every(id => this.headerCategories.includes(id));
+                return !def.categoryIds.every(id => this.ctx.headerCategories.includes(id));
             });
 
             if (contentBlocks.length < allowedBlocks.length) {
@@ -481,15 +481,19 @@ export default class PerplexContentBlocksElement
             this._value = { ...this._value, blocks: updatedBlocks };
         }
 
-        this.valueChanged();
+        this._valueChanged();
     }
+
+    // ── Render ─────────────────────────────────────────────────────────
 
     render() {
         const header = this._value.header;
-        const headerDefinition = header ? this.findDefinitionById(header.definitionId) : null;
+        const headerDefinition = header ? this.ctx.findDefinitionById(header.definitionId) : null;
         const blocks = this._value.blocks
-            .map(block => ({ block, definition: this.findDefinitionById(block.definitionId) }))
+            .map(block => ({ block, definition: this.ctx.findDefinitionById(block.definitionId) }))
             .filter(item => item.definition !== null);
+
+        const hasCopied = this._copiedValue != null;
 
         return html`
             <section class="section-controls">
@@ -531,11 +535,13 @@ export default class PerplexContentBlocksElement
                                               .draggable=${false}
                                               .block=${header}
                                               .collapsed=${!this.openedBlocks.includes(header.id)}
-                                              .removeBlock=${this.removeHeader.bind(this)}
+                                              .removeBlock=${this._removeHeader.bind(this)}
                                               .dataPath=${this.dataPath}
                                               .definition=${headerDefinition}
                                               .section=${Section.HEADER}
                                               .openModal=${this._openModal}
+                                              .isDraggingBlock=${this._isDraggingBlock}
+                                              .isMandatory=${this._isBlockMandatory(header, Section.HEADER)}
                                           ></pcb-block>
                                       `
                                     : nothing}
@@ -553,7 +559,7 @@ export default class PerplexContentBlocksElement
                                                   </slot>
                                               </uui-button>
 
-                                              ${this.copiedValue?.copied
+                                              ${hasCopied
                                                   ? html`
                                                         <uui-button
                                                             label="paste header"
@@ -587,10 +593,16 @@ export default class PerplexContentBlocksElement
                                                               .collapsed=${!this.openedBlocks.includes(block.id)}
                                                               .removeBlock=${this.#boundRemoveBlock}
                                                               .dataPath=${this.dataPath}
-                                                              .definition=${definition}
+                                                              .definition=${definition!}
                                                               .section=${Section.CONTENT}
                                                               .index=${index}
                                                               .openModal=${this._openModal}
+                                                              .isDraggingBlock=${this._isDraggingBlock}
+                                                              .isMandatory=${this._isBlockMandatory(
+                                                                  block,
+                                                                  Section.CONTENT,
+                                                              )}
+                                                              .hasCopiedValue=${hasCopied}
                                                           ></pcb-block>
                                                       </pcb-drag-item>
                                                   `,
@@ -614,7 +626,7 @@ export default class PerplexContentBlocksElement
                                               </slot>
                                           </uui-button>
 
-                                          ${this.copiedValue?.copied
+                                          ${hasCopied
                                               ? html`
                                                     <uui-button
                                                         look="primary"

@@ -1,5 +1,4 @@
-import { PCBCategory, PerplexBlockDefinition, Preset } from '../types.ts';
-import { DefinitionsDictionary } from '../state/slices/definitions.ts';
+import { DefinitionsDictionary, PCBCategory, PerplexBlockDefinition, Preset } from '../types.ts';
 import { get } from '../api/index.ts';
 
 const DEFINITIONS_ENDPOINT = '/definitions/forpage';
@@ -39,8 +38,11 @@ export const fetchPagePresets = async (documentType: string, culture?: string) =
 
 export const fetchDefinitionsPerCategory = async (documentType: string, culture?: string) => {
     try {
-        const definitions = (await fetchAllDefinitions(documentType, culture)) ?? [];
-        const categories = (await fetchAllCategories()) ?? [];
+        // Fetch definitions and categories in parallel
+        const [definitions, categories] = await Promise.all([
+            fetchAllDefinitions(documentType, culture).then(d => d ?? []),
+            fetchAllCategories().then(c => c ?? []),
+        ]);
 
         const definitionsDictionary = definitions.reduce((acc: DefinitionsDictionary, curr: PerplexBlockDefinition) => {
             acc[curr.id] = {

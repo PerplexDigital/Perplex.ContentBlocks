@@ -79,6 +79,17 @@
         }
     }
 
+    .block-head__handle-placeholder {
+        display: none;
+        /* Same width as the handle: icon 20px + padding 8px left + 8px right = 36px */
+        width: calc(var(--s) * 5 + var(--s) * 4);
+        flex-shrink: 0;
+
+        @media only screen and (min-width: 1000px) {
+            display: block;
+        }
+    }
+
     .block-head__title {
         display: flex;
         align-items: start;
