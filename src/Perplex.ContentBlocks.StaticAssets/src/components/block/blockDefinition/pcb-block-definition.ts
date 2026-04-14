@@ -191,7 +191,7 @@ export class PcbBlockDefinition extends LitElement {
                 border-radius: 100%;
                 background-color: var(--uui-palette-mine-grey);
                 cursor: pointer;
-                color: white;
+                color: var(--uui-color-default-contrast);
                 padding: 0;
             }
 
@@ -204,7 +204,7 @@ export class PcbBlockDefinition extends LitElement {
             }
 
             .blockDefinition__nav-btn--prev {
-                left: 10px;
+                left: var(--uui-size-5);
             }
 
             .blockDefinition__nav-btn--prev svg {
@@ -212,7 +212,7 @@ export class PcbBlockDefinition extends LitElement {
             }
 
             .blockDefinition__nav-btn--next {
-                right: 10px;
+                right: var(--uui-size-5);
             }
 
             .blockDefinition__nav-btn:hover:not(:disabled) {
@@ -222,35 +222,6 @@ export class PcbBlockDefinition extends LitElement {
             .blockDefinition__nav-btn:disabled {
                 opacity: 0.35;
                 cursor: default;
-            }
-
-            /* Pagination dots in the controls area */
-            .blockDefinition__pagination {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 4px;
-                height: 100%;
-            }
-
-            .blockDefinition__dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                border: 1px solid var(--uui-color-border);
-                background: var(--uui-color-surface);
-                padding: 0;
-                cursor: pointer;
-                transition: background-color 150ms ease;
-            }
-
-            .blockDefinition__dot--active {
-                background: var(--uui-color-interactive);
-                border-color: var(--uui-color-interactive);
-            }
-
-            .blockDefinition__dot:hover:not(.blockDefinition__dot--active) {
-                background: var(--uui-color-surface-alt);
             }
         `,
     ];
