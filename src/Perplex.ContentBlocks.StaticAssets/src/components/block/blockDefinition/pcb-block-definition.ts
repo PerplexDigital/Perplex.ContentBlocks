@@ -79,11 +79,6 @@ export class PcbBlockDefinition extends LitElement {
         }
     };
 
-    private _goToSlide = (index: number, e: Event) => {
-        e.stopPropagation();
-        this.selectedLayoutIndex = index;
-    };
-
     onSelected() {
         this.dispatchEvent(
             new CustomEvent(ON_BLOCK_SELECTED, {
@@ -117,6 +112,7 @@ export class PcbBlockDefinition extends LitElement {
                     class="blockDefinition__inner"
                     @click=${this.onSelected}
                     ?disabled=${this.disabled}
+                    aria-label="Select ${this.definition.name} - ${current.name}"
                 >
                     <div id="portrait">
                         <div class="portrait__placeholder">

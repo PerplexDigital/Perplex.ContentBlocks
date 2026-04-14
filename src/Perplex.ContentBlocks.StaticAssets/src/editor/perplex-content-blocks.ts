@@ -769,10 +769,6 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
                 display: block;
             }
 
-            .pcb__region {
-                background-color: var(--uui-color-background);
-            }
-
             .pcb__blocks {
                 display: grid;
                 grid-template-columns: 1fr;
@@ -793,14 +789,6 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
                     &.pcb__block-add--header {
                         margin-block-end: 1rem;
                     }
-                }
-            }
-
-            .pcb__headers {
-                .pcb__headers-add {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
                 }
             }
         `,

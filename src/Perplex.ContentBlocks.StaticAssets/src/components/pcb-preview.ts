@@ -292,6 +292,7 @@ export default class PerplexContentBlocksPreviewElement extends UmbLitElement {
                             class="preview-frame"
                             frameborder="0"
                             scrolling="yes"
+                            title="Content blocks preview"
                         ></iframe>
                     </div>
                 </div>

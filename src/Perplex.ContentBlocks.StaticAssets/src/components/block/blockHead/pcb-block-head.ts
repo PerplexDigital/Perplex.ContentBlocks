@@ -192,6 +192,8 @@ export default class PcbBlockHead extends UmbLitElement {
                     type="button"
                     @click=${this.onHeadClicked}
                     class=${`block-head__toggle ${this.collapsed ? '' : 'block-head--open'}`}
+                    aria-expanded=${!this.collapsed}
+                    aria-label="Toggle block ${this.blockDefinitionName}"
                 >
                     ${!isTouchDevice
                         ? html`
@@ -272,6 +274,7 @@ export default class PcbBlockHead extends UmbLitElement {
                         class="block-head__control"
                         type="button"
                         @click=${this.onToggleVisibilityClicked}
+                        aria-label=${this.block.isDisabled ? 'Show block' : 'Hide block'}
                     >
                         ${this.block.isDisabled
                             ? this.crossedEyeIcon()
@@ -288,6 +291,7 @@ export default class PcbBlockHead extends UmbLitElement {
                         class="block-head__control"
                         type="button"
                         @click=${this.onCopyClicked}
+                        aria-label="Copy block"
                     >
                         <uui-icon
                             style="font-size: 20px;"
@@ -300,6 +304,7 @@ export default class PcbBlockHead extends UmbLitElement {
                         type="button"
                         @click=${this.onRemoveClicked}
                         ?disabled=${this.isMandatory}
+                        aria-label="Remove block"
                     >
                         <uui-icon
                             style="font-size: 20px;"

@@ -24,6 +24,7 @@ export default class PerplexContentBlocksStructurePropertyEditorUiElement
         return html`
             <select
                 id="native"
+                aria-label="Content blocks structure"
                 @change=${(e: Event) => this._setValue((e.target as HTMLSelectElement).value)}
             >
                 <option
