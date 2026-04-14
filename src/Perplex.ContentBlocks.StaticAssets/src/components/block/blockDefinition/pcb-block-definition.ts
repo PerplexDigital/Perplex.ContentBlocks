@@ -79,6 +79,11 @@ export class PcbBlockDefinition extends LitElement {
         }
     };
 
+    private _goToSlide = (index: number, e: Event) => {
+        e.stopPropagation();
+        this.selectedLayoutIndex = index;
+    };
+
     onSelected() {
         this.dispatchEvent(
             new CustomEvent(ON_BLOCK_SELECTED, {
@@ -144,6 +149,21 @@ export class PcbBlockDefinition extends LitElement {
                                   >
                                       ${chevronSvg}
                                   </button>
+
+                                  <div class="blockDefinition__pagination">
+                                      ${layouts.map(
+                                          (_, i) => html`
+                                              <button
+                                                  type="button"
+                                                  class="blockDefinition__dot ${i === this.selectedLayoutIndex
+                                                      ? 'blockDefinition__dot--active'
+                                                      : ''}"
+                                                  @click=${(e: Event) => this._goToSlide(i, e)}
+                                                  aria-label="Layout ${i + 1}"
+                                              ></button>
+                                          `,
+                                      )}
+                                  </div>
                               `
                             : nothing}
                     </div>
@@ -218,6 +238,36 @@ export class PcbBlockDefinition extends LitElement {
             .blockDefinition__nav-btn:disabled {
                 opacity: 0.35;
                 cursor: default;
+            }
+
+            /* Pagination dots in the controls area */
+            .blockDefinition__pagination {
+                position: absolute;
+                inset: auto 0 var(--uui-size-8) 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: var(--uui-size-2);
+            }
+
+            .blockDefinition__dot {
+                width: var(--uui-size-3);
+                height: var(--uui-size-3);
+                border-radius: 50%;
+                border: 1px solid var(--uui-color-border);
+                background: var(--uui-color-surface);
+                padding: 0;
+                cursor: pointer;
+                transition: background-color 150ms ease;
+            }
+
+            .blockDefinition__dot--active {
+                background: var(--uui-color-interactive);
+                border-color: var(--uui-color-interactive);
+            }
+
+            .blockDefinition__dot:hover:not(.blockDefinition__dot--active) {
+                background: var(--uui-color-surface-alt);
             }
         `,
     ];
