@@ -116,49 +116,51 @@ export default class PerplexContentBlocksAddBlockModalElement
             .filter(category => category.filteredDefinitions.length > 0);
 
         return html`
-            <ul class="addBlockModal__blockList">
-                <div class="addBlockModal__filterBar">
-                    <div class="addBlockModal__searchBar">
-                        <uui-input
-                            label="search blocks"
-                            @input=${this.onSearchTermChanged}
-                            placeholder="Search blocks..."
-                            .value=${this.searchTerm || ''}
-                        ></uui-input>
-                        <uui-button
-                            label="reset filters"
-                            look="primary"
-                            ?disabled=${!this.searchTerm && !this.selectedCategories}
-                            @click=${this.onResetFilters}
-                        >
-                            Reset <uui-icon name="icon-trash"></uui-icon>
-                        </uui-button>
-                    </div>
-                    <div class="addBlockModal__filters">
-                        ${categories.map(category => {
-                            return html`
-                                <label
-                                    class="addBlockModal__filter"
-                                    for=${category.category.name}
-                                >
-                                    <svg style="width: 20px;height: 20px;">
-                                        <use href="${category.category.icon}"></use>
-                                    </svg>
-
-                                    <span> ${category.category.name} </span>
-                                    <input
-                                        id=${category.category.name}
-                                        type="checkbox"
-                                        name="category"
-                                        @change=${(e: Event) => this.onCategoryClicked(e, category.category.id)}
-                                        .checked=${this.selectedCategories?.includes(category.category.id) ?? false}
-                                    />
-                                </label>
-                            `;
-                        })}
-                    </div>
+            <div class="addBlockModal__filterBar">
+                <div class="addBlockModal__searchBar">
+                    <uui-input
+                        label="search blocks"
+                        @input=${this.onSearchTermChanged}
+                        placeholder="Search blocks..."
+                        .value=${this.searchTerm || ''}
+                        style="
+                            --uui-input-height: var(--uui-size-12); 
+                            --uui-input-background-color: var(--uui-color-surface-emphasis); 
+                            width: 100%
+                        "
+                    ></uui-input>
                 </div>
+                <div class="addBlockModal__filters">
+                    ${categories.map(category => {
+                        return html`
+                            <uui-checkbox
+                                label-position="left"
+                                label="${category.category.name}"
+                                name="category"
+                                .checked=${this.selectedCategories?.includes(category.category.id) ?? false}
+                                @change=${(e: Event) => this.onCategoryClicked(e, category.category.id)}
+                                style="
+                                    --uui-checkbox-size: var(--uui-size-space-5);
+                                    line-height: 1.2;
+                                    border: 1px solid var(--uui-color-border);
+                                    border-radius: var(--uui-border-radius);
+                                    padding: var(--uui-size-3) var(--uui-size-4);
+                                "
+                            ></uui-checkbox>
+                        `;
+                    })}
+                </div>
+                <uui-button
+                    label="reset filters"
+                    look="primary"
+                    ?disabled=${!this.searchTerm && !this.selectedCategories}
+                    @click=${this.onResetFilters}
+                >
+                    Reset <uui-icon name="icon-axis-rotation"></uui-icon>
+                </uui-button>
+            </div>
 
+            <ul class="addBlockModal__blockList">
                 ${filteredCategories.length === 0
                     ? html`<div class="addBlockModal__noResults">No blocks found</div>`
                     : repeat(

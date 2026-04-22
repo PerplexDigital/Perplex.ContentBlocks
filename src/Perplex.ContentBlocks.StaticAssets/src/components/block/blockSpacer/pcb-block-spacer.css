@@ -1,17 +1,17 @@
 .pcb-block-spacer {
-    padding: calc(var(--s) * 3) 0;
-    margin: 0 calc(var(--s) * 12);
-
     display: grid;
     grid-template-rows: 0fr;
+    padding: var(--uui-size-4) var(--uui-size-5);
+    border-radius: var(--uui-size-5);
     transition:
         250ms grid-template-rows ease,
         250ms padding ease;
 
     &.pcb-block-spacer > div {
         overflow: hidden;
-        background-color: var(--c-mystic);
-        padding: calc(var(--s) * 1) calc(var(--s) * 3);
+        background-color: var(--uui-color-background);
+        border-top: 2px solid var(--uui-color-background);
+        border-radius: var(--uui-border-radius);
         transition: 250ms padding ease;
 
         > * {
@@ -24,7 +24,7 @@
         grid-template-rows: 1fr;
 
         > div {
-            padding: calc(var(--s) * 3);
+            padding: var(--uui-size-5);
 
             > * {
                 opacity: 1;
@@ -36,6 +36,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: calc(var(--s) * 3);
+        gap: var(--uui-size-4);
     }
 }

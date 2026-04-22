@@ -24,6 +24,7 @@ export default class PerplexContentBlocksStructurePropertyEditorUiElement
         return html`
             <select
                 id="native"
+                aria-label="Content blocks structure"
                 @change=${(e: Event) => this._setValue((e.target as HTMLSelectElement).value)}
             >
                 <option
@@ -87,7 +88,7 @@ export default class PerplexContentBlocksStructurePropertyEditorUiElement
         }
 
         option:checked {
-            background: var(--uui-select-selected-option-background-color, var(--uui-color-selected));
+            background-color: var(--uui-select-selected-option-background-color, var(--uui-color-selected));
             color: var(--uui-select-selected-option-color, var(--uui-color-selected-contrast));
         }
 

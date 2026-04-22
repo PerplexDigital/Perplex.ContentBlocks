@@ -18,7 +18,6 @@ import { PcbToastEvent } from '../../../events/toast.ts';
 import { consume } from '@lit/context';
 import { pcbEditorContext } from '../../../context';
 import { PcbEditorContext } from '../../../context/pcb-editor-context.ts';
-import { getCategoriesForDefinition } from '../../../utils/block.ts';
 
 const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
 
@@ -80,16 +79,44 @@ export default class PcbBlockHead extends UmbLitElement {
     @consume({ context: pcbEditorContext })
     ctx!: PcbEditorContext;
 
-    private getIcon() {
-        const categories = getCategoriesForDefinition(this.definition?.id ?? '', this.ctx.definitions);
-        if (this.definition?.icon) return this.definition.icon;
-        if (categories.length > 0) return categories[0].icon;
-        return 'icon-block-default';
+    @query('#tooltip-header-block')
+    private _tooltipHeaderBlock!: HTMLElement;
+
+    private crossedEyeIcon(fontSize = '20px') {
+        return html`
+            <uui-icon style="font-size: ${fontSize};">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-eye-off-icon lucide-eye-off"
+                >
+                    <path
+                        d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                    />
+                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                    <path
+                        d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                    />
+                    <path d="m2 2 20 20" />
+                </svg>
+            </uui-icon>
+        `;
     }
 
     #tooltipOnMouseEnter() {
         if (!this.collapsed) {
             this._tooltipPopover.showPopover();
+        }
+
+        if (this.collapsed && this.section === Section.HEADER) {
+            this._tooltipHeaderBlock.showPopover();
         }
     }
 
@@ -120,6 +147,26 @@ export default class PcbBlockHead extends UmbLitElement {
         );
     };
 
+    private get hasBlockNameValue(): boolean {
+        if (!this.blockNameTemplate) return false;
+
+        // Matches: {prefix: alias}  {=alias}  ${ alias }
+        const aliasPattern = /\{(?:[^:}]+:\s*(\w+)|=(\w+))|\$\{\s*(\w+)/g;
+        let match;
+        let hasAnyAlias = false;
+
+        while ((match = aliasPattern.exec(this.blockNameTemplate)) !== null) {
+            hasAnyAlias = true;
+            const alias = match[1] ?? match[2] ?? match[3];
+            if (alias && this.blockValuesByAlias[alias]) {
+                return true;
+            }
+        }
+
+        // No UFM aliases found — plain text template, always show
+        return !hasAnyAlias;
+    }
+
     protected willUpdate(_changedProperties: PropertyValues<this>) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
             this.selectedLayoutIndex = this.definition.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
@@ -140,49 +187,79 @@ export default class PcbBlockHead extends UmbLitElement {
         const isTouchDevice = this.ctx?.isTouchDevice ?? false;
 
         return html`
-            <div class="block-head">
+            <div class="block-head ${this.block.isDisabled ? 'block-head--disabled' : ''}">
                 <button
                     type="button"
                     @click=${this.onHeadClicked}
-                    class=${`block-head__toggle ${this.block.isDisabled ? 'block-head__toggle--disabled' : ''} ${this.collapsed ? '' : 'block-head--open'}`}
+                    class=${`block-head__toggle ${this.collapsed ? '' : 'block-head--open'}`}
+                    aria-expanded=${!this.collapsed}
+                    aria-label="Toggle block ${this.blockDefinitionName}"
                 >
-                    ${this.section === Section.CONTENT && !isTouchDevice
+                    ${!isTouchDevice
                         ? html`
-                              <b
+                              <div
                                   id="tooltip-toggle"
-                                  popovertarget="tooltip-popover"
+                                  class="block-head__handle-wrapper"
+                                  popovertarget=${this.collapsed && this.section === Section.HEADER
+                                      ? 'tooltip-header-block'
+                                      : 'tooltip-popover'}
                                   @mouseenter=${this.#tooltipOnMouseEnter}
                                   @mouseleave=${this.#tooltipOnMouseLeave}
                               >
-                                  <uui-icon
-                                      class="block-head__handle icon icon--base"
-                                      name="icon-grip"
-                                  >
-                                  </uui-icon
-                              ></b>
+                                  ${this.section === Section.CONTENT
+                                      ? html`
+                                            <uui-icon
+                                                class="block-head__handle icon icon--base"
+                                                name="icon-grip"
+                                            ></uui-icon>
+                                        `
+                                      : nothing}
+                              </div>
                               <uui-popover-container id="tooltip-popover">
                                   <div
-                                      style="background-color: var(--uui-color-surface); max-width: 150px; box-shadow: var(--uui-shadow-depth-4); padding: var(--uui-size-space-4); border-radius: var(--uui-border-radius); font-size: 0.9rem;"
+                                      style="font-size: var(--uui-type-small-size); color: var(--uui-color-surface); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--uui-color-text); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
                                   >
                                       An expanded block cannot be dragged. Collapse the block to drag it.
                                   </div>
                               </uui-popover-container>
+                              ${this.section === Section.HEADER
+                                  ? html`
+                                        <uui-popover-container id="tooltip-header-block">
+                                            <div
+                                                style="font-size: var(--uui-type-small-size); color: var(--uui-color-surface); max-width: 320px; padding: var(--uui-size-space-4); background-color: var(--uui-color-text); border-radius: var(--uui-border-radius); box-shadow: var(--uui-shadow-depth-4);"
+                                            >
+                                                A header block cannot be dragged because it should always be positioned
+                                                at the top op the page.
+                                            </div>
+                                        </uui-popover-container>
+                                    `
+                                  : nothing}
                           `
-                        : html`<div class="block-head__handle-placeholder"></div>`}
+                        : nothing}
                     <div class="block-head__title">
                         <strong>
-                            <umb-ufm-render
-                                inline
-                                .markdown=${this.blockNameTemplate}
-                                .value=${this.blockValuesByAlias}
-                            ></umb-ufm-render
-                        ></strong>
-                        <div>${this.blockDefinitionName}</div>
+                            ${this.hasBlockNameValue
+                                ? html`<umb-ufm-render
+                                      inline
+                                      .markdown=${this.blockNameTemplate}
+                                      .value=${this.blockValuesByAlias}
+                                  ></umb-ufm-render>`
+                                : nothing}
+                        </strong>
+                        ${this.block.isDisabled
+                            ? html`
+                                  <uui-tag style="--uui-tag-border-radius: 30px;">
+                                      ${this.crossedEyeIcon('12px')}
+                                      <span>Hidden</span>
+                                  </uui-tag>
+                              `
+                            : nothing}
+                        <div
+                            class="${`block-head__description ${this.hasBlockNameValue ? '' : 'block-head__description--no-title'}`}"
+                        >
+                            ${this.blockDefinitionName}
+                        </div>
                     </div>
-
-                    <svg class="block-head__icon icon icon--base">
-                        <use href="${this.getIcon()}"></use>
-                    </svg>
                 </button>
                 ${this.isDraggingBlock
                     ? nothing
@@ -192,39 +269,45 @@ export default class PcbBlockHead extends UmbLitElement {
                               .initialSlideIndex=${this.selectedLayoutIndex}
                           ></pcb-inline-layout-switch>
                       `}
-
                 <div class="block-head__controls">
                     <button
-                        class="block-head__control ${this.block.isDisabled ? 'block-head__control--disabled' : ''}"
+                        class="block-head__control"
                         type="button"
                         @click=${this.onToggleVisibilityClicked}
+                        aria-label=${this.block.isDisabled ? 'Show block' : 'Hide block'}
                     >
-                        <uui-icon
-                            style="font-size: 20px; color: var(--c-submarine);"
-                            name="icon-eye"
-                        >
-                        </uui-icon>
+                        ${this.block.isDisabled
+                            ? this.crossedEyeIcon()
+                            : html`
+                                  <uui-icon
+                                      style="font-size: 20px;"
+                                      name="icon-eye"
+                                  >
+                                  </uui-icon>
+                              `}
                     </button>
 
                     <button
                         class="block-head__control"
                         type="button"
                         @click=${this.onCopyClicked}
+                        aria-label="Copy block"
                     >
                         <uui-icon
-                            style="font-size: 20px; color: var(--c-submarine);"
+                            style="font-size: 20px;"
                             name="icon-documents"
                         >
                         </uui-icon>
                     </button>
                     <button
-                        class="block-head__control ${this.isMandatory ? 'block-head__control--disabled' : ''}"
+                        class="block-head__control"
                         type="button"
                         @click=${this.onRemoveClicked}
                         ?disabled=${this.isMandatory}
+                        aria-label="Remove block"
                     >
                         <uui-icon
-                            style="font-size: 20px; color: var(--c-submarine);"
+                            style="font-size: 20px;"
                             name="icon-trash"
                         >
                         </uui-icon>

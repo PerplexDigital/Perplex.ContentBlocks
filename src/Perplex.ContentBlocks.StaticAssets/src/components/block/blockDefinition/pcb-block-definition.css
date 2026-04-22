@@ -1,7 +1,8 @@
 :host {
     flex-direction: column;
     justify-content: flex-start;
-    background: white;
+    background-color: var(--uui-color-surface);
+    box-shadow: none;
 }
 
 :host(:focus-within) {
@@ -10,19 +11,20 @@
     border-radius: var(--uui-border-radius);
 }
 
-:host(:hover) #info {
-    color: var(--uui-color-interactive-emphasis);
-}
-
 .blockDefinition {
     width: 100%;
+    height: 100%;
 
     .blockDefinition__inner {
         width: 100%;
-        display: block;
+        height: 100%;
+        display: grid;
+        grid-template-rows: 18rem 1fr max-content;
+        overflow: hidden;
+        margin-bottom: 0;
+        border: 1px solid var(--uui-color-border);
         border-radius: var(--uui-border-radius);
         background: none;
-        border: none;
         padding: 0;
         font: inherit;
         cursor: pointer;
@@ -36,7 +38,6 @@
     .blockDefinition__inner:focus-visible {
         outline: 3px solid var(--uui-color-focus);
         outline-offset: 2px;
-        box-shadow: 0 0 0 6px rgba(0, 123, 255, 0.15);
         position: relative;
         z-index: 10;
     }
@@ -51,37 +52,59 @@
     }
 
     .blockDefinition__controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         height: 2rem;
-        width: 100%;
-    }
+        padding: var(--uui-size-3) var(--uui-size-5);
+        border-top: 1px solid var(--uui-color-border);
+        min-width: 0;
 
-    .blockDefinition__single {
-        width: 100%;
-        background: none;
-        color: inherit;
-        border: none;
-        padding: 0;
-        font: inherit;
-        cursor: pointer;
+        .blockDefinition__control-wrapper {
+            margin-inline: var(--uui-size-11);
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        strong {
+            min-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        uui-tag {
+            margin-left: var(--uui-size-3);
+        }
     }
 }
 
 #portrait {
     position: relative;
-    background-color: var(--uui-color-surface-alt);
+    background-color: var(--uui-color-surface);
     display: flex;
     justify-content: center;
-    height: 250px;
+    padding: var(--uui-size-5);
+
+    .portrait__placeholder {
+        width: 100%;
+        height: 100%;
+        padding: var(--uui-size-3);
+        border-radius: calc(var(--uui-border-radius) * 2);
+        background-color: var(--uui-color-background);
+        box-sizing: border-box;
+    }
 
     img {
         align-self: center;
         display: block;
-        font-size: var(--uui-size-8);
-        border-radius: var(--uui-border-radius);
-        background-color: var(--uui-color-surface-emphasis);
-        object-fit: contain;
         width: 100%;
         height: 100%;
+        object-fit: contain;
+        border: 1px solid var(--uui-color-border);
+        border-radius: var(--uui-border-radius);
     }
 }
 
@@ -89,30 +112,31 @@
     text-align: left;
     background-color: var(--uui-color-surface);
     cursor: pointer;
-    color: var(--uui-color-interactive);
+    color: var(--uui-color-text);
     border: none;
-    border-top: 1px solid var(--uui-color-divider);
+    border-top: 1px solid var(--uui-color-border);
     border-radius: 0 0 var(--uui-border-radius) var(--uui-border-radius);
     font-family: inherit;
     font-size: var(--uui-type-small-size);
     box-sizing: border-box;
-    padding: var(--uui-size-2) var(--uui-size-4);
+    padding: var(--uui-size-4) var(--uui-size-5);
     display: flex;
     flex-direction: column;
+    justify-content: center;
     line-height: var(--uui-size-6);
 
     strong {
-        font-size: var(--uui-size-5);
+        font-size: var(--uui-type-default-size);
     }
 
     span {
-        font-size: var(--uui-size-4);
+        font-size: var(--uui-type-small-size);
     }
 }
 
 :host([disabled]) #open-part {
     pointer-events: none;
-    background: var(--uui-color-disabled);
+    background-color: var(--uui-color-disabled);
     color: var(--uui-color-contrast-disabled);
 }
 
@@ -122,47 +146,4 @@
 
 #open-part:hover {
     color: var(--uui-color-interactive-emphasis);
-}
-
-:host([image]:not([image=''])) #open-part {
-    transition: opacity 0.5s 0.5s;
-    opacity: 0;
-}
-
-#tag {
-    position: absolute;
-    top: var(--uui-size-4);
-    right: var(--uui-size-4);
-    display: flex;
-    justify-content: right;
-}
-
-#actions {
-    position: absolute;
-    top: var(--uui-size-4);
-    right: var(--uui-size-4);
-    display: flex;
-    justify-content: right;
-
-    opacity: 0;
-    transition: opacity 120ms;
-}
-
-:host(:focus) #actions,
-:host(:focus-within) #actions,
-:host(:hover) #actions {
-    opacity: 1;
-}
-
-:host(
-        [image]:not([image='']):hover,
-        [image]:not([image='']):focus,
-        [image]:not([image='']):focus-within,
-        [selected][image]:not([image='']),
-        [error][image]:not([image=''])
-    )
-    #open-part {
-    opacity: 1;
-    transition-duration: 120ms;
-    transition-delay: 0s;
 }

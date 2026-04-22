@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
+        target: ['chrome112', 'edge112', 'firefox117', 'safari16.5'],
         lib: {
             entry: 'src/index.ts',
             formats: ['es'],

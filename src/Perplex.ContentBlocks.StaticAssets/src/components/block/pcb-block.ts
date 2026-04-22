@@ -533,9 +533,9 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         css`
             :host {
                 display: block;
-                position: relative;
                 width: 100%;
                 overflow: visible;
+                min-width: 0;
             }
 
             :host(:hover) {
@@ -543,8 +543,6 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             }
 
             .block {
-                box-shadow: var(--bs-base);
-
                 &.block__removing {
                     opacity: 0;
                     transform: scaleY(0);
@@ -558,7 +556,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 }
 
                 .block__body {
-                    background-color: var(--c-mystic);
+                    background-color: var(--uui-color-surface-emphasis);
                     display: grid;
 
                     transition:
@@ -567,12 +565,14 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
                     &.block__body--hidden {
                         grid-template-rows: 0fr;
-                        padding: 0 calc(var(--s) * 8);
+                        padding: 0 var(--uui-size-8);
                     }
 
                     &.block__body--open {
                         grid-template-rows: 1fr;
-                        padding: calc(var(--s) * 6) calc(var(--s) * 8);
+                        padding: var(--uui-size-6) var(--uui-size-8);
+                        border-bottom-left-radius: var(--uui-border-radius);
+                        border-bottom-right-radius: var(--uui-border-radius);
                     }
 
                     &.block__body--dragging {
@@ -584,8 +584,8 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     }
 
                     .block__body-loading {
-                        color: var(--c-submarine);
-                        padding: calc(var(--s) * 2) 0;
+                        color: var(--uui-color-text-alt);
+                        padding: var(--uui-size-3) 0;
                     }
                 }
             }

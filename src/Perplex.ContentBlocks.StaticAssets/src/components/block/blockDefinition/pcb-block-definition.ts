@@ -108,6 +108,7 @@ export class PcbBlockDefinition extends LitElement {
         const current = layouts[this.selectedLayoutIndex];
         const hasPrev = this.selectedLayoutIndex > 0;
         const hasNext = this.selectedLayoutIndex < layouts.length - 1;
+        const currentNumber = this.selectedLayoutIndex + 1;
         const hasMultiple = layouts.length > 1;
 
         return html`
@@ -116,14 +117,17 @@ export class PcbBlockDefinition extends LitElement {
                     class="blockDefinition__inner"
                     @click=${this.onSelected}
                     ?disabled=${this.disabled}
+                    aria-label="Select ${this.definition.name} - ${current.name}"
                 >
                     <div id="portrait">
-                        <img
-                            src=${current.previewImage}
-                            alt="Preview image for ${this.definition.name}"
-                            loading="lazy"
-                            decoding="async"
-                        />
+                        <div class="portrait__placeholder">
+                            <img
+                                src=${current.previewImage}
+                                alt="Preview image for ${this.definition.name}"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        </div>
 
                         ${hasMultiple
                             ? html`
@@ -145,22 +149,7 @@ export class PcbBlockDefinition extends LitElement {
                                   >
                                       ${chevronSvg}
                                   </button>
-                              `
-                            : nothing}
-                    </div>
 
-                    <div id="open-part">
-                        <strong
-                            >${current.name === 'Default'
-                                ? this.definition.name
-                                : `${this.definition.name} | ${current.name}`}</strong
-                        >
-                        <span>${this.definition.description}</span>
-                    </div>
-
-                    <div class="blockDefinition__controls">
-                        ${hasMultiple
-                            ? html`
                                   <div class="blockDefinition__pagination">
                                       ${layouts.map(
                                           (_, i) => html`
@@ -177,6 +166,22 @@ export class PcbBlockDefinition extends LitElement {
                                   </div>
                               `
                             : nothing}
+                    </div>
+
+                    <div id="open-part">
+                        <strong
+                            >${current.name === 'Default'
+                                ? this.definition.name
+                                : `${this.definition.name} | ${current.name}`}</strong
+                        >
+                        <span>${this.definition.description}</span>
+                    </div>
+
+                    <div class="blockDefinition__controls">
+                        <div class="blockDefinition__control-wrapper">
+                            <strong>${current.name}</strong>
+                            ${hasMultiple ? html` <uui-tag>${currentNumber}/${layouts.length}</uui-tag> ` : nothing}
+                        </div>
                     </div>
                 </button>
             </div>
@@ -202,8 +207,12 @@ export class PcbBlockDefinition extends LitElement {
                 border-radius: 100%;
                 background-color: var(--uui-palette-mine-grey);
                 cursor: pointer;
-                color: white;
+                color: var(--uui-color-default-contrast);
                 padding: 0;
+            }
+
+            .blockDefinition__nav-btn:focus {
+                border-radius: 100%;
             }
 
             .blockDefinition__nav-btn svg {
@@ -211,7 +220,7 @@ export class PcbBlockDefinition extends LitElement {
             }
 
             .blockDefinition__nav-btn--prev {
-                left: 10px;
+                left: var(--uui-size-5);
             }
 
             .blockDefinition__nav-btn--prev svg {
@@ -219,7 +228,7 @@ export class PcbBlockDefinition extends LitElement {
             }
 
             .blockDefinition__nav-btn--next {
-                right: 10px;
+                right: var(--uui-size-5);
             }
 
             .blockDefinition__nav-btn:hover:not(:disabled) {
@@ -233,16 +242,17 @@ export class PcbBlockDefinition extends LitElement {
 
             /* Pagination dots in the controls area */
             .blockDefinition__pagination {
+                position: absolute;
+                inset: auto 0 var(--uui-size-8) 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 4px;
-                height: 100%;
+                gap: var(--uui-size-2);
             }
 
             .blockDefinition__dot {
-                width: 8px;
-                height: 8px;
+                width: var(--uui-size-3);
+                height: var(--uui-size-3);
                 border-radius: 50%;
                 border: 1px solid var(--uui-color-border);
                 background: var(--uui-color-surface);

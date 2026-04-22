@@ -1,6 +1,5 @@
 .addBlockModal {
     background-color: var(--uui-color-background);
-    width: 100%;
     right: calc(var(--slider-width) * -1);
     transition: right var(--uui-modal-transition-duration, 250ms);
     display: flex;
@@ -9,55 +8,24 @@
     height: 100%;
 
     .addBlockModal__filterBar {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr max-content;
         grid-column: 1 / -1;
-        gap: calc(var(--s) * 3);
+        gap: var(--uui-size-3);
+        padding: var(--uui-size-5);
+        border-bottom: 1px solid var(--uui-color-border);
+        background: var(--uui-color-surface);
 
         .addBlockModal__searchBar {
+            grid-column: span 2;
             display: flex;
-            gap: calc(var(--s) * 3);
-
-
-            uui-input {
-                width: 100%;
-            }
         }
 
         .addBlockModal__filters {
             display: flex;
-            gap: calc(var(--s) * 2);
-            flex-wrap: wrap;
-
-            .addBlockModal__filter {
-                display: flex;
-                align-items: center;
-                gap: calc(var(--s) * 2);
-                background-color: var(--uui-color-surface);
-                border: 1px solid var(--uui-color-border);
-                border-radius: var(--uui-border-radius);
-                padding: calc(var(--s) * 2) calc(var(--s) * 4);
-                cursor: pointer;
-                transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-
-                input {
-                    margin: 0;
-                }
-
-                &:hover {
-                    background-color: var(--uui-color-surface-alt);
-                    border-color: var(--uui-color-border-emphasis);
-                }
-
-                &:has(input[type="radio"]:checked) {
-                    border-color: var(--uui-color-focus);
-                    color: var(--uui-color-focus);
-                }
-            }
+            gap: var(--uui-size-3);
         }
     }
-
-
 
     @media only screen and (min-width: 1200px) {
         grid-template-columns: repeat(4, 1fr);
@@ -66,16 +34,18 @@
     .addBlockModal__blockList {
         display: grid;
         grid-template-columns: repeat(1, minmax(0, 1fr));
-        gap: 20px;
-        padding: calc(var(--s) * 10);
+        gap: var(--uui-size-8);
+        margin: 0 1px 0 0;
+        padding: var(--uui-size-8) var(--uui-size-12);
         overflow-y: scroll;
+        background-color: var(--uui-color-background);
 
         @media only screen and (min-width: 500px) {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         @media only screen and (min-width: 2000px) {
-            padding: calc(var(--s) * 20);
+            padding: var(--uui-size-20);
         }
     }
 
@@ -86,7 +56,8 @@
         align-items: center;
         justify-content: end;
         padding: 1rem 2rem;
-        background: var(--uui-color-surface);
+        background-color: var(--uui-color-surface);
         box-shadow: var(--uui-shadow-depth-4);
+        border-top: 1px solid var(--uui-color-border);
     }
 }
