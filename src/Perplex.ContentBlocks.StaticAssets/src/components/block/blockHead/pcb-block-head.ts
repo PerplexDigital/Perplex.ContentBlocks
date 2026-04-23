@@ -122,6 +122,7 @@ export default class PcbBlockHead extends UmbLitElement {
 
     #tooltipOnMouseLeave() {
         this._tooltipPopover.hidePopover();
+        this._tooltipHeaderBlock?.hidePopover();
     }
 
     onHeadClicked = () => {
