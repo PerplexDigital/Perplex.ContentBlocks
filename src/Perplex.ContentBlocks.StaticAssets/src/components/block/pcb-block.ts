@@ -533,6 +533,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
         css`
             :host {
                 display: block;
+                position: relative;
                 width: 100%;
                 overflow: visible;
                 min-width: 0;
