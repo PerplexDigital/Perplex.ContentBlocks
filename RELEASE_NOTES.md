@@ -4,9 +4,9 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v4.0.0 - <sub><sup>TBD</sup></sub>
 
-- Added support for Umbraco v16+
+- Added support for Umbraco v17+
   - Umbraco v10 - v13 are only support by v1 - v3
-  - Perplex.ContentBlocks v4 only supports Umbraco v16+
+  - Perplex.ContentBlocks v4 only supports Umbraco v17+
 - Replaced NestedContent with Block Editor as underlying data structure.
 - Breaking changes
   - Removed properties:
