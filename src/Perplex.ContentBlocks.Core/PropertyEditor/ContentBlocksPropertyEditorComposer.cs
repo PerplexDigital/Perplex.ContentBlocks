@@ -9,5 +9,6 @@ public class ContentBlocksPropertyEditorComposer : IComposer
     public void Compose(IUmbracoBuilder builder)
     {
         builder.Services.AddSingleton<ContentBlocksValidator>();
+        builder.Services.AddSingleton<ContentBlocksPropertyIndexValueFactory>();
     }
 }

@@ -11,14 +11,23 @@ public class PerplexContentBlocksPropertyEditor : DataEditor
 {
     private readonly IIOHelper _ioHelper;
     private readonly IConfigurationEditorJsonSerializer _configEditorSerializer;
+    private readonly ContentBlocksPropertyIndexValueFactory _propertyIndexValueFactory;
 
-    public PerplexContentBlocksPropertyEditor(IDataValueEditorFactory dataValueEditorFactory, IIOHelper ioHelper, IConfigurationEditorJsonSerializer configEditorSerializer)
-        : base(dataValueEditorFactory)
+    public PerplexContentBlocksPropertyEditor
+    (
+        IDataValueEditorFactory dataValueEditorFactory,
+        IIOHelper ioHelper,
+        IConfigurationEditorJsonSerializer configEditorSerializer,
+        ContentBlocksPropertyIndexValueFactory propertyIndexValueFactory
+    ) : base(dataValueEditorFactory)
     {
         SupportsReadOnly = true;
         _ioHelper = ioHelper;
         _configEditorSerializer = configEditorSerializer;
+        _propertyIndexValueFactory = propertyIndexValueFactory;
     }
+
+    public override IPropertyIndexValueFactory PropertyIndexValueFactory => _propertyIndexValueFactory;
 
     protected override IDataValueEditor CreateValueEditor() =>
         DataValueEditorFactory.Create<ContentBlocksValueEditor>(Attribute!);
