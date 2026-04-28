@@ -124,12 +124,10 @@
             svg {
                 width: var(--uui-size-5);
                 height: var(--uui-size-5);
-                vertical-align: middle;
             }
 
             span {
-                margin-left: var(--uui-size-3);
-                vertical-align: middle;
+                margin-left: var(--uui-size-2);
             }
         }
 
