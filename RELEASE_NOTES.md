@@ -2,12 +2,14 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
-## v4.0.0 - <sub><sup>TBD</sup></sub>
+## v4.0.0 - <sub><sup>2026-06-22</sup></sub>
 
 - Added support for Umbraco v17+
-  - Umbraco v10 - v13 are only support by v1 - v3
+  - Umbraco v10 - v13 are only supported by v1 - v3
   - Perplex.ContentBlocks v4 only supports Umbraco v17+
 - Replaced NestedContent with Block Editor as underlying data structure.
+- Implemented IPropertyIndexValueFactory
+  - This improves Examine indexing by indexing individual nested property values from ContentBlocks instead of indexing the raw JSON blob.
 - Breaking changes
   - Removed properties:
     - `IContentBlockDefinition.{DataTypeKey,DataTypeId}`
