@@ -1,0 +1,19 @@
+{
+  "printWidth": 120,
+  "arrowParens": "avoid",
+  "singleQuote": true,
+  "tabWidth": 4,
+  "singleAttributePerLine": true,
+  "endOfLine": "auto",
+  "overrides": [
+    {
+      "files": [
+        "*.json",
+        "*.yml"
+      ],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}

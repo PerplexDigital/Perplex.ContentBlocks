@@ -1,0 +1,595 @@
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
+import {
+    classMap,
+    css,
+    customElement,
+    html,
+    property,
+    repeat,
+    state,
+    unsafeCSS,
+    nothing,
+    PropertyValues,
+} from '@umbraco-cms/backoffice/external/lit';
+import type { UmbPropertyTypeContainerModel, UmbPropertyTypeModel } from '@umbraco-cms/backoffice/content-type';
+import { PerplexContentBlocksPropertyDatasetContext } from '../../editor/perplex-content-blocks-dataset-context.ts';
+import { UmbDataTypeDetailModel } from '@umbraco-cms/backoffice/data-type';
+import { UmbDocumentTypeDetailModel } from '@umbraco-cms/backoffice/document-type';
+import { UMB_VALIDATION_CONTEXT, UmbValidationController } from '@umbraco-cms/backoffice/validation';
+import { Group, PerplexBlockDefinition, PerplexContentBlocksBlock, Section, Tab } from '../../types.ts';
+import { PcbBlockLayoutChangeEvent, PcbBlockUpdatedEvent, ON_BLOCK_REMOVE } from '../../events/block.ts';
+
+import baseStyles from './../../css/base.css?inline';
+import { PcbDragAndDrop } from '../dragAndDrop/pcb-drag-and-drop.ts';
+import { propertyAliasPrefix } from '../../utils/block.ts';
+import { consume } from '@lit/context';
+import { pcbEditorContext } from '../../context';
+import { PcbEditorContext } from '../../context/pcb-editor-context.ts';
+import { PcbFocusBlockInPreviewEvent } from '../../events/preview.ts';
+
+@customElement('pcb-block')
+export default class PerplexContentBlocksBlockElement extends UmbLitElement {
+    @property({ type: Boolean, reflect: true })
+    dragging: boolean | null = null;
+
+    @property({ attribute: false })
+    section: Section = Section.CONTENT;
+
+    @property({ attribute: false })
+    index!: number;
+
+    @property({
+        type: Boolean,
+        reflect: true,
+        attribute: 'draggable',
+        converter: {
+            toAttribute: (value: boolean) => (value ? 'true' : 'false'),
+            fromAttribute: (value: string | null) => value === 'true',
+        },
+    })
+    draggable: boolean = false;
+
+    @state()
+    invalid: boolean = false;
+
+    @property({ attribute: false })
+    collapsed: boolean = true;
+
+    @property({ attribute: false })
+    definition!: PerplexBlockDefinition;
+
+    @property({ attribute: false })
+    block!: PerplexContentBlocksBlock;
+
+    @property({ attribute: false })
+    removeBlock!: (udi: string) => void;
+
+    @property({ attribute: false })
+    dataPath!: string;
+
+    @property({ attribute: false })
+    openModal!: (section: Section, insertAtIndex: number) => any;
+
+    // Props passed from parent (no more Redux)
+    @property({ type: Boolean })
+    isDraggingBlock: boolean = false;
+
+    @property({ type: Boolean })
+    isMandatory: boolean = false;
+
+    @property({ type: Boolean })
+    hasCopiedValue: boolean = false;
+
+    @state()
+    private ok: boolean = false;
+
+    @state()
+    properties: UmbPropertyTypeModel[] = [];
+
+    @state()
+    private bodyLoaded: boolean = false;
+
+    @state()
+    private bodyLoading: boolean = false;
+
+    @state()
+    removing: boolean = false;
+
+    #dataTypes: {
+        [key: string]: UmbDataTypeDetailModel;
+    } = {};
+
+    #bodyLoadPromise?: Promise<void>;
+
+    #propertyDatasetContext?: PerplexContentBlocksPropertyDatasetContext;
+
+    #validationContext!: UmbValidationController;
+
+    @consume({ context: pcbEditorContext })
+    ctx!: PcbEditorContext;
+
+    connectedCallback() {
+        super.connectedCallback();
+        const errors: string[] = [];
+
+        if (!this.block) {
+            errors.push('block property is required');
+        }
+
+        if (!this.removeBlock) {
+            errors.push('removeBlock property is required');
+        }
+
+        if (errors.length > 0) {
+            throw new Error(errors.join(' | '));
+        }
+
+        this.addEventListener('dragstart', this.onDragStart);
+        this.addEventListener('dragend', this.onDragEnd);
+        this.addEventListener(PcbBlockLayoutChangeEvent.TYPE, (e: Event) =>
+            this.onLayoutChange(e as PcbBlockLayoutChangeEvent),
+        );
+        this.addEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.removeEventListener('dragstart', this.onDragStart);
+        this.removeEventListener('dragend', this.onDragEnd);
+        this.removeEventListener(ON_BLOCK_REMOVE, this.onBlockRemoveClick);
+        this.clearValidationMessages();
+    }
+
+    updated(changedProps: PropertyValues) {
+        super.updated(changedProps);
+
+        if (changedProps.has('collapsed')) {
+            if (changedProps.get('collapsed') === true) {
+                this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id));
+            }
+
+            if (!this.collapsed && this.ok) {
+                void this.#loadBodyAndApplyPropertyLayout();
+            }
+        }
+    }
+
+    onDragStart = (_: DragEvent) => {
+        if (!this.draggable) return;
+        this.dragging = true;
+    };
+
+    onDragEnd = () => {
+        if (!this.draggable) return;
+        const active = PcbDragAndDrop.activeDrag;
+        if (active) {
+            active.element.style.display = ''; // restore visibility
+        }
+        PcbDragAndDrop.activeDrag = null;
+        this.dragging = null;
+    };
+
+    onLayoutChange = (event: PcbBlockLayoutChangeEvent) => {
+        // do nothing if the layout didn't change
+        if (this.block.layoutId === event.selectedLayout.id) {
+            return;
+        }
+
+        const updatedBlock: PerplexContentBlocksBlock = {
+            ...this.block,
+            layoutId: event.selectedLayout.id,
+        };
+
+        this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section, this.ctx.editorId));
+    };
+
+    constructor() {
+        super();
+        this.getContext(UMB_VALIDATION_CONTEXT).then(validationContext => {
+            if (validationContext == null) throw new Error('Validation context is required');
+
+            this.#validationContext = validationContext;
+
+            this.#validationContext.messages.messages.subscribe(messages => {
+                this.invalid = false;
+
+                for (const message of messages) {
+                    if (message.path.indexOf(this.block.id) !== -1) {
+                        this.invalid = true;
+                    }
+                }
+            });
+        });
+    }
+
+    onBlockRemoveClick = () => {
+        this.removing = true;
+
+        // Remove the block after the animation has finished
+        setTimeout(() => {
+            this.removeBlock(this.block.id);
+        }, 250);
+    };
+
+    onBlockUpdate = (block: PerplexContentBlocksBlock) => {
+        this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.ctx.editorId));
+    };
+
+    async firstUpdated() {
+        // Use shared cache from PcbEditorContext (deduplicates across blocks)
+        const elementType = await this.ctx.getContentType(this.block.content.contentTypeKey);
+        this.properties = await this.#getOrderedProperties(elementType);
+
+        this.ok = true;
+
+        if (!this.collapsed) {
+            await this.#loadBodyAndApplyPropertyLayout();
+        }
+    }
+
+    async #loadBodyAndApplyPropertyLayout() {
+        await this.#ensureBodyLoaded();
+        await this.updateComplete;
+
+        Array.from(this.renderRoot.querySelectorAll('umb-property')).forEach((umbProp: any) => {
+            const layout = umbProp?.shadowRoot?.querySelector('umb-property-layout');
+            if (layout) layout.orientation = 'vertical';
+        });
+    }
+
+    async #ensureBodyLoaded() {
+        if (this.bodyLoaded) {
+            return;
+        }
+
+        if (this.#bodyLoadPromise) {
+            await this.#bodyLoadPromise;
+            return;
+        }
+
+        this.#bodyLoadPromise = (async () => {
+            this.bodyLoading = true;
+
+            if (!this.#propertyDatasetContext) {
+                this.#propertyDatasetContext = new PerplexContentBlocksPropertyDatasetContext(
+                    this,
+                    this.definition.name,
+                    this.block,
+                    this.onBlockUpdate,
+                );
+            }
+
+            const dataTypeUniques = new Set(this.properties.map(p => p.dataType.unique));
+
+            // Use shared cache from PcbEditorContext — parallel fetch, deduplicated
+            const entries = await Promise.all(
+                [...dataTypeUniques]
+                    .filter(key => !this.#dataTypes[key])
+                    .map(async key => {
+                        const dt = await this.ctx.getDataType(key);
+                        return [key, dt] as const;
+                    }),
+            );
+
+            for (const [key, dt] of entries) {
+                this.#dataTypes[key] = dt;
+            }
+
+            this.bodyLoaded = true;
+        })();
+
+        try {
+            await this.#bodyLoadPromise;
+        } finally {
+            this.bodyLoading = false;
+            this.#bodyLoadPromise = undefined;
+        }
+    }
+
+    async #getOrderedProperties(elementType: UmbDocumentTypeDetailModel) {
+        if (elementType.compositions.length === 0) {
+            return [...elementType.properties];
+        }
+
+        // When the element type has compositions we need to ensure the properties are returned in the proper order,
+        // we cannot simply concat all contentType.properties together unfortunately.
+        // The order is determined by the tabs and groups defined on each content type.
+        // The order is:
+        // 1) For each group without a parent tab:
+        //      1) Properties in that group
+        // 2) For each tab:
+        //      1) Properties directly on the tab (not in a group)
+        //      2) For each group in that tab:
+        //          1) Properties in that group
+        // Ensure each step orders by sortOrder of the tab, group or property.
+        // Note that we must first merge tabs and groups at each level based on their name,
+        // e.g. if an Element Type defines 'Tab A' and a composition also defines 'Tab A' we need to merge them.
+        // Same goes for groups, also those within merged tabs.
+
+        const contentTypes: UmbDocumentTypeDetailModel[] = [];
+        contentTypes.push(elementType);
+
+        // Use shared cache for compositions too
+        const compositionResults = await Promise.all(
+            elementType.compositions.map(c => this.ctx.getContentType(c.contentType.unique).catch(() => null)),
+        );
+
+        for (const ct of compositionResults) {
+            if (ct) contentTypes.push(ct);
+        }
+
+        const tabs: Tab[] = [];
+        const groups: Group[] = [];
+
+        const propertiesByContainerId: { [key: string]: UmbPropertyTypeModel[] } = {};
+
+        for (const contentType of contentTypes) {
+            for (const property of contentType.properties) {
+                if (property.container?.id == null) continue;
+
+                if (!propertiesByContainerId[property.container.id])
+                    propertiesByContainerId[property.container.id] = [];
+
+                propertiesByContainerId[property.container.id].push(property);
+            }
+
+            const containersByParentId: { [key: string]: UmbPropertyTypeContainerModel[] } = {};
+            for (const container of contentType.containers) {
+                const parentId = container.parent?.id;
+                if (parentId == null) continue;
+                if (!containersByParentId[parentId]) containersByParentId[parentId] = [];
+                containersByParentId[parentId].push(container);
+            }
+
+            for (const container of contentType.containers) {
+                if (container.type === 'Tab') {
+                    const groups: Group[] = (containersByParentId[container.id] || []).map(buildGroup);
+
+                    const tab: Tab = {
+                        id: container.id,
+                        name: container.name,
+                        sortOrder: container.sortOrder,
+                        groups: groups,
+                        properties: propertiesByContainerId[container.id] || [],
+                    };
+
+                    const existingTab = tabs.find(t => t.name === tab.name);
+                    if (existingTab) {
+                        // Merge
+                        const merged = mergeTabs(existingTab, tab);
+                        tabs.splice(tabs.indexOf(existingTab), 1, merged);
+                    } else {
+                        tabs.push(tab);
+                    }
+                } else if (container.type === 'Group' && container.parent?.id == null) {
+                    const group = buildGroup(container);
+                    const existingGroup = groups.find(g => g.name === group.name);
+                    if (existingGroup) {
+                        // Merge
+                        const merged = mergeGroups(existingGroup, group);
+                        groups.splice(groups.indexOf(existingGroup), 1, merged);
+                    } else {
+                        groups.push(group);
+                    }
+                }
+            }
+
+            function buildGroup(container: UmbPropertyTypeContainerModel): Group {
+                return {
+                    id: container.id,
+                    name: container.name,
+                    sortOrder: container.sortOrder,
+                    properties: propertiesByContainerId[container.id] || [],
+                };
+            }
+        }
+
+        tabs.sort((a, b) => a.sortOrder - b.sortOrder);
+        groups.sort((a, b) => a.sortOrder - b.sortOrder);
+
+        const properties: UmbPropertyTypeModel[] = [];
+
+        for (const group of groups) {
+            addSortedProperties(group);
+        }
+
+        for (const tab of tabs) {
+            addSortedProperties(tab);
+
+            for (const group of tab.groups) {
+                addSortedProperties(group);
+            }
+        }
+
+        function addSortedProperties(container: Group | Tab) {
+            const props = container.properties.slice();
+            props.sort((a, b) => a.sortOrder - b.sortOrder);
+            properties.push(...props);
+        }
+
+        function mergeTabs(tabA: Tab, tabB: Tab): Tab {
+            const properties = [...tabA.properties, ...tabB.properties];
+            properties.sort((a, b) => a.sortOrder - b.sortOrder);
+
+            const groups: Group[] = [];
+            for (const group of [...tabA.groups, ...tabB.groups]) {
+                const existingGroup = groups.find(g => g.name === group.name);
+                if (existingGroup) {
+                    const merged = mergeGroups(existingGroup, group);
+                    groups.splice(groups.indexOf(existingGroup), 1, merged);
+                } else {
+                    groups.push(group);
+                }
+            }
+
+            const mergedTab: Tab = {
+                id: tabA.id,
+                name: tabA.name,
+                sortOrder: Math.min(tabA.sortOrder, tabB.sortOrder),
+                properties,
+                groups,
+            };
+
+            return mergedTab;
+        }
+
+        function mergeGroups(groupA: Group, groupB: Group): Group {
+            const properties = [...groupA.properties, ...groupB.properties];
+            properties.sort((a, b) => a.sortOrder - b.sortOrder);
+
+            const mergedGroup: Group = {
+                id: groupA.id,
+                name: groupA.name,
+                sortOrder: Math.min(groupA.sortOrder, groupB.sortOrder),
+                properties,
+            };
+
+            return mergedGroup;
+        }
+
+        return properties;
+    }
+
+    clearValidationMessages() {
+        for (const property of this.properties) {
+            const path = `${this.dataPath}.${this.block.id}.${property.alias}`;
+            this.#validationContext.messages.removeMessagesByPath(path);
+        }
+    }
+
+    render() {
+        if (!this.ok) {
+            return nothing;
+        }
+
+        const classes = {
+            block: true,
+            block__removing: this.removing,
+            block__invalid: this.invalid && !this.removing,
+        };
+
+        return html` ${this.section !== Section.HEADER
+                ? html`<pcb-block-spacer
+                      .openModal=${this.openModal}
+                      .index=${this.index}
+                      .hasCopiedValue=${this.hasCopiedValue}
+                  ></pcb-block-spacer>`
+                : nothing}
+            <div class="${classMap(classes)}">
+                <pcb-block-head
+                    .block=${this.block}
+                    .id=${this.block.id}
+                    .blockDefinitionName=${this.definition.name}
+                    .blockNameTemplate=${this.definition.blockNameTemplate ?? ''}
+                    .collapsed="${this.collapsed}"
+                    .definition=${this.definition}
+                    .section=${this.section}
+                    .isDraggingBlock=${this.isDraggingBlock}
+                    .isMandatory=${this.isMandatory}
+                >
+                </pcb-block-head>
+                <div
+                    class="
+                    block__body
+                    ${classMap({
+                        'block__body--open': !this.collapsed,
+                        'block__body--hidden': this.collapsed,
+                        'block__body--dragging': this.isDraggingBlock && this.collapsed,
+                    })}"
+                >
+                    <div>
+                        ${this.bodyLoaded
+                            ? repeat(
+                                  this.properties,
+                                  property => property.unique,
+                                  property => {
+                                      const dataType = this.#dataTypes[property.dataType.unique];
+                                      if (dataType == null) throw new Error('missing data type');
+
+                                      return html` <umb-property
+                                          .dataPath=${`${this.dataPath}.${this.block.id}.${property.alias}`}
+                                          .alias=${propertyAliasPrefix(this.block) + property.alias}
+                                          .label=${property.name}
+                                          .description=${property.description}
+                                          .appearance=${property.appearance}
+                                          property-editor-ui-alias=${dataType.editorUiAlias}
+                                          orientation="vertical"
+                                          .config=${dataType.values}
+                                          .validation=${property.validation}
+                                      >
+                                      </umb-property>`;
+                                  },
+                              )
+                            : this.bodyLoading
+                              ? html`<div class="block__body-loading">Loading ...</div>`
+                              : nothing}
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    static styles = [
+        unsafeCSS(baseStyles),
+        css`
+            :host {
+                display: block;
+                position: relative;
+                width: 100%;
+                overflow: visible;
+                min-width: 0;
+            }
+
+            :host(:hover) {
+                z-index: 2;
+            }
+
+            .block {
+                &.block__removing {
+                    opacity: 0;
+                    transform: scaleY(0);
+                    transition:
+                        opacity 250ms,
+                        transform 250ms;
+                }
+
+                &.block__invalid {
+                    border: 2px solid var(--uui-color-danger);
+                }
+
+                .block__body {
+                    background-color: var(--uui-color-surface-emphasis);
+                    display: grid;
+
+                    transition:
+                        250ms grid-template-rows ease,
+                        250ms padding ease;
+
+                    &.block__body--hidden {
+                        grid-template-rows: 0fr;
+                        padding: 0 var(--uui-size-8);
+                    }
+
+                    &.block__body--open {
+                        grid-template-rows: 1fr;
+                        padding: var(--uui-size-6) var(--uui-size-8);
+                        border-bottom-left-radius: var(--uui-border-radius);
+                        border-bottom-right-radius: var(--uui-border-radius);
+                    }
+
+                    &.block__body--dragging {
+                        display: none;
+                    }
+
+                    > div {
+                        overflow: hidden;
+                    }
+
+                    .block__body-loading {
+                        color: var(--uui-color-text-alt);
+                        padding: var(--uui-size-3) 0;
+                    }
+                }
+            }
+        `,
+    ];
+}

@@ -1,0 +1,5 @@
+.icon {
+    width: var(--uui-size-5);
+    height: var(--uui-size-5);
+    color: var(--uui-color-text);
+}

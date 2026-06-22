@@ -1,69 +1,46 @@
-﻿using Perplex.ContentBlocks.PropertyEditor.Configuration;
-using Perplex.ContentBlocks.PropertyEditor.ModelValue;
+﻿using Perplex.ContentBlocks.DeliveryApi;
+using Perplex.ContentBlocks.PropertyEditor.Configuration;
+using Perplex.ContentBlocks.PropertyEditor.Value;
 using Perplex.ContentBlocks.Rendering;
-using Perplex.ContentBlocks.Variants;
+using Umbraco.Cms.Core.DeliveryApi;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
+using Umbraco.Cms.Core.PropertyEditors.DeliveryApi;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+using Umbraco.Extensions;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
-public class ContentBlocksValueConverter : PropertyValueConverterBase
+public class ContentBlocksValueConverter
+(
+    IServiceProvider serviceProvider,
+    ContentBlocksValueDeserializer deserializer,
+    BlockEditorConverter converter,
+    IApiElementBuilder apiElementBuilder
+) : PropertyValueConverterBase, IDeliveryApiPropertyValueConverter
 {
-    private readonly NestedContentSingleValueConverter _nestedContentSingleValueConverter;
-    private readonly ContentBlocksModelValueDeserializer _deserializer;
-    private readonly IContentBlockVariantSelector _variantSelector;
-    private readonly IServiceProvider _serviceProvider;
-
-    public ContentBlocksValueConverter(
-        NestedContentSingleValueConverter nestedContentSingleValueConverter,
-        ContentBlocksModelValueDeserializer deserializer,
-        IContentBlockVariantSelector variantSelector,
-        IServiceProvider serviceProvider
-    )
-    {
-        _nestedContentSingleValueConverter = nestedContentSingleValueConverter;
-        _deserializer = deserializer;
-        _variantSelector = variantSelector;
-        _serviceProvider = serviceProvider;
-    }
-
     public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
-    {
-        // We might be able to set this to .Elements. This ensures the cache will be refreshed
-        // even after publishing any other content, which ensures no issues arise when the block
-        // contains editors that reference other content (e.g. a ContentPicker).
-        // However, this requires proper testing first with a wide range of editors.
-        // Until that time, .Snapshot is the safest option: per request caching.
-        return PropertyCacheLevel.Snapshot;
-    }
+        => PropertyCacheLevel.Elements;
 
     public override bool IsConverter(IPublishedPropertyType propertyType)
         => propertyType.EditorAlias == Constants.PropertyEditor.Alias;
 
     public override object ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
     {
-        ContentBlocksModelValue? modelValue = _deserializer.Deserialize(inter?.ToString());
-        if (modelValue is null)
+        if (deserializer.Deserialize(inter?.ToString()) is not ContentBlocksValue value)
         {
             return Rendering.ContentBlocks.Empty;
         }
 
-        var interValue = new ContentBlocksInterValue
-        {
-            Header = SelectBlock(modelValue.Header),
-            Blocks = modelValue.Blocks?.Select(SelectBlock).OfType<ContentBlockInterValue>().ToArray() ?? Array.Empty<ContentBlockInterValue>(),
-        };
-
         var config = propertyType.DataType.ConfigurationAs<ContentBlocksConfiguration>() ?? ContentBlocksConfiguration.DefaultConfiguration;
 
         var header = config.Structure.HasFlag(Structure.Header)
-            ? CreateViewModel(interValue.Header)
+            ? CreateViewModel(value.Header)
             : null;
 
         var blocks = config.Structure.HasFlag(Structure.Blocks)
-            ? interValue.Blocks.Select(CreateViewModel).OfType<IContentBlockViewModel>().ToArray()
-            : Array.Empty<IContentBlockViewModel>();
+            ? value.Blocks?.Select(CreateViewModel).OfType<IContentBlockViewModel>().ToArray() ?? []
+            : [];
 
         return new Rendering.ContentBlocks
         {
@@ -71,57 +48,26 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
             Blocks = blocks
         };
 
-        ContentBlockInterValue? SelectBlock(ContentBlockModelValue? original)
+        IContentBlockViewModel? CreateViewModel(ContentBlockValue? block)
         {
-            if (original is null || original.IsDisabled)
-            {
-                return null;
-            }
-
-            // Start with default content
-            var block = new ContentBlockInterValue
-            {
-                Id = original.Id,
-                DefinitionId = original.DefinitionId,
-                LayoutId = original.LayoutId,
-                Content = original.Content,
-            };
-
-            if (_variantSelector.SelectVariant(original, owner, preview) is ContentBlockVariantModelValue variant)
-            {
-                // Use variant instead, note we always use the definition + layout specified by the block
-                block.Id = variant.Id;
-                block.Content = variant.Content;
-            };
-
-            return block;
-        }
-
-        IContentBlockViewModel? CreateViewModel(ContentBlockInterValue? block)
-        {
-            if (block is null)
-            {
-                return null;
-            }
-
-            if (ParseElement(block.Content?.ToString()) is not IPublishedElement content)
+            if (block is null ||
+                block.Content is null ||
+                block.IsDisabled ||
+                converter.ConvertToElement(owner, block.Content, referenceCacheLevel, preview) is not IPublishedElement content)
             {
                 return null;
             }
 
             var contentType = content.GetType();
-            var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType(new[] { contentType });
+            var genericViewModelFactoryType = typeof(IContentBlockViewModelFactory<>).MakeGenericType([contentType]);
 
-            if (_serviceProvider.GetService(genericViewModelFactoryType) is not IContentBlockViewModelFactory viewModelFactory)
+            if (serviceProvider.GetService(genericViewModelFactoryType) is not IContentBlockViewModelFactory viewModelFactory)
             {
                 return null;
             }
 
             return viewModelFactory.Create(content, block.Id, block.DefinitionId, block.LayoutId);
         }
-
-        IPublishedElement? ParseElement(string? blockContent)
-            => _nestedContentSingleValueConverter.ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, blockContent, preview) as IPublishedElement;
     }
 
     public override bool? IsValue(object? value, PropertyValueLevel level)
@@ -132,16 +78,68 @@ public class ContentBlocksValueConverter : PropertyValueConverterBase
             return null;
         }
 
-        if (value is not IContentBlocks model)
+        if (value is IContentBlocks model)
         {
-            // Value must be invalid
-            return false;
+            // Valid with at least 1 block
+            return model.Header is not null || model.Blocks.Any();
         }
 
-        // Valid with at least 1 block
-        return model.Header is not null || model.Blocks.Any();
+        if (value is string inter)
+        {
+            // Umbraco incorrectly passes in the Inter value when PropertyValueLevel is set to Object in some cases:
+            // https://github.com/umbraco/Umbraco-CMS/issues/20338
+            // We will attempt to deserialize it here in that case, but Umbraco should fix this in the future
+            // so this case will never be hit anymore.
+            // This method (IsValue) is called on every render and we do not want to deserialize every time
+            // but rather look at the cached Object value.
+            if (deserializer.Deserialize(inter) is ContentBlocksValue modelValue)
+            {
+                // Valid with at least 1 block
+                return modelValue.Header is not null || modelValue.Blocks?.Count > 0;
+            }
+        }
+
+        // If we end up here it is invalid.
+        return false;
     }
 
     public override Type GetPropertyValueType(IPublishedPropertyType propertyType)
         => typeof(IContentBlocks);
+
+    public PropertyCacheLevel GetDeliveryApiPropertyCacheLevel(IPublishedPropertyType propertyType)
+        => GetPropertyCacheLevel(propertyType);
+
+    public Type GetDeliveryApiPropertyValueType(IPublishedPropertyType propertyType)
+        => typeof(IApiContentBlocks);
+
+    public object? ConvertIntermediateToDeliveryApiObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview, bool expanding)
+    {
+        var modelValue = ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, inter, preview);
+        if (modelValue is not IContentBlocks contentBlocks)
+        {
+            return null;
+        }
+
+        return new ApiContentBlocks
+        {
+            Header = Map(contentBlocks.Header),
+            Blocks = [.. contentBlocks.Blocks.Select(Map).OfType<IApiContentBlockViewModel>()],
+        };
+
+        ApiContentBlockViewModel? Map(IContentBlockViewModel? vm)
+        {
+            if (vm is null)
+            {
+                return null;
+            }
+
+            return new ApiContentBlockViewModel
+            {
+                Id = vm.Id,
+                DefinitionId = vm.DefinitionId,
+                LayoutId = vm.LayoutId,
+                Content = apiElementBuilder.Build(vm.Content),
+            };
+        }
+    }
 }

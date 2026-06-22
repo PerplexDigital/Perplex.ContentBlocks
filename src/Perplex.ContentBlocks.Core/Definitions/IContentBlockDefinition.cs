@@ -15,27 +15,9 @@ public interface IContentBlockDefinition
     string Name { get; }
 
     /// <summary>
-    /// Description of this Content Block definition
+    /// Key of the Element Type to use for this Content Block definition.
     /// </summary>
-    string Description { get; }
-
-    /// <summary>
-    /// Preview image that will appear in the backoffice UI when selecting blocks
-    /// </summary>
-    string PreviewImage { get; }
-
-    /// <summary>
-    /// Data type id of the Nested Content data type used for this Content Block definition.
-    /// Provide either DataTypeId OR DataTypeKey, not both. Leave one of them NULL.
-    /// </summary>
-    [Obsolete("Use " + nameof(DataTypeKey) + " instead. This will be removed in a next major release.")]
-    int? DataTypeId { get; }
-
-    /// <summary>
-    /// Data type key of the Nested Content data type used for this Content Block definition.
-    /// Provide either DataTypeId OR DataTypeKey, not both. Leave one of them NULL.
-    /// </summary>
-    Guid? DataTypeKey { get; }
+    Guid ElementTypeKey { get; }
 
     /// <summary>
     /// Category ids this definition belongs to.
@@ -46,6 +28,27 @@ public interface IContentBlockDefinition
     /// Layouts this block defines. Make sure to specify at least one layout.
     /// </summary>
     IEnumerable<IContentBlockLayout> Layouts { get; }
+
+    /// <summary>
+    /// Description of this Content Block definition
+    /// </summary>
+    string Description { get; }
+
+    /// <summary>
+    /// Template to use for the block name. To render the value of a block property, use {{propertyAlias}}.
+    /// </summary>
+    string BlockNameTemplate { get; }
+
+    /// <summary>
+    /// The icon of this block that will be used in the backoffice UI.
+    /// If left empty the icon of this block's first category will be used as a fallback.
+    /// </summary>
+    string Icon { get; }
+
+    /// <summary>
+    /// Preview image that will appear in the backoffice UI when selecting blocks
+    /// </summary>
+    string PreviewImage { get; }
 
     /// <summary>
     /// Limits this Content Block definition to only the given document types.

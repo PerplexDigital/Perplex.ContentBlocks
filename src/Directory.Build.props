@@ -1,16 +1,16 @@
-﻿<Project>
+<Project>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <DebugType>embedded</DebugType>
-    <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
+    <NoWarn>$(NoWarn);NU1900;NU1902;NU1903</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package">
-    <Version>3.0.1</Version>
+    <Version>4.0.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Company>Perplex Digital</Company>
     <Authors>$(Company)</Authors>

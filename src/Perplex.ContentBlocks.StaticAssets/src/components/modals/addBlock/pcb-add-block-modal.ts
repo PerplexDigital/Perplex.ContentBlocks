@@ -1,0 +1,220 @@
+import { customElement, html, property, state, repeat, unsafeCSS } from '@umbraco-cms/backoffice/external/lit';
+import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
+import { UmbModalExtensionElement } from '@umbraco-cms/backoffice/modal';
+import type { UmbModalContext } from '@umbraco-cms/backoffice/modal';
+import { PcbAddBlockModalData, PcbAddBlockModalValue } from './modal-token.ts';
+import { PerplexContentBlocksBlock, Section } from '../../../types.ts';
+import { ON_BLOCK_SELECTED } from '../../../events/block.ts';
+import { PcbToastEvent } from '../../../events/toast.ts';
+import addBlockModalStyles from './addBlockModal.css?inline';
+
+export const ELEMENT_NAME = 'pcb-add-block-modal';
+
+@customElement(ELEMENT_NAME)
+export default class PerplexContentBlocksAddBlockModalElement
+    extends UmbLitElement
+    implements UmbModalExtensionElement<PcbAddBlockModalData, PcbAddBlockModalValue>
+{
+    @property({ attribute: false })
+    modalContext?: UmbModalContext<PcbAddBlockModalData, PcbAddBlockModalValue>;
+
+    @property({ attribute: false })
+    data?: PcbAddBlockModalData;
+
+    @state()
+    selectedBlock: PerplexContentBlocksBlock | null = null;
+
+    @state()
+    searchTerm: string | null = null;
+
+    @state()
+    selectedCategories: string[] | null = null;
+
+    private _handleCancel() {
+        this.modalContext?.submit();
+    }
+
+    private _handleSubmit() {
+        if (!this.selectedBlock) {
+            this.dispatchEvent(
+                new PcbToastEvent('warning', {
+                    headline: 'Select a content block',
+                }),
+            );
+            return;
+        }
+
+        this.modalContext?.updateValue({
+            blocks: [this.selectedBlock],
+            section: this.modalContext?.data.section,
+            desiredIndex: this.modalContext?.data.insertAtIndex ?? null,
+        });
+        this.modalContext?.submit();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener(ON_BLOCK_SELECTED, (e: Event) => this.onBlockSelected(e as CustomEvent));
+    }
+
+    onBlockSelected(event: CustomEvent) {
+        this.selectedBlock = event.detail;
+    }
+
+    onSearchTermChanged(e: Event) {
+        const input = e.target as HTMLInputElement;
+        this.searchTerm = input.value;
+    }
+
+    onCategoryClicked(e: Event, categoryId: string) {
+        e.preventDefault();
+        if (!this.selectedCategories) {
+            this.selectedCategories = [];
+        }
+
+        if (this.selectedCategories.includes(categoryId)) {
+            this.selectedCategories = this.selectedCategories.filter(id => id !== categoryId);
+        } else {
+            this.selectedCategories = [...this.selectedCategories, categoryId];
+        }
+    }
+
+    onResetFilters() {
+        this.selectedCategories = null;
+        this.searchTerm = null;
+    }
+
+    renderBlocks() {
+        if (!this.modalContext?.data.groupedDefinitions) return;
+
+        const searchTerm = this.searchTerm?.toLowerCase().trim() || '';
+
+        // Only show categories that match the section.
+        const categories = Object.values(this.modalContext?.data.groupedDefinitions).filter(category => {
+            const isHeader = this.modalContext?.data.section === Section.HEADER;
+            return category.category.isEnabledForHeaders === isHeader;
+        });
+
+        const filteredCategories = categories
+            .map(category => {
+                // Filter definitions by search term
+                const filteredDefinitions = Object.values(category.definitions).filter(definition =>
+                    `${definition!.name} | ${definition.layouts.map(layout => layout.name).join(' | ')}`
+                        .toLowerCase()
+                        .includes(searchTerm),
+                );
+
+                // If categories are selected, filter by selected categories
+                if (this.selectedCategories && this.selectedCategories.length > 0) {
+                    if (!this.selectedCategories.includes(category.category.id)) {
+                        return { ...category, filteredDefinitions: [] };
+                    }
+                }
+                return { ...category, filteredDefinitions };
+            })
+            // Exclude categories with no matching definitions
+            .filter(category => category.filteredDefinitions.length > 0);
+
+        return html`
+            <div class="addBlockModal__filterBar">
+                <div class="addBlockModal__searchBar">
+                    <uui-input
+                        label="search blocks"
+                        @input=${this.onSearchTermChanged}
+                        placeholder="Search blocks..."
+                        .value=${this.searchTerm || ''}
+                        style="
+                            --uui-input-height: var(--uui-size-12); 
+                            --uui-input-background-color: var(--uui-color-surface-emphasis); 
+                            width: 100%
+                        "
+                    ></uui-input>
+                </div>
+                <div class="addBlockModal__filters">
+                    ${categories.map(category => {
+                        return html`
+                            <uui-checkbox
+                                label-position="left"
+                                label="${category.category.name}"
+                                name="category"
+                                .checked=${this.selectedCategories?.includes(category.category.id) ?? false}
+                                @change=${(e: Event) => this.onCategoryClicked(e, category.category.id)}
+                                style="
+                                    --uui-checkbox-size: var(--uui-size-space-5);
+                                    line-height: 1.2;
+                                    border: 1px solid var(--uui-color-border);
+                                    border-radius: var(--uui-border-radius);
+                                    padding: var(--uui-size-3) var(--uui-size-4);
+                                "
+                            ></uui-checkbox>
+                        `;
+                    })}
+                </div>
+                <uui-button
+                    label="reset filters"
+                    look="primary"
+                    ?disabled=${!this.searchTerm && !this.selectedCategories}
+                    @click=${this.onResetFilters}
+                >
+                    Reset <uui-icon name="icon-axis-rotation"></uui-icon>
+                </uui-button>
+            </div>
+
+            <ul class="addBlockModal__blockList">
+                ${filteredCategories.length === 0
+                    ? html`<div class="addBlockModal__noResults">No blocks found</div>`
+                    : repeat(
+                          filteredCategories,
+                          category => category.category.id,
+                          category => html`
+                              ${repeat(
+                                  category.filteredDefinitions,
+                                  definition => definition.id,
+                                  definition => html`
+                                      <pcb-block-definition
+                                          .selectedDefinition=${this.selectedBlock?.definitionId}
+                                          .selectedLayout=${this.selectedBlock?.layoutId}
+                                          .definition=${definition}
+                                      ></pcb-block-definition>
+                                  `,
+                              )}
+                          `,
+                      )}
+            </ul>
+        `;
+    }
+
+    render() {
+        return html`
+            <div
+                class="addBlockModal"
+                @click=${(e: Event) => e.stopPropagation()}
+            >
+                ${this.renderBlocks()}
+
+                <div class="addBlockModal__sidebarButtons">
+                    <uui-button
+                        label="close"
+                        look="secondary"
+                        type="button"
+                        @click=${this._handleCancel}
+                    >
+                        Close
+                    </uui-button>
+
+                    <uui-button
+                        label="save"
+                        look="primary"
+                        type="button"
+                        ?disabled=${!this.selectedBlock}
+                        @click=${this._handleSubmit}
+                    >
+                        Save
+                    </uui-button>
+                </div>
+            </div>
+        `;
+    }
+
+    static styles = [unsafeCSS(addBlockModalStyles)];
+}

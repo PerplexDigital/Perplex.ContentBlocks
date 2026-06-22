@@ -1,0 +1,30 @@
+{
+  "name": "perplex.content-blocks",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "watch": "concurrently \"tsc --noEmit --watch\" \"vite build --watch\"",
+    "prettier": "prettier --write \"./src/**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
+  },
+  "dependencies": {
+    "@lit/context": "^1.1.6",
+    "mutative": "^1.0.5"
+  },
+  "devDependencies": {
+    "@umbraco-cms/backoffice": "17.0.0",
+    "concurrently": "^9.2.1",
+    "eslint-plugin-lit": "^1.15.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.2.2",
+    "vite": "^5.4.21"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

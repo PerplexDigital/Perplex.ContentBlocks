@@ -1,17 +1,8 @@
-﻿using Perplex.ContentBlocks.Providers;
-
-namespace Perplex.ContentBlocks.Presets;
+﻿namespace Perplex.ContentBlocks.Presets;
 
 public class InMemoryContentBlocksPresetRepository : IContentBlocksPresetRepository
 {
-    private readonly IDocumentTypeAliasProvider _documentTypeAliasProvider;
-
-    public InMemoryContentBlocksPresetRepository(IDocumentTypeAliasProvider documentTypeAliasProvider)
-    {
-        _documentTypeAliasProvider = documentTypeAliasProvider;
-    }
-
-    private readonly IDictionary<Guid, IContentBlocksPreset> _presets = new Dictionary<Guid, IContentBlocksPreset>();
+    private readonly Dictionary<Guid, IContentBlocksPreset> _presets = [];
 
     public void Add(IContentBlocksPreset preset)
         => _presets[preset.Id] = preset;
@@ -20,40 +11,23 @@ public class InMemoryContentBlocksPresetRepository : IContentBlocksPresetReposit
         => _presets.Remove(id);
 
     public IContentBlocksPreset? GetById(Guid id)
-    {
-        return _presets.TryGetValue(id, out var preset) ? preset : null;
-    }
+        => _presets.TryGetValue(id, out var preset) ? preset : null;
 
     public IEnumerable<IContentBlocksPreset> GetAll()
-    {
-        return _presets.Values;
-    }
+        => _presets.Values;
 
-    public IContentBlocksPreset? GetPresetForPage(int pageId, string culture)
-    {
-        if (string.IsNullOrEmpty(culture))
-        {
-            return null;
-        }
-
-        var documentType = _documentTypeAliasProvider.GetDocumentTypeAlias(pageId);
-        if (documentType is null) return null;
-
-        return GetPresetForPage(documentType, culture);
-    }
-
-    public IContentBlocksPreset? GetPresetForPage(string documentType, string culture)
+    public IContentBlocksPreset? GetPresetForPage(string documentType, string? culture)
     {
         if (string.IsNullOrEmpty(documentType))
         {
             return null;
         }
 
-        bool isEmptyOrContains(IEnumerable<string> input, string toMatch)
-            => input?.Any() != true || input.Any(i => string.Equals(i, toMatch, StringComparison.InvariantCultureIgnoreCase));
-
         return GetAll()?.FirstOrDefault(p =>
-            isEmptyOrContains(p.ApplyToCultures, culture) &&
-            isEmptyOrContains(p.ApplyToDocumentTypes, documentType));
+            IsEmptyOrContains(p.ApplyToCultures, culture) &&
+            IsEmptyOrContains(p.ApplyToDocumentTypes, documentType));
+
+        static bool IsEmptyOrContains(IEnumerable<string> input, string? toMatch)
+            => input?.Any() != true || input.Any(i => string.Equals(i, toMatch, StringComparison.InvariantCultureIgnoreCase));
     }
 }

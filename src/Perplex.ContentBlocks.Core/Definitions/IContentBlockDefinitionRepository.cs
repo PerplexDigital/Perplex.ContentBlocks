@@ -10,7 +10,5 @@ public interface IContentBlockDefinitionRepository
 
     IEnumerable<IContentBlockDefinition> GetAll();
 
-    IEnumerable<IContentBlockDefinition> GetAllForPage(int pageId, string culture);
-
-    IEnumerable<IContentBlockDefinition> GetAllForPage(string documentType, string culture);
+    IEnumerable<IContentBlockDefinition> GetAllForPage(string documentType, string? culture);
 }

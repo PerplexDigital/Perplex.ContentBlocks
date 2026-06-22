@@ -7,7 +7,7 @@
 /// </summary>
 public class DefaultPreviewScrollScriptProvider : IPreviewScrollScriptProvider
 {
-    private const string SCROLL_SCRIPT = @"
+    private const string _scrollScript = @"
         if (typeof window.scrollTo === ""function"") {
             window.scrollTo({
                 top: element.offsetTop,
@@ -15,5 +15,5 @@ public class DefaultPreviewScrollScriptProvider : IPreviewScrollScriptProvider
             });
         }";
 
-    public string ScrollScript { get; } = SCROLL_SCRIPT;
+    public string ScrollScript { get; } = _scrollScript;
 }

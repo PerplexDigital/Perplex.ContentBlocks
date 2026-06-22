@@ -1,195 +1,182 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Perplex.ContentBlocks.PropertyEditor.ModelValue;
-using Perplex.ContentBlocks.Utils;
+﻿using Perplex.ContentBlocks.PropertyEditor.Value;
+using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Models.Editors;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Serialization;
-using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Strings;
 
 namespace Perplex.ContentBlocks.PropertyEditor;
 
 public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
 {
-    private readonly ContentBlocksModelValueDeserializer _deserializer;
-    private readonly ContentBlockUtils _utils;
-
-    private readonly IShortStringHelper _shortStringHelper;
+    private readonly IJsonSerializer _jsonSerializer;
+    private readonly ContentBlocksValueDeserializer _deserializer;
+    private readonly PropertyEditorCollection _propertyEditors;
+    private readonly IDataTypeConfigurationCache _dataTypeConfigCache;
+    private readonly DataValueReferenceFactoryCollection _referenceFactories;
 
     public ContentBlocksValueEditor(
-        ContentBlocksModelValueDeserializer deserializer,
-        ContentBlockUtils utils,
-        ILocalizedTextService localizedTextService,
-        IShortStringHelper shortStringHelper,
-        IJsonSerializer jsonSerializer) : base(localizedTextService, shortStringHelper, jsonSerializer)
+        IShortStringHelper shortStringHelper, IJsonSerializer jsonSerializer, IIOHelper ioHelper,
+        DataEditorAttribute attribute, ContentBlocksValidator validator, ContentBlocksValueDeserializer deserializer,
+        PropertyEditorCollection propertyEditors, IDataTypeConfigurationCache dataTypeConfigCache,
+        DataValueReferenceFactoryCollection referenceFactories)
+        : base(shortStringHelper, jsonSerializer, ioHelper, attribute)
     {
+        Validators.Add(validator);
+        _jsonSerializer = jsonSerializer;
         _deserializer = deserializer;
-        _utils = utils;
-        _shortStringHelper = shortStringHelper;
+        _propertyEditors = propertyEditors;
+        _dataTypeConfigCache = dataTypeConfigCache;
+        _referenceFactories = referenceFactories;
+    }
+
+    public override object? ToEditor(IProperty property, string? culture = null, string? segment = null)
+    {
+        var json = property.GetValue(culture, segment)?.ToString();
+        if (_deserializer.Deserialize(json) is not ContentBlocksValue model)
+        {
+            return base.ToEditor(property, culture, segment);
+        }
+
+        ContentBlocksValueUtils.Iterate(model, block =>
+            ToEditor(block.Content, culture, segment));
+
+        return model;
+
+        void ToEditor(BlockItemData? data, string? culture, string? segment)
+        {
+            if (data is null)
+            {
+                return;
+            }
+
+            foreach (var prop in data.Values)
+            {
+                if (prop.PropertyType is null)
+                {
+                    continue;
+                }
+
+                var configuration = _dataTypeConfigCache.GetConfiguration(prop.PropertyType.DataTypeKey);
+
+                IDataEditor? propEditor = _propertyEditors[prop.PropertyType.PropertyEditorAlias];
+
+                if (propEditor?.GetValueEditor(configuration) is not IDataValueEditor valueEditor)
+                {
+                    continue;
+                }
+
+                var variations = ContentVariation.Nothing;
+                if (!string.IsNullOrEmpty(culture)) variations |= ContentVariation.Culture;
+                if (!string.IsNullOrEmpty(segment)) variations |= ContentVariation.Segment;
+                prop.PropertyType.Variations = variations;
+
+                var tempProp = new Property(prop.PropertyType);
+                tempProp.SetValue(prop.Value, culture, segment);
+
+                prop.Value = valueEditor.ToEditor(tempProp, culture, segment);
+            }
+        }
     }
 
     public override object? FromEditor(ContentPropertyData editorValue, object? currentValue)
     {
         var json = editorValue.Value?.ToString();
-        var modelValue = _deserializer.Deserialize(json);
-        if (modelValue == null)
+        if (_deserializer.Deserialize(json) is not ContentBlocksValue model)
         {
             return base.FromEditor(editorValue, currentValue);
         }
 
-        if (modelValue.Header is ContentBlockModelValue header)
-        {
-            header.Content = FromEditor(header.Content, header.DefinitionId);
+        ContentBlocksValueUtils.Iterate(model, block =>
+            FromEditor(block.Content));
 
-            foreach (var variant in header.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
+        return _jsonSerializer.Serialize(model);
+
+        void FromEditor(BlockItemData? data)
+        {
+            if (data is null)
             {
-                variant.Content = FromEditor(variant.Content, header.DefinitionId);
+                return;
             }
-        }
 
-        foreach (var block in modelValue.Blocks ?? Enumerable.Empty<ContentBlockModelValue>())
-        {
-            block.Content = FromEditor(block.Content, block.DefinitionId);
-
-            foreach (var variant in block.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
+            foreach (var prop in data.Values)
             {
-                variant.Content = FromEditor(variant.Content, block.DefinitionId);
-            }
-        }
-
-        return JsonConvert.SerializeObject(modelValue, Formatting.None);
-
-        JArray? FromEditor(JArray? blockContent, Guid blockDefinitionId)
-        {
-            if (blockContent?.ToString() is string content &&
-                !string.IsNullOrWhiteSpace(content) &&
-                _utils.GetDataType(blockDefinitionId) is IDataType dataType &&
-                dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
-            {
-                var propertyData = new ContentPropertyData(content, dataType.Configuration);
-
-                try
+                if (prop.PropertyType is null)
                 {
-                    var ncJson = valueEditor.FromEditor(propertyData, null)?.ToString();
-
-                    if (!string.IsNullOrWhiteSpace(ncJson))
-                    {
-                        return JArray.Parse(ncJson);
-                    }
+                    continue;
                 }
-                catch
+
+                var configuration = _dataTypeConfigCache.GetConfiguration(prop.PropertyType.DataTypeKey);
+
+                IDataEditor? propEditor = _propertyEditors[prop.PropertyType.PropertyEditorAlias];
+                if (propEditor?.GetValueEditor(configuration) is not IDataValueEditor valueEditor)
                 {
-                    return blockContent;
+                    continue;
                 }
-            }
 
-            // Fallback: return the original value
-            return blockContent;
-        }
-    }
-
-    public override object? ToEditor(IProperty property, string? culture = null, string? segment = null)
-
-    {
-        var json = property.GetValue(culture, segment)?.ToString();
-        var modelValue = _deserializer.Deserialize(json);
-        if (modelValue == null)
-        {
-            return base.ToEditor(property, culture, segment);
-        }
-
-        JArray? ToEditor(JArray? blockContent, Guid blockDefinitionId)
-        {
-            if (blockContent?.ToString() is string content &&
-                !string.IsNullOrWhiteSpace(content) &&
-                _utils.GetDataType(blockDefinitionId) is IDataType dataType &&
-                dataType.Editor?.GetValueEditor() is IDataValueEditor valueEditor)
-            {
-                var ncPropType = new PropertyType(_shortStringHelper, dataType);
-                if (culture != null) ncPropType.Variations |= ContentVariation.Culture;
-                if (segment != null) ncPropType.Variations |= ContentVariation.Segment;
-
-                var ncProperty = new Property(ncPropType);
-                ncProperty.SetValue(content, culture, segment);
-
-                try
-                {
-                    if (valueEditor.ToEditor(ncProperty, culture, segment) is object ncValue)
-                    {
-                        return JArray.FromObject(ncValue);
-                    };
-                }
-                catch
-                {
-                    return blockContent;
-                }
-            }
-
-            // Fallback: return the original value
-            return blockContent;
-        }
-
-        if (modelValue.Header is ContentBlockModelValue header)
-        {
-            header.Content = ToEditor(header.Content, header.DefinitionId);
-
-            foreach (var variant in header.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
-            {
-                variant.Content = ToEditor(variant.Content, header.DefinitionId);
+                var propData = new ContentPropertyData(prop.Value, configuration);
+                prop.Value = valueEditor.FromEditor(propData, prop.Value);
             }
         }
-
-        foreach (var block in modelValue.Blocks ?? Enumerable.Empty<ContentBlockModelValue>())
-        {
-            block.Content = ToEditor(block.Content, block.DefinitionId);
-
-            foreach (var variant in block.Variants ?? Enumerable.Empty<ContentBlockVariantModelValue>())
-            {
-                variant.Content = ToEditor(variant.Content, block.DefinitionId);
-            }
-        }
-
-        return JObject.FromObject(modelValue);
     }
 
     public IEnumerable<UmbracoEntityReference> GetReferences(object? value)
     {
-        var result = new List<UmbracoEntityReference>();
-        var json = value?.ToString();
-
-        var modelValue = _deserializer.Deserialize(json);
-        if (modelValue is null)
-            return result;
-
-        if (modelValue.Header != null)
+        if (_deserializer.Deserialize(value?.ToString()) is not ContentBlocksValue model)
         {
-            result.AddRange(GetReferencesByBlock(modelValue.Header));
+            yield break;
         }
 
-        if (modelValue.Blocks?.Any() is true)
+        if (model.Header is not null)
         {
-            foreach (var block in modelValue.Blocks)
+            foreach (var reference in GetReferences(model.Header.Content))
             {
-                result.AddRange(GetReferencesByBlock(block));
+                yield return reference;
             }
         }
 
-        IEnumerable<UmbracoEntityReference> GetReferencesByBlock(ContentBlockModelValue model)
+        if (model.Blocks is not null)
         {
-            if (_utils.GetDataType(model.DefinitionId) is IDataType dataType && dataType.Editor?.GetValueEditor() is IDataValueReference valueEditor)
+            foreach (var block in model.Blocks)
             {
-                var blockReferences = valueEditor.GetReferences(model.Content?.ToString());
-                var variantReferences = model.Variants?.SelectMany(v => valueEditor.GetReferences(v.Content?.ToString())) ?? Enumerable.Empty<UmbracoEntityReference>();
-                return blockReferences.Concat(variantReferences);
-            }
-            else
-            {
-                return Enumerable.Empty<UmbracoEntityReference>();
+                foreach (var reference in GetReferences(block.Content))
+                {
+                    yield return reference;
+                }
             }
         }
 
-        return result;
+        UmbracoEntityReference[] GetReferences(BlockItemData? data)
+        {
+            if (data is null)
+            {
+                return [];
+            }
+
+            var references = new HashSet<UmbracoEntityReference>();
+
+            foreach (var property in data.Values)
+            {
+                if (property.PropertyType is null)
+                {
+                    continue;
+                }
+
+                if (!_propertyEditors.TryGet(property.PropertyType.PropertyEditorAlias, out IDataEditor? dataEditor))
+                {
+                    continue;
+                }
+
+                foreach (var reference in _referenceFactories.GetReferences(dataEditor, property.Value))
+                {
+                    references.Add(reference);
+                }
+            }
+
+            return [.. references];
+        }
     }
 }

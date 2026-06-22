@@ -26,9 +26,4 @@ public interface IContentBlockPreset
     /// The initial values of the generated Content Block per property alias of the IPublishedElement.
     /// </summary>
     IDictionary<string, object> Values { get; }
-
-    /// <summary>
-    /// The variants of this preset.
-    /// </summary>
-    IEnumerable<IContentBlockVariantPreset> Variants { get; set; }
 }

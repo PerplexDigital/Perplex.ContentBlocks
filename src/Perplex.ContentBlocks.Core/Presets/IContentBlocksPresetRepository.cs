@@ -8,7 +8,5 @@ public interface IContentBlocksPresetRepository
 
     IEnumerable<IContentBlocksPreset> GetAll();
 
-    IContentBlocksPreset? GetPresetForPage(int pageId, string culture);
-
-    IContentBlocksPreset? GetPresetForPage(string documentType, string culture);
+    IContentBlocksPreset? GetPresetForPage(string documentType, string? culture);
 }

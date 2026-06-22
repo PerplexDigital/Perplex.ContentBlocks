@@ -1,0 +1,117 @@
+.inline-layout-switch {
+    position: relative;
+    width: 280px;
+    height: 100%;
+    border-block: 1px solid var(--uui-color-border);
+    box-sizing: border-box;
+
+    .inline-layout-switch__layout {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        font-weight: bold;
+    }
+
+    .inline-layout-switch__single {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .inline-layout-switch__nav {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .inline-layout-switch__btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: none;
+        border-radius: 100%;
+        background-color: var(--uui-palette-mine-grey);
+        cursor: pointer;
+        color: var(--uui-color-default-contrast);
+        padding: 0;
+        flex-shrink: 0;
+        margin: 0 10px;
+
+        svg {
+            width: 6px;
+            height: 10px;
+        }
+
+        &:hover:not(:disabled) {
+            opacity: 0.8;
+        }
+
+        &:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+    }
+
+    /* Mirror the chevron for the "prev" button */
+    .inline-layout-switch__btn--prev svg {
+        transform: rotate(180deg);
+    }
+
+    .inline-layout-switch__nav .inline-layout-switch__layout {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    &:hover {
+        background-color: var(--uui-color-surface-emphasis);
+
+        .inline-layout-switch__preview {
+            visibility: visible;
+        }
+    }
+
+    .inline-layout-switch__preview {
+        --preview-height: 7rem;
+        position: absolute;
+        z-index: 50;
+        visibility: hidden;
+        bottom: calc(-1 * (var(--preview-height) + var(--uui-size-8)));
+        height: var(--preview-height);
+        left: 0;
+        right: 0;
+        padding: var(--uui-size-3);
+        border: 1px solid var(--uui-color-border);
+        border-radius: calc(var(--uui-border-radius) * 2);
+        background-color: var(--uui-color-background);
+        box-shadow: var(--uui-shadow-depth-1);
+        border-radius: var(--uui-border-radius);
+
+        .inline-layout-switch__layout {
+            padding: 0;
+            border: 1px solid var(--uui-color-border);
+            border-radius: var(--uui-border-radius);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}

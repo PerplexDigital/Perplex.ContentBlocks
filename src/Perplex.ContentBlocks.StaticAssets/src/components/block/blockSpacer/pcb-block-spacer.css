@@ -1,0 +1,41 @@
+.pcb-block-spacer {
+    display: grid;
+    grid-template-rows: 0fr;
+    padding: var(--uui-size-4) var(--uui-size-5);
+    border-radius: var(--uui-size-5);
+    transition:
+        250ms grid-template-rows ease,
+        250ms padding ease;
+
+    &.pcb-block-spacer > div {
+        overflow: hidden;
+        background-color: var(--uui-color-background);
+        border-top: 2px solid var(--uui-color-background);
+        border-radius: var(--uui-border-radius);
+        transition: 250ms padding ease;
+
+        > * {
+            opacity: 0;
+            transition: 250ms opacity ease;
+        }
+    }
+
+    &.pcb-block-spacer:hover {
+        grid-template-rows: 1fr;
+
+        > div {
+            padding: var(--uui-size-5);
+
+            > * {
+                opacity: 1;
+            }
+        }
+    }
+
+    .pcb-block-spacer__controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--uui-size-4);
+    }
+}

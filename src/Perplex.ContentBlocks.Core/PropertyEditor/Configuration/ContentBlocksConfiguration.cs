@@ -1,4 +1,7 @@
-﻿namespace Perplex.ContentBlocks.PropertyEditor.Configuration;
+﻿using Umbraco.Cms.Core.PropertyEditors;
+using static Perplex.ContentBlocks.Constants.PropertyEditor.Configuration;
+
+namespace Perplex.ContentBlocks.PropertyEditor.Configuration;
 
 /// <summary>
 /// The structure of the editor in the backoffice
@@ -35,52 +38,23 @@ public class ContentBlocksConfiguration
     /// <summary>
     /// Added for detecting out of date configuration objects in the future.
     /// </summary>
+    [ConfigurationField(VersionKey)]
     public int Version { get; set; }
 
     /// <summary>
     /// The structure of the editor in the backoffice
     /// </summary>
+    [ConfigurationField(StructureKey)]
     public Structure Structure { get; set; }
-
-    /// <summary>
-    /// Indicates if the preview component should be hidden
-    /// </summary>
-    public bool DisablePreview { get; set; }
-
-    /// <summary>
-    /// Indicates if the label of the editor should be hidden
-    /// </summary>
-    public bool HideLabel { get; set; }
-
-    /// <summary>
-    /// Indicates if the property group container should be hidden
-    /// </summary>
-    public bool HidePropertyGroupContainer { get; set; }
-
-    /// <summary>
-    /// Indicates if it is allowed to add blocks without first setting a header
-    /// </summary>
-    public bool AllowBlocksWithoutHeader { get; set; }
 
     /// <summary>
     /// Current configuration version.
     /// </summary>
-    public const int VERSION = 3;
+    public const int CurrentVersion = 4;
 
     public static readonly ContentBlocksConfiguration DefaultConfiguration = new()
     {
-        Version = VERSION,
-
-        HideLabel = true,
-        Structure = Structure.Blocks | Structure.Header,
-        DisablePreview = false,
-
-        // It is quite likely this will default to "false" in the future
-        // considering hiding the property group container is messing with
-        // the default Umbraco UI and also causes some flickering upon page load
-        // when the group is being hidden after our editor is initialized.
-        HidePropertyGroupContainer = true,
-
-        AllowBlocksWithoutHeader = false,
+        Version = CurrentVersion,
+        Structure = Structure.All
     };
 }
