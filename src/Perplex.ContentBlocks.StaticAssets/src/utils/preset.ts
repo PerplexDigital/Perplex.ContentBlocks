@@ -22,8 +22,14 @@ export const getBlocksFromPreset = (
             returnVal.header = makeBlockFromPresetItem(preset.header, definitions);
         }
 
-        if (preset.blocks && currentValue.blocks.length === 0) {
+        if (preset.blocks) {
             returnVal.blocks = preset.blocks
+                .filter(
+                    (item, index) =>
+                        currentValue.blocks.length === 0 ||
+                        (item.isMandatory &&
+                            currentValue.blocks[index]?.presetId !== item.id),
+                )
                 .map(item => makeBlockFromPresetItem(item, definitions))
                 .filter((block): block is PerplexContentBlocksBlock => block !== null);
         }
