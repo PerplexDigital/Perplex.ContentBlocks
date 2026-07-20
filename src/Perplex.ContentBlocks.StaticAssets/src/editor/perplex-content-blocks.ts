@@ -188,8 +188,7 @@ export default class PerplexContentBlocksElement extends UmbLitElement implement
                     this.addBlocks([presetBlocks.header], Section.HEADER, 0);
                 }
                 if (presetBlocks.blocks.length > 0) {
-                    for (const block of presetBlocks.blocks) {
-                        const presetIndex = presets.blocks.findIndex(item => item.id === block.presetId);
+                    for (const { block, presetIndex } of presetBlocks.blocks) {
                         this.addBlocks([block], Section.CONTENT, presetIndex);
                     }
                 }
