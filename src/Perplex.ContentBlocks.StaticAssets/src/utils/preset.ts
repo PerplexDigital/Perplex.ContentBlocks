@@ -14,7 +14,7 @@ export const getBlocksFromPreset = (
 ) => {
     let returnVal = {
         header: null as PerplexContentBlocksValue['header'],
-        blocks: [] as PerplexContentBlocksValue['blocks'],
+        blocks: [] as { block: PerplexContentBlocksBlock; presetIndex: number }[],
     };
 
     if (preset && definitions) {
@@ -22,10 +22,23 @@ export const getBlocksFromPreset = (
             returnVal.header = makeBlockFromPresetItem(preset.header, definitions);
         }
 
-        if (preset.blocks && currentValue.blocks.length === 0) {
+        if (preset.blocks) {
             returnVal.blocks = preset.blocks
-                .map(item => makeBlockFromPresetItem(item, definitions))
-                .filter((block): block is PerplexContentBlocksBlock => block !== null);
+                .map((item, presetIndex) => ({ item, presetIndex }))
+                .filter(
+                    ({ item }) =>
+                        currentValue.blocks.length === 0 ||
+                        (item.isMandatory &&
+                            !currentValue.blocks.some(block => block.presetId === item.id)),
+                )
+                .map(({ item, presetIndex }) => ({
+                    block: makeBlockFromPresetItem(item, definitions),
+                    presetIndex,
+                }))
+                .filter(
+                    (item): item is { block: PerplexContentBlocksBlock; presetIndex: number } =>
+                        item.block !== null,
+                );
         }
     }
 
