@@ -2,6 +2,11 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.1 - <sub><sup>2026-07-20</sup></sub>
+
+- Fixed mandatory preset blocks not being re-added when they are missing from existing content.
+  - Missing preset blocks are restored at their original preset position.
+
 ## v4.0.0 - <sub><sup>2026-06-22</sup></sub>
 
 - Added support for Umbraco v17+
