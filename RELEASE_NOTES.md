@@ -2,6 +2,10 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.2 - <sub><sup>2026-07-23</sup></sub>
+
+- Do not show categories with isHidden = true in the add block modal
+
 ## v4.0.1 - <sub><sup>2026-07-20</sup></sub>
 
 - Fixed mandatory preset blocks not being re-added when they are missing from existing content.
