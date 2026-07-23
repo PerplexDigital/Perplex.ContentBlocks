@@ -92,7 +92,7 @@ export default class PerplexContentBlocksAddBlockModalElement
         // Only show categories that match the section.
         const categories = Object.values(this.modalContext?.data.groupedDefinitions).filter(category => {
             const isHeader = this.modalContext?.data.section === Section.HEADER;
-            return category.category.isEnabledForHeaders === isHeader;
+            return !category.category.isHidden && category.category.isEnabledForHeaders === isHeader;
         });
 
         const filteredCategories = categories
