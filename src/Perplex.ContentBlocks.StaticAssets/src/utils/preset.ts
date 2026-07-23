@@ -28,16 +28,14 @@ export const getBlocksFromPreset = (
                 .filter(
                     ({ item }) =>
                         currentValue.blocks.length === 0 ||
-                        (item.isMandatory &&
-                            !currentValue.blocks.some(block => block.presetId === item.id)),
+                        (item.isMandatory && !currentValue.blocks.some(block => block.presetId === item.id)),
                 )
                 .map(({ item, presetIndex }) => ({
                     block: makeBlockFromPresetItem(item, definitions),
                     presetIndex,
                 }))
                 .filter(
-                    (item): item is { block: PerplexContentBlocksBlock; presetIndex: number } =>
-                        item.block !== null,
+                    (item): item is { block: PerplexContentBlocksBlock; presetIndex: number } => item.block !== null,
                 );
         }
     }
