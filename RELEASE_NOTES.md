@@ -2,6 +2,11 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.3 - <sub><sup>2026-07-27</sup></sub>
+
+- Fixed saving Image Cropper and File Upload editors inside a block (#102)
+  - Thanks to [@talhamalik4025](https://github.com/talhamalik4025) for raising the issue and providing a PR.
+
 ## v4.0.2 - <sub><sup>2026-07-23</sup></sub>
 
 - Do not show categories with isHidden = true in the add block modal
