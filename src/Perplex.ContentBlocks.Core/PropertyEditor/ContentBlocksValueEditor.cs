@@ -117,7 +117,11 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                     continue;
                 }
 
-                var propData = new ContentPropertyData(prop.Value, configuration);
+                var propData = new ContentPropertyData(prop.Value, configuration)
+                {
+                    ContentKey = editorValue.ContentKey,
+                    PropertyTypeKey = prop.PropertyType.Key,
+                };
                 prop.Value = valueEditor.FromEditor(propData, prop.Value);
             }
         }
