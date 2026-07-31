@@ -24,7 +24,7 @@ const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
 @customElement('pcb-block-head')
 export default class PcbBlockHead extends UmbLitElement {
     @property({ attribute: false })
-    definition!: PerplexBlockDefinition;
+    definition: PerplexBlockDefinition | null = null;
 
     @property({ attribute: false })
     blockDefinitionName!: string;
@@ -126,6 +126,7 @@ export default class PcbBlockHead extends UmbLitElement {
     }
 
     onHeadClicked = () => {
+        if (this.definition == null) return;
         this.dispatchEvent(new PcbBlockToggleEvent(this.id));
     };
 
@@ -135,10 +136,14 @@ export default class PcbBlockHead extends UmbLitElement {
 
     onToggleVisibilityClicked = () => {
         const updatedBlock = { ...this.block, isDisabled: !this.block.isDisabled };
-        this.dispatchEvent(new PcbBlockUpdatedEvent(updatedBlock, this.definition, this.section));
+        this.dispatchEvent(
+            new PcbBlockUpdatedEvent(updatedBlock, this.definition ?? ({} as PerplexBlockDefinition), this.section),
+        );
     };
 
     onCopyClicked = () => {
+        if (this.definition == null) return;
+
         this.dispatchEvent(new PcbValueCopiedEvent([this.block], this.section));
         this.dispatchEvent(
             new PcbToastEvent('positive', {
@@ -170,7 +175,7 @@ export default class PcbBlockHead extends UmbLitElement {
 
     protected willUpdate(_changedProperties: PropertyValues<this>) {
         if (_changedProperties.has('definition') || _changedProperties.has('block')) {
-            this.selectedLayoutIndex = this.definition.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
+            this.selectedLayoutIndex = this.definition?.layouts.findIndex(l => l.id === this.block.layoutId) || 0;
         }
 
         if (_changedProperties.has('block')) {
@@ -188,7 +193,11 @@ export default class PcbBlockHead extends UmbLitElement {
         const isTouchDevice = this.ctx?.isTouchDevice ?? false;
 
         return html`
-            <div class="block-head ${this.block.isDisabled ? 'block-head--disabled' : ''}">
+            <div
+                class="block-head ${this.block.isDisabled ? 'block-head--disabled' : ''} ${this.definition == null
+                    ? 'block-head--missing-definition'
+                    : ''}"
+            >
                 <button
                     type="button"
                     @click=${this.onHeadClicked}
@@ -239,13 +248,15 @@ export default class PcbBlockHead extends UmbLitElement {
                         : nothing}
                     <div class="block-head__title">
                         <strong>
-                            ${this.hasBlockNameValue
-                                ? html`<umb-ufm-render
-                                      inline
-                                      .markdown=${this.blockNameTemplate}
-                                      .value=${this.blockValuesByAlias}
-                                  ></umb-ufm-render>`
-                                : nothing}
+                            ${this.definition == null
+                                ? 'Block definition not found'
+                                : this.hasBlockNameValue
+                                  ? html`<umb-ufm-render
+                                        inline
+                                        .markdown=${this.blockNameTemplate}
+                                        .value=${this.blockValuesByAlias}
+                                    ></umb-ufm-render>`
+                                  : nothing}
                         </strong>
                         ${this.block.isDisabled
                             ? html`
@@ -256,20 +267,24 @@ export default class PcbBlockHead extends UmbLitElement {
                               `
                             : nothing}
                         <div
-                            class="${`block-head__description ${this.hasBlockNameValue ? '' : 'block-head__description--no-title'}`}"
+                            class="${`block-head__description ${
+                                this.definition != null && !this.hasBlockNameValue
+                                    ? 'block-head__description--no-title'
+                                    : ''
+                            }`}"
                         >
-                            ${this.blockDefinitionName}
+                            ${this.definition == null ? this.block.definitionId : this.blockDefinitionName}
                         </div>
                     </div>
                 </button>
-                ${this.isDraggingBlock
-                    ? nothing
-                    : html`
+                ${this.definition != null && !this.isDraggingBlock
+                    ? html`
                           <pcb-inline-layout-switch
                               .definition=${this.definition}
                               .initialSlideIndex=${this.selectedLayoutIndex}
                           ></pcb-inline-layout-switch>
-                      `}
+                      `
+                    : nothing}
                 <div class="block-head__controls">
                     <button
                         class="block-head__control"
@@ -287,19 +302,21 @@ export default class PcbBlockHead extends UmbLitElement {
                                   </uui-icon>
                               `}
                     </button>
-
-                    <button
-                        class="block-head__control"
-                        type="button"
-                        @click=${this.onCopyClicked}
-                        aria-label="Copy block"
-                    >
-                        <uui-icon
-                            style="font-size: 20px;"
-                            name="icon-documents"
-                        >
-                        </uui-icon>
-                    </button>
+                    ${this.definition != null
+                        ? html` <button
+                              class="block-head__control"
+                              type="button"
+                              @click=${this.onCopyClicked}
+                              ?disabled=${this.definition == null}
+                              aria-label="Copy block"
+                          >
+                              <uui-icon
+                                  style="font-size: 20px;"
+                                  name="icon-documents"
+                              >
+                              </uui-icon>
+                          </button>`
+                        : nothing}
                     <button
                         class="block-head__control"
                         type="button"

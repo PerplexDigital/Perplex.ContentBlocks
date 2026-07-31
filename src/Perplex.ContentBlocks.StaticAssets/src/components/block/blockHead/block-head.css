@@ -13,6 +13,10 @@
         border-top-right-radius: var(--uui-border-radius);
         border-bottom-right-radius: var(--uui-border-radius);
         border: 1px solid var(--uui-color-border);
+
+        .block-head--missing-definition & {
+            border-left: none;
+        }
     }
 
     .block-head__control {
@@ -145,6 +149,10 @@
                 .block-head--disabled & {
                     text-decoration: line-through;
                 }
+            }
+
+            .block-head--missing-definition & {
+                user-select: text;
             }
         }
     }

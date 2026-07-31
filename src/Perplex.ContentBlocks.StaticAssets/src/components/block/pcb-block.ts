@@ -56,7 +56,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     collapsed: boolean = true;
 
     @property({ attribute: false })
-    definition!: PerplexBlockDefinition;
+    definition: PerplexBlockDefinition | null = null;
 
     @property({ attribute: false })
     block!: PerplexContentBlocksBlock;
@@ -148,7 +148,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 this.dispatchEvent(new PcbFocusBlockInPreviewEvent(this.block.id));
             }
 
-            if (!this.collapsed && this.ok) {
+            if (!this.collapsed && this.ok && this.definition != null) {
                 void this.#loadBodyAndApplyPropertyLayout();
             }
         }
@@ -171,7 +171,7 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
 
     onLayoutChange = (event: PcbBlockLayoutChangeEvent) => {
         // do nothing if the layout didn't change
-        if (this.block.layoutId === event.selectedLayout.id) {
+        if (this.block.layoutId === event.selectedLayout.id || this.definition == null) {
             return;
         }
 
@@ -212,17 +212,25 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
     };
 
     onBlockUpdate = (block: PerplexContentBlocksBlock) => {
+        if (this.definition == null) return;
         this.dispatchEvent(new PcbBlockUpdatedEvent(block, this.definition, this.section, this.ctx.editorId));
     };
 
     async firstUpdated() {
-        // Use shared cache from PcbEditorContext (deduplicates across blocks)
-        const elementType = await this.ctx.getContentType(this.block.content.contentTypeKey);
-        this.properties = await this.#getOrderedProperties(elementType);
+        // Load the element type properties even when the block definition is
+        // missing, so the block can still be removed/moved by the editor. The
+        // property body is only rendered when a definition exists.
+        try {
+            const elementType = await this.ctx.getContentType(this.block.content.contentTypeKey);
+            this.properties = await this.#getOrderedProperties(elementType);
+        } catch (error) {
+            console.warn(`[pcb-block] Could not load element type for block ${this.block.id}`, error);
+            this.properties = [];
+        }
 
         this.ok = true;
 
-        if (!this.collapsed) {
+        if (!this.collapsed && this.definition != null) {
             await this.#loadBodyAndApplyPropertyLayout();
         }
     }
@@ -251,9 +259,10 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
             this.bodyLoading = true;
 
             if (!this.#propertyDatasetContext) {
+                // #loadBodyAndApplyPropertyLayout() is only called when definition != null
                 this.#propertyDatasetContext = new PerplexContentBlocksPropertyDatasetContext(
                     this,
-                    this.definition.name,
+                    this.definition!.name,
                     this.block,
                     this.onBlockUpdate,
                 );
@@ -479,8 +488,8 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                 <pcb-block-head
                     .block=${this.block}
                     .id=${this.block.id}
-                    .blockDefinitionName=${this.definition.name}
-                    .blockNameTemplate=${this.definition.blockNameTemplate ?? ''}
+                    .blockDefinitionName=${this.definition?.name ?? ''}
+                    .blockNameTemplate=${this.definition?.blockNameTemplate ?? ''}
                     .collapsed="${this.collapsed}"
                     .definition=${this.definition}
                     .section=${this.section}
@@ -492,13 +501,13 @@ export default class PerplexContentBlocksBlockElement extends UmbLitElement {
                     class="
                     block__body
                     ${classMap({
-                        'block__body--open': !this.collapsed,
-                        'block__body--hidden': this.collapsed,
+                        'block__body--open': !this.collapsed && this.definition != null,
+                        'block__body--hidden': this.collapsed || this.definition == null,
                         'block__body--dragging': this.isDraggingBlock && this.collapsed,
                     })}"
                 >
                     <div>
-                        ${this.bodyLoaded
+                        ${this.definition != null && this.bodyLoaded
                             ? repeat(
                                   this.properties,
                                   property => property.unique,
