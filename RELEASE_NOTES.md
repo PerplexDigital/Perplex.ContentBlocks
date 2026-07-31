@@ -2,6 +2,12 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.4 - <sub><sup>2026-07-31</sup></sub>
+
+- Blocks that exist in the property data without block definitions are now rendered as "Block definition not found" in the UI like in v1-v3.
+  - This way it is immediately obvious when a block definition is missing and it is possible to remove such blocks from the data.
+  - The block definition refers to an implementation of `IContentBlockDefinition` that the property data holds a reference to based on its `Id`.
+
 ## v4.0.3 - <sub><sup>2026-07-27</sup></sub>
 
 - Fixed saving Image Cropper and File Upload editors inside a block (#102)
