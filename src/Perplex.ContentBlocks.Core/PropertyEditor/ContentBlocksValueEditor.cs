@@ -33,6 +33,9 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
         _referenceFactories = referenceFactories;
     }
 
+    /// <inheritdoc />
+    public override IValueRequiredValidator RequiredValidator => new ContentBlocksRequiredValidator(_deserializer);
+
     public override object? ToEditor(IProperty property, string? culture = null, string? segment = null)
     {
         var json = property.GetValue(culture, segment)?.ToString();
