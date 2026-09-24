@@ -17,6 +17,24 @@ This package works on top of NestedContent but provides a more advanced user int
   - This helps editors to distinguish better between available blocks
   - Pickers show blocks in categories to help organization when available block count is high
 
+### Preview Configuration
+
+The server-side preview request uses the User-Agent `Perplex.ContentBlocks.Preview/1.0` by default. To customize it, set `Perplex:ContentBlocks:Preview:UserAgent` (shown here as equivalent JSON nesting):
+
+```json
+{
+  "Perplex": {
+    "ContentBlocks": {
+      "Preview": {
+        "UserAgent": "MySite.Preview/1.0"
+      }
+    }
+  }
+}
+```
+
+Ensure your CDN allows the server-side preview request to reach the site. Bot challenges may block this request; if so, configure a CDN exception for the preview request.
+
 ## Release Notes
 
 Release notes are [available here](RELEASE_NOTES.md).

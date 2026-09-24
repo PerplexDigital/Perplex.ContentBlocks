@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Perplex.ContentBlocks.Api;
 using System.Net.Mime;
 using System.Text;
@@ -14,7 +15,8 @@ public class ContentBlocksPreviewApiController
 (
     IPreviewScrollScriptProvider scrollScriptProvider,
     IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
-    IPreviewTokenGenerator previewTokenGenerator
+    IPreviewTokenGenerator previewTokenGenerator,
+    IConfiguration configuration
 ) : ContentBlocksApiControllerBase
 {
     private static readonly HttpClient _httpClient;
@@ -66,6 +68,11 @@ public class ContentBlocksPreviewApiController
 
         string cookieHeader = string.Join("; ", cookies);
         message.Headers.Add("Cookie", cookieHeader);
+
+        string? userAgent = configuration["Perplex:ContentBlocks:Preview:UserAgent"];
+        message.Headers.UserAgent.ParseAdd(string.IsNullOrWhiteSpace(userAgent)
+            ? "Perplex.ContentBlocks.Preview/1.0"
+            : userAgent);
 
         var result = await _httpClient.SendAsync(message);
         string html = await result.Content.ReadAsStringAsync();
