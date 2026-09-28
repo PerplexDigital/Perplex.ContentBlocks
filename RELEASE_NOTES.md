@@ -2,6 +2,14 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.5 - <sub><sup>2026-09-28</sup></sub>
+
+- Fixed required validation for Content Blocks properties with no blocks or header (#105). Empty Content Blocks data now fails validation when the property is mandatory.
+  - Thanks to [@talhamalik4025](https://github.com/talhamalik4025) for providing the PR.
+- Added a User-Agent to server-side preview requests to help identify them when configuring CDN rules (#106).
+  - Defaults to `Perplex.ContentBlocks.Preview/<VERSION>`; customize it with `Perplex:ContentBlocks:Preview:UserAgent`.
+  - Thanks to [@SelwynEdelbroek](https://github.com/SelwynEdelbroek) for providing the PR.
+
 ## v4.0.4 - <sub><sup>2026-07-31</sup></sub>
 
 - Blocks that exist in the property data without block definitions are now rendered as "Block definition not found" in the UI like in v1-v3.
