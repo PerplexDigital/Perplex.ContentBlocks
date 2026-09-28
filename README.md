@@ -19,7 +19,7 @@ This package works on top of NestedContent but provides a more advanced user int
 
 ### Preview Configuration
 
-The server-side preview request uses the User-Agent `Perplex.ContentBlocks.Preview/1.0` by default. To customize it, set `Perplex:ContentBlocks:Preview:UserAgent` (shown here as equivalent JSON nesting):
+The server-side preview request uses the User-Agent `Perplex.ContentBlocks.Preview/<VERSION>` by default. To customize it, set `Perplex:ContentBlocks:Preview:UserAgent` (shown here as equivalent JSON nesting):
 
 ```json
 {
