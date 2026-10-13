@@ -2,6 +2,11 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.6 - <sub><sup>2026-10-13</sup></sub>
+
+- Set the `SqlBulkCopy` timeout to 600 seconds to prevent timeouts when migrating larger Content Blocks datasets (#107).
+  - Thanks to [@osigas](https://github.com/osigas) for providing the PR.
+
 ## v4.0.5 - <sub><sup>2026-09-28</sup></sub>
 
 - Fixed required validation for Content Blocks properties with no blocks or header (#105). Empty Content Blocks data now fails validation when the property is mandatory.
