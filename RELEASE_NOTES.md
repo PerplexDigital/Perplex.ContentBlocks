@@ -4,14 +4,14 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v4.0.6 - <sub><sup>2026-10-13</sup></sub>
 
-- Set the `SqlBulkCopy` timeout to 600 seconds to prevent timeouts when migrating larger Content Blocks datasets (#107).
+- Set the `SqlBulkCopy` timeout to 600 seconds to prevent timeouts when migrating larger Content Blocks datasets ([#107](https://github.com/PerplexDigital/Perplex.ContentBlocks/pull/107)).
   - Thanks to [@osigas](https://github.com/osigas) for providing the PR.
 
 ## v4.0.5 - <sub><sup>2026-09-28</sup></sub>
 
-- Fixed required validation for Content Blocks properties with no blocks or header (#105). Empty Content Blocks data now fails validation when the property is mandatory.
+- Fixed required validation for Content Blocks properties with no blocks or header ([#105](https://github.com/PerplexDigital/Perplex.ContentBlocks/pull/105)). Empty Content Blocks data now fails validation when the property is mandatory.
   - Thanks to [@talhamalik4025](https://github.com/talhamalik4025) for providing the PR.
-- Added a User-Agent to server-side preview requests to help identify them when configuring CDN rules (#106).
+- Added a User-Agent to server-side preview requests to help identify them when configuring CDN rules ([#106](https://github.com/PerplexDigital/Perplex.ContentBlocks/pull/106)).
   - Defaults to `Perplex.ContentBlocks.Preview/<VERSION>`; customize it with `Perplex:ContentBlocks:Preview:UserAgent`.
   - Thanks to [@SelwynEdelbroek](https://github.com/SelwynEdelbroek) for providing the PR.
 
@@ -23,7 +23,7 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v4.0.3 - <sub><sup>2026-07-27</sup></sub>
 
-- Fixed saving Image Cropper and File Upload editors inside a block (#102)
+- Fixed saving Image Cropper and File Upload editors inside a block ([#102](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/102))
   - Thanks to [@talhamalik4025](https://github.com/talhamalik4025) for raising the issue and providing a PR.
 
 ## v4.0.2 - <sub><sup>2026-07-23</sup></sub>
@@ -232,7 +232,7 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v1.6.3 - <sub><sup>2020-12-30</sup></sub>
 
-- Fixed Content Block `id` + Nested Content `key` properties not getting new values when a content node is copied (#45).
+- Fixed Content Block `id` + Nested Content `key` properties not getting new values when a content node is copied ([#45](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/45)).
   - These properties are supposed to be unique. NestedContent uses the `key` property as a cache key so having multiple Content Blocks on different pages share the same `key` can lead to issues. These properties will now be recursively updated to new unique keys when a node is copied.
   - Note this was only an issue when copying an entire content node. Copying blocks using the ContentBlocks UI already updated these properties correctly.
 
@@ -253,7 +253,7 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v1.6.0 - <sub><sup>2020-09-10</sup></sub>
 
-- Editor UI can now be localized (#22)
+- Editor UI can now be localized ([#22](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/22))
   - Using Umbraco's built-in `<localize>` directive and `lang/` XML files.
   - Looks at language of logged in Umbraco user.
   - Thanks to @AndersBrohus for the PR and Danish translations
@@ -262,14 +262,14 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v1.5.3 - <sub><sup>2020-08-28</sup></sub>
 
-- Fix disappearing content in the backoffice (#38)
+- Fix disappearing content in the backoffice ([#38](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/38))
   - This issue occurred in multilingual setups and was introduced in 1.5.2.
   - Content is still present in the database but did not show up in the backoffice editor.
 
 ## v1.5.2 - <sub><sup>2020-08-24</sup></sub>
 
-- Fix an issue where RTEs inside blocks are "killed" when reordering ContentBlocks (#28)
-- Fix macro issues when macro is inserted in an RTE in a ContentBlock (#31)
+- Fix an issue where RTEs inside blocks are "killed" when reordering ContentBlocks ([#28](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/28))
+- Fix macro issues when macro is inserted in an RTE in a ContentBlock ([#31](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/31))
   - Macro property value was not transformed correctly and therefore not rendered correctly in the frontend.
 
 ## v1.5.1 - <sub><sup>2020-08-05</sup></sub>
@@ -278,8 +278,8 @@ Summary of changes in each release. For a full changelog see [the commit history
 
 ## v1.5.0 - <sub><sup>2020-07-24</sup></sub>
 
-- Copy/paste blocks: do not abort entirely when header cannot be pasted (#20)
-- Added option to allow adding blocks even when header is not set yet (#24)
+- Copy/paste blocks: do not abort entirely when header cannot be pasted ([#20](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/20))
+- Added option to allow adding blocks even when header is not set yet ([#24](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/24))
 - Fixed crash in preview mode for HTML with multiple root nodes
 - Some small layout fixes
 
