@@ -372,7 +372,7 @@ public class MigrateFromNestedContentToBlockList
                     TextValue = pd.TextValue,
                 }).ToArray();
 
-                Database.InsertBulk(migratedValues);
+                Database.InsertBulk(migratedValues, new InsertBulkOptions { BulkCopyTimeout = 600 });
 
                 Database.OneTimeCommandTimeout = 600; // 10 minutes
 
