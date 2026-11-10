@@ -21,6 +21,21 @@ import { PcbEditorContext } from '../../../context/pcb-editor-context.ts';
 
 const OLD_SYNTAX_SINGLE_VALUE = /^\{\{\s*(\w+)\s*\}\}$/;
 
+/** Text content of a node including text rendered inside nested shadow roots. */
+function getText(node: Node): string {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? '';
+    if (node instanceof HTMLStyleElement || node instanceof HTMLScriptElement) return '';
+
+    let text = '';
+    if (node instanceof Element && node.shadowRoot) {
+        // Only the shadow root is rendered; light DOM children (e.g. the raw expression
+        // inside <umb-ufm-js-expression>) are not displayed since UFM components have no slots.
+        return getText(node.shadowRoot);
+    }
+    node.childNodes.forEach(child => (text += getText(child)));
+    return text;
+}
+
 @customElement('pcb-block-head')
 export default class PcbBlockHead extends UmbLitElement {
     @property({ attribute: false })
@@ -153,24 +168,118 @@ export default class PcbBlockHead extends UmbLitElement {
         );
     };
 
-    private get hasBlockNameValue(): boolean {
-        if (!this.blockNameTemplate) return false;
+    /**
+     * Whether the block name template, as rendered by UFM, produced any visible text.
+     * We cannot know this up front (UFM expressions and components like {umbValue: ...}
+     * resolve asynchronously, partly in nested shadow roots), so we observe the rendered
+     * DOM of <umb-ufm-render> and read its trimmed text content.
+     */
+    @state()
+    private hasBlockNameValue = false;
 
-        // Matches: {prefix: alias}  {=alias}  ${ alias }
-        const aliasPattern = /\{(?:[^:}]+:\s*(\w+)|=(\w+))|\$\{\s*(\w+)/g;
-        let match;
-        let hasAnyAlias = false;
+    @query('umb-ufm-render')
+    private _ufmRender?: HTMLElement;
 
-        while ((match = aliasPattern.exec(this.blockNameTemplate)) !== null) {
-            hasAnyAlias = true;
-            const alias = match[1] ?? match[2] ?? match[3];
-            if (alias && this.blockValuesByAlias[alias]) {
-                return true;
-            }
+    #observedUfmRender?: HTMLElement;
+    #ufmObservers = new Map<Node, MutationObserver>();
+
+    #observeUfmRender() {
+        const el = this._ufmRender;
+        if (el === this.#observedUfmRender) return;
+
+        this.#disconnectUfmObservers();
+        this.#observedUfmRender = el;
+
+        if (el?.shadowRoot) {
+            this.#observeNode(el.shadowRoot);
         }
 
-        // No UFM aliases found — plain text template, always show
-        return !hasAnyAlias;
+        this.#updateHasBlockNameValue();
+    }
+
+    #updateScheduled = false;
+
+    #observeNode(root: Node) {
+        if (this.#ufmObservers.has(root)) return;
+
+        const observer = new MutationObserver(mutations => this.#onUfmMutation(mutations));
+        observer.observe(root, { childList: true, subtree: true, characterData: true });
+        this.#ufmObservers.set(root, observer);
+        this.#discoverShadowRoots(root);
+    }
+
+    #onUfmMutation(mutations: MutationRecord[]) {
+        // Nested custom elements (e.g. umb-ufm-js-expression) render inside their own shadow roots,
+        // which are invisible to a parent observer. Only inspect added/removed nodes.
+        for (const mutation of mutations) {
+            mutation.addedNodes.forEach(node => {
+                if (!(node instanceof Element)) return;
+                if (node.shadowRoot) this.#observeNode(node.shadowRoot);
+                this.#discoverShadowRoots(node);
+            });
+            mutation.removedNodes.forEach(node => {
+                if (node instanceof Element) this.#disposeShadowObservers(node);
+            });
+        }
+        this.#scheduleUpdateHasBlockNameValue();
+    }
+
+    #discoverShadowRoots(root: Node) {
+        root.childNodes.forEach(child => {
+            if (child instanceof Element && child.shadowRoot) {
+                this.#observeNode(child.shadowRoot);
+            }
+            this.#discoverShadowRoots(child);
+        });
+    }
+
+    #disposeShadowObservers(element: Element) {
+        if (element.shadowRoot) {
+            this.#ufmObservers.get(element.shadowRoot)?.disconnect();
+            this.#ufmObservers.delete(element.shadowRoot);
+            this.#disposeShadowObserversIn(element.shadowRoot);
+        }
+        this.#disposeShadowObserversIn(element);
+    }
+
+    #disposeShadowObserversIn(root: Node) {
+        root.childNodes.forEach(child => {
+            if (child instanceof Element) this.#disposeShadowObservers(child);
+        });
+    }
+
+    #disconnectUfmObservers() {
+        this.#ufmObservers.forEach(o => o.disconnect());
+        this.#ufmObservers.clear();
+        this.#observedUfmRender = undefined;
+    }
+
+    /** Batches recalculation so multiple observers firing in the same tick compute the text once. */
+    #scheduleUpdateHasBlockNameValue() {
+        if (this.#updateScheduled) return;
+        this.#updateScheduled = true;
+        queueMicrotask(() => {
+            this.#updateScheduled = false;
+            this.#updateHasBlockNameValue();
+        });
+    }
+
+    #updateHasBlockNameValue() {
+        const root = this.#observedUfmRender?.shadowRoot;
+        const hasValue = root != null && getText(root).trim().length > 0;
+        if (hasValue !== this.hasBlockNameValue) {
+            this.hasBlockNameValue = hasValue;
+        }
+    }
+
+    protected updated(_changedProperties: PropertyValues<this>) {
+        super.updated(_changedProperties);
+        this.#observeUfmRender();
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.#disconnectUfmObservers();
     }
 
     protected willUpdate(_changedProperties: PropertyValues<this>) {
@@ -250,9 +359,10 @@ export default class PcbBlockHead extends UmbLitElement {
                         <strong>
                             ${this.definition == null
                                 ? 'Block definition not found'
-                                : this.hasBlockNameValue
+                                : this.blockNameTemplate
                                   ? html`<umb-ufm-render
                                         inline
+                                        style=${this.hasBlockNameValue ? '' : 'display: none'}
                                         .markdown=${this.blockNameTemplate}
                                         .value=${this.blockValuesByAlias}
                                     ></umb-ufm-render>`
