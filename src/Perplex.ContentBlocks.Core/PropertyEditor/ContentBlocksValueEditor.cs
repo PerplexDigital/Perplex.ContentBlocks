@@ -93,12 +93,16 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
             return base.FromEditor(editorValue, currentValue);
         }
 
+        // Editors like the Image Cropper and File Upload need the stored value to update or delete their file,
+        // so match the stored blocks by id and their values by alias, like Umbraco's own block editors do.
+        var currentBlocks = ContentBlocksValueUtils.Map(_deserializer.Deserialize(currentValue?.ToString()), block => block);
+
         ContentBlocksValueUtils.Iterate(model, block =>
-            FromEditor(block.Content));
+            FromEditor(block.Content, currentBlocks.FirstOrDefault(current => current.Id == block.Id)?.Content));
 
         return _jsonSerializer.Serialize(model);
 
-        void FromEditor(BlockItemData? data)
+        void FromEditor(BlockItemData? data, BlockItemData? currentData)
         {
             if (data is null)
             {
@@ -125,7 +129,8 @@ public class ContentBlocksValueEditor : DataValueEditor, IDataValueReference
                     ContentKey = editorValue.ContentKey,
                     PropertyTypeKey = prop.PropertyType.Key,
                 };
-                prop.Value = valueEditor.FromEditor(propData, prop.Value);
+                var currentPropValue = currentData?.Values.FirstOrDefault(current => current.Alias == prop.Alias)?.Value;
+                prop.Value = valueEditor.FromEditor(propData, currentPropValue);
             }
         }
     }
