@@ -2,6 +2,15 @@
 
 Summary of changes in each release. For a full changelog see [the commit history](https://github.com/PerplexDigital/Perplex.ContentBlocks/commits/master).
 
+## v4.0.7 - <sub><sup>2026-11-11</sup></sub>
+
+- Fixed block titles being hidden in some scenarios when a block name template contains multiple properties.
+  - The block name template was only rendered when a regex found an alias with a value. That regex only detected the first identifier, so a template like `${ propA || propB }` was hidden when only `propB` had a value.
+  - We now inspect the rendered UFM output instead of relying on an incomplete regex.
+- Fixed nested editors receiving the wrong current value when saving a block. Clearing an Image Cropper now stores `null` and removes the uploaded file ([#110](https://github.com/PerplexDigital/Perplex.ContentBlocks/issues/110)).
+  - Note: publishing blocks with empty Image Cropper values can still fail in some cases; it is caused by an Umbraco Image Cropper issue and depends on [Umbraco CMS #24336](https://github.com/umbraco/Umbraco-CMS/issues/24336), which will be fixed in Umbraco 17.10.0.
+  - Thanks to [@talhamalik4025](https://github.com/talhamalik4025) for raising the issue and providing a PR.
+
 ## v4.0.6 - <sub><sup>2026-10-13</sup></sub>
 
 - Set the `SqlBulkCopy` timeout to 600 seconds to prevent timeouts when migrating larger Content Blocks datasets ([#107](https://github.com/PerplexDigital/Perplex.ContentBlocks/pull/107)).
